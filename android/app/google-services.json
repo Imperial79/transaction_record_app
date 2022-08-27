@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "621632578553",
+    "project_id": "transact-record",
+    "storage_bucket": "transact-record.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621632578553:android:98782bf2b5ddcd4a715328",
+        "android_client_info": {
+          "package_name": "com.imperial.transactRecord"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621632578553-9310nmd533mf8rdabviispr0kko7d880.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imperial.transactRecord",
+            "certificate_hash": "45ed376c7aba06330fcda58a8c817889c20ba509"
+          }
+        },
+        {
+          "client_id": "621632578553-oh0mg9ls97cdjtgifsq4nsqgpv5cvt26.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imperial.transactRecord",
+            "certificate_hash": "0cff88706a07e71f841e04eb7a5b65bca7226a7b"
+          }
+        },
+        {
+          "client_id": "621632578553-am88nb3bho0nsm4vtu2ugp4fjibq1dgr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZykF8nZRNJwCm88m2kTAqO6qcMhLwLLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621632578553-am88nb3bho0nsm4vtu2ugp4fjibq1dgr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
