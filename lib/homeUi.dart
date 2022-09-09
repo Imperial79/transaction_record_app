@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/homeMenuUI.dart';
 import 'package:transaction_record_app/newTransactUi.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/setBalanceUi.dart';
@@ -25,8 +28,9 @@ class _HomeUiState extends State<HomeUi> {
   int? currentBalance;
   String dateTitle = '';
   bool showDateWidget = false;
+  bool _isMenuOpen = false;
   final ScrollController _scrollController = ScrollController();
-  final ValueNotifier<bool> _showShuffle = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -34,9 +38,9 @@ class _HomeUiState extends State<HomeUi> {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        _showShuffle.value = false;
+        _showAdd.value = false;
       } else {
-        _showShuffle.value = true;
+        _showAdd.value = true;
       }
     });
     super.initState();
@@ -167,196 +171,273 @@ class _HomeUiState extends State<HomeUi> {
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    radius: 15,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: UserDetails.userProfilePic == ''
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color: primaryAccentColor,
-                                strokeWidth: 1.5,
-                              ),
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: UserDetails.userProfilePic,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Hi ',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextSpan(
-                            text: UserDetails.userDisplayName.split(' ').first,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  CircleAvatar(
-                    radius: 21,
-                    backgroundColor: Colors.grey,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.white,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: Colors.black,
+      body: Stack(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                AnimatedSize(
+                  duration: Duration(milliseconds: 200),
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: _showAdd,
+                      builder: (BuildContext context, bool showFullAppBar,
+                          Widget? child) {
+                        return Container(
+                          child: showFullAppBar
+                              ? Column(
+                                  children: [
+                                    SizedBox(
+                                      height: size.height * 0.02,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 15,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              child:
+                                                  UserDetails.userProfilePic ==
+                                                          ''
+                                                      ? Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color:
+                                                                primaryAccentColor,
+                                                            strokeWidth: 1.5,
+                                                          ),
+                                                        )
+                                                      : CachedNetworkImage(
+                                                          imageUrl: UserDetails
+                                                              .userProfilePic,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Expanded(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: 'Hi ',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text: UserDetails
+                                                        .userDisplayName
+                                                        .split(' ')
+                                                        .first,
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          CircleAvatar(
+                                            radius: 21,
+                                            backgroundColor: Colors.grey,
+                                            child: CircleAvatar(
+                                              radius: 20,
+                                              backgroundColor: Colors.white,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(
+                                                      () => _isMenuOpen = true);
+                                                },
+                                                icon: Icon(
+                                                  Icons
+                                                      .keyboard_arrow_down_rounded,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          NavPush(context, SetBalanceUi());
+                                        },
+                                        child: Container(
+                                          color: Colors.transparent,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'INR ',
+                                                style: TextStyle(
+                                                  fontSize: 40,
+                                                  fontWeight: FontWeight.w200,
+                                                ),
+                                              ),
+                                              StreamBuilder<dynamic>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection('users')
+                                                    .doc(FirebaseAuth.instance
+                                                        .currentUser!.uid)
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData) {
+                                                    DocumentSnapshot ds =
+                                                        snapshot.data;
+                                                    double currBal =
+                                                        double.parse(
+                                                            ds['currentBalance']
+                                                                .toString());
+                                                    return Text(
+                                                      currBal
+                                                          .toStringAsFixed(2),
+                                                      style: TextStyle(
+                                                        fontSize: 40,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    );
+                                                  }
+                                                  return CircularProgressIndicator(
+                                                    color: primaryColor,
+                                                    strokeWidth: 1.5,
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Container(),
+                        );
+                      }),
+                ),
+
+                //  Scrollable body
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 15,
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: GestureDetector(
-                onTap: () {
-                  NavPush(context, SetBalanceUi());
-                },
-                child: Container(
-                  color: Colors.transparent,
-                  child: Row(
-                    children: [
-                      Text(
-                        'INR ',
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w200,
-                        ),
-                      ),
-                      StreamBuilder<dynamic>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            DocumentSnapshot ds = snapshot.data;
-                            double currBal =
-                                double.parse(ds['currentBalance'].toString());
-                            return Text(
-                              currBal.toStringAsFixed(2),
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w900,
-                              ),
+                        StreamBuilder<dynamic>(
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .where('uid', isEqualTo: UserDetails.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (snapshot.data.docs.length == 0) {
+                                return Text('No Data');
+                              }
+                              DocumentSnapshot ds = snapshot.data.docs[0];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: StatsCard(
+                                        label: 'Income',
+                                        content: ds['income'].toString(),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: StatsCard(
+                                        label: 'Expenses',
+                                        content: ds['expense'].toString(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(),
                             );
-                          }
-                          return CircularProgressIndicator(
-                            color: primaryColor,
-                            strokeWidth: 1.5,
-                          );
-                        },
-                      ),
-                    ],
+                          },
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Divider(
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: transactList(),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.07,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: BouncingScrollPhysics(),
+          ),
+          if (_isMenuOpen)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: EdgeInsets.all(20),
+                alignment: Alignment.center,
+                width: double.infinity,
+                height: double.infinity,
                 child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 15,
-                    ),
-                    StreamBuilder<dynamic>(
-                      stream: FirebaseFirestore.instance
-                          .collection('users')
-                          .where('uid', isEqualTo: UserDetails.uid)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data.docs.length == 0) {
-                            return Text('No Data');
-                          }
-                          DocumentSnapshot ds = snapshot.data.docs[0];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: StatsCard(
-                                    label: 'Income',
-                                    content: ds['income'].toString(),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: StatsCard(
-                                    label: 'Expenses',
-                                    content: ds['expense'].toString(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Divider(
-                        color: Colors.grey.shade600,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isMenuOpen = !_isMenuOpen;
+                          });
+                        },
+                        icon: Icon(Icons.close),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: transactList(),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.07,
+                    Text(
+                      'data',
+                      style: TextStyle(fontSize: 30),
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: InkWell(
@@ -380,12 +461,13 @@ class _HomeUiState extends State<HomeUi> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: AnimatedSize(
+              //TODO
               duration: const Duration(milliseconds: 100),
               child: ValueListenableBuilder<bool>(
-                valueListenable: _showShuffle,
+                valueListenable: _showAdd,
                 builder: (
                   BuildContext context,
-                  bool showFullShuffle,
+                  bool showFullAddBtn,
                   Widget? child,
                 ) {
                   return Row(
@@ -397,8 +479,8 @@ class _HomeUiState extends State<HomeUi> {
                         color: Colors.white,
                         size: 24.0,
                       ),
-                      if (showFullShuffle) const SizedBox(width: 10),
-                      if (showFullShuffle)
+                      if (showFullAddBtn) const SizedBox(width: 10),
+                      if (showFullAddBtn)
                         Text(
                           'Add',
                           style: TextStyle(
@@ -408,7 +490,7 @@ class _HomeUiState extends State<HomeUi> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                      if (showFullShuffle) const SizedBox(width: 2.5),
+                      if (showFullAddBtn) const SizedBox(width: 2.5),
                     ],
                   );
                 },
@@ -486,19 +568,25 @@ class _HomeUiState extends State<HomeUi> {
 
 //-----------------------------------------------------------------------
   Widget transactTile({final ds}) {
-    var todayDate = DateFormat('dd MMMM, yyyy').format(DateTime.now());
-    print('Todays date: ' + todayDate);
-
+    var todayDate = DateFormat.yMMMMd().format(DateTime.now());
+    // print('Todays date = ' + todayDate);
+    // print('Incoming Date = ' + ds['date']);
     Size size = MediaQuery.of(context).size;
-    print('Date from DB - ' + ds['date']);
 
-    if (dateTitle == ds['date'].toString().split('-').first) {
+    // if (todayDate == ds['date']) {
+    //   dateTitle = 'Today';
+    // } else {
+    //   dateTitle = ds['date'];
+    // }
+
+    if (dateTitle == ds['date']) {
       showDateWidget = false;
+      print({'DateTitle - ' + dateTitle, 'amt - ' + ds['amount']});
     } else {
-      dateTitle = ds['date'].toString().split('-').first;
+      dateTitle = ds['date'];
       showDateWidget = true;
+      print({'DateTitle - ' + dateTitle, 'amt - ' + ds['amount']});
     }
-    print('dateTitle - ' + dateTitle);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -507,7 +595,7 @@ class _HomeUiState extends State<HomeUi> {
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Text(
-              dateTitle.contains(todayDate) ? 'Today' : dateTitle,
+              dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.black,
@@ -535,29 +623,40 @@ class _HomeUiState extends State<HomeUi> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: size.width * 0.22,
                         margin: EdgeInsets.only(bottom: 10),
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.grey.shade800,
+                          borderRadius: BorderRadius.circular(5),
+                          color: ds['transactMode'] == 'CASH'
+                              ? Colors.grey.shade800
+                              : Colors.blue.shade800,
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              '₹ ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                fontFamily: 'default',
-                              ),
+                            ds['transactMode'] == 'CASH'
+                                ? Text(
+                                    '₹ ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.white,
+                                      fontFamily: 'default',
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.payment,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                            SizedBox(
+                              width: ds['transactMode'] == 'CASH' ? 0 : 7,
                             ),
                             Text(
-                              'Cash',
+                              ds['transactMode'],
                               style: TextStyle(
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
                               ),
@@ -565,6 +664,15 @@ class _HomeUiState extends State<HomeUi> {
                           ],
                         ),
                       ),
+                      // Container(
+                      //   color: Colors.black,
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Icon(Icons.abc),
+                      //     ],
+                      //   ),
+                      // ),
                       Row(
                         children: [
                           CircleAvatar(
@@ -687,10 +795,20 @@ class _HomeUiState extends State<HomeUi> {
                               ),
                             ),
                           ),
+                          // Text(
+                          //   ds['date'].toString().split(' ')[5] +
+                          //       ' ' +
+                          //       ds['date'].toString().split(' ')[6],
+                          //   style: TextStyle(
+                          //     color: Colors.grey.shade600,
+                          //     fontSize: 13,
+                          //     fontWeight: FontWeight.w700,
+                          //   ),
+                          // ),
                           Text(
-                            ds['date'].toString().split(' ')[5] +
-                                ' ' +
-                                ds['date'].toString().split(' ')[6],
+                            ds['date'].toString() +
+                                ' | ' +
+                                ds['time'].toString(),
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 13,

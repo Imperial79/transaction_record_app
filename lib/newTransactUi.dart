@@ -23,11 +23,41 @@ class _NewTransactUiState extends State<NewTransactUi> {
   String transactType = "Income";
   String transactMode = 'CASH';
   DateTime _selectedDate = DateTime.now();
+  String _selectedTimeStamp = DateTime.now().toString();
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
 
-  saveTransacts(var DisplayTime, String currTime) {
+  @override
+  void initState() {
+    super.initState();
+    onPageLoad();
+  }
+
+  onPageLoad() {
+    setState(() {
+      var formatedDate = DateFormat.yMMMMd().format(DateTime.now());
+      print('Formated Date (onPageLoad) -' + formatedDate);
+
+      // var formatter = DateFormat('dd MMMM, yyyy - ').add_jm().format(DateTime.now());
+      String currentTimeStamp = DateTime.now().toString();
+      print('Current TS (onPageLoad) - ' + currentTimeStamp);
+    });
+  }
+
+  convertTimeToTS(date, time) {
+    var nowNanoSec = DateTime.now().toString().split('.').last;
+    _selectedTimeStamp = date.toString().split(' ').first +
+        ' ' +
+        time.toString().split(' ').first +
+        ':00.$nowNanoSec';
+
+    return _selectedTimeStamp;
+  }
+
+  saveTransacts() {
+    print(convertTimeToTS(_selectedDate, _selectedTime));
     if (amountField.text != '') {
+      convertTimeToTS(_selectedDate, _selectedTime);
       Map<String, dynamic> transactMap = {
         'title': title.text,
         "amount": amountField.text,
@@ -35,8 +65,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
         "transactMode": transactMode,
         "description": descriptionField.text,
         "type": transactType,
-        'date': DisplayTime,
-        'ts': currTime,
+        'date': DateFormat.yMMMMd().format(_selectedDate),
+        'time': _selectedTime,
+        'ts': _selectedTimeStamp,
       };
       databaseMethods.uploadTransacts(UserDetails.uid, transactMap);
       if (transactType == 'Income') {
@@ -226,59 +257,70 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           color: Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Row(
+                        child: Column(
                           children: [
-                            Icon(
-                              Icons.calendar_today_rounded,
-                              size: 20,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.punch_clock,
+                                  size: 20,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Created on',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(
-                              width: 10,
+                              height: 10,
                             ),
-                            Text(
-                              'Created on',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Spacer(),
-                            InkWell(
-                              onTap: () async {
-                                _selectedDate =
-                                    await selectDate(context, setState);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      _selectedDate =
+                                          await selectDate(context, setState);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                      ),
+                                      child: Text(
+                                        DateFormat.yMMMMd()
+                                            .format(_selectedDate),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  DateFormat('dd MMMM')
-                                      .format(_selectedDate)
-                                      .toString(),
+                                SizedBox(
+                                  width: 6,
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 6,
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                _selectedTime =
-                                    await selectTime(context, setState);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
+                                InkWell(
+                                  onTap: () async {
+                                    _selectedTime =
+                                        await selectTime(context, setState);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                    child: Text(
+                                      _selectedTime,
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  _selectedTime,
-                                ),
-                              ),
+                              ],
                             ),
 
                             ///////////////////////
@@ -479,9 +521,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
                               .format(DateTime.now());
                           String currentTime = DateTime.now().toString();
                           saveTransacts(
-                            formatter,
-                            currentTime,
-                          );
+                              // formatter,
+                              // currentTime,
+                              );
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
