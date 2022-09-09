@@ -461,7 +461,6 @@ class _HomeUiState extends State<HomeUi> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: AnimatedSize(
-              //TODO
               duration: const Duration(milliseconds: 100),
               child: ValueListenableBuilder<bool>(
                 valueListenable: _showAdd,
