@@ -568,23 +568,13 @@ class _HomeUiState extends State<HomeUi> {
 //-----------------------------------------------------------------------
   Widget transactTile({final ds}) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    // print('Todays date = ' + todayDate);
-    // print('Incoming Date = ' + ds['date']);
     Size size = MediaQuery.of(context).size;
-
-    // if (todayDate == ds['date']) {
-    //   dateTitle = 'Today';
-    // } else {
-    //   dateTitle = ds['date'];
-    // }
 
     if (dateTitle == ds['date']) {
       showDateWidget = false;
-      print({'DateTitle - ' + dateTitle, 'amt - ' + ds['amount']});
     } else {
       dateTitle = ds['date'];
       showDateWidget = true;
-      print({'DateTitle - ' + dateTitle, 'amt - ' + ds['amount']});
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

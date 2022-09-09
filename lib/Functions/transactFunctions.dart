@@ -22,7 +22,6 @@ Future<DateTime> selectDate(BuildContext context, StateSetter setState) async {
     setState(() {
       selectedDate = picked;
       _dateController.text = DateFormat.yMMMMd().format(selectedDate);
-      print(picked);
     });
 
   return picked!;
@@ -44,7 +43,6 @@ Future<String> selectTime(BuildContext context, StateSetter setState) async {
       _timeController.text = formatDate(
           DateTime(2019, 08, 1, selectedTime.hour, selectedTime.minute),
           [hh, ':', nn, " ", am]).toString();
-      print(_timeController.text.toString().split(' ').first + ':00');
     });
 
   return _timeController.text;

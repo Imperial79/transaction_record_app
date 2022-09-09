@@ -169,9 +169,7 @@ class _LoginUIState extends State<LoginUI> {
 
   Widget TextLink({final text, link, alignment}) {
     return GestureDetector(
-      onTap: () {
-        print(link);
-      },
+      onTap: () {},
       child: Container(
         alignment: alignment,
         color: Colors.transparent,

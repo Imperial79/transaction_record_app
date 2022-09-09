@@ -20,6 +20,10 @@
 # is commented out by default.
 #.vscode/
 
+# Keystore is not being uploaded in git 
+lib/upload-keystore.jks
+
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

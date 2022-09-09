@@ -30,18 +30,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void initState() {
     super.initState();
-    onPageLoad();
-  }
-
-  onPageLoad() {
-    setState(() {
-      var formatedDate = DateFormat.yMMMMd().format(DateTime.now());
-      print('Formated Date (onPageLoad) -' + formatedDate);
-
-      // var formatter = DateFormat('dd MMMM, yyyy - ').add_jm().format(DateTime.now());
-      String currentTimeStamp = DateTime.now().toString();
-      print('Current TS (onPageLoad) - ' + currentTimeStamp);
-    });
   }
 
   convertTimeToTS(date, time) {
@@ -55,7 +43,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   }
 
   saveTransacts() {
-    print(convertTimeToTS(_selectedDate, _selectedTime));
     if (amountField.text != '') {
       convertTimeToTS(_selectedDate, _selectedTime);
       Map<String, dynamic> transactMap = {

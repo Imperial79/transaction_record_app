@@ -61,8 +61,6 @@ class AuthMethods {
           .then(
         (value) {
           if (value.exists) {
-            print('does exist -------------');
-
             Map<String, dynamic> userInfoMap = {
               'uid': userDetails.uid,
               "email": userDetails.email,
@@ -80,8 +78,6 @@ class AuthMethods {
                   context, MaterialPageRoute(builder: (context) => HomeUi()));
             });
           } else {
-            print('does not exist --------- ');
-
             Map<String, dynamic> userInfoMap = {
               'uid': userDetails.uid,
               "email": userDetails.email,
