@@ -2,12 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
-import 'package:transaction_record_app/newTranactUi.dart';
+import 'package:transaction_record_app/newTransactUi.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/setBalanceUi.dart';
 
@@ -24,11 +25,27 @@ class _HomeUiState extends State<HomeUi> {
   int? currentBalance;
   String dateTitle = '';
   bool showDateWidget = false;
+  final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<bool> _showShuffle = ValueNotifier<bool>(true);
 
   @override
   void initState() {
     getUserDetailsFromPreference(setState);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _showShuffle.value = false;
+      } else {
+        _showShuffle.value = true;
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 
   Widget transactList() {
@@ -151,6 +168,7 @@ class _HomeUiState extends State<HomeUi> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             SizedBox(
@@ -271,6 +289,7 @@ class _HomeUiState extends State<HomeUi> {
             ),
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 physics: BouncingScrollPhysics(),
                 child: Column(
                   children: [
@@ -330,7 +349,7 @@ class _HomeUiState extends State<HomeUi> {
                       child: transactList(),
                     ),
                     SizedBox(
-                      height: size.height * 0.1,
+                      height: size.height * 0.07,
                     ),
                   ],
                 ),
@@ -345,25 +364,55 @@ class _HomeUiState extends State<HomeUi> {
           NavPush(
             context,
             NewTransactUi(),
-          ).then(() {
-            dateTitle = '';
-            setState(() {});
-          });
+          );
         },
-        child: Container(
-          width: 60,
-          height: 60,
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
+        child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            // color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(100.0),
             gradient: LinearGradient(
               colors: [
                 Colors.black,
                 Colors.grey,
               ],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 100),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _showShuffle,
+                builder: (
+                  BuildContext context,
+                  bool showFullShuffle,
+                  Widget? child,
+                ) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                      if (showFullShuffle) const SizedBox(width: 10),
+                      if (showFullShuffle)
+                        Text(
+                          'Add',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      if (showFullShuffle) const SizedBox(width: 2.5),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -486,20 +535,25 @@ class _HomeUiState extends State<HomeUi> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: 100,
-                        alignment: Alignment.center,
+                        width: size.width * 0.22,
                         margin: EdgeInsets.only(bottom: 10),
                         padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           color: Colors.grey.shade800,
                         ),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.attach_money_rounded,
-                              color: Colors.white,
+                            Text(
+                              '₹ ',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontFamily: 'default',
+                              ),
                             ),
                             Text(
                               'Cash',

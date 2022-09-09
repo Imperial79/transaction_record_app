@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -20,6 +21,10 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   String source = 'From';
   String transactType = "Income";
+  String transactMode = 'CASH';
+  DateTime _selectedDate = DateTime.now();
+  String _selectedTime =
+      DateFormat().add_jm().format(DateTime.now()).toString();
 
   saveTransacts(var DisplayTime, String currTime) {
     if (amountField.text != '') {
@@ -27,6 +32,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         'title': title.text,
         "amount": amountField.text,
         "source": sourceField.text,
+        "transactMode": transactMode,
         "description": descriptionField.text,
         "type": transactType,
         'date': DisplayTime,
@@ -34,6 +40,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       };
       databaseMethods.uploadTransacts(UserDetails.uid, transactMap);
       if (transactType == 'Income') {
+        //  UPDATING (Increment) THE CURRENT BALANCE IN DB
         FirebaseFirestore.instance
             .collection('users')
             .doc(UserDetails.uid)
@@ -50,6 +57,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       } else {
         final amount = double.parse(amountField.text);
 
+        //  UPDATING (Increment) THE CURRENT BALANCE IN DB
         FirebaseFirestore.instance
             .collection('users')
             .doc(UserDetails.uid)
@@ -83,7 +91,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.white,
+        systemNavigationBarColor: Colors.transparent,
         statusBarBrightness: Brightness.light,
       ),
     );
@@ -211,48 +219,87 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       SizedBox(
                         height: 10,
                       ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 13, vertical: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: 20,
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 13, vertical: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 20,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              'Created on',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Created on',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () async {
+                                _selectedDate =
+                                    await selectDate(context, setState);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Text(
+                                  DateFormat('dd MMMM')
+                                      .format(_selectedDate)
+                                      .toString(),
                                 ),
                               ),
-                              Spacer(),
-                              Text(
-                                DateFormat('dd MMMM')
-                                        .format(DateTime.now())
-                                        .toString() +
-                                    ' at ' +
-                                    DateFormat()
-                                        .add_jm()
-                                        .format(DateTime.now())
-                                        .toString(),
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            SizedBox(
+                              width: 6,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                _selectedTime =
+                                    await selectTime(context, setState);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Text(
+                                  _selectedTime,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+
+                            ///////////////////////
+                            // Text(
+                            //   DateFormat('dd MMMM')
+                            //           .format(_selectedDate)
+                            //           .toString() +
+                            //       ' at ' +
+                            //       _selectedTime.hour.toString() +
+                            //       ':' +
+                            //       _selectedTime.minute.toString(),
+                            // DateFormat()
+                            //     .add_jm()
+                            //     .format(_selectedTime)
+                            //     .toString(),
+                            //   style: TextStyle(
+                            //     color: Colors.black,
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                          ],
                         ),
                       ),
                       SizedBox(
@@ -365,13 +412,33 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           SizedBox(
                             height: 5,
                           ),
-                          Text(
-                            'CASH',
+                          DropdownButton(
+                            value: transactMode,
                             style: TextStyle(
                               fontWeight: FontWeight.w800,
                               color: Colors.black,
                               fontSize: 16,
                             ),
+                            underline: const SizedBox(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                transactMode = newValue!;
+                              });
+                            },
+                            items: <String>['CASH', 'ONLINE']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
@@ -443,7 +510,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             children: [
                               Icon(
                                 Icons.add,
-                                color: Colors.white,
+                                color: transactType == 'Income'
+                                    ? Colors.green.shade900
+                                    : Colors.white,
                               ),
                               SizedBox(
                                 width: 5,
@@ -452,7 +521,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 'Add ' + transactType,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: transactType == 'Income'
+                                      ? Colors.green.shade900
+                                      : Colors.white,
                                   fontSize: 18,
                                 ),
                               ),

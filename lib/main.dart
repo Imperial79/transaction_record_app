@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
-      color: primaryColor,
+      color: Colors.white,
       theme: ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
