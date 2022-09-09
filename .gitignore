@@ -21,8 +21,9 @@
 #.vscode/
 
 # Keystore is not being uploaded in git 
-lib/upload-keystore.jks
-
+android/key.properties
+upload-keystore.jks
+lib/key.jks
 
 # Flutter/Dart/Pub related
 **/doc/api/
