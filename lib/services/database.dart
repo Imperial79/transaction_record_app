@@ -1,6 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class DatabaseMethods {
+  //  upload new transact book
+  createNewTransactBook(String bookId, newBookMap) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .set(newBookMap);
+  }
+
   //Adding user to database QUERY
   addUserInfoToDB(String userId, Map<String, dynamic> userInfoMap) async {
     return await FirebaseFirestore.instance
@@ -10,11 +21,13 @@ class DatabaseMethods {
   }
 
   //Uploading transactions to database QUERY
-  uploadTransacts(uid, transactMap) {
-    FirebaseFirestore.instance
+  uploadTransacts(uid, transactMap, bookId) async {
+    await FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
-        .collection("transacts")
+        .collection("transact_books")
+        .doc(bookId)
+        .collection('transacts')
         .add(transactMap);
   }
 

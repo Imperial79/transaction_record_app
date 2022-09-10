@@ -8,6 +8,9 @@ import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 class NewTransactUi extends StatefulWidget {
+  final bookId;
+
+  const NewTransactUi({Key? key, required this.bookId}) : super(key: key);
   @override
   _NewTransactUiState createState() => _NewTransactUiState();
 }
@@ -56,9 +59,10 @@ class _NewTransactUiState extends State<NewTransactUi> {
         'time': _selectedTime,
         'ts': _selectedTimeStamp,
       };
-      databaseMethods.uploadTransacts(UserDetails.uid, transactMap);
+      databaseMethods.uploadTransacts(
+          UserDetails.uid, transactMap, widget.bookId);
       if (transactType == 'Income') {
-        //  UPDATING (Increment) THE CURRENT BALANCE IN DB
+        //  UPDATING GLOBALLY
         FirebaseFirestore.instance
             .collection('users')
             .doc(UserDetails.uid)
@@ -72,10 +76,20 @@ class _NewTransactUiState extends State<NewTransactUi> {
             .update({
           'income': FieldValue.increment(double.parse(amountField.text)),
         });
+
+        //  UPDATING INSIDE BOOK
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserDetails.uid)
+            .collection('transact_books')
+            .doc(widget.bookId)
+            .update({
+          'income': FieldValue.increment(double.parse(amountField.text)),
+        });
       } else {
         final amount = double.parse(amountField.text);
 
-        //  UPDATING (Increment) THE CURRENT BALANCE IN DB
+        //  UPDATING GLOBALLY
         FirebaseFirestore.instance
             .collection('users')
             .doc(UserDetails.uid)
@@ -88,6 +102,16 @@ class _NewTransactUiState extends State<NewTransactUi> {
             .doc(UserDetails.uid)
             .update({
           'expense': FieldValue.increment(double.parse(amountField.text))
+        });
+
+        //  UPDATING INSIDE BOOK
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserDetails.uid)
+            .collection('transact_books')
+            .doc(widget.bookId)
+            .update({
+          'expense': FieldValue.increment(double.parse(amountField.text)),
         });
       }
 

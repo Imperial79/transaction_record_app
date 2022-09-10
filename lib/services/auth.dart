@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:transaction_record_app/homeUi.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/setBalanceUi.dart';
+import 'package:transaction_record_app/screens/Transact%20Screens/setBalanceUi.dart';
 
 //creating an instance of Firebase Authentication
 class AuthMethods {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/user.dart';
-import 'package:transaction_record_app/homeUi.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 class SetBalanceUi extends StatefulWidget {
