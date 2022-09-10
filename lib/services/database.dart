@@ -20,15 +20,28 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
+  //  UPDATE TRANSACTS
+  updateTransacts(String bookId, transactId, transactMap) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .collection('transacts')
+        .doc(transactId)
+        .update(transactMap);
+  }
+
   //Uploading transactions to database QUERY
-  uploadTransacts(uid, transactMap, bookId) async {
+  uploadTransacts(uid, transactMap, bookId, transactId) async {
     await FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
         .collection("transact_books")
         .doc(bookId)
         .collection('transacts')
-        .add(transactMap);
+        .doc(transactId)
+        .set(transactMap);
   }
 
   //Set Balance
@@ -73,6 +86,42 @@ class DatabaseMethods {
         ds.reference.delete();
       }
     });
+  }
+
+  //  Update BOOK transactions
+  updateBookTransactions(String bookId, Map<String, dynamic> newMap) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .update(newMap);
+  }
+
+  //  Update global CURRENT BALANCE
+  updateGlobalCurrentBal(String uid, Map<String, dynamic> currentBalMap) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update(currentBalMap);
+  }
+
+  //  Reset Book Income/Expense
+  resetBookIncomeExpense(String bookId, uid, map) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .update(map);
+  }
+
+  //  Reset Book Income/Expense
+  resetGlobalIncomeExpense(String bookId, uid, map) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update(map);
   }
 
   //Delete all transacts

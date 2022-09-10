@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/newTransactUi.dart';
 import '../../Functions/navigatorFns.dart';
-import '../../Functions/transactFunctions.dart';
 import '../../colors.dart';
 import '../../services/user.dart';
 import '../../widgets.dart';
@@ -20,7 +20,27 @@ class BookUI extends StatefulWidget {
 class _BookUIState extends State<BookUI> {
   String dateTitle = '';
   bool showDateWidget = false;
+  final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _showAdd.value = false;
+      } else {
+        _showAdd.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,85 +51,154 @@ class _BookUIState extends State<BookUI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.snap['bookName'],
-                style: TextStyle(
-                  fontSize: 30,
-                ),
+              AnimatedSize(
+                duration: Duration(milliseconds: 200),
+                child: ValueListenableBuilder<bool>(
+                    valueListenable: _showAdd,
+                    builder: (BuildContext context, bool showFullAppBar,
+                        Widget? child) {
+                      return Container(
+                        child: showFullAppBar
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.snap['bookName'],
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Created On',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade900,
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 5),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.grey.shade800,
+                                    ),
+                                    child: Text(
+                                      widget.snap['date'],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Divider(),
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                      );
+                    }),
               ),
-              Text(
-                'Created On',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade900,
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 5),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.grey.shade800,
-                ),
-                child: Text(
-                  widget.snap['createdOn'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
+              Column(
+                children: [
+                  StreamBuilder<dynamic>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(UserDetails.uid)
+                        .collection('transact_books')
+                        .where('bookId', isEqualTo: widget.snap['bookId'])
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data.docs.length == 0) {
+                          return Text('No Data');
+                        }
+                        DocumentSnapshot ds = snapshot.data.docs[0];
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: StatsCard(
+                                label: 'Income',
+                                content: ds['income'].toString(),
+                                isBook: true,
+                                bookId: ds['bookId'],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: StatsCard(
+                                label: 'Expenses',
+                                content: ds['expense'].toString(),
+                                isBook: true,
+                                bookId: ds['bookId'],
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
                   ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Divider(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
               ),
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(
                     children: [
-                      StreamBuilder<dynamic>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(UserDetails.uid)
-                            .collection('transact_books')
-                            .where('bookId', isEqualTo: widget.snap['bookId'])
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data.docs.length == 0) {
-                              return Text('No Data');
-                            }
-                            DocumentSnapshot ds = snapshot.data.docs[0];
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: StatsCard(
-                                    label: 'Income',
-                                    content: ds['income'].toString(),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: StatsCard(
-                                    label: 'Expenses',
-                                    content: ds['expense'].toString(),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      // StreamBuilder<dynamic>(
+                      //   stream: FirebaseFirestore.instance
+                      //       .collection('users')
+                      //       .doc(UserDetails.uid)
+                      //       .collection('transact_books')
+                      //       .where('bookId', isEqualTo: widget.snap['bookId'])
+                      //       .snapshots(),
+                      //   builder: (context, snapshot) {
+                      //     if (snapshot.hasData) {
+                      //       if (snapshot.data.docs.length == 0) {
+                      //         return Text('No Data');
+                      //       }
+                      //       DocumentSnapshot ds = snapshot.data.docs[0];
+                      //       return Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: StatsCard(
+                      //               label: 'Income',
+                      //               content: ds['income'].toString(),
+                      //             ),
+                      //           ),
+                      //           SizedBox(
+                      //             width: 10,
+                      //           ),
+                      //           Expanded(
+                      //             child: StatsCard(
+                      //               label: 'Expenses',
+                      //               content: ds['expense'].toString(),
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       );
+                      //     }
+                      //     return Center(
+                      //       child: CircularProgressIndicator(),
+                      //     );
+                      //   },
+                      // ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
                       TransactList(widget.snap['bookId']),
                     ],
                   ),
@@ -126,12 +215,13 @@ class _BookUIState extends State<BookUI> {
             context,
             NewTransactUi(
               bookId: widget.snap['bookId'],
+              isEditing: false,
+              snap: null,
             ),
           );
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
-            // color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(100.0),
             gradient: LinearGradient(
               colors: [
@@ -247,7 +337,15 @@ class _BookUIState extends State<BookUI> {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            NavPush(
+                context,
+                NewTransactUi(
+                  bookId: ds['bookId'],
+                  isEditing: true,
+                  snap: ds,
+                ));
+          },
           child: Container(
             child: Column(
               children: [
@@ -259,7 +357,7 @@ class _BookUIState extends State<BookUI> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,9 +527,7 @@ class _BookUIState extends State<BookUI> {
                             ),
                           ),
                           Text(
-                            ds['date'].toString() +
-                                ' | ' +
-                                ds['time'].toString(),
+                            ds['time'].toString(),
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 13,

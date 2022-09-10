@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 import 'Functions/navigatorFns.dart';
 import 'colors.dart';
@@ -45,6 +47,8 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                   context,
                   NewTransactUi(
                     bookId: bookId,
+                    isEditing: false,
+                    snap: null,
                   ));
             },
             color: Colors.white,
@@ -125,66 +129,103 @@ class AppTitle extends StatelessWidget {
   }
 }
 
-Widget StatsCard({final label, content}) {
-  return GestureDetector(
-    onTap: () {},
-    child: Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: label == 'Expenses'
-                ? Colors.red.shade100.withOpacity(0.6)
-                : primaryColor.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: Offset(0, 5),
+Widget StatsCard({final label, content, isBook, bookId}) {
+  return Stack(
+    children: [
+      GestureDetector(
+        onTap: () {},
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: label == 'Expenses'
+                    ? Colors.red.shade100.withOpacity(0.6)
+                    : primaryColor.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+            gradient: LinearGradient(
+              colors: [
+                label == 'Expenses' ? Colors.red : primaryColor,
+                label == 'Expenses' ? Colors.red.shade100 : Color(0xFF1FFFB4),
+              ],
+            ),
           ),
-        ],
-        gradient: LinearGradient(
-          colors: [
-            label == 'Expenses' ? Colors.red : primaryColor,
-            label == 'Expenses' ? Colors.red.shade100 : Color(0xFF1FFFB4),
-          ],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                label == 'Expenses'
-                    ? Icons.file_upload_outlined
-                    : Icons.file_download_outlined,
-                color: Colors.white,
+              Row(
+                children: [
+                  Icon(
+                    label == 'Expenses'
+                        ? Icons.file_upload_outlined
+                        : Icons.file_download_outlined,
+                    color: label == 'Expenses' ? Colors.white : Colors.black,
+                  ),
+                  SizedBox(
+                    width: 6,
+                  ),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: label == 'Expenses' ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
-                width: 6,
+                height: 10,
               ),
               Text(
-                label,
+                content + ' INR',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  color: label == 'Expenses' ? Colors.white : Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            content + ' INR',
-            style: TextStyle(
+        ),
+      ),
+      Align(
+        alignment: Alignment.topRight,
+        child: GestureDetector(
+          onTap: () {
+            print('Reset $label');
+            if (isBook) {
+              Map<String, dynamic> map =
+                  label == 'Income' ? {'income': 0} : {'expense': 0};
+              DatabaseMethods()
+                  .resetBookIncomeExpense(bookId, UserDetails.uid, map);
+            } else {
+              Map<String, dynamic> map =
+                  label == 'Income' ? {'income': 0} : {'expense': 0};
+              DatabaseMethods()
+                  .resetGlobalIncomeExpense(bookId, UserDetails.uid, map);
+            }
+          },
+          child: Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
               color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+              ),
+            ),
+            child: Icon(
+              Icons.restore,
+              size: 15,
             ),
           ),
-        ],
+        ),
       ),
-    ),
+    ],
   );
 }

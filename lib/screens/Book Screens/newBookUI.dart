@@ -24,14 +24,15 @@ class _NewBookUIState extends State<NewBookUI> {
   createBook() {
     try {
       if (bookTitleController.text.isNotEmpty) {
-        String displayDate = DateFormat.yMMMMd().format(_selectedDate) +
-            ' | ' +
+        String displayDate = DateFormat.yMMMMd().format(_selectedDate);
+        String displayTime =
             DateFormat().add_jm().format(_selectedTimeStamp).toString();
 
         Map<String, dynamic> newBookMap = {
           'bookName': bookTitleController.text,
           'bookDescription': bookDescriptionController.text,
-          'createdOn': displayDate,
+          'date': displayDate,
+          'time': displayTime,
           'bookId': _selectedTimeStamp.toString(),
           'income': 0,
           'expense': 0,

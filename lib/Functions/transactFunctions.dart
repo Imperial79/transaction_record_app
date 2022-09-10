@@ -16,7 +16,7 @@ TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
 TextEditingController _dateController = TextEditingController();
 TextEditingController _timeController = TextEditingController();
 
-Future<DateTime> selectDate(BuildContext context, StateSetter setState) async {
+Future<String> selectDate(BuildContext context, StateSetter setState) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: selectedDate,
@@ -30,7 +30,8 @@ Future<DateTime> selectDate(BuildContext context, StateSetter setState) async {
       _dateController.text = DateFormat.yMMMMd().format(selectedDate);
     });
 
-  return picked!;
+  // return picked!;
+  return _dateController.text;
 }
 
 Future<String> selectTime(BuildContext context, StateSetter setState) async {

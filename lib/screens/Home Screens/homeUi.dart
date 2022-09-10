@@ -19,6 +19,7 @@ import 'package:transaction_record_app/transactBookCard.dart';
 
 import '../../services/user.dart';
 import '../../widgets.dart';
+import '../Book Screens/bookUI.dart';
 
 class HomeUi extends StatefulWidget {
   @override
@@ -29,6 +30,8 @@ class _HomeUiState extends State<HomeUi> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   List? data;
   int? currentBalance;
+  String dateTitle = '';
+  bool showDateWidget = false;
 
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
@@ -72,7 +75,7 @@ class _HomeUiState extends State<HomeUi> {
                     itemBuilder: (context, index) {
                       DocumentSnapshot ds = snapshot.data.docs[index];
 
-                      return TransactBookCard(ds: ds);
+                      return TransactBookCard(ds);
                     },
                   )
             : Center(
@@ -292,6 +295,8 @@ class _HomeUiState extends State<HomeUi> {
                                       child: StatsCard(
                                         label: 'Income',
                                         content: ds['income'].toString(),
+                                        isBook: false,
+                                        bookId: '',
                                       ),
                                     ),
                                     SizedBox(
@@ -301,6 +306,8 @@ class _HomeUiState extends State<HomeUi> {
                                       child: StatsCard(
                                         label: 'Expenses',
                                         content: ds['expense'].toString(),
+                                        isBook: false,
+                                        bookId: '',
                                       ),
                                     ),
                                   ],
@@ -327,15 +334,7 @@ class _HomeUiState extends State<HomeUi> {
                           SizedBox(
                             height: 10,
                           ),
-                          // TransactBookCard(),
-
                           BookList(),
-
-                          //  Transaction List --------->
-                          // Padding(
-                          //   padding: EdgeInsets.symmetric(horizontal: 15),
-                          //   child: transactList(),
-                          // ),
                           SizedBox(
                             height: size.height * 0.07,
                           ),
@@ -412,6 +411,105 @@ class _HomeUiState extends State<HomeUi> {
     );
   }
 
+  Widget TransactBookCard(ds) {
+    var todayDate = DateFormat.yMMMMd().format(DateTime.now());
+
+    if (dateTitle == ds['date']) {
+      showDateWidget = false;
+    } else {
+      dateTitle = ds['date'];
+      showDateWidget = true;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Visibility(
+          visible: showDateWidget,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            child: Text(
+              dateTitle == todayDate ? 'Today' : dateTitle,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            NavPush(context, BookUI(snap: ds));
+          },
+          child: Container(
+            width: double.infinity,
+            margin: EdgeInsets.only(bottom: 10),
+            padding: EdgeInsets.symmetric(
+              vertical: 17,
+              horizontal: 15,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 17,
+                  child: Icon(
+                    Icons.book,
+                    size: 18,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ds['bookName'],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Visibility(
+                      visible: ds['bookDescription'].toString().isNotEmpty,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Row(
+                          children: [
+                            Icon(Icons.segment),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(ds['bookDescription']),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      ds['date'],
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Container NewBookCard() => Container(
         width: double.infinity,
         padding: EdgeInsets.all(13),
@@ -479,68 +577,4 @@ class _HomeUiState extends State<HomeUi> {
           ],
         ),
       );
-
-  // Widget StatsCard({final label, content}) {
-  //   return GestureDetector(
-  //     onTap: () {},
-  //     child: Container(
-  //       padding: EdgeInsets.all(20),
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(12),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: label == 'Expenses'
-  //                 ? Colors.red.shade100.withOpacity(0.6)
-  //                 : primaryColor.withOpacity(0.3),
-  //             spreadRadius: 1,
-  //             blurRadius: 10,
-  //             offset: Offset(0, 5),
-  //           ),
-  //         ],
-  //         gradient: LinearGradient(
-  //           colors: [
-  //             label == 'Expenses' ? Colors.red : primaryColor,
-  //             label == 'Expenses' ? Colors.red.shade100 : Color(0xFF1FFFB4),
-  //           ],
-  //         ),
-  //       ),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Row(
-  //             children: [
-  //               Icon(
-  //                 label == 'Expenses'
-  //                     ? Icons.file_upload_outlined
-  //                     : Icons.file_download_outlined,
-  //                 color: Colors.white,
-  //               ),
-  //               SizedBox(
-  //                 width: 6,
-  //               ),
-  //               Text(
-  //                 label,
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           SizedBox(
-  //             height: 10,
-  //           ),
-  //           Text(
-  //             content + ' INR',
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontSize: 17,
-  //               fontWeight: FontWeight.w700,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

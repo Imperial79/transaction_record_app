@@ -9,8 +9,12 @@ import 'package:transaction_record_app/services/database.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;
+  final isEditing;
+  final snap;
 
-  const NewTransactUi({Key? key, required this.bookId}) : super(key: key);
+  const NewTransactUi(
+      {Key? key, required this.bookId, this.isEditing, this.snap})
+      : super(key: key);
   @override
   _NewTransactUiState createState() => _NewTransactUiState();
 }
@@ -25,7 +29,8 @@ class _NewTransactUiState extends State<NewTransactUi> {
   String source = 'From';
   String transactType = "Income";
   String transactMode = 'CASH';
-  DateTime _selectedDate = DateTime.now();
+  String transactId = DateTime.now().toString();
+  String _selectedDate = DateFormat.yMMMMd().format(DateTime.now());
   String _selectedTimeStamp = DateTime.now().toString();
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
@@ -33,6 +38,89 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void initState() {
     super.initState();
+    if (widget.isEditing) {
+      title.text = widget.snap['title'];
+      amountField.text = widget.snap['amount'];
+      source = widget.snap['source'];
+      _selectedDate = widget.snap['date'];
+      _selectedTime = widget.snap['time'];
+      _selectedTimeStamp = widget.snap['ts'];
+      transactId = widget.snap['transactId'];
+
+      // DateFormat("yyyy-MM-dd hh:mm:ss").parse(widget.snap['ts']);
+
+      transactType = widget.snap['type'];
+      transactMode = widget.snap['transactMode'];
+      setState(() {});
+    }
+  }
+
+  handleNewNoteTransaction() {
+    //  calculating the Income and Expense for new transact
+    if (transactType == 'Income') {
+      Map<String, dynamic> newMap = {
+        'currentBalance': FieldValue.increment(double.parse(amountField.text)),
+        'income': FieldValue.increment(double.parse(amountField.text)),
+      };
+
+      //  UPDATING GLOBALLY
+      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+
+      //  UPDATING INSIDE BOOK
+      newMap = {
+        'income': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+    } else {
+      final amount = double.parse(amountField.text);
+
+      //  UPDATING GLOBALLY
+      Map<String, dynamic> newMap = {
+        'currentBalance': FieldValue.increment(0.0 - amount),
+        'expense': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+
+      //  UPDATING INSIDE BOOK
+      newMap = {
+        'expense': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+    }
+  }
+
+  handleEditedNoteTransaction() {
+    //  calculating the Income and Expense for edited transact
+    if (transactType == 'Income') {
+      Map<String, dynamic> newMap = {
+        'currentBalance': FieldValue.increment(double.parse(amountField.text)),
+        'income': FieldValue.increment(double.parse(amountField.text)),
+      };
+
+      //  UPDATING GLOBALLY
+      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+
+      //  UPDATING INSIDE BOOK
+      newMap = {
+        'income': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+    } else {
+      final amount = double.parse(amountField.text);
+
+      //  UPDATING GLOBALLY
+      Map<String, dynamic> newMap = {
+        'currentBalance': FieldValue.increment(0.0 - amount),
+        'expense': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+
+      //  UPDATING INSIDE BOOK
+      newMap = {
+        'expense': FieldValue.increment(double.parse(amountField.text)),
+      };
+      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+    }
   }
 
   convertTimeToTS(date, time) {
@@ -45,79 +133,39 @@ class _NewTransactUiState extends State<NewTransactUi> {
     return _selectedTimeStamp;
   }
 
-  saveTransacts() {
+  saveTransacts() async {
     if (amountField.text != '') {
+      transactId = _selectedTimeStamp;
       convertTimeToTS(_selectedDate, _selectedTime);
+
       Map<String, dynamic> transactMap = {
+        'transactId': widget.isEditing ? widget.snap['transactId'] : transactId,
         'title': title.text,
         "amount": amountField.text,
         "source": sourceField.text,
         "transactMode": transactMode,
         "description": descriptionField.text,
         "type": transactType,
-        'date': DateFormat.yMMMMd().format(_selectedDate),
+        'date': _selectedDate,
         'time': _selectedTime,
+        'bookId': widget.bookId,
         'ts': _selectedTimeStamp,
       };
-      databaseMethods.uploadTransacts(
-          UserDetails.uid, transactMap, widget.bookId);
-      if (transactType == 'Income') {
-        //  UPDATING GLOBALLY
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .update({
-          'currentBalance': FieldValue.increment(double.parse(amountField.text))
-        });
 
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .update({
-          'income': FieldValue.increment(double.parse(amountField.text)),
-        });
-
-        //  UPDATING INSIDE BOOK
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .collection('transact_books')
-            .doc(widget.bookId)
-            .update({
-          'income': FieldValue.increment(double.parse(amountField.text)),
-        });
+      if (widget.isEditing) {
+        print('new desp ' + descriptionField.text);
+        databaseMethods.updateTransacts(
+            widget.bookId, widget.snap['transactId'], transactMap);
       } else {
-        final amount = double.parse(amountField.text);
+        databaseMethods.uploadTransacts(
+            UserDetails.uid, transactMap, widget.bookId, transactId);
 
-        //  UPDATING GLOBALLY
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .update({
-          'currentBalance': FieldValue.increment(0.0 - amount),
-        });
-
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .update({
-          'expense': FieldValue.increment(double.parse(amountField.text))
-        });
-
-        //  UPDATING INSIDE BOOK
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserDetails.uid)
-            .collection('transact_books')
-            .doc(widget.bookId)
-            .update({
-          'expense': FieldValue.increment(double.parse(amountField.text)),
-        });
+        handleNewNoteTransaction();
       }
 
       Navigator.pop(context);
 
-      //resetting the values
+      //  resetting the values
       amountField.clear();
       descriptionField.clear();
       sourceField.clear();
@@ -306,8 +354,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                         color: Colors.white,
                                       ),
                                       child: Text(
-                                        DateFormat.yMMMMd()
-                                            .format(_selectedDate),
+                                        _selectedDate,
                                       ),
                                     ),
                                   ),
