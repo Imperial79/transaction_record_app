@@ -44,6 +44,7 @@ dependencies:
   date_time_picker: ^2.1.0
   date_format: ^2.0.6
   sticky_headers: ^0.3.0+2
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

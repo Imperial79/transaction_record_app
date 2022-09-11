@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 NavPush(BuildContext context, screen) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
@@ -23,4 +24,12 @@ ShowSnackBar(BuildContext context, String text) {
       backgroundColor: Colors.grey.shade700,
     ),
   );
+}
+
+launchTheUrl(Uri url) async {
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch $url';
+  }
 }

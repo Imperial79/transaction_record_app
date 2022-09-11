@@ -38,6 +38,7 @@ class _HomeUiState extends State<HomeUi> {
 
   @override
   void initState() {
+    print('Date Title from init ' + dateTitle);
     getUserDetailsFromPreference(setState);
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
@@ -325,7 +326,7 @@ class _HomeUiState extends State<HomeUi> {
                             color: Colors.grey.shade600,
                           ),
                           Text(
-                            'Transact Book',
+                            'Recent Books',
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.black,
@@ -426,7 +427,7 @@ class _HomeUiState extends State<HomeUi> {
         Visibility(
           visible: showDateWidget,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 0),
+            padding: EdgeInsets.symmetric(vertical: 10),
             child: Text(
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
@@ -493,12 +494,23 @@ class _HomeUiState extends State<HomeUi> {
                     SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      ds['date'],
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 12,
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 15,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          ds['date'] + ' at ' + ds['time'],
+                          style: TextStyle(
+                            // fontStyle: FontStyle.italic,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

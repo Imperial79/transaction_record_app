@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
@@ -25,12 +26,22 @@ class _NewTransactUiState extends State<NewTransactUi> {
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
   final title = TextEditingController();
+  final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
+  final ScrollController _scrollController = ScrollController();
+
+  // FocusNode titleFocus = FocusNode();
+  // FocusNode descriptionFocus = FocusNode();
+  // FocusNode sourceFocus = FocusNode();
+  // FocusNode amountFocus = FocusNode();
 
   String source = 'From';
   String transactType = "Income";
   String transactMode = 'CASH';
   String transactId = DateTime.now().toString();
-  String _selectedDate = DateFormat.yMMMMd().format(DateTime.now());
+  Map<String, dynamic> _selectedDateMap = {
+    'displayDate': DateFormat.yMMMMd().format(DateTime.now()),
+    'tsDate': DateTime.now().toString(),
+  };
   String _selectedTimeStamp = DateTime.now().toString();
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
@@ -38,11 +49,21 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void initState() {
     super.initState();
+    // amountFocus.addListener(_onFocusChange);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _showAmountField.value = false;
+      } else {
+        _showAmountField.value = true;
+      }
+    });
+
     if (widget.isEditing) {
       title.text = widget.snap['title'];
       amountField.text = widget.snap['amount'];
       source = widget.snap['source'];
-      _selectedDate = widget.snap['date'];
+      _selectedDateMap['displayDate'] = widget.snap['date'];
       _selectedTime = widget.snap['time'];
       _selectedTimeStamp = widget.snap['ts'];
       transactId = widget.snap['transactId'];
@@ -54,6 +75,17 @@ class _NewTransactUiState extends State<NewTransactUi> {
       setState(() {});
     }
   }
+
+  // void _onFocusChange() {
+  //   print("Focus: ${amountFocus.hasFocus.toString()}");
+  //   if (amountFocus.hasFocus) {
+  //     _showAmountField.value = true;
+  //   } else if (MediaQuery.of(context).viewInsets.bottom == 0 ||
+  //       amountFocus.hasFocus != false) {
+  //     _showAmountField.value = false;
+  //   }
+  //   setState(() {});
+  // }
 
   handleNewNoteTransaction() {
     //  calculating the Income and Expense for new transact
@@ -92,51 +124,50 @@ class _NewTransactUiState extends State<NewTransactUi> {
   handleEditedNoteTransaction() {
     //  calculating the Income and Expense for edited transact
     if (transactType == 'Income') {
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(double.parse(amountField.text)),
-        'income': FieldValue.increment(double.parse(amountField.text)),
-      };
+      //  If newType is INCOME
+      //--------------------------------------------
 
-      //  UPDATING GLOBALLY
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+      double _oldAmount = double.parse(widget.snap['amount']);
+      double _newAmount = double.parse(amountField.text);
+      String _oldType = widget.snap['type'];
 
-      //  UPDATING INSIDE BOOK
-      newMap = {
-        'income': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+      //--------------------------------------------
+
+      if (_oldType == 'Income') {
+        print(
+            'when old type is $_oldType -> OLD AMOUNT = $_oldAmount & NEW AMOUNT = $_newAmount');
+        databaseMethods.updateBookTransactions(widget.bookId,
+            {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+      } else {
+        //  if oldType was expense ----------->
+        databaseMethods.updateBookTransactions(widget.bookId,
+            {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+      }
     } else {
-      final amount = double.parse(amountField.text);
+      //  If newType is Expense ---------------->
 
-      //  UPDATING GLOBALLY
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(0.0 - amount),
-        'expense': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
+      //--------------------------------------------
 
-      //  UPDATING INSIDE BOOK
-      newMap = {
-        'expense': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateBookTransactions(widget.bookId, newMap);
+      double _oldAmount = double.parse(widget.snap['amount']);
+      double _newAmount = double.parse(amountField.text);
+      String _oldType = widget.snap['type'];
+
+      //--------------------------------------------
+      if (_oldType == 'Income') {
+        databaseMethods.updateBookTransactions(widget.bookId,
+            {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+      } else {
+        //  if oldType was expense ----------->
+        databaseMethods.updateBookTransactions(widget.bookId,
+            {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+      }
     }
-  }
-
-  convertTimeToTS(date, time) {
-    var nowNanoSec = DateTime.now().toString().split('.').last;
-    _selectedTimeStamp = date.toString().split(' ').first +
-        ' ' +
-        time.toString().split(' ').first +
-        ':00.$nowNanoSec';
-
-    return _selectedTimeStamp;
   }
 
   saveTransacts() async {
     if (amountField.text != '') {
       transactId = _selectedTimeStamp;
-      convertTimeToTS(_selectedDate, _selectedTime);
+      await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
 
       Map<String, dynamic> transactMap = {
         'transactId': widget.isEditing ? widget.snap['transactId'] : transactId,
@@ -146,16 +177,17 @@ class _NewTransactUiState extends State<NewTransactUi> {
         "transactMode": transactMode,
         "description": descriptionField.text,
         "type": transactType,
-        'date': _selectedDate,
+        'date': _selectedDateMap['displayDate'],
         'time': _selectedTime,
         'bookId': widget.bookId,
         'ts': _selectedTimeStamp,
       };
 
       if (widget.isEditing) {
-        print('new desp ' + descriptionField.text);
         databaseMethods.updateTransacts(
             widget.bookId, widget.snap['transactId'], transactMap);
+
+        handleEditedNoteTransaction();
       } else {
         databaseMethods.uploadTransacts(
             UserDetails.uid, transactMap, widget.bookId, transactId);
@@ -163,16 +195,27 @@ class _NewTransactUiState extends State<NewTransactUi> {
         handleNewNoteTransaction();
       }
 
-      Navigator.pop(context);
-
       //  resetting the values
       amountField.clear();
       descriptionField.clear();
       sourceField.clear();
-
       transactType = 'Income';
       source = 'From';
+
+      Navigator.pop(context);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // amountFocus.removeListener(_onFocusChange);
+    // amountFocus.dispose();
+    _scrollController.dispose();
+    amountField.dispose();
+    title.dispose();
+    descriptionField.dispose();
+    sourceField.dispose();
   }
 
   @override
@@ -185,6 +228,10 @@ class _NewTransactUiState extends State<NewTransactUi> {
         statusBarBrightness: Brightness.light,
       ),
     );
+
+    // _showAmountField.value =
+    //     MediaQuery.of(context).viewInsets.bottom == 0 ? true : false;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -192,6 +239,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
                 child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Column(
@@ -239,6 +289,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       ),
                       TextField(
                         controller: title,
+                        // focusNode: titleFocus,
                         style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w900,
@@ -286,6 +337,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             Expanded(
                               child: TextField(
                                 controller: descriptionField,
+                                // focusNode: descriptionFocus,
                                 maxLines: 2,
                                 minLines: 1,
                                 cursorColor: Colors.black,
@@ -344,7 +396,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 Expanded(
                                   child: InkWell(
                                     onTap: () async {
-                                      _selectedDate =
+                                      _selectedDateMap =
                                           await selectDate(context, setState);
                                     },
                                     child: Container(
@@ -354,7 +406,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                         color: Colors.white,
                                       ),
                                       child: Text(
-                                        _selectedDate,
+                                        _selectedDateMap['displayDate'],
                                       ),
                                     ),
                                   ),
@@ -424,6 +476,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             Expanded(
                               child: TextField(
                                 controller: sourceField,
+                                // focusNode: sourceFocus,
                                 maxLines: 4,
                                 minLines: 1,
                                 cursorColor: Colors.black,
@@ -449,193 +502,407 @@ class _NewTransactUiState extends State<NewTransactUi> {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade100,
-                    spreadRadius: 10,
-                    blurRadius: 10,
-                    offset: Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Container(
-                          width: 200,
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            controller: amountField,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black,
-                              fontSize: 40,
-                            ),
-                            cursorColor: Colors.black,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: '0.00',
-                              hintStyle: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.grey.shade400,
-                                fontSize: 40,
-                              ),
-                              suffixText: 'INR',
-                              suffixStyle: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                                fontSize: 40,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            'Add money to',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          DropdownButton(
-                            value: transactMode,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
-                            underline: const SizedBox(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                transactMode = newValue!;
-                              });
-                            },
-                            items: <String>['CASH', 'ONLINE']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MediaQuery.of(context).viewInsets.bottom != 0
+            AnimatedSize(
+              duration: Duration(milliseconds: 200),
+              child: ValueListenableBuilder<bool>(
+                  valueListenable: _showAmountField,
+                  builder: (BuildContext context, bool showFullAppBar,
+                      Widget? child) {
+                    return Container(
+                      child: showFullAppBar
                           ? Container(
-                              height: 40,
-                              width: 40,
+                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1,
-                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.shade100,
+                                    spreadRadius: 10,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
                               ),
-                              child: IconButton(
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-                                },
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down_rounded,
-                                  size: 20,
-                                  color: Colors.black,
-                                ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Container(
+                                          width: 200,
+                                          child: TextField(
+                                            controller: amountField,
+                                            // focusNode: amountFocus,
+                                            keyboardType: TextInputType.number,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.black,
+                                              fontSize: 40,
+                                            ),
+                                            cursorColor: Colors.black,
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: '0.00',
+                                              hintStyle: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.grey.shade400,
+                                                fontSize: 40,
+                                              ),
+                                              suffixText: 'INR',
+                                              suffixStyle: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                                fontSize: 40,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Add money to',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          DropdownButton(
+                                            value: transactMode,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                            ),
+                                            underline: const SizedBox(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                transactMode = newValue!;
+                                              });
+                                            },
+                                            items: <String>['CASH', 'ONLINE']
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      MediaQuery.of(context)
+                                                  .viewInsets
+                                                  .bottom !=
+                                              0
+                                          ? Container(
+                                              height: 40,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  FocusScope.of(context)
+                                                      .unfocus();
+                                                },
+                                                icon: Icon(
+                                                  Icons
+                                                      .keyboard_arrow_down_rounded,
+                                                  size: 20,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            )
+                                          : SizedBox(
+                                              width: 20,
+                                            ),
+                                      MaterialButton(
+                                        onPressed: () {
+                                          var formatter =
+                                              DateFormat('dd MMMM, yyyy - ')
+                                                  .add_jm()
+                                                  .format(DateTime.now());
+                                          String currentTime =
+                                              DateTime.now().toString();
+                                          saveTransacts(
+                                              // formatter,
+                                              // currentTime,
+                                              );
+                                        },
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        child: Ink(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 15,
+                                            horizontal: 25,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                transactType == 'Income'
+                                                    ? primaryColor
+                                                    : Colors.black,
+                                                transactType == 'Income'
+                                                    ? primaryAccentColor
+                                                    : Colors.grey,
+                                              ],
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.add,
+                                                color: transactType == 'Income'
+                                                    ? Colors.green.shade900
+                                                    : Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                'Add ' + transactType,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: transactType ==
+                                                          'Income'
+                                                      ? Colors.green.shade900
+                                                      : Colors.white,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             )
-                          : SizedBox(
-                              width: 20,
-                            ),
-                      MaterialButton(
-                        onPressed: () {
-                          var formatter = DateFormat('dd MMMM, yyyy - ')
-                              .add_jm()
-                              .format(DateTime.now());
-                          String currentTime = DateTime.now().toString();
-                          saveTransacts(
-                              // formatter,
-                              // currentTime,
-                              );
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        child: Ink(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 25,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            gradient: LinearGradient(
-                              colors: [
-                                transactType == 'Income'
-                                    ? primaryColor
-                                    : Colors.black,
-                                transactType == 'Income'
-                                    ? primaryAccentColor
-                                    : Colors.grey,
-                              ],
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.add,
-                                color: transactType == 'Income'
-                                    ? Colors.green.shade900
-                                    : Colors.white,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                'Add ' + transactType,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: transactType == 'Income'
-                                      ? Colors.green.shade900
-                                      : Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                          : Container(),
+                    );
+                  }),
             ),
+
+            // Container(
+            //   padding: EdgeInsets.all(20),
+            //   margin: EdgeInsets.all(10),
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.circular(30),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.grey.shade100,
+            //         spreadRadius: 10,
+            //         blurRadius: 10,
+            //         offset: Offset(0, 0),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Column(
+            //     children: [
+            //       Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //         children: [
+            //           Flexible(
+            //             child: Container(
+            //               width: 200,
+            //               child: TextField(
+            //                 keyboardType: TextInputType.number,
+            //                 controller: amountField,
+            //                 style: TextStyle(
+            //                   fontWeight: FontWeight.w800,
+            //                   color: Colors.black,
+            //                   fontSize: 40,
+            //                 ),
+            //                 cursorColor: Colors.black,
+            //                 decoration: InputDecoration(
+            //                   border: InputBorder.none,
+            //                   hintText: '0.00',
+            //                   hintStyle: TextStyle(
+            //                     fontWeight: FontWeight.w800,
+            //                     color: Colors.grey.shade400,
+            //                     fontSize: 40,
+            //                   ),
+            //                   suffixText: 'INR',
+            //                   suffixStyle: TextStyle(
+            //                     fontWeight: FontWeight.w400,
+            //                     color: Colors.black,
+            //                     fontSize: 40,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //           Column(
+            //             children: [
+            //               Text(
+            //                 'Add money to',
+            //                 style: TextStyle(
+            //                   fontWeight: FontWeight.w500,
+            //                   color: Colors.black,
+            //                   fontSize: 13,
+            //                 ),
+            //               ),
+            //               SizedBox(
+            //                 height: 5,
+            //               ),
+            //               DropdownButton(
+            //                 value: transactMode,
+            //                 style: TextStyle(
+            //                   fontWeight: FontWeight.w800,
+            //                   color: Colors.black,
+            //                   fontSize: 16,
+            //                 ),
+            //                 underline: const SizedBox(),
+            //                 onChanged: (String? newValue) {
+            //                   setState(() {
+            //                     transactMode = newValue!;
+            //                   });
+            //                 },
+            //                 items: <String>['CASH', 'ONLINE']
+            //                     .map<DropdownMenuItem<String>>((String value) {
+            //                   return DropdownMenuItem<String>(
+            //                     value: value,
+            //                     child: Text(
+            //                       value,
+            //                       style: TextStyle(
+            //                         fontWeight: FontWeight.w800,
+            //                         color: Colors.black,
+            //                         fontSize: 16,
+            //                       ),
+            //                     ),
+            //                   );
+            //                 }).toList(),
+            //               ),
+            //             ],
+            //           ),
+            //         ],
+            //       ),
+            //       Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //         children: [
+            //           MediaQuery.of(context).viewInsets.bottom != 0
+            //               ? Container(
+            //                   height: 40,
+            //                   width: 40,
+            //                   decoration: BoxDecoration(
+            //                     shape: BoxShape.circle,
+            //                     border: Border.all(
+            //                       color: Colors.grey,
+            //                       width: 1,
+            //                     ),
+            //                   ),
+            //                   child: IconButton(
+            //                     onPressed: () {
+            //                       FocusScope.of(context).unfocus();
+            //                     },
+            //                     icon: Icon(
+            //                       Icons.keyboard_arrow_down_rounded,
+            //                       size: 20,
+            //                       color: Colors.black,
+            //                     ),
+            //                   ),
+            //                 )
+            //               : SizedBox(
+            //                   width: 20,
+            //                 ),
+            //           MaterialButton(
+            //             onPressed: () {
+            //               var formatter = DateFormat('dd MMMM, yyyy - ')
+            //                   .add_jm()
+            //                   .format(DateTime.now());
+            //               String currentTime = DateTime.now().toString();
+            //               saveTransacts(
+            //                   // formatter,
+            //                   // currentTime,
+            //                   );
+            //             },
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(50),
+            //             ),
+            //             elevation: 0,
+            //             padding: EdgeInsets.zero,
+            //             child: Ink(
+            //               padding: EdgeInsets.symmetric(
+            //                 vertical: 15,
+            //                 horizontal: 25,
+            //               ),
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(50),
+            //                 gradient: LinearGradient(
+            //                   colors: [
+            //                     transactType == 'Income'
+            //                         ? primaryColor
+            //                         : Colors.black,
+            //                     transactType == 'Income'
+            //                         ? primaryAccentColor
+            //                         : Colors.grey,
+            //                   ],
+            //                 ),
+            //               ),
+            //               child: Row(
+            //                 children: [
+            //                   Icon(
+            //                     Icons.add,
+            //                     color: transactType == 'Income'
+            //                         ? Colors.green.shade900
+            //                         : Colors.white,
+            //                   ),
+            //                   SizedBox(
+            //                     width: 5,
+            //                   ),
+            //                   Text(
+            //                     'Add ' + transactType,
+            //                     style: TextStyle(
+            //                       fontWeight: FontWeight.w600,
+            //                       color: transactType == 'Income'
+            //                           ? Colors.green.shade900
+            //                           : Colors.white,
+            //                       fontSize: 18,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

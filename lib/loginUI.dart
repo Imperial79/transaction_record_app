@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/auth.dart';
 
@@ -10,6 +11,12 @@ class LoginUI extends StatefulWidget {
 }
 
 class _LoginUIState extends State<LoginUI> {
+  Uri _privacyPolicyUrl = Uri.parse(
+      'https://www.freeprivacypolicy.com/live/d6175538-7c18-42f4-989e-2c6351204f4b');
+
+  Uri _githubLink =
+      Uri.parse('https://github.com/Imperial79/transaction_record_app');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,11 +53,17 @@ class _LoginUIState extends State<LoginUI> {
                       '#OpenSource',
                       style: TextStyle(
                         fontSize: 17,
-                        color: Color(0xFF04C282),
-                        fontWeight: FontWeight.w800,
+                        color: textLinkColor,
+                        fontWeight: FontWeight.w600,
                         height: 1.7,
                       ),
                     ),
+                    TextLink(
+                      color: Colors.grey.shade700,
+                      alignment: Alignment.topLeft,
+                      link: _githubLink,
+                      text: '_Github',
+                    )
                   ],
                 ),
               ),
@@ -58,7 +71,7 @@ class _LoginUIState extends State<LoginUI> {
                 children: [
                   Icon(
                     Icons.backup,
-                    color: primaryColor,
+                    color: textLinkColor,
                   ),
                   SizedBox(
                     width: 10,
@@ -68,7 +81,7 @@ class _LoginUIState extends State<LoginUI> {
                       'SYNC YOUR DATA ON TRANSACT CLOUD',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        color: primaryColor,
+                        color: textLinkColor,
                       ),
                     ),
                   ),
@@ -78,7 +91,7 @@ class _LoginUIState extends State<LoginUI> {
                 height: 30,
               ),
               InkWell(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(15),
                 splashColor: Colors.red,
                 onTap: () {
                   AuthMethods().signInWithgoogle(context);
@@ -86,7 +99,7 @@ class _LoginUIState extends State<LoginUI> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(15),
                     gradient: LinearGradient(
                       colors: [
                         Colors.pink,
@@ -147,14 +160,16 @@ class _LoginUIState extends State<LoginUI> {
                   Expanded(
                     child: TextLink(
                       text: 'Terms and Conditions',
-                      link: 'Terms and Conditions',
+                      link: Uri.parse(''),
+                      color: textLinkColor,
                       alignment: Alignment.bottomLeft,
                     ),
                   ),
                   Expanded(
                     child: TextLink(
                       text: 'Privacy Policy',
-                      link: 'Privacy Policy',
+                      link: _privacyPolicyUrl,
+                      color: textLinkColor,
                       alignment: Alignment.bottomRight,
                     ),
                   ),
@@ -167,17 +182,20 @@ class _LoginUIState extends State<LoginUI> {
     );
   }
 
-  Widget TextLink({final text, link, alignment}) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
+  Widget TextLink({final text, alignment, color, Uri? link}) {
+    return InkWell(
+      onTap: () {
+        launchTheUrl(link!);
+      },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Align(
         alignment: alignment,
-        color: Colors.transparent,
         child: Text(
           text,
           style: TextStyle(
             fontSize: 14,
-            color: primaryColor,
+            color: color,
             fontWeight: FontWeight.w600,
           ),
         ),

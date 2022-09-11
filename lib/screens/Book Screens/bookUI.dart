@@ -62,6 +62,29 @@ class _BookUIState extends State<BookUI> {
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Container(
+                                    child: IconButton(
+                                      color: textLinkColor,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.arrow_back),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            'Return',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                   Text(
                                     widget.snap['bookName'],
                                     style: TextStyle(
@@ -158,47 +181,6 @@ class _BookUIState extends State<BookUI> {
                   controller: _scrollController,
                   child: Column(
                     children: [
-                      // StreamBuilder<dynamic>(
-                      //   stream: FirebaseFirestore.instance
-                      //       .collection('users')
-                      //       .doc(UserDetails.uid)
-                      //       .collection('transact_books')
-                      //       .where('bookId', isEqualTo: widget.snap['bookId'])
-                      //       .snapshots(),
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.hasData) {
-                      //       if (snapshot.data.docs.length == 0) {
-                      //         return Text('No Data');
-                      //       }
-                      //       DocumentSnapshot ds = snapshot.data.docs[0];
-                      //       return Row(
-                      //         children: [
-                      //           Expanded(
-                      //             child: StatsCard(
-                      //               label: 'Income',
-                      //               content: ds['income'].toString(),
-                      //             ),
-                      //           ),
-                      //           SizedBox(
-                      //             width: 10,
-                      //           ),
-                      //           Expanded(
-                      //             child: StatsCard(
-                      //               label: 'Expenses',
-                      //               content: ds['expense'].toString(),
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       );
-                      //     }
-                      //     return Center(
-                      //       child: CircularProgressIndicator(),
-                      //     );
-                      //   },
-                      // ),
-                      // SizedBox(
-                      //   height: 10,
-                      // ),
                       TransactList(widget.snap['bookId']),
                     ],
                   ),

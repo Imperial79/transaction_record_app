@@ -16,7 +16,8 @@ TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
 TextEditingController _dateController = TextEditingController();
 TextEditingController _timeController = TextEditingController();
 
-Future<String> selectDate(BuildContext context, StateSetter setState) async {
+Future<Map<String, dynamic>> selectDate(
+    BuildContext context, StateSetter setState) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: selectedDate,
@@ -31,7 +32,12 @@ Future<String> selectDate(BuildContext context, StateSetter setState) async {
     });
 
   // return picked!;
-  return _dateController.text;
+  Map<String, dynamic> dateMap = {
+    'displayDate': _dateController.text,
+    'tsDate': picked!
+  };
+  // return _dateController.text;
+  return dateMap;
 }
 
 Future<String> selectTime(BuildContext context, StateSetter setState) async {
@@ -53,4 +59,14 @@ Future<String> selectTime(BuildContext context, StateSetter setState) async {
     });
 
   return _timeController.text;
+}
+
+String convertTimeToTS(date, time) {
+  var nowNanoSec = DateTime.now().toString().split('.').last;
+  String _selectedTimeStamp = date.toString().split(' ').first +
+      ' ' +
+      time.toString().split(' ').first +
+      ':00.$nowNanoSec';
+
+  return _selectedTimeStamp;
 }

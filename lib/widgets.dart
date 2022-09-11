@@ -8,6 +8,7 @@ import 'screens/Transact Screens/newTransactUi.dart';
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
+    margin: EdgeInsets.only(top: 20),
     width: double.infinity,
     padding: EdgeInsets.all(13),
     decoration: BoxDecoration(
@@ -51,7 +52,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                     snap: null,
                   ));
             },
-            color: Colors.white,
+            color: Colors.amber,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -64,13 +65,13 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                 children: [
                   Icon(
                     Icons.bolt_outlined,
-                    color: Colors.amber.shade800,
+                    color: Colors.black,
                   ),
                   Text(
                     'Create',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: Colors.amber.shade800,
+                      color: Colors.black,
                     ),
                   ),
                 ],
