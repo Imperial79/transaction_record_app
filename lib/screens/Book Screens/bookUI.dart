@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/screens/Transact%20Screens/newTransactUi.dart';
+import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
+import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../colors.dart';
 import '../../services/user.dart';
@@ -179,9 +180,13 @@ class _BookUIState extends State<BookUI> {
               Expanded(
                 child: SingleChildScrollView(
                   controller: _scrollController,
+                  physics: BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       TransactList(widget.snap['bookId']),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.07,
+                      )
                     ],
                   ),
                 ),
@@ -197,8 +202,6 @@ class _BookUIState extends State<BookUI> {
             context,
             NewTransactUi(
               bookId: widget.snap['bookId'],
-              isEditing: false,
-              snap: null,
             ),
           );
         },
@@ -321,12 +324,11 @@ class _BookUIState extends State<BookUI> {
         GestureDetector(
           onTap: () {
             NavPush(
-                context,
-                NewTransactUi(
-                  bookId: ds['bookId'],
-                  isEditing: true,
-                  snap: ds,
-                ));
+              context,
+              EditTransactUI(
+                snap: ds,
+              ),
+            );
           },
           child: Container(
             child: Column(
@@ -508,13 +510,24 @@ class _BookUIState extends State<BookUI> {
                               ),
                             ),
                           ),
-                          Text(
-                            ds['time'].toString(),
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 15,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                ds['time'].toString(),
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

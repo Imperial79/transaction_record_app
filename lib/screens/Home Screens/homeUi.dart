@@ -10,8 +10,9 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/animatedMenuButton.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
-import 'package:transaction_record_app/screens/Transact%20Screens/newTransactUi.dart';
+import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/setBalanceUi.dart';
@@ -35,11 +36,17 @@ class _HomeUiState extends State<HomeUi> {
 
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _showHomeMenu = ValueNotifier<bool>(false);
 
   @override
   void initState() {
-    print('Date Title from init ' + dateTitle);
+    dateTitle = '';
     getUserDetailsFromPreference(setState);
+    _scrollFunction();
+    super.initState();
+  }
+
+  _scrollFunction() {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -48,7 +55,6 @@ class _HomeUiState extends State<HomeUi> {
         _showAdd.value = true;
       }
     });
-    super.initState();
   }
 
   @override
@@ -114,6 +120,18 @@ class _HomeUiState extends State<HomeUi> {
                 AnimatedSize(
                   duration: Duration(milliseconds: 200),
                   child: ValueListenableBuilder<bool>(
+                    valueListenable: _showHomeMenu,
+                    builder: (BuildContext context, bool showFullHomeMenu,
+                        Widget? child) {
+                      return Container(
+                        child: showFullHomeMenu ? HomeMenuUI() : Container(),
+                      );
+                    },
+                  ),
+                ),
+                AnimatedSize(
+                  duration: Duration(milliseconds: 200),
+                  child: ValueListenableBuilder<bool>(
                       valueListenable: _showAdd,
                       builder: (BuildContext context, bool showFullAppBar,
                           Widget? child) {
@@ -122,7 +140,7 @@ class _HomeUiState extends State<HomeUi> {
                               ? Column(
                                   children: [
                                     SizedBox(
-                                      height: size.height * 0.02,
+                                      height: size.height * 0.01,
                                     ),
                                     Padding(
                                       padding:
@@ -193,11 +211,17 @@ class _HomeUiState extends State<HomeUi> {
                                               radius: 20,
                                               backgroundColor: Colors.white,
                                               child: IconButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _showHomeMenu.value =
+                                                        !_showHomeMenu.value;
+                                                  });
+                                                },
                                                 icon: Icon(
-                                                  Icons
-                                                      .keyboard_arrow_down_rounded,
-                                                  color: Colors.black,
+                                                  _showHomeMenu.value
+                                                      ? Icons.arrow_upward
+                                                      : Icons.arrow_downward,
+                                                  size: 17,
                                                 ),
                                               ),
                                             ),
@@ -223,36 +247,38 @@ class _HomeUiState extends State<HomeUi> {
                                                   fontWeight: FontWeight.w200,
                                                 ),
                                               ),
-                                              StreamBuilder<dynamic>(
-                                                stream: FirebaseFirestore
-                                                    .instance
-                                                    .collection('users')
-                                                    .doc(FirebaseAuth.instance
-                                                        .currentUser!.uid)
-                                                    .snapshots(),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData) {
-                                                    DocumentSnapshot ds =
-                                                        snapshot.data;
-                                                    double currBal =
-                                                        double.parse(
-                                                            ds['currentBalance']
-                                                                .toString());
-                                                    return Text(
-                                                      currBal
-                                                          .toStringAsFixed(2),
-                                                      style: TextStyle(
-                                                        fontSize: 40,
-                                                        fontWeight:
-                                                            FontWeight.w900,
-                                                      ),
+                                              Expanded(
+                                                child: StreamBuilder<dynamic>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                      .snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      DocumentSnapshot ds =
+                                                          snapshot.data;
+                                                      double currBal =
+                                                          double.parse(
+                                                              ds['currentBalance']
+                                                                  .toString());
+                                                      return Text(
+                                                        currBal
+                                                            .toStringAsFixed(2),
+                                                        style: TextStyle(
+                                                          fontSize: 40,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                        ),
+                                                      );
+                                                    }
+                                                    return CircularProgressIndicator(
+                                                      color: primaryColor,
+                                                      strokeWidth: 1.5,
                                                     );
-                                                  }
-                                                  return CircularProgressIndicator(
-                                                    color: primaryColor,
-                                                    strokeWidth: 1.5,
-                                                  );
-                                                },
+                                                  },
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -450,67 +476,112 @@ class _HomeUiState extends State<HomeUi> {
               horizontal: 15,
             ),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.12),
+              color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
               children: [
-                CircleAvatar(
-                  radius: 17,
-                  child: Icon(
-                    Icons.book,
-                    size: 18,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Column(
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      ds['bookName'],
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                    CircleAvatar(
+                      radius: 17,
+                      child: Icon(
+                        Icons.book,
+                        size: 18,
                       ),
                     ),
-                    Visibility(
-                      visible: ds['bookDescription'].toString().isNotEmpty,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 10),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ds['bookName'],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                ds['bookDescription'].toString().isNotEmpty,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.segment),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(ds['bookDescription']),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 15,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                ds['date'] + ' at ' + ds['time'],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
                         child: Row(
                           children: [
-                            Icon(Icons.segment),
+                            Icon(
+                              (Icons.file_upload_outlined),
+                              color: Colors.red,
+                            ),
                             SizedBox(
                               width: 5,
                             ),
-                            Text(ds['bookDescription']),
+                            Text("₹ " + ds['expense'].toString()),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.schedule,
-                          size: 15,
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              (Icons.file_download_outlined),
+                              color: Colors.green,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text("₹ " + ds['income'].toString()),
+                          ],
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          ds['date'] + ' at ' + ds['time'],
-                          style: TextStyle(
-                            // fontStyle: FontStyle.italic,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),

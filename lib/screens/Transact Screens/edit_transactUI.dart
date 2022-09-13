@@ -1,26 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Functions/transactFunctions.dart';
-import 'package:transaction_record_app/colors.dart';
-import 'package:transaction_record_app/services/user.dart';
-import 'package:transaction_record_app/services/database.dart';
 
-class NewTransactUi extends StatefulWidget {
-  final bookId;
-  final isEditing;
+import '../../Functions/transactFunctions.dart';
+import '../../colors.dart';
+import '../../services/database.dart';
+
+class EditTransactUI extends StatefulWidget {
   final snap;
+  const EditTransactUI({Key? key, this.snap}) : super(key: key);
 
-  const NewTransactUi(
-      {Key? key, required this.bookId, this.isEditing, this.snap})
-      : super(key: key);
   @override
-  _NewTransactUiState createState() => _NewTransactUiState();
+  State<EditTransactUI> createState() => _EditTransactUIState();
 }
 
-class _NewTransactUiState extends State<NewTransactUi> {
+class _EditTransactUIState extends State<EditTransactUI> {
+  //  Variables -------------->
+
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
@@ -29,11 +26,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
   final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
   final ScrollController _scrollController = ScrollController();
 
-  // FocusNode titleFocus = FocusNode();
-  // FocusNode descriptionFocus = FocusNode();
-  // FocusNode sourceFocus = FocusNode();
-  // FocusNode amountFocus = FocusNode();
-
+  //---------------
   String source = 'From';
   String transactType = "Income";
   String transactMode = 'CASH';
@@ -46,79 +39,20 @@ class _NewTransactUiState extends State<NewTransactUi> {
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
 
+  //  Functions ----------------------------------------->
   @override
   void initState() {
     super.initState();
-    // amountFocus.addListener(_onFocusChange);
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        _showAmountField.value = false;
-      } else {
-        _showAmountField.value = true;
-      }
-    });
-
-    if (widget.isEditing) {
-      title.text = widget.snap['title'];
-      amountField.text = widget.snap['amount'];
-      source = widget.snap['source'];
-      _selectedDateMap['displayDate'] = widget.snap['date'];
-      _selectedTime = widget.snap['time'];
-      _selectedTimeStamp = widget.snap['ts'];
-      transactId = widget.snap['transactId'];
-
-      // DateFormat("yyyy-MM-dd hh:mm:ss").parse(widget.snap['ts']);
-
-      transactType = widget.snap['type'];
-      transactMode = widget.snap['transactMode'];
-      setState(() {});
-    }
-  }
-
-  // void _onFocusChange() {
-  //   print("Focus: ${amountFocus.hasFocus.toString()}");
-  //   if (amountFocus.hasFocus) {
-  //     _showAmountField.value = true;
-  //   } else if (MediaQuery.of(context).viewInsets.bottom == 0 ||
-  //       amountFocus.hasFocus != false) {
-  //     _showAmountField.value = false;
-  //   }
-  //   setState(() {});
-  // }
-
-  handleNewNoteTransaction() {
-    //  calculating the Income and Expense for new transact
-    if (transactType == 'Income') {
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(double.parse(amountField.text)),
-        'income': FieldValue.increment(double.parse(amountField.text)),
-      };
-
-      //  UPDATING GLOBALLY
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
-
-      //  UPDATING INSIDE BOOK
-      newMap = {
-        'income': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateBookTransactions(widget.bookId, newMap);
-    } else {
-      final amount = double.parse(amountField.text);
-
-      //  UPDATING GLOBALLY
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(0.0 - amount),
-        'expense': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
-
-      //  UPDATING INSIDE BOOK
-      newMap = {
-        'expense': FieldValue.increment(double.parse(amountField.text)),
-      };
-      databaseMethods.updateBookTransactions(widget.bookId, newMap);
-    }
+    title.text = widget.snap['title'];
+    amountField.text = widget.snap['amount'];
+    source = widget.snap['source'];
+    _selectedDateMap['displayDate'] = widget.snap['date'];
+    _selectedTime = widget.snap['time'];
+    _selectedTimeStamp = widget.snap['ts'];
+    transactId = widget.snap['transactId'];
+    transactType = widget.snap['type'];
+    transactMode = widget.snap['transactMode'];
+    setState(() {});
   }
 
   handleEditedNoteTransaction() {
@@ -134,16 +68,15 @@ class _NewTransactUiState extends State<NewTransactUi> {
       //--------------------------------------------
 
       if (_oldType == 'Income') {
-        print(
-            'when old type is $_oldType -> OLD AMOUNT = $_oldAmount & NEW AMOUNT = $_newAmount');
-        databaseMethods.updateBookTransactions(widget.bookId,
+        databaseMethods.updateBookTransactions(widget.snap['bookId'],
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.bookId,
+        databaseMethods.updateBookTransactions(widget.snap['bookId'],
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     } else {
+      print('HERE --------------->');
       //  If newType is Expense ---------------->
 
       //--------------------------------------------
@@ -154,11 +87,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
       //--------------------------------------------
       if (_oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.bookId,
+        databaseMethods.updateBookTransactions(widget.snap['bookId'],
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.bookId,
+        databaseMethods.updateBookTransactions(widget.snap['bookId'],
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     }
@@ -170,7 +103,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
 
       Map<String, dynamic> transactMap = {
-        'transactId': widget.isEditing ? widget.snap['transactId'] : transactId,
+        'transactId': widget.snap['transactId'],
         'title': title.text,
         "amount": amountField.text,
         "source": sourceField.text,
@@ -179,21 +112,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
         "type": transactType,
         'date': _selectedDateMap['displayDate'],
         'time': _selectedTime,
-        'bookId': widget.bookId,
+        'bookId': widget.snap['bookId'],
         'ts': _selectedTimeStamp,
       };
 
-      if (widget.isEditing) {
-        databaseMethods.updateTransacts(
-            widget.bookId, widget.snap['transactId'], transactMap);
+      databaseMethods.updateTransacts(
+          widget.snap['bookId'], widget.snap['transactId'], transactMap);
 
-        handleEditedNoteTransaction();
-      } else {
-        databaseMethods.uploadTransacts(
-            UserDetails.uid, transactMap, widget.bookId, transactId);
-
-        handleNewNoteTransaction();
-      }
+      handleEditedNoteTransaction();
 
       //  resetting the values
       amountField.clear();
@@ -209,14 +135,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void dispose() {
     super.dispose();
-    // amountFocus.removeListener(_onFocusChange);
-    // amountFocus.dispose();
     _scrollController.dispose();
     amountField.dispose();
     title.dispose();
     descriptionField.dispose();
     sourceField.dispose();
   }
+
+  // -----------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -228,10 +154,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
         statusBarBrightness: Brightness.light,
       ),
     );
-
-    // _showAmountField.value =
-    //     MediaQuery.of(context).viewInsets.bottom == 0 ? true : false;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -241,7 +163,8 @@ class _NewTransactUiState extends State<NewTransactUi> {
               child: SingleChildScrollView(
                 controller: _scrollController,
                 physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Column(
@@ -270,26 +193,16 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             ),
                           ),
                           Spacer(),
-                          Expanded(
-                            child: TransactTypeCard(
-                              icon: Icons.file_download_outlined,
-                              label: 'Income',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: TransactTypeCard(
-                              icon: Icons.file_upload_outlined,
-                              label: 'Expense',
-                            ),
+                          TransactTypeCard(
+                            icon: widget.snap['type'] == 'Income'
+                                ? Icons.file_download_outlined
+                                : Icons.file_upload_outlined,
+                            label: widget.snap['type'],
                           ),
                         ],
                       ),
                       TextField(
                         controller: title,
-                        // focusNode: titleFocus,
                         style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w900,
@@ -396,8 +309,10 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 Expanded(
                                   child: InkWell(
                                     onTap: () async {
-                                      _selectedDateMap =
-                                          await selectDate(context, setState);
+                                      _selectedDateMap = await selectDate(
+                                          context,
+                                          setState,
+                                          DateTime.parse(widget.snap['ts']));
                                     },
                                     child: Container(
                                       padding: EdgeInsets.all(10),
@@ -432,25 +347,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 ),
                               ],
                             ),
-
-                            ///////////////////////
-                            // Text(
-                            //   DateFormat('dd MMMM')
-                            //           .format(_selectedDate)
-                            //           .toString() +
-                            //       ' at ' +
-                            //       _selectedTime.hour.toString() +
-                            //       ':' +
-                            //       _selectedTime.minute.toString(),
-                            // DateFormat()
-                            //     .add_jm()
-                            //     .format(_selectedTime)
-                            //     .toString(),
-                            //   style: TextStyle(
-                            //     color: Colors.black,
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
@@ -476,7 +372,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             Expanded(
                               child: TextField(
                                 controller: sourceField,
-                                // focusNode: sourceFocus,
                                 maxLines: 4,
                                 minLines: 1,
                                 cursorColor: Colors.black,
@@ -644,16 +539,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                             ),
                                       MaterialButton(
                                         onPressed: () {
-                                          var formatter =
-                                              DateFormat('dd MMMM, yyyy - ')
-                                                  .add_jm()
-                                                  .format(DateTime.now());
-                                          String currentTime =
-                                              DateTime.now().toString();
-                                          saveTransacts(
-                                              // formatter,
-                                              // currentTime,
-                                              );
+                                          saveTransacts();
                                         },
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -683,7 +569,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                           child: Row(
                                             children: [
                                               Icon(
-                                                Icons.add,
+                                                transactType == 'Income'
+                                                    ? Icons
+                                                        .file_download_outlined
+                                                    : Icons
+                                                        .file_upload_outlined,
                                                 color: transactType == 'Income'
                                                     ? Colors.green.shade900
                                                     : Colors.white,
@@ -692,7 +582,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                                 width: 5,
                                               ),
                                               Text(
-                                                'Add ' + transactType,
+                                                'Update ' + transactType,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: transactType ==
@@ -715,194 +605,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                     );
                   }),
             ),
-
-            // Container(
-            //   padding: EdgeInsets.all(20),
-            //   margin: EdgeInsets.all(10),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     borderRadius: BorderRadius.circular(30),
-            //     boxShadow: [
-            //       BoxShadow(
-            //         color: Colors.grey.shade100,
-            //         spreadRadius: 10,
-            //         blurRadius: 10,
-            //         offset: Offset(0, 0),
-            //       ),
-            //     ],
-            //   ),
-            //   child: Column(
-            //     children: [
-            //       Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           Flexible(
-            //             child: Container(
-            //               width: 200,
-            //               child: TextField(
-            //                 keyboardType: TextInputType.number,
-            //                 controller: amountField,
-            //                 style: TextStyle(
-            //                   fontWeight: FontWeight.w800,
-            //                   color: Colors.black,
-            //                   fontSize: 40,
-            //                 ),
-            //                 cursorColor: Colors.black,
-            //                 decoration: InputDecoration(
-            //                   border: InputBorder.none,
-            //                   hintText: '0.00',
-            //                   hintStyle: TextStyle(
-            //                     fontWeight: FontWeight.w800,
-            //                     color: Colors.grey.shade400,
-            //                     fontSize: 40,
-            //                   ),
-            //                   suffixText: 'INR',
-            //                   suffixStyle: TextStyle(
-            //                     fontWeight: FontWeight.w400,
-            //                     color: Colors.black,
-            //                     fontSize: 40,
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           ),
-            //           Column(
-            //             children: [
-            //               Text(
-            //                 'Add money to',
-            //                 style: TextStyle(
-            //                   fontWeight: FontWeight.w500,
-            //                   color: Colors.black,
-            //                   fontSize: 13,
-            //                 ),
-            //               ),
-            //               SizedBox(
-            //                 height: 5,
-            //               ),
-            //               DropdownButton(
-            //                 value: transactMode,
-            //                 style: TextStyle(
-            //                   fontWeight: FontWeight.w800,
-            //                   color: Colors.black,
-            //                   fontSize: 16,
-            //                 ),
-            //                 underline: const SizedBox(),
-            //                 onChanged: (String? newValue) {
-            //                   setState(() {
-            //                     transactMode = newValue!;
-            //                   });
-            //                 },
-            //                 items: <String>['CASH', 'ONLINE']
-            //                     .map<DropdownMenuItem<String>>((String value) {
-            //                   return DropdownMenuItem<String>(
-            //                     value: value,
-            //                     child: Text(
-            //                       value,
-            //                       style: TextStyle(
-            //                         fontWeight: FontWeight.w800,
-            //                         color: Colors.black,
-            //                         fontSize: 16,
-            //                       ),
-            //                     ),
-            //                   );
-            //                 }).toList(),
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //       Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           MediaQuery.of(context).viewInsets.bottom != 0
-            //               ? Container(
-            //                   height: 40,
-            //                   width: 40,
-            //                   decoration: BoxDecoration(
-            //                     shape: BoxShape.circle,
-            //                     border: Border.all(
-            //                       color: Colors.grey,
-            //                       width: 1,
-            //                     ),
-            //                   ),
-            //                   child: IconButton(
-            //                     onPressed: () {
-            //                       FocusScope.of(context).unfocus();
-            //                     },
-            //                     icon: Icon(
-            //                       Icons.keyboard_arrow_down_rounded,
-            //                       size: 20,
-            //                       color: Colors.black,
-            //                     ),
-            //                   ),
-            //                 )
-            //               : SizedBox(
-            //                   width: 20,
-            //                 ),
-            //           MaterialButton(
-            //             onPressed: () {
-            //               var formatter = DateFormat('dd MMMM, yyyy - ')
-            //                   .add_jm()
-            //                   .format(DateTime.now());
-            //               String currentTime = DateTime.now().toString();
-            //               saveTransacts(
-            //                   // formatter,
-            //                   // currentTime,
-            //                   );
-            //             },
-            //             shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(50),
-            //             ),
-            //             elevation: 0,
-            //             padding: EdgeInsets.zero,
-            //             child: Ink(
-            //               padding: EdgeInsets.symmetric(
-            //                 vertical: 15,
-            //                 horizontal: 25,
-            //               ),
-            //               decoration: BoxDecoration(
-            //                 borderRadius: BorderRadius.circular(50),
-            //                 gradient: LinearGradient(
-            //                   colors: [
-            //                     transactType == 'Income'
-            //                         ? primaryColor
-            //                         : Colors.black,
-            //                     transactType == 'Income'
-            //                         ? primaryAccentColor
-            //                         : Colors.grey,
-            //                   ],
-            //                 ),
-            //               ),
-            //               child: Row(
-            //                 children: [
-            //                   Icon(
-            //                     Icons.add,
-            //                     color: transactType == 'Income'
-            //                         ? Colors.green.shade900
-            //                         : Colors.white,
-            //                   ),
-            //                   SizedBox(
-            //                     width: 5,
-            //                   ),
-            //                   Text(
-            //                     'Add ' + transactType,
-            //                     style: TextStyle(
-            //                       fontWeight: FontWeight.w600,
-            //                       color: transactType == 'Income'
-            //                           ? Colors.green.shade900
-            //                           : Colors.white,
-            //                       fontSize: 18,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),

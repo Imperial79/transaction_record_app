@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/services/auth.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);
@@ -12,31 +11,74 @@ class HomeMenuUI extends StatefulWidget {
 class _HomeMenuUIState extends State<HomeMenuUI> {
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-      child: Container(
-        color: Colors.grey.withOpacity(0.7),
-        padding: EdgeInsets.all(20),
-        alignment: Alignment.center,
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.close),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(bottom: 20, left: 20, right: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Settings',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 25,
+            ),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              HomeMenuBtn(
+                onPress: () {
+                  print('object');
+                },
+                label: 'Account',
+                icon: Icon(Icons.person, color: Colors.blue.shade700),
+                btnColor: Colors.blue.withOpacity(0.12),
+                textColor: Colors.black,
               ),
-            ),
-            Text(
-              'Settings',
-              style: TextStyle(fontSize: 30),
-            ),
-          ],
-        ),
+              HomeMenuBtn(
+                onPress: () {
+                  AuthMethods().signOut(context);
+                },
+                label: 'Logout',
+                icon: Icon(Icons.logout, color: Colors.red),
+                btnColor: Colors.red.withOpacity(0.12),
+                textColor: Colors.red,
+              ),
+            ],
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget HomeMenuBtn(
+      {required VoidCallback onPress, final label, icon, btnColor, textColor}) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: btnColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: IconButton(
+            onPressed: onPress,
+            icon: icon,
+          ),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

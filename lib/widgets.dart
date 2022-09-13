@@ -4,7 +4,7 @@ import 'package:transaction_record_app/services/user.dart';
 
 import 'Functions/navigatorFns.dart';
 import 'colors.dart';
-import 'screens/Transact Screens/newTransactUi.dart';
+import 'screens/Transact Screens/new_transactUi.dart';
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
@@ -48,8 +48,6 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                   context,
                   NewTransactUi(
                     bookId: bookId,
-                    isEditing: false,
-                    snap: null,
                   ));
             },
             color: Colors.amber,

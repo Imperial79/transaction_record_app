@@ -1,12 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/colors.dart';
-
-import '../transactTile1.dart';
-import '../widgets.dart';
 
 String? _hour, _minute, _time;
 
@@ -17,13 +11,17 @@ TextEditingController _dateController = TextEditingController();
 TextEditingController _timeController = TextEditingController();
 
 Future<Map<String, dynamic>> selectDate(
-    BuildContext context, StateSetter setState) async {
+  BuildContext context,
+  StateSetter setState,
+  DateTime currentDate,
+) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: selectedDate,
     initialDatePickerMode: DatePickerMode.day,
     firstDate: DateTime(2015),
     lastDate: DateTime(2101),
+    currentDate: currentDate,
   );
   if (picked != null)
     setState(() {
@@ -34,7 +32,7 @@ Future<Map<String, dynamic>> selectDate(
   // return picked!;
   Map<String, dynamic> dateMap = {
     'displayDate': _dateController.text,
-    'tsDate': picked!
+    'tsDate': picked,
   };
   // return _dateController.text;
   return dateMap;

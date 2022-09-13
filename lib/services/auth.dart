@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/loginUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -100,9 +102,11 @@ class AuthMethods {
     }
   }
 
-  signOut() async {
+  signOut(BuildContext context) async {
+    print('object');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     await auth.signOut();
+    NavPushReplacement(context, LoginUI());
   }
 }
