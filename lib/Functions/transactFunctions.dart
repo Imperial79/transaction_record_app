@@ -15,7 +15,7 @@ Future<Map<String, dynamic>> selectDate(
   StateSetter setState,
   DateTime currentDate,
 ) async {
-  final DateTime? picked = await showDatePicker(
+  DateTime? picked = await showDatePicker(
     context: context,
     initialDate: selectedDate,
     initialDatePickerMode: DatePickerMode.day,
@@ -23,11 +23,17 @@ Future<Map<String, dynamic>> selectDate(
     lastDate: DateTime(2101),
     currentDate: currentDate,
   );
-  if (picked != null)
+  if (picked != null) {
     setState(() {
-      selectedDate = picked;
+      selectedDate = picked!;
       _dateController.text = DateFormat.yMMMMd().format(selectedDate);
     });
+  } else {
+    setState(() {
+      picked = DateTime.now();
+      _dateController.text = DateFormat.yMMMMd().format(picked!);
+    });
+  }
 
   // return picked!;
   Map<String, dynamic> dateMap = {
@@ -43,7 +49,7 @@ Future<String> selectTime(BuildContext context, StateSetter setState) async {
     context: context,
     initialTime: TimeOfDay.now(),
   );
-  if (picked != null)
+  if (picked != null) {
     setState(() {
       selectedTime = picked;
 
@@ -55,6 +61,12 @@ Future<String> selectTime(BuildContext context, StateSetter setState) async {
           DateTime(2019, 08, 1, selectedTime.hour, selectedTime.minute),
           [hh, ':', nn, " ", am]).toString();
     });
+  } else {
+    setState(() {
+      _timeController.text =
+          formatDate(DateTime.now(), [hh, ':', nn, " ", am]).toString();
+    });
+  }
 
   return _timeController.text;
 }

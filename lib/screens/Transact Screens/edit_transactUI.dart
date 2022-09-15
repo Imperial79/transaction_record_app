@@ -100,8 +100,11 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   saveTransacts() async {
     if (amountField.text != '') {
-      _selectedTimeStamp =
-          await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
+      if (widget.snap['date'] != _selectedDateMap['displayDate'] ||
+          widget.snap['time'] != _selectedTime) {
+        _selectedTimeStamp =
+            await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
+      }
 
       Map<String, dynamic> transactMap = {
         'transactId': widget.snap['transactId'],
@@ -369,8 +372,23 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        _selectedTime =
-                                            await selectTime(context, setState);
+                                        _selectedTime = await selectTime(
+                                          context,
+                                          setState,
+                                          // TimeOfDay(
+                                          //     hour: int.parse(widget
+                                          //         .snap['time']
+                                          //         .toString()
+                                          //         .replaceAll('AM', '')
+                                          //         .split(':')
+                                          //         .first),
+                                          //     minute: int.parse(widget
+                                          //         .snap['time']
+                                          //         .toString()
+                                          //         .replaceAll('AM', '')
+                                          //         .split(':')
+                                          //         .last)));
+                                        );
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(10),
