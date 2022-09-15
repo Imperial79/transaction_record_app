@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);
@@ -32,7 +35,12 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             children: [
               HomeMenuBtn(
                 onPress: () {
-                  print('object');
+                  NavPush(
+                      context,
+                      AccountUI(
+                        name: UserDetails.userDisplayName,
+                        email: UserDetails.userEmail,
+                      ));
                 },
                 label: 'Account',
                 icon: Icon(Icons.person, color: Colors.blue.shade700),

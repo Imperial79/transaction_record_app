@@ -26,7 +26,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.white,
-            fontSize: 22,
+            fontSize: 20,
           ),
         ),
         SizedBox(
@@ -35,9 +35,9 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
         Text(
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 15,
           ),
         ),
         SizedBox(

@@ -94,18 +94,9 @@ class _BookUIState extends State<BookUI> {
                                   Text(
                                     widget.snap['bookName'],
                                     style: TextStyle(
-                                      fontSize: 30,
+                                      fontSize: 25,
                                     ),
                                   ),
-                                  // Text(
-                                  //   'Created On',
-                                  //   style: TextStyle(
-                                  //     fontWeight: FontWeight.w500,
-                                  //     color: Colors.grey,
-                                  //     fontSize: 12,
-                                  //     fontStyle: FontStyle.italic,
-                                  //   ),
-                                  // ),
                                   Text(
                                     widget.snap['date'] +
                                         ', ' +
@@ -115,11 +106,6 @@ class _BookUIState extends State<BookUI> {
                                       fontSize: 12,
                                     ),
                                   ),
-                                  // Padding(
-                                  //   padding:
-                                  //       EdgeInsets.symmetric(vertical: 8.0),
-                                  //   child: Divider(),
-                                  // ),
                                 ],
                               )
                             : Container(),
@@ -155,7 +141,7 @@ class _BookUIState extends State<BookUI> {
                                     Text(
                                       'INR ',
                                       style: TextStyle(
-                                        fontSize: 40,
+                                        fontSize: 35,
                                         fontWeight: FontWeight.w200,
                                       ),
                                     ),
@@ -163,13 +149,16 @@ class _BookUIState extends State<BookUI> {
                                         child: Text(
                                       oCcy.format(ds['income'] - ds['expense']),
                                       style: TextStyle(
-                                        fontSize: 40,
+                                        fontSize: 35,
                                         fontWeight: FontWeight.w900,
                                       ),
                                     )),
                                   ],
                                 ),
                               ),
+                            ),
+                            SizedBox(
+                              height: 5,
                             ),
                             Row(
                               children: [
@@ -194,38 +183,6 @@ class _BookUIState extends State<BookUI> {
                                 ),
                               ],
                             ),
-                            // SizedBox(
-                            //   height: 10,
-                            // ),
-                            // RichText(
-                            //   text: TextSpan(
-                            //     style: TextStyle(
-                            //       color: Colors.black,
-                            //     ),
-                            //     children: [
-                            //       TextSpan(
-                            //         text: 'Net Amount = ',
-                            //         style: TextStyle(
-                            //           fontWeight: FontWeight.w400,
-                            //           fontSize: 16,
-                            //           fontFamily: 'Product',
-                            //         ),
-                            //       ),
-                            //       TextSpan(
-                            //         text: '₹ ' +
-                            //             oCcy
-                            //                 .format(
-                            //                     ds['income'] - ds['expense'])
-                            //                 .toString(),
-                            //         style: TextStyle(
-                            //           fontWeight: FontWeight.w800,
-                            //           fontSize: 20,
-                            //           fontFamily: 'Product',
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                           ],
                         );
                       }
@@ -303,7 +260,7 @@ class _BookUIState extends State<BookUI> {
                           'Add',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
+                            fontSize: 16,
                             color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
@@ -396,10 +353,7 @@ class _BookUIState extends State<BookUI> {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 15,
-                  ),
+                  padding: EdgeInsets.all(10),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
@@ -408,91 +362,76 @@ class _BookUIState extends State<BookUI> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: ds['transactMode'] == 'CASH'
-                              ? Colors.grey.shade800
-                              : Colors.blue.shade800,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ds['transactMode'] == 'CASH'
-                                ? Text(
-                                    '₹ ',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                      fontFamily: 'default',
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.payment,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                            SizedBox(
-                              width: ds['transactMode'] == 'CASH' ? 0 : 7,
-                            ),
-                            Text(
-                              ds['transactMode'],
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CircleAvatar(
-                            backgroundColor: Colors.white,
+                            radius: 17,
+                            backgroundColor: ds["type"] == 'Income'
+                                ? primaryAccentColor
+                                : Colors.black,
                             child: Icon(
                               ds["type"] == 'Income'
                                   ? Icons.file_download_outlined
                                   : Icons.file_upload_outlined,
                               color: ds["type"] == 'Income'
-                                  ? Color(0xFF01AF75)
-                                  : Colors.red,
+                                  ? Colors.black
+                                  : Colors.white,
+                              size: 17,
                             ),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: double.parse(ds["amount"]).toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: size.height * 0.03,
-                                    color: ds["type"] == 'Income'
-                                        ? Color(0xFF01AF75)
-                                        : Colors.red.shade900,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' INR',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: size.height * 0.03,
-                                    color: ds["type"] == 'Income'
-                                        ? Color(0xFF01AF75)
-                                        : Colors.red.shade900,
-                                  ),
-                                ),
-                              ],
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: ds['transactMode'] == 'CASH'
+                                  ? Colors.white
+                                  : Colors.blue.shade100,
+                            ),
+                            child: Text(
+                              ds['transactMode'],
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: ds['transactMode'] == 'CASH'
+                                    ? Colors.black
+                                    : Colors.blue.shade900,
+                              ),
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: double.parse(ds["amount"]).toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: ds["type"] == 'Income'
+                                    ? Color(0xFF01AF75)
+                                    : Colors.red.shade900,
+                                fontFamily: 'Product',
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' INR',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 20,
+                                color: ds["type"] == 'Income'
+                                    ? Color(0xFF01AF75)
+                                    : Colors.red.shade900,
+                                fontFamily: 'Product',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(
                         height: 10,

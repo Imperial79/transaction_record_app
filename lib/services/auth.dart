@@ -41,65 +41,63 @@ class AuthMethods {
 
     User? userDetails = result.user;
 
-    if (result != null) {
-      final SharedPreferences prefs = await _prefs;
+    final SharedPreferences prefs = await _prefs;
 
-      prefs.setString('USERKEY', userDetails!.uid);
-      prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
-      prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
-      prefs.setString('USEREMAILKEY', userDetails.email!);
-      prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
+    prefs.setString('USERKEY', userDetails!.uid);
+    prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
+    prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
+    prefs.setString('USEREMAILKEY', userDetails.email!);
+    prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
 
-      UserDetails.userEmail = userDetails.email!;
-      UserDetails.userDisplayName = userDetails.displayName!;
-      UserDetails.userName = userDetails.email!.split('@').first;
-      UserDetails.uid = userDetails.uid;
-      UserDetails.userProfilePic = userDetails.photoURL!;
+    UserDetails.userEmail = userDetails.email!;
+    UserDetails.userDisplayName = userDetails.displayName!;
+    UserDetails.userName = userDetails.email!.split('@').first;
+    UserDetails.uid = userDetails.uid;
+    UserDetails.userProfilePic = userDetails.photoURL!;
 
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userDetails.uid)
-          .get()
-          .then(
-        (value) {
-          if (value.exists) {
-            Map<String, dynamic> userInfoMap = {
-              'uid': userDetails.uid,
-              "email": userDetails.email,
-              "username": userDetails.email!.split('@').first,
-              "name": userDetails.displayName,
-              "imgUrl": userDetails.photoURL,
-            };
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDetails.uid)
+        .get()
+        .then(
+      (value) {
+        if (value.exists) {
+          Map<String, dynamic> userInfoMap = {
+            'uid': userDetails.uid,
+            "email": userDetails.email,
+            "username": userDetails.email!.split('@').first,
+            "name": userDetails.displayName,
+            "imgUrl": userDetails.photoURL,
+          };
 
-            FirebaseFirestore.instance
-                .collection("users")
-                .doc(userDetails.uid)
-                .update(userInfoMap)
-                .then((value) {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => HomeUi()));
-            });
-          } else {
-            Map<String, dynamic> userInfoMap = {
-              'uid': userDetails.uid,
-              "email": userDetails.email,
-              "username": userDetails.email!.split('@').first,
-              "name": userDetails.displayName,
-              "imgUrl": userDetails.photoURL,
-              'income': 0,
-              'expense': 0,
-              'currentBalance': 0,
-            };
-            databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
-              (value) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => SetBalanceUi()));
-              },
-            );
-          }
-        },
-      );
-    }
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(userDetails.uid)
+              .update(userInfoMap)
+              .then((value) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomeUi()));
+          });
+        } else {
+          Map<String, dynamic> userInfoMap = {
+            'uid': userDetails.uid,
+            "email": userDetails.email,
+            "username": userDetails.email!.split('@').first,
+            "name": userDetails.displayName,
+            "imgUrl": userDetails.photoURL,
+            'income': 0,
+            'expense': 0,
+            'currentBalance': 0,
+          };
+          databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
+            (value) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => SetBalanceUi()));
+            },
+          );
+        }
+      },
+    );
   }
 
   signOut(BuildContext context) async {

@@ -21,7 +21,7 @@ ShowSnackBar(BuildContext context, String text) {
           color: Colors.white,
         ),
       ),
-      backgroundColor: Colors.grey.shade700,
+      backgroundColor: Colors.black,
     ),
   );
 }

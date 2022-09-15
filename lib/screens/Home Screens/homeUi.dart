@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/animatedMenuButton.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
@@ -149,27 +150,39 @@ class _HomeUiState extends State<HomeUi> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          CircleAvatar(
-                                            radius: 15,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                              child:
-                                                  UserDetails.userProfilePic ==
-                                                          ''
-                                                      ? Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            color:
-                                                                primaryAccentColor,
-                                                            strokeWidth: 1.5,
-                                                          ),
-                                                        )
-                                                      : CachedNetworkImage(
-                                                          imageUrl: UserDetails
-                                                              .userProfilePic,
-                                                          fit: BoxFit.cover,
+                                          GestureDetector(
+                                            onTap: () {
+                                              NavPush(
+                                                  context,
+                                                  AccountUI(
+                                                    name: UserDetails
+                                                        .userDisplayName,
+                                                    email:
+                                                        UserDetails.userEmail,
+                                                  ));
+                                            },
+                                            child: CircleAvatar(
+                                              radius: 15,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                child: UserDetails
+                                                            .userProfilePic ==
+                                                        ''
+                                                    ? Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color:
+                                                              primaryAccentColor,
+                                                          strokeWidth: 1.5,
                                                         ),
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        imageUrl: UserDetails
+                                                            .userProfilePic,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(
