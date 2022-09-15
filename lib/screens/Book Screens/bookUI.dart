@@ -9,6 +9,7 @@ import '../../Functions/navigatorFns.dart';
 import '../../colors.dart';
 import '../../services/user.dart';
 import '../../widgets.dart';
+import '../Transact Screens/setBalanceUi.dart';
 
 class BookUI extends StatefulWidget {
   final snap;
@@ -23,6 +24,7 @@ class _BookUIState extends State<BookUI> {
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
+  final oCcy = new NumberFormat("#,##0.00", "en_US");
 
   @override
   void initState() {
@@ -72,9 +74,12 @@ class _BookUIState extends State<BookUI> {
                                       icon: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.arrow_back),
+                                          Icon(
+                                            Icons.arrow_back,
+                                            // size: 17,
+                                          ),
                                           SizedBox(
-                                            width: 5,
+                                            width: 10,
                                           ),
                                           Text(
                                             'Return',
@@ -92,36 +97,29 @@ class _BookUIState extends State<BookUI> {
                                       fontSize: 30,
                                     ),
                                   ),
+                                  // Text(
+                                  //   'Created On',
+                                  //   style: TextStyle(
+                                  //     fontWeight: FontWeight.w500,
+                                  //     color: Colors.grey,
+                                  //     fontSize: 12,
+                                  //     fontStyle: FontStyle.italic,
+                                  //   ),
+                                  // ),
                                   Text(
-                                    'Created On',
+                                    widget.snap['date'] +
+                                        ', ' +
+                                        widget.snap['time'],
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade900,
+                                      color: Colors.black,
                                       fontSize: 12,
-                                      fontStyle: FontStyle.italic,
                                     ),
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 5),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Colors.grey.shade800,
-                                    ),
-                                    child: Text(
-                                      widget.snap['date'],
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Divider(),
-                                  ),
+                                  // Padding(
+                                  //   padding:
+                                  //       EdgeInsets.symmetric(vertical: 8.0),
+                                  //   child: Divider(),
+                                  // ),
                                 ],
                               )
                             : Container(),
@@ -143,27 +141,91 @@ class _BookUIState extends State<BookUI> {
                           return Text('No Data');
                         }
                         DocumentSnapshot ds = snapshot.data.docs[0];
-                        return Row(
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: StatsCard(
-                                label: 'Income',
-                                content: ds['income'].toString(),
-                                isBook: true,
-                                bookId: ds['bookId'],
+                            GestureDetector(
+                              onTap: () {
+                                NavPush(context, SetBalanceUi());
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'INR ',
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w200,
+                                      ),
+                                    ),
+                                    Expanded(
+                                        child: Text(
+                                      oCcy.format(ds['income'] - ds['expense']),
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    )),
+                                  ],
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              width: 10,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: StatsCard(
+                                    label: 'Income',
+                                    content: ds['income'].toString(),
+                                    isBook: true,
+                                    bookId: ds['bookId'],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: StatsCard(
+                                    label: 'Expenses',
+                                    content: ds['expense'].toString(),
+                                    isBook: true,
+                                    bookId: ds['bookId'],
+                                  ),
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: StatsCard(
-                                label: 'Expenses',
-                                content: ds['expense'].toString(),
-                                isBook: true,
-                                bookId: ds['bookId'],
-                              ),
-                            ),
+                            // SizedBox(
+                            //   height: 10,
+                            // ),
+                            // RichText(
+                            //   text: TextSpan(
+                            //     style: TextStyle(
+                            //       color: Colors.black,
+                            //     ),
+                            //     children: [
+                            //       TextSpan(
+                            //         text: 'Net Amount = ',
+                            //         style: TextStyle(
+                            //           fontWeight: FontWeight.w400,
+                            //           fontSize: 16,
+                            //           fontFamily: 'Product',
+                            //         ),
+                            //       ),
+                            //       TextSpan(
+                            //         text: '₹ ' +
+                            //             oCcy
+                            //                 .format(
+                            //                     ds['income'] - ds['expense'])
+                            //                 .toString(),
+                            //         style: TextStyle(
+                            //           fontWeight: FontWeight.w800,
+                            //           fontSize: 20,
+                            //           fontFamily: 'Product',
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                           ],
                         );
                       }

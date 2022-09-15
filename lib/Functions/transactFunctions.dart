@@ -65,6 +65,6 @@ String convertTimeToTS(date, time) {
       ' ' +
       time.toString().split(' ').first +
       ':00.$nowNanoSec';
-
+  print(_selectedTimeStamp);
   return _selectedTimeStamp;
 }

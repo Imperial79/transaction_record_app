@@ -106,8 +106,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   saveTransacts() async {
     if (amountField.text != '') {
+      _selectedTimeStamp =
+          await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
       transactId = _selectedTimeStamp;
-      await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
 
       Map<String, dynamic> transactMap = {
         'transactId': transactId,

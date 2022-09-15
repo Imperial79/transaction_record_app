@@ -45,6 +45,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     super.initState();
     title.text = widget.snap['title'];
     amountField.text = widget.snap['amount'];
+    descriptionField.text = widget.snap['description'];
     source = widget.snap['source'];
     _selectedDateMap['displayDate'] = widget.snap['date'];
     _selectedTime = widget.snap['time'];
@@ -99,8 +100,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   saveTransacts() async {
     if (amountField.text != '') {
-      transactId = _selectedTimeStamp;
-      await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
+      _selectedTimeStamp =
+          await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
 
       Map<String, dynamic> transactMap = {
         'transactId': widget.snap['transactId'],

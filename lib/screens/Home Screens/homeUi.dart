@@ -229,62 +229,62 @@ class _HomeUiState extends State<HomeUi> {
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          NavPush(context, SetBalanceUi());
-                                        },
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'INR ',
-                                                style: TextStyle(
-                                                  fontSize: 40,
-                                                  fontWeight: FontWeight.w200,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: StreamBuilder<dynamic>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(FirebaseAuth.instance
-                                                          .currentUser!.uid)
-                                                      .snapshots(),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData) {
-                                                      DocumentSnapshot ds =
-                                                          snapshot.data;
-                                                      double currBal =
-                                                          double.parse(
-                                                              ds['currentBalance']
-                                                                  .toString());
-                                                      return Text(
-                                                        currBal
-                                                            .toStringAsFixed(2),
-                                                        style: TextStyle(
-                                                          fontSize: 40,
-                                                          fontWeight:
-                                                              FontWeight.w900,
-                                                        ),
-                                                      );
-                                                    }
-                                                    return CircularProgressIndicator(
-                                                      color: primaryColor,
-                                                      strokeWidth: 1.5,
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Padding(
+                                    //   padding:
+                                    //       EdgeInsets.symmetric(horizontal: 20),
+                                    //   child: GestureDetector(
+                                    //     onTap: () {
+                                    //       NavPush(context, SetBalanceUi());
+                                    //     },
+                                    //     child: Container(
+                                    //       color: Colors.transparent,
+                                    //       child: Row(
+                                    //         children: [
+                                    //           Text(
+                                    //             'INR ',
+                                    //             style: TextStyle(
+                                    //               fontSize: 40,
+                                    //               fontWeight: FontWeight.w200,
+                                    //             ),
+                                    //           ),
+                                    //           Expanded(
+                                    //             child: StreamBuilder<dynamic>(
+                                    //               stream: FirebaseFirestore
+                                    //                   .instance
+                                    //                   .collection('users')
+                                    //                   .doc(FirebaseAuth.instance
+                                    //                       .currentUser!.uid)
+                                    //                   .snapshots(),
+                                    //               builder: (context, snapshot) {
+                                    //                 if (snapshot.hasData) {
+                                    //                   DocumentSnapshot ds =
+                                    //                       snapshot.data;
+                                    //                   double currBal =
+                                    //                       double.parse(
+                                    //                           ds['currentBalance']
+                                    //                               .toString());
+                                    //                   return Text(
+                                    //                     currBal
+                                    //                         .toStringAsFixed(2),
+                                    //                     style: TextStyle(
+                                    //                       fontSize: 40,
+                                    //                       fontWeight:
+                                    //                           FontWeight.w900,
+                                    //                     ),
+                                    //                   );
+                                    //                 }
+                                    //                 return CircularProgressIndicator(
+                                    //                   color: primaryColor,
+                                    //                   strokeWidth: 1.5,
+                                    //                 );
+                                    //               },
+                                    //             ),
+                                    //           ),
+                                    //         ],
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 )
                               : Container(),
@@ -305,62 +305,62 @@ class _HomeUiState extends State<HomeUi> {
                           SizedBox(
                             height: 15,
                           ),
-                          StreamBuilder<dynamic>(
-                            stream: FirebaseFirestore.instance
-                                .collection('users')
-                                .where('uid', isEqualTo: UserDetails.uid)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                if (snapshot.data.docs.length == 0) {
-                                  return Text('No Data');
-                                }
-                                DocumentSnapshot ds = snapshot.data.docs[0];
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: StatsCard(
-                                        label: 'Income',
-                                        content: ds['income'].toString(),
-                                        isBook: false,
-                                        bookId: '',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: StatsCard(
-                                        label: 'Expenses',
-                                        content: ds['expense'].toString(),
-                                        isBook: false,
-                                        bookId: '',
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            },
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Divider(
-                            color: Colors.grey.shade600,
-                          ),
+                          // StreamBuilder<dynamic>(
+                          //   stream: FirebaseFirestore.instance
+                          //       .collection('users')
+                          //       .where('uid', isEqualTo: UserDetails.uid)
+                          //       .snapshots(),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.hasData) {
+                          //       if (snapshot.data.docs.length == 0) {
+                          //         return Text('No Data');
+                          //       }
+                          //       DocumentSnapshot ds = snapshot.data.docs[0];
+                          //       return Row(
+                          //         children: [
+                          //           Expanded(
+                          //             child: StatsCard(
+                          //               label: 'Income',
+                          //               content: ds['income'].toString(),
+                          //               isBook: false,
+                          //               bookId: '',
+                          //             ),
+                          //           ),
+                          //           SizedBox(
+                          //             width: 10,
+                          //           ),
+                          //           Expanded(
+                          //             child: StatsCard(
+                          //               label: 'Expenses',
+                          //               content: ds['expense'].toString(),
+                          //               isBook: false,
+                          //               bookId: '',
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     }
+                          //     return Center(
+                          //       child: CircularProgressIndicator(),
+                          //     );
+                          //   },
+                          // ),
+                          // SizedBox(
+                          //   height: 20,
+                          // ),
+                          // Divider(
+                          //   color: Colors.grey.shade600,
+                          // ),
                           Text(
                             'Recent Books',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 30,
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          // SizedBox(
+                          //   height: 10,
+                          // ),
                           BookList(),
                           SizedBox(
                             height: size.height * 0.07,
