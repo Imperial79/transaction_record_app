@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/auth.dart';
+import 'package:transaction_record_app/widgets.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);
@@ -22,14 +23,7 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    setSystemUIColors();
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -77,13 +71,13 @@ class _LoginUIState extends State<LoginUI> {
                             ),
                           ),
                           SizedBox(
-                            height: 40,
+                            height: 30,
                           ),
                           Text(
-                            'Your Personal Money manager',
+                            'Your Personal Money Manager',
                             style: TextStyle(
                               fontSize: 17,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
@@ -96,10 +90,10 @@ class _LoginUIState extends State<LoginUI> {
                             ),
                           ),
                           TextLink(
+                            link: _githubLink,
                             color: Colors.grey.shade700,
                             alignment: Alignment.topLeft,
-                            link: _githubLink,
-                            text: '_Github',
+                            text: '#Github',
                           )
                         ],
                       ),
@@ -130,9 +124,13 @@ class _LoginUIState extends State<LoginUI> {
                     InkWell(
                       borderRadius: BorderRadius.circular(15),
                       splashColor: Colors.red,
-                      onTap: () {
-                        setState(() => _isLoading = !_isLoading);
-                        AuthMethods().signInWithgoogle(context);
+                      onTap: () async {
+                        setState(() => _isLoading = true);
+                        String res =
+                            await AuthMethods().signInWithgoogle(context);
+                        if (res == 'fail') {
+                          setState(() => _isLoading = false);
+                        }
                       },
                       child: Container(
                         width: double.infinity,

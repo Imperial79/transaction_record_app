@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
@@ -226,5 +227,16 @@ Widget StatsCard({final label, content, isBook, bookId}) {
       //   ),
       // ),
     ],
+  );
+}
+
+setSystemUIColors() {
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle.light.copyWith(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.light,
+    ),
   );
 }

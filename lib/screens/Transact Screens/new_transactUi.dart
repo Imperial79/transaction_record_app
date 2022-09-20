@@ -7,6 +7,7 @@ import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/widgets.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;
@@ -154,17 +155,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
-    // _showAmountField.value =
-    //     MediaQuery.of(context).viewInsets.bottom == 0 ? true : false;
+    setSystemUIColors();
 
     return Scaffold(
       body: SafeArea(

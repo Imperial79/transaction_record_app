@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/widgets.dart';
 
 class NewBookUI extends StatefulWidget {
   const NewBookUI({Key? key}) : super(key: key);
@@ -49,14 +50,7 @@ class _NewBookUIState extends State<NewBookUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    setSystemUIColors();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -250,46 +244,56 @@ class _NewBookUIState extends State<NewBookUI> {
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 30, right: 30, bottom: 10),
-              child: MaterialButton(
-                onPressed: () {
-                  createBook();
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 0,
-                padding: EdgeInsets.zero,
-                child: Ink(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 25,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.grey.shade800,
-                        Colors.grey.shade400,
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Create',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: MaterialButton(
+          onPressed: () {
+            createBook();
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          child: Ink(
+            padding: EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 25,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black,
+                  Colors.grey,
+                ],
               ),
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_circle_outline_rounded,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Create Book',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

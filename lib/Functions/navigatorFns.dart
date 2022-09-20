@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-NavPush(BuildContext context, screen) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+Future<Null> NavPush(BuildContext context, screen) async {
+  await Navigator.push(
+      context, MaterialPageRoute(builder: (context) => screen));
 }
 
-NavPushReplacement(BuildContext context, screen) {
-  Navigator.pushReplacement(
+Future<Null> NavPushReplacement(BuildContext context, screen) async {
+  await Navigator.pushReplacement(
       context, MaterialPageRoute(builder: (context) => screen));
 }
 

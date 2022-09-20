@@ -21,83 +21,76 @@ class AuthMethods {
     return await auth.currentUser;
   }
 
-  signInWithgoogle(context) async {
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+  Future<String> signInWithgoogle(context) async {
+    try {
+      final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+      final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
 
-    final GoogleSignInAuthentication? googleSignInAuthentication =
-        await googleSignInAccount!.authentication;
+      final GoogleSignInAuthentication? googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      idToken: googleSignInAuthentication!.idToken,
-      accessToken: googleSignInAuthentication.accessToken,
-    );
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication!.idToken,
+        accessToken: googleSignInAuthentication.accessToken,
+      );
 
-    UserCredential result =
-        await _firebaseAuth.signInWithCredential(credential);
+      UserCredential result =
+          await _firebaseAuth.signInWithCredential(credential);
 
-    User? userDetails = result.user;
+      User? userDetails = result.user;
 
-    final SharedPreferences prefs = await _prefs;
+      final SharedPreferences prefs = await _prefs;
 
-    prefs.setString('USERKEY', userDetails!.uid);
-    prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
-    prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
-    prefs.setString('USEREMAILKEY', userDetails.email!);
-    prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
+      prefs.setString('USERKEY', userDetails!.uid);
+      prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
+      prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
+      prefs.setString('USEREMAILKEY', userDetails.email!);
+      prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
 
-    UserDetails.userEmail = userDetails.email!;
-    UserDetails.userDisplayName = userDetails.displayName!;
-    UserDetails.userName = userDetails.email!.split('@').first;
-    UserDetails.uid = userDetails.uid;
-    UserDetails.userProfilePic = userDetails.photoURL!;
+      UserDetails.userEmail = userDetails.email!;
+      UserDetails.userDisplayName = userDetails.displayName!;
+      UserDetails.userName = userDetails.email!.split('@').first;
+      UserDetails.uid = userDetails.uid;
+      UserDetails.userProfilePic = userDetails.photoURL!;
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userDetails.uid)
-        .get()
-        .then(
-      (value) {
-        if (value.exists) {
-          Map<String, dynamic> userInfoMap = {
-            'uid': userDetails.uid,
-            "email": userDetails.email,
-            "username": userDetails.email!.split('@').first,
-            "name": userDetails.displayName,
-            "imgUrl": userDetails.photoURL,
-          };
-
-          FirebaseFirestore.instance
-              .collection("users")
-              .doc(userDetails.uid)
-              .update(userInfoMap)
-              .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userDetails.uid)
+          .get()
+          .then(
+        (value) {
+          if (value.exists) {
+            UserDetails.userDisplayName = value.data()!['name'];
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => HomeUi()));
-          });
-        } else {
-          Map<String, dynamic> userInfoMap = {
-            'uid': userDetails.uid,
-            "email": userDetails.email,
-            "username": userDetails.email!.split('@').first,
-            "name": userDetails.displayName,
-            "imgUrl": userDetails.photoURL,
-            'income': 0,
-            'expense': 0,
-            'currentBalance': 0,
-          };
-          databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
-            (value) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SetBalanceUi()));
-            },
-          );
-        }
-      },
-    );
+          } else {
+            Map<String, dynamic> userInfoMap = {
+              'uid': userDetails.uid,
+              "email": userDetails.email,
+              "username": userDetails.email!.split('@').first,
+              "name": userDetails.displayName,
+              "imgUrl": userDetails.photoURL,
+              'income': 0,
+              'expense': 0,
+              'currentBalance': 0,
+            };
+            databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
+              (value) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => SetBalanceUi()));
+              },
+            );
+          }
+        },
+      );
+      return 'success';
+    } catch (e) {
+      print(e);
+      return 'fail';
+    }
   }
 
   signOut(BuildContext context) async {

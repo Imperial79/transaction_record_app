@@ -322,7 +322,7 @@ class _BookUIState extends State<BookUI> {
       dateTitle = ds['date'];
       showDateWidget = true;
     }
-    Size size = MediaQuery.of(context).size;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

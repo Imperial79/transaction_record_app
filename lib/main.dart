@@ -5,6 +5,7 @@ import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/loginUI.dart';
+import 'package:transaction_record_app/widgets.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,14 +22,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: [SystemUiOverlay.top]);
 
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.dark,
-      ),
-    );
+    setSystemUIColors();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,14 +9,9 @@ import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/animatedMenuButton.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
-import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/screens/Transact%20Screens/setBalanceUi.dart';
-import 'package:transaction_record_app/transactBookCard.dart';
-
 import '../../services/user.dart';
 import '../../widgets.dart';
 import '../Book Screens/bookUI.dart';
@@ -101,14 +94,7 @@ class _HomeUiState extends State<HomeUi> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    setSystemUIColors();
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -399,8 +385,7 @@ class _HomeUiState extends State<HomeUi> {
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
-            // color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(100.0),
+            borderRadius: BorderRadius.circular(100),
             gradient: LinearGradient(
               colors: [
                 Colors.black,
@@ -409,9 +394,10 @@ class _HomeUiState extends State<HomeUi> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(
+                horizontal: _showAdd.value ? 20 : 15, vertical: 15),
             child: AnimatedSize(
-              duration: const Duration(milliseconds: 100),
+              duration: Duration(milliseconds: 100),
               child: ValueListenableBuilder<bool>(
                 valueListenable: _showAdd,
                 builder: (
@@ -426,14 +412,14 @@ class _HomeUiState extends State<HomeUi> {
                       Icon(
                         Icons.add_circle_outline,
                         color: Colors.white,
-                        size: 24.0,
+                        size: !_showAdd.value ? 30 : 24.0,
                       ),
                       if (showFullAddBtn) const SizedBox(width: 10),
                       if (showFullAddBtn)
                         Text(
                           'New Book',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             fontSize: 18.0,
                             color: Colors.white,
                           ),
