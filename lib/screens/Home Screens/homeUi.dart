@@ -228,62 +228,6 @@ class _HomeUiState extends State<HomeUi> {
                                         ],
                                       ),
                                     ),
-                                    // Padding(
-                                    //   padding:
-                                    //       EdgeInsets.symmetric(horizontal: 20),
-                                    //   child: GestureDetector(
-                                    //     onTap: () {
-                                    //       NavPush(context, SetBalanceUi());
-                                    //     },
-                                    //     child: Container(
-                                    //       color: Colors.transparent,
-                                    //       child: Row(
-                                    //         children: [
-                                    //           Text(
-                                    //             'INR ',
-                                    //             style: TextStyle(
-                                    //               fontSize: 40,
-                                    //               fontWeight: FontWeight.w200,
-                                    //             ),
-                                    //           ),
-                                    //           Expanded(
-                                    //             child: StreamBuilder<dynamic>(
-                                    //               stream: FirebaseFirestore
-                                    //                   .instance
-                                    //                   .collection('users')
-                                    //                   .doc(FirebaseAuth.instance
-                                    //                       .currentUser!.uid)
-                                    //                   .snapshots(),
-                                    //               builder: (context, snapshot) {
-                                    //                 if (snapshot.hasData) {
-                                    //                   DocumentSnapshot ds =
-                                    //                       snapshot.data;
-                                    //                   double currBal =
-                                    //                       double.parse(
-                                    //                           ds['currentBalance']
-                                    //                               .toString());
-                                    //                   return Text(
-                                    //                     currBal
-                                    //                         .toStringAsFixed(2),
-                                    //                     style: TextStyle(
-                                    //                       fontSize: 40,
-                                    //                       fontWeight:
-                                    //                           FontWeight.w900,
-                                    //                     ),
-                                    //                   );
-                                    //                 }
-                                    //                 return CircularProgressIndicator(
-                                    //                   color: primaryColor,
-                                    //                   strokeWidth: 1.5,
-                                    //                 );
-                                    //               },
-                                    //             ),
-                                    //           ),
-                                    //         ],
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
                                   ],
                                 )
                               : Container(),
@@ -393,19 +337,21 @@ class _HomeUiState extends State<HomeUi> {
               ],
             ),
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: _showAdd.value ? 20 : 15, vertical: 15),
-            child: AnimatedSize(
-              duration: Duration(milliseconds: 100),
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _showAdd,
-                builder: (
-                  BuildContext context,
-                  bool showFullAddBtn,
-                  Widget? child,
-                ) {
-                  return Row(
+          child: AnimatedSize(
+            duration: Duration(milliseconds: 100),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _showAdd,
+              builder: (
+                BuildContext context,
+                bool showFullAddBtn,
+                Widget? child,
+              ) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: showFullAddBtn ? 20 : 15,
+                    vertical: 15,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -427,9 +373,9 @@ class _HomeUiState extends State<HomeUi> {
                         ),
                       if (showFullAddBtn) const SizedBox(width: 2.5),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -552,14 +498,22 @@ class _HomeUiState extends State<HomeUi> {
                       child: Container(
                         child: Row(
                           children: [
-                            Icon(
-                              (Icons.file_upload_outlined),
-                              color: Colors.red,
+                            CircleAvatar(
+                              radius: 15,
+                              backgroundColor: Colors.black,
+                              child: Icon(
+                                Icons.file_upload_outlined,
+                                color: Colors.white,
+                                size: 15,
+                              ),
                             ),
                             SizedBox(
                               width: 5,
                             ),
-                            Text("₹ " + ds['expense'].toString()),
+                            Text(
+                              "₹ " + oCcy.format(ds['expense']),
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ],
                         ),
                       ),
@@ -570,14 +524,22 @@ class _HomeUiState extends State<HomeUi> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Icon(
-                              (Icons.file_download_outlined),
-                              color: Colors.green,
+                            Text(
+                              "₹ " + oCcy.format(ds['income']),
+                              style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             SizedBox(
                               width: 5,
                             ),
-                            Text("₹ " + ds['income'].toString()),
+                            CircleAvatar(
+                              radius: 15,
+                              backgroundColor: primaryAccentColor,
+                              child: Icon(
+                                Icons.file_download_outlined,
+                                color: Colors.black,
+                                size: 15,
+                              ),
+                            ),
                           ],
                         ),
                       ),

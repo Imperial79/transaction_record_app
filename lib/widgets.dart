@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/services/user.dart';
 
 import 'Functions/navigatorFns.dart';
 import 'colors.dart';
@@ -227,6 +226,34 @@ Widget StatsCard({final label, content, isBook, bookId}) {
       //   ),
       // ),
     ],
+  );
+}
+
+MaterialButton BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
+  return MaterialButton(
+    onPressed: onPress,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(5),
+    ),
+    elevation: 0,
+    color: btnColor,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: textColor,
+          size: 15,
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Text(
+          label,
+          style: TextStyle(color: textColor),
+        ),
+      ],
+    ),
   );
 }
 

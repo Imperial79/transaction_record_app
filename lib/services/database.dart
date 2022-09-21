@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 class DatabaseMethods {
-  final userRef =
-      FirebaseFirestore.instance.collection('users').doc(UserDetails.uid);
+  final _firestore = FirebaseFirestore.instance;
   //  upload new transact book
   createNewTransactBook(String bookId, newBookMap) async {
-    return await userRef
+    return await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
         .collection('transact_books')
         .doc(bookId)
         .set(newBookMap);
@@ -14,15 +15,14 @@ class DatabaseMethods {
 
   //Adding user to database QUERY
   addUserInfoToDB(String uid, Map<String, dynamic> userInfoMap) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .doc(uid)
-        .set(userInfoMap);
+    return await _firestore.collection("users").doc(uid).set(userInfoMap);
   }
 
   //  UPDATE TRANSACTS
   updateTransacts(String bookId, transactId, transactMap) async {
-    await userRef
+    await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
         .collection('transact_books')
         .doc(bookId)
         .collection('transacts')
@@ -32,7 +32,9 @@ class DatabaseMethods {
 
   //Uploading transactions to database QUERY
   uploadTransacts(uid, transactMap, bookId, transactId) async {
-    await userRef
+    await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
         .collection("transact_books")
         .doc(bookId)
         .collection('transacts')
@@ -44,7 +46,10 @@ class DatabaseMethods {
   Future<String> updateAccountDetails(
       String uid, Map<String, dynamic> accountDetails) async {
     try {
-      await userRef.update(accountDetails);
+      await _firestore
+          .collection('users')
+          .doc(UserDetails.uid)
+          .update(accountDetails);
       return 'Profile updated successfully';
     } catch (e) {
       return e.toString();
@@ -53,7 +58,9 @@ class DatabaseMethods {
 
   //  Update BOOK transactions
   updateBookTransactions(String bookId, Map<String, dynamic> newMap) async {
-    return await userRef
+    return await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
         .collection('transact_books')
         .doc(bookId)
         .update(newMap);
@@ -61,22 +68,58 @@ class DatabaseMethods {
 
   //  Update global CURRENT BALANCE
   updateGlobalCurrentBal(String uid, Map<String, dynamic> currentBalMap) async {
-    return await userRef.update(currentBalMap);
+    return await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
+        .update(currentBalMap);
   }
 
   //  Reset Book Income/Expense
   resetBookIncomeExpense(String bookId, uid, map) async {
-    return await userRef.collection('transact_books').doc(bookId).update(map);
+    return await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .update(map);
   }
 
   //  Reset Book Income/Expense
   resetGlobalIncomeExpense(String bookId, uid, map) async {
-    return await userRef.update(map);
+    return await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
+        .update(map);
   }
 
-  //Delete all transacts
-  Future deleteTransact(String uid, bookId, transactId) async {
-    return await userRef
+  //Delete one book
+  Future<String> deleteBook(bookId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(UserDetails.uid)
+          .collection('transact_books')
+          .where('bookId', isEqualTo: bookId)
+          .limit(1)
+          .get()
+          .then(
+        (snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.delete();
+          }
+        },
+      );
+      return 'Success';
+    } catch (e) {
+      return 'fail';
+    }
+  }
+
+  //Delete one transact
+  deleteTransact(bookId, transactId) async {
+    await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
         .collection('transact_books')
         .doc(bookId)
         .collection('transacts')
@@ -90,5 +133,20 @@ class DatabaseMethods {
         }
       },
     );
+  }
+
+  deleteAllTransacts(String bookId) async {
+    await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .doc(bookId)
+        .collection('transacts')
+        .get()
+        .then((value) {
+      value.docs.forEach((doc) {
+        _firestore.collection('users').doc(doc.id).delete();
+      });
+    });
   }
 }

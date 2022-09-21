@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/services/user.dart';
-
 import '../../Functions/transactFunctions.dart';
 import '../../colors.dart';
 import '../../services/database.dart';
@@ -136,12 +134,67 @@ class _EditTransactUIState extends State<EditTransactUI> {
     }
   }
 
-  deleteTransact() async {
+  Widget AlertBox(BuildContext context) {
+    return StatefulBuilder(
+      builder: (context, StateSetter setState) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          icon: Icon(
+            Icons.delete,
+            color: Colors.red,
+            size: 30,
+          ),
+          title: Text(
+            'Delete Transact ?',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          content: Text(
+            'Do you really want to delete this Transact ? This cannot be undone!',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Cancel',
+              ),
+            ),
+            MaterialButton(
+              onPressed: () {
+                _deleteTransact();
+              },
+              color: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              elevation: 0,
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _deleteTransact() async {
     setState(() {
       _isLoading = true;
     });
-    await DatabaseMethods().deleteTransact(
-        UserDetails.uid, widget.snap['bookId'], widget.snap['transactId']);
+    await DatabaseMethods()
+        .deleteTransact(widget.snap['bookId'], widget.snap['transactId']);
     if (transactType == 'Income') {
       Map<String, dynamic> _updatedMap = {
         'income':
@@ -375,19 +428,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                         _selectedTime = await selectTime(
                                           context,
                                           setState,
-                                          // TimeOfDay(
-                                          //     hour: int.parse(widget
-                                          //         .snap['time']
-                                          //         .toString()
-                                          //         .replaceAll('AM', '')
-                                          //         .split(':')
-                                          //         .first),
-                                          //     minute: int.parse(widget
-                                          //         .snap['time']
-                                          //         .toString()
-                                          //         .replaceAll('AM', '')
-                                          //         .split(':')
-                                          //         .last)));
                                         );
                                       },
                                       child: Container(
@@ -454,7 +494,13 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              deleteTransact();
+                              print('object');
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertBox(context);
+                                },
+                              );
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -535,7 +581,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                               width: 200,
                                               child: TextField(
                                                 controller: amountField,
-                                                // focusNode: amountFocus,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 style: TextStyle(
@@ -678,6 +723,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                             ),
                                           ),
                                           child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               Icon(
                                                 transactType == 'Income'
@@ -690,7 +737,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                                     : Colors.white,
                                               ),
                                               SizedBox(
-                                                width: 5,
+                                                width: 10,
                                               ),
                                               Text(
                                                 'Update ' + transactType,
