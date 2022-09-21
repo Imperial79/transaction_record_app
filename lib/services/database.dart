@@ -93,24 +93,57 @@ class DatabaseMethods {
   }
 
   //Delete one book
-  Future<String> deleteBook(bookId) async {
+  _deleteBook(bookId) async {
+    await _firestore
+        .collection('users')
+        .doc(UserDetails.uid)
+        .collection('transact_books')
+        .where('bookId', isEqualTo: bookId)
+        .limit(1)
+        .get()
+        .then(
+      (snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.delete();
+        }
+      },
+    );
+  }
+
+  Future<String> deleteBookWithCollections(String bookId) async {
     try {
       await _firestore
           .collection('users')
           .doc(UserDetails.uid)
           .collection('transact_books')
-          .where('bookId', isEqualTo: bookId)
+          .doc(bookId)
+          .collection('transacts')
           .limit(1)
           .get()
-          .then(
-        (snapshot) {
-          for (DocumentSnapshot ds in snapshot.docs) {
-            ds.reference.delete();
-          }
-        },
-      );
-      return 'Success';
+          .then((value) async {
+        if (value.docs.isEmpty) {
+          print('No collection ahead');
+          _deleteBook(bookId);
+        } else {
+          print('Collection ahead');
+          await _firestore
+              .collection('users')
+              .doc(UserDetails.uid)
+              .collection('transact_books')
+              .doc(bookId)
+              .collection('transacts')
+              .get()
+              .then((snapshot) {
+            for (DocumentSnapshot ds in snapshot.docs) {
+              ds.reference.delete();
+              _deleteBook(bookId);
+            }
+          });
+        }
+      });
+      return 'success';
     } catch (e) {
+      print(e);
       return 'fail';
     }
   }
@@ -135,6 +168,7 @@ class DatabaseMethods {
     );
   }
 
+  //  clear all transacts
   deleteAllTransacts(String bookId) async {
     await _firestore
         .collection('users')
@@ -143,10 +177,12 @@ class DatabaseMethods {
         .doc(bookId)
         .collection('transacts')
         .get()
-        .then((value) {
-      value.docs.forEach((doc) {
-        _firestore.collection('users').doc(doc.id).delete();
-      });
-    });
+        .then(
+      (snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.delete();
+        }
+      },
+    );
   }
 }

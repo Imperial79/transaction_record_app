@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -28,9 +27,12 @@ class _HomeUiState extends State<HomeUi> {
   String dateTitle = '';
   bool showDateWidget = false;
 
+  final _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showHomeMenu = ValueNotifier<bool>(false);
+
+  bool isKeyboardOpen = false;
 
   @override
   void initState() {
@@ -68,16 +70,57 @@ class _HomeUiState extends State<HomeUi> {
       builder: (context, snapshot) {
         return (snapshot.hasData)
             ? (snapshot.data.docs.length == 0)
-                ? NewBookCard()
-                : ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: snapshot.data.docs.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot ds = snapshot.data.docs[index];
-
-                      return TransactBookCard(ds);
-                    },
+                ? NewBookCard(context)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SearchBar(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Recent Books',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _searchController.text.isEmpty
+                          ? ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              itemCount: snapshot.data.docs.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds = snapshot.data.docs[index];
+                                return TransactBookCard(ds);
+                              },
+                            )
+                          : ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              itemCount: snapshot.data.docs.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds = snapshot.data.docs[index];
+                                return ds['bookName']
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains(_searchController.text
+                                                .toLowerCase()
+                                                .trim()) ||
+                                        ds['bookDescription']
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains(_searchController.text
+                                                .toLowerCase()
+                                                .trim())
+                                    ? TransactBookCard(ds)
+                                    : Container();
+                              },
+                            ),
+                    ],
                   )
             : Center(
                 child: Padding(
@@ -95,6 +138,8 @@ class _HomeUiState extends State<HomeUi> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors();
+    isKeyboardOpen =
+        MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -248,62 +293,6 @@ class _HomeUiState extends State<HomeUi> {
                           SizedBox(
                             height: 15,
                           ),
-                          // StreamBuilder<dynamic>(
-                          //   stream: FirebaseFirestore.instance
-                          //       .collection('users')
-                          //       .where('uid', isEqualTo: UserDetails.uid)
-                          //       .snapshots(),
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.hasData) {
-                          //       if (snapshot.data.docs.length == 0) {
-                          //         return Text('No Data');
-                          //       }
-                          //       DocumentSnapshot ds = snapshot.data.docs[0];
-                          //       return Row(
-                          //         children: [
-                          //           Expanded(
-                          //             child: StatsCard(
-                          //               label: 'Income',
-                          //               content: ds['income'].toString(),
-                          //               isBook: false,
-                          //               bookId: '',
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             width: 10,
-                          //           ),
-                          //           Expanded(
-                          //             child: StatsCard(
-                          //               label: 'Expenses',
-                          //               content: ds['expense'].toString(),
-                          //               isBook: false,
-                          //               bookId: '',
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       );
-                          //     }
-                          //     return Center(
-                          //       child: CircularProgressIndicator(),
-                          //     );
-                          //   },
-                          // ),
-                          // SizedBox(
-                          //   height: 20,
-                          // ),
-                          // Divider(
-                          //   color: Colors.grey.shade600,
-                          // ),
-                          Text(
-                            'Recent Books',
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.black,
-                            ),
-                          ),
-                          // SizedBox(
-                          //   height: 10,
-                          // ),
                           BookList(),
                           SizedBox(
                             height: size.height * 0.07,
@@ -320,66 +309,68 @@ class _HomeUiState extends State<HomeUi> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: InkWell(
-        onTap: () {
-          NavPush(
-            context,
-            NewBookUI(),
-          );
-        },
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            gradient: LinearGradient(
-              colors: [
-                Colors.black,
-                Colors.grey,
-              ],
-            ),
-          ),
-          child: AnimatedSize(
-            duration: Duration(milliseconds: 100),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _showAdd,
-              builder: (
-                BuildContext context,
-                bool showFullAddBtn,
-                Widget? child,
-              ) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: showFullAddBtn ? 20 : 15,
-                    vertical: 15,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.add_circle_outline,
-                        color: Colors.white,
-                        size: !_showAdd.value ? 30 : 24.0,
-                      ),
-                      if (showFullAddBtn) const SizedBox(width: 10),
-                      if (showFullAddBtn)
-                        Text(
-                          'New Book',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18.0,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      if (showFullAddBtn) const SizedBox(width: 2.5),
-                    ],
-                  ),
+      floatingActionButton: isKeyboardOpen
+          ? Container()
+          : InkWell(
+              onTap: () {
+                NavPush(
+                  context,
+                  NewBookUI(),
                 );
               },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black,
+                      Colors.grey,
+                    ],
+                  ),
+                ),
+                child: AnimatedSize(
+                  duration: Duration(milliseconds: 100),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _showAdd,
+                    builder: (
+                      BuildContext context,
+                      bool showFullAddBtn,
+                      Widget? child,
+                    ) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: showFullAddBtn ? 20 : 15,
+                          vertical: 15,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.add_circle_outline,
+                              color: Colors.white,
+                              size: !_showAdd.value ? 30 : 24.0,
+                            ),
+                            if (showFullAddBtn) const SizedBox(width: 10),
+                            if (showFullAddBtn)
+                              Text(
+                                'New Book',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18.0,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            if (showFullAddBtn) const SizedBox(width: 2.5),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -554,71 +545,39 @@ class _HomeUiState extends State<HomeUi> {
     );
   }
 
-  Container NewBookCard() => Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(13),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade800,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Create your first Transact Book',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                fontSize: 22,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              'Track your daily expenses by creating categorised Transact Book',
-              style: TextStyle(
+  Widget SearchBar() {
+    return Row(
+      children: [
+        Flexible(
+          child: TextField(
+            controller: _searchController,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search),
+              hintText: 'Search for books ...',
+              hintStyle: TextStyle(
                 fontWeight: FontWeight.w400,
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Align(
-              alignment: Alignment.topRight,
-              child: MaterialButton(
-                onPressed: () {
-                  NavPush(context, NewBookUI());
-                },
                 color: Colors.grey,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 70,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.bolt_outlined,
-                        color: Colors.yellow,
-                      ),
-                      Text(
-                        'Create',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                fontSize: 20,
               ),
             ),
-          ],
+            onChanged: (val) {
+              setState(() {});
+            },
+          ),
         ),
-      );
+        Visibility(
+          visible: _searchController.text.isNotEmpty,
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                _searchController.clear();
+              });
+            },
+            icon: Icon(Icons.close),
+          ),
+        ),
+      ],
+    );
+  }
 }

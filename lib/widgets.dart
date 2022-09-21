@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 import 'Functions/navigatorFns.dart';
@@ -267,3 +268,130 @@ setSystemUIColors() {
     ),
   );
 }
+
+Widget ALertBox(BuildContext context, {final label, content, onPress}) {
+  return StatefulBuilder(
+    builder: (context, StateSetter setState) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        icon: Icon(
+          Icons.delete,
+          color: Colors.red,
+          size: 30,
+        ),
+        title: Text(
+          label,
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        content: Text(
+          content,
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Cancel',
+            ),
+          ),
+          MaterialButton(
+            onPressed: onPress,
+            color: Colors.red,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            elevation: 0,
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Widget NewBookCard(BuildContext context) => Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        gradient: LinearGradient(
+          colors: [
+            primaryColor,
+            Colors.black,
+          ],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Create your first Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 22,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            'Track your daily expenses by creating categorised Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: MaterialButton(
+              onPressed: () {
+                NavPush(context, NewBookUI());
+              },
+              color: Colors.white.withOpacity(0.2),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                width: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bolt_outlined,
+                      color: Colors.yellow,
+                    ),
+                    Text(
+                      'Create',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );

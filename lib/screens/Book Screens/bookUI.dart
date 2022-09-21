@@ -10,7 +10,6 @@ import '../../colors.dart';
 import '../../services/database.dart';
 import '../../services/user.dart';
 import '../../widgets.dart';
-import '../Transact Screens/setBalanceUi.dart';
 
 class BookUI extends StatefulWidget {
   final snap;
@@ -44,15 +43,20 @@ class _BookUIState extends State<BookUI> {
 
   //------------------------------------>
   _deleteBook() async {
+    final bookName = widget.snap['bookName'];
     setState(() {
       _isLoading = true;
     });
 
     try {
-      await DatabaseMethods().deleteBook(widget.snap['bookId']);
+      await DatabaseMethods().deleteBookWithCollections(widget.snap['bookId']);
       setState(() {
         _isLoading = false;
       });
+      ShowSnackBar(
+        context,
+        '"$bookName"' + ' book has been deleted',
+      );
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -214,7 +218,7 @@ class _BookUIState extends State<BookUI> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      NavPush(context, SetBalanceUi());
+                                      // NavPush(context, SetBalanceUi());
                                     },
                                     child: Container(
                                       color: Colors.transparent,
@@ -294,7 +298,7 @@ class _BookUIState extends State<BookUI> {
                             TransactList(widget.snap['bookId']),
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.07,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -712,7 +716,16 @@ class _BookUIState extends State<BookUI> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return DeleteBookAlertBox(context);
+                        return ALertBox(
+                          context,
+                          label: 'Delete Book',
+                          content:
+                              'Do you really want to delete this Book ? This cannot be undone!',
+                          onPress: () {
+                            _deleteBook();
+                            Navigator.pop(context);
+                          },
+                        );
                       });
                 },
                 label: 'Delete',
@@ -725,8 +738,22 @@ class _BookUIState extends State<BookUI> {
               ),
               Expanded(
                 child: BookMenuBtn(
-                  //TODO:
-                  onPress: () {},
+                  onPress: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ALertBox(
+                            context,
+                            label: 'Clear all Transacts ?',
+                            content:
+                                'Do you really want to delete all transacts in this Book ? This cannot be undone!',
+                            onPress: () {
+                              _clearAllTransacts();
+                              Navigator.pop(context);
+                            },
+                          );
+                        });
+                  },
                   label: 'Clear all Transacts',
                   icon: Icons.restore,
                   btnColor: Colors.blueGrey.shade600,
@@ -740,59 +767,9 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Widget DeleteBookAlertBox(BuildContext context) {
-    return StatefulBuilder(
-      builder: (context, StateSetter setState) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          icon: Icon(
-            Icons.delete,
-            color: Colors.red,
-            size: 30,
-          ),
-          title: Text(
-            'Delete this Book ?',
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          content: Text(
-            'Do you really want to delete this Book ? This cannot be undone!',
-            style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-          actions: [
-            MaterialButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                'Cancel',
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                _deleteBook();
-                Navigator.pop(context);
-              },
-              color: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              elevation: 0,
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+  _clearAllTransacts() async {
+    setState(() => _isLoading = true);
+    await DatabaseMethods().deleteAllTransacts(widget.snap['bookId']);
+    setState(() => _isLoading = false);
   }
 }

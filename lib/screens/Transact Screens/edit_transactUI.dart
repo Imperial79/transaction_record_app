@@ -22,7 +22,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
   final title = TextEditingController();
-  final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
+  // final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
 
@@ -547,219 +547,196 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     ),
                   ),
                 ),
-                AnimatedSize(
-                  duration: Duration(milliseconds: 200),
-                  child: ValueListenableBuilder<bool>(
-                      valueListenable: _showAmountField,
-                      builder: (BuildContext context, bool showFullAppBar,
-                          Widget? child) {
-                        return Container(
-                          child: showFullAppBar
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade100,
+                        spreadRadius: 10,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            '₹ ',
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Expanded(
+                            child: TextField(
+                              controller: amountField,
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black,
+                                fontSize: 40,
+                              ),
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: '0.00',
+                                hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.grey.shade400,
+                                  fontSize: 40,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'Add money to',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              DropdownButton(
+                                value: transactMode,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                ),
+                                elevation: 2,
+                                dropdownColor: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(8),
+                                underline: SizedBox(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    transactMode = newValue!;
+                                  });
+                                },
+                                items: <String>[
+                                  'CASH',
+                                  'ONLINE'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MediaQuery.of(context).viewInsets.bottom != 0
                               ? Container(
-                                  padding: EdgeInsets.all(20),
-                                  margin: EdgeInsets.all(10),
+                                  height: 40,
+                                  width: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.shade100,
-                                        spreadRadius: 10,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 0),
-                                      ),
-                                    ],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
                                   ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            child: Container(
-                                              width: 200,
-                                              child: TextField(
-                                                controller: amountField,
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  color: Colors.black,
-                                                  fontSize: 40,
-                                                ),
-                                                cursorColor: Colors.black,
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  hintText: '0.00',
-                                                  hintStyle: TextStyle(
-                                                    fontWeight: FontWeight.w800,
-                                                    color: Colors.grey.shade400,
-                                                    fontSize: 40,
-                                                  ),
-                                                  suffixText: 'INR',
-                                                  suffixStyle: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.black,
-                                                    fontSize: 40,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'Add money to',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              DropdownButton(
-                                                value: transactMode,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                ),
-                                                underline: const SizedBox(),
-                                                onChanged: (String? newValue) {
-                                                  setState(() {
-                                                    transactMode = newValue!;
-                                                  });
-                                                },
-                                                items: <String>[
-                                                  'CASH',
-                                                  'ONLINE'
-                                                ].map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    value: value,
-                                                    child: Text(
-                                                      value,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                        color: Colors.black,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          MediaQuery.of(context)
-                                                      .viewInsets
-                                                      .bottom !=
-                                                  0
-                                              ? Container(
-                                                  height: 40,
-                                                  width: 40,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Colors.grey,
-                                                      width: 1,
-                                                    ),
-                                                  ),
-                                                  child: IconButton(
-                                                    onPressed: () {
-                                                      FocusScope.of(context)
-                                                          .unfocus();
-                                                    },
-                                                    icon: Icon(
-                                                      Icons
-                                                          .keyboard_arrow_down_rounded,
-                                                      size: 20,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                )
-                                              : SizedBox(
-                                                  width: 20,
-                                                ),
-                                        ],
-                                      ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          saveTransacts();
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        child: Ink(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 15,
-                                            horizontal: 25,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                transactType == 'Income'
-                                                    ? primaryColor
-                                                    : Colors.black,
-                                                transactType == 'Income'
-                                                    ? primaryAccentColor
-                                                    : Colors.grey,
-                                              ],
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                transactType == 'Income'
-                                                    ? Icons
-                                                        .file_download_outlined
-                                                    : Icons
-                                                        .file_upload_outlined,
-                                                color: transactType == 'Income'
-                                                    ? Colors.green.shade900
-                                                    : Colors.white,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                'Update ' + transactType,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: transactType ==
-                                                          'Income'
-                                                      ? Colors.green.shade900
-                                                      : Colors.white,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: IconButton(
+                                    onPressed: () {
+                                      FocusScope.of(context).unfocus();
+                                    },
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      size: 20,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 )
-                              : Container(),
-                        );
-                      }),
+                              : SizedBox(
+                                  width: 20,
+                                ),
+                          MaterialButton(
+                            onPressed: () {
+                              saveTransacts();
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
+                            child: Ink(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                                horizontal: 25,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    transactType == 'Income'
+                                        ? primaryColor
+                                        : Colors.black,
+                                    transactType == 'Income'
+                                        ? primaryAccentColor
+                                        : Colors.grey,
+                                  ],
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    transactType == 'Income'
+                                        ? Icons.file_download_outlined
+                                        : Icons.file_upload_outlined,
+                                    color: transactType == 'Income'
+                                        ? Colors.green.shade900
+                                        : Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Update ' + transactType,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: transactType == 'Income'
+                                          ? Colors.green.shade900
+                                          : Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -29,11 +29,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
   final ScrollController _scrollController = ScrollController();
 
-  // FocusNode titleFocus = FocusNode();
-  // FocusNode descriptionFocus = FocusNode();
-  // FocusNode sourceFocus = FocusNode();
-  // FocusNode amountFocus = FocusNode();
-
   String source = 'From';
   String transactType = "Income";
   String transactMode = 'CASH';
@@ -49,7 +44,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void initState() {
     super.initState();
-    // amountFocus.addListener(_onFocusChange);
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -60,23 +54,12 @@ class _NewTransactUiState extends State<NewTransactUi> {
     });
   }
 
-  // void _onFocusChange() {
-  //   print("Focus: ${amountFocus.hasFocus.toString()}");
-  //   if (amountFocus.hasFocus) {
-  //     _showAmountField.value = true;
-  //   } else if (MediaQuery.of(context).viewInsets.bottom == 0 ||
-  //       amountFocus.hasFocus != false) {
-  //     _showAmountField.value = false;
-  //   }
-  //   setState(() {});
-  // }
-
-  handleNewNoteTransaction() {
+  handleNewNoteTransaction(String uploadableAmount) {
     //  calculating the Income and Expense for new transact
     if (transactType == 'Income') {
       Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(double.parse(amountField.text)),
-        'income': FieldValue.increment(double.parse(amountField.text)),
+        'currentBalance': FieldValue.increment(double.parse(uploadableAmount)),
+        'income': FieldValue.increment(double.parse(uploadableAmount)),
       };
 
       //  UPDATING GLOBALLY
@@ -84,22 +67,22 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
       //  UPDATING INSIDE BOOK
       newMap = {
-        'income': FieldValue.increment(double.parse(amountField.text)),
+        'income': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateBookTransactions(widget.bookId, newMap);
     } else {
-      final amount = double.parse(amountField.text);
+      final amount = double.parse(uploadableAmount);
 
       //  UPDATING GLOBALLY
       Map<String, dynamic> newMap = {
         'currentBalance': FieldValue.increment(0.0 - amount),
-        'expense': FieldValue.increment(double.parse(amountField.text)),
+        'expense': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
 
       //  UPDATING INSIDE BOOK
       newMap = {
-        'expense': FieldValue.increment(double.parse(amountField.text)),
+        'expense': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateBookTransactions(widget.bookId, newMap);
     }
@@ -110,11 +93,12 @@ class _NewTransactUiState extends State<NewTransactUi> {
       _selectedTimeStamp =
           await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
       transactId = _selectedTimeStamp;
-
+      final _uploadableAmount =
+          amountField.text.replaceAll(' ', '').replaceAll(',', '');
       Map<String, dynamic> transactMap = {
         'transactId': transactId,
         'title': title.text,
-        "amount": amountField.text,
+        "amount": _uploadableAmount,
         "source": sourceField.text,
         "transactMode": transactMode,
         "description": descriptionField.text,
@@ -128,7 +112,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       databaseMethods.uploadTransacts(
           UserDetails.uid, transactMap, widget.bookId, transactId);
 
-      handleNewNoteTransaction();
+      handleNewNoteTransaction(_uploadableAmount);
 
       //  resetting the values
       amountField.clear();
@@ -357,25 +341,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 ),
                               ],
                             ),
-
-                            ///////////////////////
-                            // Text(
-                            //   DateFormat('dd MMMM')
-                            //           .format(_selectedDate)
-                            //           .toString() +
-                            //       ' at ' +
-                            //       _selectedTime.hour.toString() +
-                            //       ':' +
-                            //       _selectedTime.minute.toString(),
-                            // DateFormat()
-                            //     .add_jm()
-                            //     .format(_selectedTime)
-                            //     .toString(),
-                            //   style: TextStyle(
-                            //     color: Colors.black,
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
@@ -427,218 +392,200 @@ class _NewTransactUiState extends State<NewTransactUi> {
                 ),
               ),
             ),
-            AnimatedSize(
-              duration: Duration(milliseconds: 200),
-              child: ValueListenableBuilder<bool>(
-                  valueListenable: _showAmountField,
-                  builder: (BuildContext context, bool showFullAppBar,
-                      Widget? child) {
-                    return Container(
-                      child: showFullAppBar
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade100,
+                    spreadRadius: 10,
+                    blurRadius: 10,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '₹ ',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: amountField,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                            fontSize: 40,
+                          ),
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            // prefixText: '₹ ',
+                            // prefixStyle: TextStyle(
+                            //   color: Colors.grey.shade700,
+                            //   fontSize: 40,
+                            //   fontWeight: FontWeight.w700,
+                            // ),
+                            hintText: '0.00',
+                            hintStyle: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.grey.shade400,
+                              fontSize: 40,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'Add money to',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                              fontSize: 13,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          DropdownButton(
+                            value: transactMode,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                            elevation: 2,
+                            dropdownColor: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                            underline: SizedBox(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                transactMode = newValue!;
+                              });
+                            },
+                            items: <String>['CASH', 'ONLINE']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MediaQuery.of(context).viewInsets.bottom != 0
                           ? Container(
-                              padding: EdgeInsets.all(20),
-                              margin: EdgeInsets.all(10),
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.shade100,
-                                    spreadRadius: 10,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 1,
+                                ),
                               ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Flexible(
-                                        child: Container(
-                                          width: 200,
-                                          child: TextField(
-                                            controller: amountField,
-                                            // focusNode: amountFocus,
-                                            keyboardType: TextInputType.number,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.black,
-                                              fontSize: 40,
-                                            ),
-                                            cursorColor: Colors.black,
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText: '0.00',
-                                              hintStyle: TextStyle(
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.grey.shade400,
-                                                fontSize: 40,
-                                              ),
-                                              suffixText: 'INR',
-                                              suffixStyle: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black,
-                                                fontSize: 40,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'Add money to',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          DropdownButton(
-                                            value: transactMode,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                            ),
-                                            underline: const SizedBox(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                transactMode = newValue!;
-                                              });
-                                            },
-                                            items: <String>['CASH', 'ONLINE']
-                                                .map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(
-                                                  value,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w800,
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom !=
-                                              0
-                                          ? Container(
-                                              height: 40,
-                                              width: 40,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.grey,
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  FocusScope.of(context)
-                                                      .unfocus();
-                                                },
-                                                icon: Icon(
-                                                  Icons
-                                                      .keyboard_arrow_down_rounded,
-                                                  size: 20,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            )
-                                          : SizedBox(
-                                              width: 20,
-                                            ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          var formatter =
-                                              DateFormat('dd MMMM, yyyy - ')
-                                                  .add_jm()
-                                                  .format(DateTime.now());
-                                          String currentTime =
-                                              DateTime.now().toString();
-                                          saveTransacts(
-                                              // formatter,
-                                              // currentTime,
-                                              );
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        child: Ink(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 15,
-                                            horizontal: 25,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                transactType == 'Income'
-                                                    ? primaryColor
-                                                    : Colors.black,
-                                                transactType == 'Income'
-                                                    ? primaryAccentColor
-                                                    : Colors.grey,
-                                              ],
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.add,
-                                                color: transactType == 'Income'
-                                                    ? Colors.green.shade900
-                                                    : Colors.white,
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                'Add ' + transactType,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: transactType ==
-                                                          'Income'
-                                                      ? Colors.green.shade900
-                                                      : Colors.white,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              child: IconButton(
+                                onPressed: () {
+                                  FocusScope.of(context).unfocus();
+                                },
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
                               ),
                             )
-                          : Container(),
-                    );
-                  }),
+                          : SizedBox(
+                              width: 20,
+                            ),
+                      MaterialButton(
+                        onPressed: () {
+                          saveTransacts();
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        elevation: 0,
+                        padding: EdgeInsets.zero,
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 25,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            gradient: LinearGradient(
+                              colors: [
+                                transactType == 'Income'
+                                    ? primaryColor
+                                    : Colors.black,
+                                transactType == 'Income'
+                                    ? primaryAccentColor
+                                    : Colors.grey,
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                transactType == 'Income'
+                                    ? Icons.file_download_outlined
+                                    : Icons.file_upload_outlined,
+                                color: transactType == 'Income'
+                                    ? Colors.green.shade900
+                                    : Colors.white,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'Update ' + transactType,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: transactType == 'Income'
+                                      ? Colors.green.shade900
+                                      : Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
