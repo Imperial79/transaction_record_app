@@ -27,6 +27,7 @@ class _BookUIState extends State<BookUI> {
   final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
   final oCcy = new NumberFormat("#,##0.00", "en_US");
   bool _isLoading = false;
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -81,6 +82,9 @@ class _BookUIState extends State<BookUI> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors();
+    bool isKeyboardOpen =
+        MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
+    _searchController.text.isEmpty ? _showAdd.value = true : false;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -90,6 +94,63 @@ class _BookUIState extends State<BookUI> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      Container(
+                        child: IconButton(
+                          color: textLinkColor,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_back,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'Return',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                fontWeight: FontWeight.w400,
+                              ),
+                              hintText: 'Search transacts ...',
+                              prefixIcon: Icon(
+                                Icons.search,
+                              ),
+                            ),
+                            onChanged: (val) {
+                              setState(() {
+                                _showAdd.value = false;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   AnimatedSize(
                     duration: Duration(milliseconds: 200),
                     child: ValueListenableBuilder<bool>(
@@ -102,31 +163,6 @@ class _BookUIState extends State<BookUI> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        child: IconButton(
-                                          color: textLinkColor,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          icon: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.arrow_back,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                'Return',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
                                       Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10),
@@ -345,68 +381,69 @@ class _BookUIState extends State<BookUI> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: InkWell(
-        onTap: () {
-          NavPush(
-            context,
-            NewTransactUi(
-              bookId: widget.snap['bookId'],
-            ),
-          );
-        },
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            gradient: LinearGradient(
-              colors: [
-                Colors.black,
-                Colors.grey,
-              ],
-            ),
-          ),
-          child: AnimatedSize(
-            duration: Duration(milliseconds: 100),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _showAdd,
-              builder: (
-                BuildContext context,
-                bool showFullAddBtn,
-                Widget? child,
-              ) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: showFullAddBtn ? 20 : 15,
-                    vertical: 15,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.add_circle_outline,
-                        color: Colors.white,
-                        size: !_showAdd.value ? 30 : 24.0,
-                      ),
-                      if (showFullAddBtn) const SizedBox(width: 10),
-                      if (showFullAddBtn)
-                        Text(
-                          'New Book',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18.0,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      if (showFullAddBtn) const SizedBox(width: 2.5),
-                    ],
+      floatingActionButton: isKeyboardOpen
+          ? Container()
+          : InkWell(
+              onTap: () {
+                NavPush(
+                  context,
+                  NewTransactUi(
+                    bookId: widget.snap['bookId'],
                   ),
                 );
               },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black,
+                      Colors.grey,
+                    ],
+                  ),
+                ),
+                child: AnimatedSize(
+                  duration: Duration(milliseconds: 100),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _showAdd,
+                    builder: (
+                      BuildContext context,
+                      bool showFullAddBtn,
+                      Widget? child,
+                    ) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: showFullAddBtn ? 15 : 12,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.add_circle_outline,
+                              color: Colors.white,
+                              size: !_showAdd.value ? 30 : 24.0,
+                            ),
+                            if (showFullAddBtn) const SizedBox(width: 10),
+                            if (showFullAddBtn)
+                              Text(
+                                'New Transact',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -424,16 +461,38 @@ class _BookUIState extends State<BookUI> {
         return (snapshot.hasData)
             ? (snapshot.data.docs.length == 0)
                 ? FirstTransactCard(context, bookId)
-                : ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: snapshot.data.docs.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot ds = snapshot.data.docs[index];
+                : _searchController.text.isEmpty
+                    ? ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: snapshot.data.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot ds = snapshot.data.docs[index];
 
-                      return TransactTile(ds);
-                    },
-                  )
+                          return TransactTile(ds);
+                        },
+                      )
+                    : ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: snapshot.data.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot ds = snapshot.data.docs[index];
+                          if (ds['amount'].toString().toLowerCase().contains(
+                                  _searchController.text
+                                      .toLowerCase()
+                                      .trim()) ||
+                              ds['description']
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains(_searchController.text
+                                      .toLowerCase()
+                                      .trim())) {
+                            return TransactTile(ds);
+                          }
+                          return Container();
+                        },
+                      )
             : Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),

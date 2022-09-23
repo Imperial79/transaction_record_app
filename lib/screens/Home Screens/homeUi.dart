@@ -74,17 +74,15 @@ class _HomeUiState extends State<HomeUi> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SearchBar(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Recent Books',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.black,
-                        ),
-                      ),
+                      _searchController.text.isEmpty
+                          ? Text(
+                              'Recent Books',
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.black,
+                              ),
+                            )
+                          : Text('Searching for "${_searchController.text}"'),
                       SizedBox(
                         height: 10,
                       ),
@@ -140,6 +138,8 @@ class _HomeUiState extends State<HomeUi> {
     setSystemUIColors();
     isKeyboardOpen =
         MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
+
+    _searchController.text.isEmpty ? _showAdd.value = true : false;
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -291,6 +291,10 @@ class _HomeUiState extends State<HomeUi> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
+                            height: 10,
+                          ),
+                          SearchBar(),
+                          SizedBox(
                             height: 15,
                           ),
                           BookList(),
@@ -339,8 +343,8 @@ class _HomeUiState extends State<HomeUi> {
                     ) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: showFullAddBtn ? 20 : 15,
-                          vertical: 15,
+                          horizontal: showFullAddBtn ? 15 : 10,
+                          vertical: 12,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -357,12 +361,11 @@ class _HomeUiState extends State<HomeUi> {
                                 'New Book',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 18.0,
+                                  fontSize: 15,
                                   color: Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                            if (showFullAddBtn) const SizedBox(width: 2.5),
                           ],
                         ),
                       );
@@ -549,21 +552,30 @@ class _HomeUiState extends State<HomeUi> {
     return Row(
       children: [
         Flexible(
-          child: TextField(
-            controller: _searchController,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Search for books ...',
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w400,
-                color: Colors.grey,
-                fontSize: 20,
-              ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(10),
             ),
-            onChanged: (val) {
-              setState(() {});
-            },
+            child: TextField(
+              controller: _searchController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Search for books ...',
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey,
+                  fontSize: 20,
+                ),
+              ),
+              onChanged: (val) {
+                setState(() {
+                  _showAdd.value = false;
+                });
+              },
+            ),
           ),
         ),
         Visibility(
