@@ -636,41 +636,24 @@ class _BookUIState extends State<BookUI> {
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 5),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: ds["type"] == 'Income'
-                                          ? Colors.green.shade800
-                                          : Colors.red,
-                                    ),
-                                    child: Text(
-                                      ds["type"] == 'Income' ? 'From' : 'To',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
+                                  Icon(
+                                    Icons.person,
+                                    size: 15,
                                   ),
                                   SizedBox(
-                                    width: 10,
+                                    width: 5,
                                   ),
-                                  Text(
-                                    ds['source'],
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: ds["type"] == 'Income'
-                                          ? Colors.green.shade800
-                                          : Colors.red,
+                                  Expanded(
+                                    child: Text(
+                                      ds['source'],
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade700,
+                                      ),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -684,7 +667,7 @@ class _BookUIState extends State<BookUI> {
                                 children: [
                                   Icon(
                                     Icons.short_text,
-                                    size: 20,
+                                    size: 15,
                                   ),
                                   SizedBox(
                                     width: 5,

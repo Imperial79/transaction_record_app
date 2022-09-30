@@ -196,36 +196,37 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           ),
                         ],
                       ),
-                      TextField(
-                        controller: title,
-                        // focusNode: titleFocus,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900,
-                        ),
-                        cursorWidth: 1,
-                        cursorColor: Colors.black,
-                        decoration: InputDecoration(
-                          focusColor: Colors.black,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          hintText: 'Transact title',
-                          hintStyle: TextStyle(
-                            fontSize: 40,
-                            color: Colors.grey.shade400,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
+
+                      // TextField(
+                      //   controller: title,
+                      //   // focusNode: titleFocus,
+                      //   style: TextStyle(
+                      //     fontSize: 40,
+                      //     fontWeight: FontWeight.w900,
+                      //   ),
+                      //   cursorWidth: 1,
+                      //   cursorColor: Colors.black,
+                      //   decoration: InputDecoration(
+                      //     focusColor: Colors.black,
+                      //     focusedBorder: UnderlineInputBorder(
+                      //       borderSide: BorderSide(
+                      //         color: Colors.black,
+                      //         width: 2,
+                      //       ),
+                      //     ),
+                      //     enabledBorder: UnderlineInputBorder(
+                      //       borderSide: BorderSide(
+                      //         color: Colors.grey.shade300,
+                      //       ),
+                      //     ),
+                      //     hintText: 'Transact title',
+                      //     hintStyle: TextStyle(
+                      //       fontSize: 40,
+                      //       color: Colors.grey.shade400,
+                      //       fontWeight: FontWeight.w900,
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(
                         height: 15,
                       ),
@@ -433,12 +434,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            // prefixText: '₹ ',
-                            // prefixStyle: TextStyle(
-                            //   color: Colors.grey.shade700,
-                            //   fontSize: 40,
-                            //   fontWeight: FontWeight.w700,
-                            // ),
                             hintText: '0.00',
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w800,

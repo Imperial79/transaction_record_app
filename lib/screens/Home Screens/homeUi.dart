@@ -379,7 +379,11 @@ class _HomeUiState extends State<HomeUi> {
 
   Widget TransactBookCard(ds) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
+    // double balanceLeft =
+    //     (double.parse(ds['income']) - double.parse(ds['expense']));
 
+    // String formattedIncome = oCcy.format(ds['income']);
+    // String formattedExpense = oCcy.format(ds['expense']);
     if (dateTitle == ds['date']) {
       showDateWidget = false;
     } else {
@@ -488,55 +492,40 @@ class _HomeUiState extends State<HomeUi> {
                 Divider(),
                 Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.black,
-                              child: Icon(
-                                Icons.file_upload_outlined,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "₹ " + oCcy.format(ds['expense']),
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
+                    TransactStatsCard(
+                      child: Text(
+                        "₹ " + oCcy.format(ds['income']),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
+                      cardColor: primaryAccentColor,
                     ),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              "₹ " + oCcy.format(ds['income']),
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: primaryAccentColor,
-                              child: Icon(
-                                Icons.file_download_outlined,
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                            ),
-                          ],
+                    SizedBox(
+                      width: 10,
+                    ),
+                    TransactStatsCard(
+                      child: FittedBox(
+                        child: Text(
+                          "₹ " + oCcy.format(ds['expense']),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
+                      cardColor: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    TransactStatsCard(
+                      child: Text(
+                        "₹ " + oCcy.format(ds['income'] - ds['expense']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                      cardColor: Colors.blue.shade700,
                     ),
                   ],
                 ),
@@ -545,6 +534,20 @@ class _HomeUiState extends State<HomeUi> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget TransactStatsCard({child, cardColor}) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: child,
+      ),
     );
   }
 

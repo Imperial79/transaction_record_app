@@ -46,7 +46,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     title.text = widget.snap['title'];
     amountField.text = widget.snap['amount'];
     descriptionField.text = widget.snap['description'];
-    source = widget.snap['source'];
+    sourceField.text = widget.snap['source'];
     _selectedDateMap['displayDate'] = widget.snap['date'];
     _selectedDateMap['tsDate'] = widget.snap['ts'];
     _selectedTime = widget.snap['time'];
@@ -293,35 +293,35 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               ),
                             ],
                           ),
-                          TextField(
-                            controller: title,
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w900,
-                            ),
-                            cursorWidth: 1,
-                            cursorColor: Colors.black,
-                            decoration: InputDecoration(
-                              focusColor: Colors.black,
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              hintText: 'Transact title',
-                              hintStyle: TextStyle(
-                                fontSize: 40,
-                                color: Colors.grey.shade400,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
+                          // TextField(
+                          //   controller: title,
+                          //   style: TextStyle(
+                          //     fontSize: 40,
+                          //     fontWeight: FontWeight.w900,
+                          //   ),
+                          //   cursorWidth: 1,
+                          //   cursorColor: Colors.black,
+                          //   decoration: InputDecoration(
+                          //     focusColor: Colors.black,
+                          //     focusedBorder: UnderlineInputBorder(
+                          //       borderSide: BorderSide(
+                          //         color: Colors.black,
+                          //         width: 2,
+                          //       ),
+                          //     ),
+                          //     enabledBorder: UnderlineInputBorder(
+                          //       borderSide: BorderSide(
+                          //         color: Colors.grey.shade300,
+                          //       ),
+                          //     ),
+                          //     hintText: 'Transact title',
+                          //     hintStyle: TextStyle(
+                          //       fontSize: 40,
+                          //       color: Colors.grey.shade400,
+                          //       fontWeight: FontWeight.w900,
+                          //     ),
+                          //   ),
+                          // ),
                           SizedBox(
                             height: 15,
                           ),
@@ -342,8 +342,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 Expanded(
                                   child: TextField(
                                     controller: descriptionField,
-                                    // focusNode: descriptionFocus,
-                                    maxLines: 2,
+                                    maxLines: 5,
                                     minLines: 1,
                                     cursorColor: Colors.black,
                                     style: TextStyle(
@@ -471,6 +470,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     controller: sourceField,
                                     maxLines: 4,
                                     minLines: 1,
+                                    textCapitalization:
+                                        TextCapitalization.words,
                                     cursorColor: Colors.black,
                                     style: TextStyle(
                                       color: Colors.black,
