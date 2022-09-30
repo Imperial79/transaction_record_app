@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
-import 'package:transaction_record_app/services/database.dart';
 
 import 'Functions/navigatorFns.dart';
 import 'colors.dart';
@@ -12,12 +11,12 @@ final oCcy = new NumberFormat("#,##0.00", "en_US");
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
-    margin: EdgeInsets.only(top: 20),
+    margin: EdgeInsets.only(top: 0),
     width: double.infinity,
     padding: EdgeInsets.all(13),
     decoration: BoxDecoration(
-      color: Colors.black,
-      borderRadius: BorderRadius.circular(20),
+      color: Color.fromARGB(255, 73, 55, 0),
+      borderRadius: BorderRadius.circular(12),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +24,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
         Text(
           'Create your first Transact',
           style: TextStyle(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: Colors.white,
             fontSize: 20,
           ),
@@ -138,17 +137,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: label == 'Expenses'
-                  ? Colors.red.shade100.withOpacity(0.6)
-                  : primaryColor.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(8),
           gradient: LinearGradient(
             colors: [
               label == 'Expenses' ? Colors.red : primaryColor,

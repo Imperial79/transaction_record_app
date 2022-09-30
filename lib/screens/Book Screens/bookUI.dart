@@ -28,6 +28,10 @@ class _BookUIState extends State<BookUI> {
   final oCcy = new NumberFormat("#,##0.00", "en_US");
   bool _isLoading = false;
   final _searchController = TextEditingController();
+  String _selectedType = 'All';
+
+  // List of items in our dropdown menu
+  var items = ['All', 'Income', 'Expense'];
 
   @override
   void initState() {
@@ -89,259 +93,299 @@ class _BookUIState extends State<BookUI> {
       body: SafeArea(
         child: Stack(
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        child: IconButton(
-                          color: textLinkColor,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.arrow_back,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Return',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintStyle: TextStyle(
-                                fontWeight: FontWeight.w400,
-                              ),
-                              hintText: 'Search transacts ...',
-                              prefixIcon: Icon(
-                                Icons.search,
-                              ),
-                            ),
-                            onChanged: (val) {
-                              setState(() {
-                                _showAdd.value = false;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 200),
-                    child: ValueListenableBuilder<bool>(
-                        valueListenable: _showAdd,
-                        builder: (BuildContext context, bool showFullAppBar,
-                            Widget? child) {
-                          return Container(
-                            child: showFullAppBar
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                widget.snap['bookName'],
-                                                style: TextStyle(
-                                                  fontSize: 25,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            IconButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  _showBookMenu.value =
-                                                      !_showBookMenu.value;
-                                                });
-                                              },
-                                              icon: Icon(
-                                                Icons.more_horiz,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //  Book Menu -------------------------->
-
-                                      AnimatedSize(
-                                        duration: Duration(milliseconds: 200),
-                                        child: ValueListenableBuilder<bool>(
-                                          valueListenable: _showBookMenu,
-                                          builder: (BuildContext context,
-                                              bool showBookMenu,
-                                              Widget? child) {
-                                            return showBookMenu
-                                                ? BookMenu(
-                                                    widget.snap['bookId'],
-                                                    context,
-                                                  )
-                                                : Container();
-                                          },
-                                        ),
-                                      ),
-                                      //  Date -------------------------->
-
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.only(left: 8.0, top: 0),
-                                        child: Text(
-                                          widget.snap['date'] +
-                                              ', ' +
-                                              widget.snap['time'],
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : Container(),
-                          );
-                        }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      children: [
-                        StreamBuilder<dynamic>(
-                          stream: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(UserDetails.uid)
-                              .collection('transact_books')
-                              .where('bookId', isEqualTo: widget.snap['bookId'])
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.docs.length == 0) {
-                                return Text('No Data');
-                              }
-                              DocumentSnapshot ds = snapshot.data.docs[0];
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // NavPush(context, SetBalanceUi());
-                                    },
-                                    child: Container(
-                                      color: Colors.transparent,
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'INR ',
-                                            style: TextStyle(
-                                              fontSize: 35,
-                                              fontWeight: FontWeight.w200,
-                                            ),
-                                          ),
-                                          Expanded(
-                                              child: Text(
-                                            oCcy.format(
-                                                ds['income'] - ds['expense']),
-                                            style: TextStyle(
-                                              fontSize: 35,
-                                              fontWeight: FontWeight.w900,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: StatsCard(
-                                          label: 'Income',
-                                          content: ds['income'].toString(),
-                                          isBook: true,
-                                          bookId: ds['bookId'],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: StatsCard(
-                                          label: 'Expenses',
-                                          content: ds['expense'].toString(),
-                                          isBook: true,
-                                          bookId: ds['bookId'],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            }
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          },
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: _showAdd.value ? 10 : 5,
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      physics: BouncingScrollPhysics(),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Column(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      child: IconButton(
+                        color: textLinkColor,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            TransactList(widget.snap['bookId']),
+                            Icon(
+                              Icons.arrow_back,
+                            ),
                             SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.07,
+                              width: 10,
+                            ),
+                            Text(
+                              'Return',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
+                    Flexible(
+                      child: Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontWeight: FontWeight.w400,
+                            ),
+                            hintText: 'Search transacts ...',
+                            prefixIcon: Icon(
+                              Icons.search,
+                            ),
+                          ),
+                          onChanged: (val) {
+                            setState(() {
+                              _showAdd.value = false;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                AnimatedSize(
+                  duration: Duration(milliseconds: 200),
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: _showAdd,
+                      builder: (BuildContext context, bool showFullAppBar,
+                          Widget? child) {
+                        return Container(
+                          child: showFullAppBar
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    //  Created On Date -------------------------->
+
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        '( ${widget.snap['date']} • ${widget.snap['time']} )',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              widget.snap['bookName'],
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _showBookMenu.value =
+                                                    !_showBookMenu.value;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              Icons.more_horiz,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    //  Book Menu -------------------------->
+
+                                    AnimatedSize(
+                                      duration: Duration(milliseconds: 200),
+                                      child: ValueListenableBuilder<bool>(
+                                        valueListenable: _showBookMenu,
+                                        builder: (BuildContext context,
+                                            bool showBookMenu, Widget? child) {
+                                          return showBookMenu
+                                              ? BookMenu(
+                                                  widget.snap['bookId'],
+                                                  context,
+                                                )
+                                              : Container();
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Container(),
+                        );
+                      }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    children: [
+                      StreamBuilder<dynamic>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserDetails.uid)
+                            .collection('transact_books')
+                            .where('bookId', isEqualTo: widget.snap['bookId'])
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.docs.length == 0) {
+                              return Text('No Data');
+                            }
+                            DocumentSnapshot ds = snapshot.data.docs[0];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                    color: Colors.transparent,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: 'INR ',
+                                                  style: TextStyle(
+                                                    fontSize: 30,
+                                                    color: Colors.black,
+                                                    fontFamily: 'Product',
+                                                    fontWeight: FontWeight.w200,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: oCcy.format(
+                                                      ds['income'] -
+                                                          ds['expense']),
+                                                  style: TextStyle(
+                                                    fontSize: 30,
+                                                    color: Colors.black,
+                                                    fontFamily: 'Product',
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                              width: 0.5,
+                                            ),
+                                          ),
+                                          child: DropdownButton(
+                                            // Initial Value
+                                            value: _selectedType,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            elevation: 2,
+                                            underline: SizedBox(),
+
+                                            // Down Arrow Icon
+                                            icon: Icon(
+                                              Icons.keyboard_arrow_down_rounded,
+                                              size: 15,
+                                            ),
+                                            isDense: true,
+                                            // Array list of items
+                                            items: items.map((String items) {
+                                              return DropdownMenuItem(
+                                                value: items,
+                                                child: Text(items),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                _selectedType = newValue!;
+                                                print(_selectedType);
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: StatsCard(
+                                        label: 'Income',
+                                        content: ds['income'].toString(),
+                                        isBook: true,
+                                        bookId: ds['bookId'],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: StatsCard(
+                                        label: 'Expenses',
+                                        content: ds['expense'].toString(),
+                                        isBook: true,
+                                        bookId: ds['bookId'],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        children: [
+                          TransactList(widget.snap['bookId']),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.07,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             // Full Screen Loading ------------------------->
@@ -458,61 +502,88 @@ class _BookUIState extends State<BookUI> {
           .orderBy('ts', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
-        return (snapshot.hasData)
-            ? (snapshot.data.docs.length == 0)
-                ? FirstTransactCard(context, bookId)
-                : _searchController.text.isEmpty
-                    ? ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: snapshot.data.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds = snapshot.data.docs[index];
-
-                          return TransactTile(ds);
-                        },
-                      )
-                    : ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: snapshot.data.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds = snapshot.data.docs[index];
-                          if (ds['amount'].toString().toLowerCase().contains(
-                                  _searchController.text
-                                      .toLowerCase()
-                                      .trim()) ||
-                              ds['description']
-                                  .toString()
-                                  .toLowerCase()
-                                  .contains(_searchController.text
-                                      .toLowerCase()
-                                      .trim())) {
-                            return TransactTile(ds);
-                          }
-                          return Container();
-                        },
-                      )
-            : Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 50),
-                  child: CircularProgressIndicator(
-                    color: primaryColor,
-                    strokeWidth: 1.5,
-                  ),
-                ),
-              );
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length == 0) {
+            return FirstTransactCard(context, bookId);
+          } else {
+            int dataCounter = 0;
+            int loopCounter = 0;
+            dateTitle = '';
+            return ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: snapshot.data.docs.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                loopCounter += 1;
+                DocumentSnapshot ds = snapshot.data.docs[index];
+                final searchKey = _searchController.text.toLowerCase().trim();
+                if (_selectedType == 'All') {
+                  if (_searchController.text.isEmpty) {
+                    dataCounter++;
+                    return TransactTile(ds);
+                  } else if (ds['amount'].toString().contains(searchKey) ||
+                      ds['description']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      ds['source']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(ds);
+                  }
+                } else if (ds['type'].toLowerCase() ==
+                    _selectedType.toLowerCase()) {
+                  if (_searchController.text.isEmpty) {
+                    dataCounter++;
+                    return TransactTile(ds);
+                  } else if (ds['amount'].toString().contains(searchKey) ||
+                      ds['description']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      ds['source']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(ds);
+                  }
+                }
+                if (dataCounter == 0 &&
+                    loopCounter == snapshot.data.docs.length) {
+                  return Text('No Item Found');
+                }
+                return SizedBox();
+              },
+            );
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
 
   Widget TransactTile(ds) {
+    String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
     if (dateTitle == ds['date']) {
       showDateWidget = false;
     } else {
       dateTitle = ds['date'];
       showDateWidget = true;
+    }
+    String ts = DateFormat("yMMMMd").parse(ds['date']).toString();
+    // print(DateTime.now().difference(DateTime.parse(ts)).inDays);
+    if (dateTitle == todayDate) {
+      dateLabel = 'Today';
+    } else if (DateTime.now().difference(DateTime.parse(ts)).inDays == 1) {
+      dateLabel = 'Yesterday';
+    } else {
+      dateLabel = dateTitle;
     }
 
     return Column(
@@ -521,11 +592,11 @@ class _BookUIState extends State<BookUI> {
         Visibility(
           visible: showDateWidget,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.only(bottom: 10, top: 5),
             child: Text(
-              dateTitle == todayDate ? 'Today' : dateTitle,
+              dateLabel,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 14,
                 color: Colors.black,
                 fontWeight: FontWeight.w500,
               ),
@@ -536,9 +607,7 @@ class _BookUIState extends State<BookUI> {
           onTap: () {
             NavPush(
               context,
-              EditTransactUI(
-                snap: ds,
-              ),
+              EditTransactUI(snap: ds),
             );
           },
           child: Container(
@@ -559,7 +628,7 @@ class _BookUIState extends State<BookUI> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CircleAvatar(
-                            radius: 17,
+                            radius: 15,
                             backgroundColor: ds["type"] == 'Income'
                                 ? primaryAccentColor
                                 : Colors.black,
@@ -571,6 +640,40 @@ class _BookUIState extends State<BookUI> {
                                   ? Colors.black
                                   : Colors.white,
                               size: 17,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        oCcy.format(double.parse(ds["amount"])),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: ds["type"] == 'Income'
+                                          ? primaryColor
+                                          : lossColor,
+                                      fontFamily: 'Product',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: ' INR',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 20,
+                                      color: ds["type"] == 'Income'
+                                          ? primaryColor
+                                          : lossColor,
+                                      fontFamily: 'Product',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           Container(
@@ -593,37 +696,6 @@ class _BookUIState extends State<BookUI> {
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: oCcy.format(double.parse(ds["amount"])),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: ds["type"] == 'Income'
-                                    ? Color(0xFF01AF75)
-                                    : Colors.red.shade900,
-                                fontFamily: 'Product',
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' INR',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 20,
-                                color: ds["type"] == 'Income'
-                                    ? Color(0xFF01AF75)
-                                    : Colors.red.shade900,
-                                fontFamily: 'Product',
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                       SizedBox(
                         height: 10,

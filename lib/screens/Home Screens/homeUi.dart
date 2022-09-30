@@ -71,54 +71,48 @@ class _HomeUiState extends State<HomeUi> {
         return (snapshot.hasData)
             ? (snapshot.data.docs.length == 0)
                 ? NewBookCard(context)
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _searchController.text.isEmpty
-                          ? Text(
-                              'Recent Books',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.black,
-                              ),
-                            )
-                          : Text('Searching for "${_searchController.text}"'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _searchController.text.isEmpty
-                          ? ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              itemCount: snapshot.data.docs.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot ds = snapshot.data.docs[index];
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _searchController.text.isEmpty
+                            ? Text(
+                                'Recent Books',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.black,
+                                ),
+                              )
+                            : Text('Searching for "${_searchController.text}"'),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: snapshot.data.docs.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot ds = snapshot.data.docs[index];
+                            if (_searchController.text.isEmpty) {
+                              return TransactBookCard(ds);
+                            } else {
+                              if (ds['bookName'].toLowerCase().contains(
+                                      _searchController.text
+                                          .toLowerCase()
+                                          .trim()) ||
+                                  ds['bookDescription'].toLowerCase().contains(
+                                      _searchController.text
+                                          .toLowerCase()
+                                          .trim())) {
                                 return TransactBookCard(ds);
-                              },
-                            )
-                          : ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              itemCount: snapshot.data.docs.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot ds = snapshot.data.docs[index];
-                                return ds['bookName']
-                                            .toString()
-                                            .toLowerCase()
-                                            .contains(_searchController.text
-                                                .toLowerCase()
-                                                .trim()) ||
-                                        ds['bookDescription']
-                                            .toString()
-                                            .toLowerCase()
-                                            .contains(_searchController.text
-                                                .toLowerCase()
-                                                .trim())
-                                    ? TransactBookCard(ds)
-                                    : Container();
-                              },
-                            ),
-                    ],
+                              }
+                              return Container();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   )
             : Center(
                 child: Padding(
@@ -282,28 +276,21 @@ class _HomeUiState extends State<HomeUi> {
 
                 //  Scrollable body
                 Expanded(
-                  child: SingleChildScrollView(
+                  child: ListView(
                     controller: _scrollController,
-                    physics: BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          SearchBar(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          BookList(),
-                          SizedBox(
-                            height: size.height * 0.07,
-                          ),
-                        ],
+                    children: [
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
+                      SearchBar(),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      BookList(),
+                      SizedBox(
+                        height: size.height * 0.07,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -343,7 +330,7 @@ class _HomeUiState extends State<HomeUi> {
                     ) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: showFullAddBtn ? 15 : 10,
+                          horizontal: showFullAddBtn ? 15 : 12,
                           vertical: 12,
                         ),
                         child: Row(
@@ -565,12 +552,17 @@ class _HomeUiState extends State<HomeUi> {
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search for books ...',
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 20,
+                ),
+                hintText: 'SEARCH FOR BOOKS',
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color: Colors.grey,
-                  fontSize: 20,
+                  color: Colors.grey.shade600,
+                  fontSize: 15,
+                  letterSpacing: 1,
+                  wordSpacing: 10,
                 ),
               ),
               onChanged: (val) {
