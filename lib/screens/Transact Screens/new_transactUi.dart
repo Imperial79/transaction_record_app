@@ -38,8 +38,17 @@ class _NewTransactUiState extends State<NewTransactUi> {
     'tsDate': DateTime.now().toString(),
   };
   String _selectedTimeStamp = DateTime.now().toString();
-  String _selectedTime =
-      DateFormat().add_jm().format(DateTime.now()).toString();
+  // String _selectedTime =
+  //     DateFormat().add_jm().format(DateTime.now()).toString();
+
+  Map<String, dynamic> _selectedTimeMap = {
+    'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
+    'tsTime': DateFormat('HH:mm').format(DateTime.now()),
+  };
+  Map<String, dynamic> _todayTimeMap = {
+    'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
+    'tsTime': DateFormat('HH:mm').format(DateTime.now()),
+  };
 
   @override
   void initState() {
@@ -90,8 +99,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   saveTransacts() async {
     if (amountField.text != '') {
-      _selectedTimeStamp =
-          await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
+      if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
+          _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
+        _selectedTimeStamp = await convertTimeToTS(
+            _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
+      }
       transactId = _selectedTimeStamp;
       final _uploadableAmount =
           amountField.text.replaceAll(' ', '').replaceAll(',', '');
@@ -104,7 +116,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         "description": descriptionField.text,
         "type": transactType,
         'date': _selectedDateMap['displayDate'],
-        'time': _selectedTime,
+        'time': _selectedTimeMap['displayTime'],
         'bookId': widget.bookId,
         'ts': _selectedTimeStamp,
       };
@@ -308,6 +320,10 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                     onTap: () async {
                                       _selectedDateMap = await selectDate(
                                           context, setState, DateTime.now());
+                                      // _selectedTimeStamp =
+                                      //     await convertTimeToTS(
+                                      //         _selectedDateMap['tsDate'],
+                                      //         _selectedTimeMap['tsTime']);
                                     },
                                     child: Container(
                                       padding: EdgeInsets.all(10),
@@ -326,8 +342,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 ),
                                 InkWell(
                                   onTap: () async {
-                                    _selectedTime =
+                                    _selectedTimeMap =
                                         await selectTime(context, setState);
+                                    // _selectedTimeStamp = await convertTimeToTS(
+                                    //     _selectedDateMap['tsDate'],
+                                    //     _selectedTimeMap['tsTime']);
                                   },
                                   child: Container(
                                     padding: EdgeInsets.all(10),
@@ -336,7 +355,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                       color: Colors.white,
                                     ),
                                     child: Text(
-                                      _selectedTime,
+                                      _selectedTimeMap['displayTime'],
                                     ),
                                   ),
                                 ),

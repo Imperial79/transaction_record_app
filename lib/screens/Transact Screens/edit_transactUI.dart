@@ -36,8 +36,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
     'tsDate': DateTime.now().toString(),
   };
   String _selectedTimeStamp = DateTime.now().toString();
-  String _selectedTime =
-      DateFormat().add_jm().format(DateTime.now()).toString();
+  // String _selectedTime =
+  //     DateFormat().add_jm().format(DateTime.now()).toString();
+  Map<String, dynamic> _selectedTimeMap = {
+    'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
+    'tsTime': DateFormat('HH:mm').format(DateTime.now()),
+  };
 
   //  Functions ----------------------------------------->
   @override
@@ -49,7 +53,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     sourceField.text = widget.snap['source'];
     _selectedDateMap['displayDate'] = widget.snap['date'];
     _selectedDateMap['tsDate'] = widget.snap['ts'];
-    _selectedTime = widget.snap['time'];
+    _selectedTimeMap['displayTime'] = widget.snap['time'];
     _selectedTimeStamp = widget.snap['ts'];
     transactId = widget.snap['transactId'];
     transactType = widget.snap['type'];
@@ -96,12 +100,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
     }
   }
 
-  saveTransacts() async {
+  updateTransacts() async {
     if (amountField.text != '') {
       if (widget.snap['date'] != _selectedDateMap['displayDate'] ||
-          widget.snap['time'] != _selectedTime) {
-        _selectedTimeStamp =
-            await convertTimeToTS(_selectedDateMap['tsDate'], _selectedTime);
+          widget.snap['time'] != _selectedTimeMap['displayTime']) {
+        _selectedTimeStamp = await convertTimeToTS(
+            _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
       }
 
       Map<String, dynamic> transactMap = {
@@ -113,7 +117,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         "description": descriptionField.text,
         "type": transactType,
         'date': _selectedDateMap['displayDate'],
-        'time': _selectedTime,
+        'time': _selectedTimeMap['displayTime'],
         'bookId': widget.snap['bookId'],
         'ts': _selectedTimeStamp,
       };
@@ -172,6 +176,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
             MaterialButton(
               onPressed: () {
                 _deleteTransact();
+                Navigator.pop(context);
               },
               color: Colors.red,
               shape: RoundedRectangleBorder(
@@ -424,10 +429,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        _selectedTime = await selectTime(
-                                          context,
-                                          setState,
-                                        );
+                                        _selectedTimeMap =
+                                            await selectTime(context, setState);
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(10),
@@ -437,7 +440,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                           color: Colors.white,
                                         ),
                                         child: Text(
-                                          _selectedTime,
+                                          _selectedTimeMap['displayTime'],
                                         ),
                                       ),
                                     ),
@@ -495,7 +498,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              print('object');
                               showDialog(
                                 context: context,
                                 builder: (context) {
@@ -681,7 +683,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 ),
                           MaterialButton(
                             onPressed: () {
-                              saveTransacts();
+                              updateTransacts();
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),

@@ -29,6 +29,7 @@ class _HomeUiState extends State<HomeUi> {
 
   final _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showHomeMenu = ValueNotifier<bool>(false);
 
@@ -137,167 +138,156 @@ class _HomeUiState extends State<HomeUi> {
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                AnimatedSize(
-                  duration: Duration(milliseconds: 200),
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _showHomeMenu,
-                    builder: (BuildContext context, bool showFullHomeMenu,
-                        Widget? child) {
-                      return Container(
-                        child: showFullHomeMenu ? HomeMenuUI() : Container(),
-                      );
-                    },
-                  ),
-                ),
-                AnimatedSize(
-                  duration: Duration(milliseconds: 200),
-                  child: ValueListenableBuilder<bool>(
-                      valueListenable: _showAdd,
-                      builder: (BuildContext context, bool showFullAppBar,
-                          Widget? child) {
-                        return Container(
-                          child: showFullAppBar
-                              ? Column(
-                                  children: [
-                                    SizedBox(
-                                      height: size.height * 0.01,
-                                    ),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              NavPush(
-                                                  context,
-                                                  AccountUI(
-                                                    name: UserDetails
-                                                        .userDisplayName,
-                                                    email:
-                                                        UserDetails.userEmail,
-                                                  ));
-                                            },
-                                            child: CircleAvatar(
-                                              radius: 15,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                child: UserDetails
-                                                            .userProfilePic ==
-                                                        ''
-                                                    ? Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color:
-                                                              primaryAccentColor,
-                                                          strokeWidth: 1.5,
-                                                        ),
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        imageUrl: UserDetails
-                                                            .userProfilePic,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Expanded(
-                                            child: RichText(
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: 'Hi ',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Colors.black,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            AnimatedSize(
+              duration: Duration(milliseconds: 200),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _showHomeMenu,
+                builder: (BuildContext context, bool showFullHomeMenu,
+                    Widget? child) {
+                  return Container(
+                    child: showFullHomeMenu ? HomeMenuUI() : Container(),
+                  );
+                },
+              ),
+            ),
+            AnimatedSize(
+              duration: Duration(milliseconds: 200),
+              child: ValueListenableBuilder<bool>(
+                  valueListenable: _showAdd,
+                  builder: (BuildContext context, bool showFullAppBar,
+                      Widget? child) {
+                    return Container(
+                      child: showFullAppBar
+                          ? Column(
+                              children: [
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          NavPush(
+                                              context,
+                                              AccountUI(
+                                                name:
+                                                    UserDetails.userDisplayName,
+                                                email: UserDetails.userEmail,
+                                              ));
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 15,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            child: UserDetails.userProfilePic ==
+                                                    ''
+                                                ? Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color: primaryAccentColor,
+                                                      strokeWidth: 1.5,
                                                     ),
+                                                  )
+                                                : CachedNetworkImage(
+                                                    imageUrl: UserDetails
+                                                        .userProfilePic,
+                                                    fit: BoxFit.cover,
                                                   ),
-                                                  TextSpan(
-                                                    text: UserDetails
-                                                        .userDisplayName
-                                                        .split(' ')
-                                                        .first,
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
                                           ),
-                                          CircleAvatar(
-                                            radius: 21,
-                                            backgroundColor: Colors.grey,
-                                            child: CircleAvatar(
-                                              radius: 20,
-                                              backgroundColor: Colors.white,
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _showHomeMenu.value =
-                                                        !_showHomeMenu.value;
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  _showHomeMenu.value
-                                                      ? Icons.arrow_upward
-                                                      : Icons.arrow_downward,
-                                                  size: 17,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'Hi ',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.black,
                                                 ),
                                               ),
+                                              TextSpan(
+                                                text: UserDetails
+                                                    .userDisplayName
+                                                    .split(' ')
+                                                    .first,
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      CircleAvatar(
+                                        radius: 21,
+                                        backgroundColor: Colors.grey,
+                                        child: CircleAvatar(
+                                          radius: 20,
+                                          backgroundColor: Colors.white,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _showHomeMenu.value =
+                                                    !_showHomeMenu.value;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              _showHomeMenu.value
+                                                  ? Icons.arrow_upward
+                                                  : Icons.arrow_downward,
+                                              size: 17,
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              : Container(),
-                        );
-                      }),
-                ),
-
-                //  Scrollable body
-                Expanded(
-                  child: ListView(
-                    controller: _scrollController,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      SearchBar(),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      BookList(),
-                      SizedBox(
-                        height: size.height * 0.07,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container(),
+                    );
+                  }),
             ),
-          ),
-          // HomeMenuUI(),
-        ],
+
+            //  Scrollable body
+            Expanded(
+              child: ListView(
+                controller: _scrollController,
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SearchBar(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  BookList(),
+                  SizedBox(
+                    height: size.height * 0.07,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: isKeyboardOpen
@@ -320,7 +310,7 @@ class _HomeUiState extends State<HomeUi> {
                   ),
                 ),
                 child: AnimatedSize(
-                  duration: Duration(milliseconds: 100),
+                  duration: Duration(milliseconds: 200),
                   child: ValueListenableBuilder<bool>(
                     valueListenable: _showAdd,
                     builder: (
@@ -366,11 +356,29 @@ class _HomeUiState extends State<HomeUi> {
 
   Widget TransactBookCard(ds) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    // double balanceLeft =
-    //     (double.parse(ds['income']) - double.parse(ds['expense']));
+    int amtPercentage = 0;
+    Color bgColor = Colors.white;
+    Color fgColor = Colors.white;
 
-    // String formattedIncome = oCcy.format(ds['income']);
-    // String formattedExpense = oCcy.format(ds['expense']);
+    if (ds['expense'] != 0 && ds['income'] != 0) {
+      amtPercentage = ((ds['expense'] / ds['income']) * 100).round();
+    } else {
+      amtPercentage = 0;
+    }
+
+    if (amtPercentage == 0) {
+      bgColor = Colors.grey.shade300;
+    } else if (amtPercentage <= 40) {
+      bgColor = primaryAccentColor;
+      fgColor = primaryColor;
+    } else if (amtPercentage > 40 && amtPercentage <= 60) {
+      bgColor = Colors.amber.shade100;
+      fgColor = Colors.amber;
+    } else {
+      bgColor = Colors.red.shade100;
+      fgColor = Colors.red;
+    }
+
     if (dateTitle == ds['date']) {
       showDateWidget = false;
     } else {
@@ -414,12 +422,29 @@ class _HomeUiState extends State<HomeUi> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 17,
-                      child: Icon(
-                        Icons.book,
-                        size: 18,
-                      ),
+                    // CircleAvatar(
+                    //   radius: 17,
+                    //   child: Icon(
+                    //     Icons.book,
+                    //     size: 18,
+                    //   ),
+                    // ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          value: amtPercentage / 100,
+                          backgroundColor: bgColor,
+                          color: fgColor,
+                        ),
+                        Text(
+                          amtPercentage.toStringAsFixed(0) + '%',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       width: 10,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
@@ -50,6 +51,7 @@ class _AccountUIState extends State<AccountUI> {
       ShowSnackBar(context, 'Please fill all the Fields');
     }
   }
+
   //------------------------->
 
   @override

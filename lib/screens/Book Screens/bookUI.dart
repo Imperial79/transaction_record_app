@@ -29,9 +29,10 @@ class _BookUIState extends State<BookUI> {
   bool _isLoading = false;
   final _searchController = TextEditingController();
   String _selectedType = 'All';
-
   // List of items in our dropdown menu
   var items = ['All', 'Income', 'Expense'];
+
+  //------------------------------------>
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _BookUIState extends State<BookUI> {
     });
   }
 
-  //------------------------------------>
+  //--------- DELETE BOOK--------------------------->
   _deleteBook() async {
     final bookName = widget.snap['bookName'];
     setState(() {
@@ -82,6 +83,8 @@ class _BookUIState extends State<BookUI> {
     super.dispose();
     _scrollController.dispose();
   }
+
+  //------------------------------------>
 
   @override
   Widget build(BuildContext context) {
@@ -884,6 +887,8 @@ class _BookUIState extends State<BookUI> {
   _clearAllTransacts() async {
     setState(() => _isLoading = true);
     await DatabaseMethods().deleteAllTransacts(widget.snap['bookId']);
+    await DatabaseMethods().updateBookTransactions(
+        widget.snap['bookId'], {"income": 0, "expense": 0});
     setState(() => _isLoading = false);
   }
 }

@@ -44,7 +44,8 @@ Future<Map<String, dynamic>> selectDate(
   return dateMap;
 }
 
-Future<String> selectTime(BuildContext context, StateSetter setState) async {
+Future<Map<String, dynamic>> selectTime(
+    BuildContext context, StateSetter setState) async {
   final TimeOfDay? picked = await showTimePicker(
     context: context,
     initialTime: TimeOfDay.now(),
@@ -67,8 +68,12 @@ Future<String> selectTime(BuildContext context, StateSetter setState) async {
           formatDate(DateTime.now(), [hh, ':', nn, " ", am]).toString();
     });
   }
+  Map<String, dynamic> timeMap = {
+    'displayTime': _timeController.text,
+    'tsTime': _time!.replaceAll(' ', ''),
+  };
 
-  return _timeController.text;
+  return timeMap;
 }
 
 String convertTimeToTS(date, time) {
