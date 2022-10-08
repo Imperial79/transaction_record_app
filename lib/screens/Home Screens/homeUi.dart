@@ -11,6 +11,7 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/services/size.dart';
 import '../../services/user.dart';
 import '../../widgets.dart';
 import '../Book Screens/bookUI.dart';
@@ -422,13 +423,6 @@ class _HomeUiState extends State<HomeUi> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // CircleAvatar(
-                    //   radius: 17,
-                    //   child: Icon(
-                    //     Icons.book,
-                    //     size: 18,
-                    //   ),
-                    // ),
                     Stack(
                       alignment: Alignment.center,
                       children: [
@@ -437,13 +431,18 @@ class _HomeUiState extends State<HomeUi> {
                           backgroundColor: bgColor,
                           color: fgColor,
                         ),
-                        Text(
-                          amtPercentage.toStringAsFixed(0) + '%',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
-                          ),
-                        ),
+                        amtPercentage < 100
+                            ? Text(
+                                amtPercentage.toString() + '%',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: sdp(context, 8),
+                                ),
+                              )
+                            : Icon(
+                                Icons.warning_amber_rounded,
+                                color: Colors.red,
+                              ),
                       ],
                     ),
                     SizedBox(
@@ -456,7 +455,7 @@ class _HomeUiState extends State<HomeUi> {
                           Text(
                             ds['bookName'],
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: sdp(context, 15.5),
                               fontWeight: FontWeight.w700,
                             ),
                           ),

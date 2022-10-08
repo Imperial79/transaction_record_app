@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
+import 'package:transaction_record_app/services/size.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../colors.dart';
 import '../../services/database.dart';
@@ -188,7 +189,7 @@ class _BookUIState extends State<BookUI> {
                                             child: Text(
                                               widget.snap['bookName'],
                                               style: TextStyle(
-                                                fontSize: 25,
+                                                fontSize: sdp(context, 15),
                                               ),
                                             ),
                                           ),

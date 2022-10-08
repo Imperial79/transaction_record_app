@@ -356,7 +356,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: 'Add description',
+                                      hintText: 'Add description (Optional)',
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                         fontWeight: FontWeight.w500,
@@ -474,7 +474,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     maxLines: 4,
                                     minLines: 1,
                                     textCapitalization:
-                                        TextCapitalization.words,
+                                        TextCapitalization.sentences,
                                     cursorColor: Colors.black,
                                     style: TextStyle(
                                       color: Colors.black,
@@ -482,7 +482,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: 'Add source',
+                                      hintText: 'Add source (Optional)',
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                         fontWeight: FontWeight.w500,

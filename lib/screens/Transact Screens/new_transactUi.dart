@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/widgets.dart';
@@ -156,264 +157,226 @@ class _NewTransactUiState extends State<NewTransactUi> {
     return Scaffold(
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: SingleChildScrollView(
+              child: ListView(
                 controller: _scrollController,
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
+                padding: EdgeInsets.all(sdp(context, 10)),
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                          Expanded(
-                            child: TransactTypeCard(
-                              icon: Icons.file_download_outlined,
-                              label: 'Income',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: TransactTypeCard(
-                              icon: Icons.file_upload_outlined,
-                              label: 'Expense',
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // TextField(
-                      //   controller: title,
-                      //   // focusNode: titleFocus,
-                      //   style: TextStyle(
-                      //     fontSize: 40,
-                      //     fontWeight: FontWeight.w900,
-                      //   ),
-                      //   cursorWidth: 1,
-                      //   cursorColor: Colors.black,
-                      //   decoration: InputDecoration(
-                      //     focusColor: Colors.black,
-                      //     focusedBorder: UnderlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Colors.black,
-                      //         width: 2,
-                      //       ),
-                      //     ),
-                      //     enabledBorder: UnderlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Colors.grey.shade300,
-                      //       ),
-                      //     ),
-                      //     hintText: 'Transact title',
-                      //     hintStyle: TextStyle(
-                      //       fontSize: 40,
-                      //       color: Colors.grey.shade400,
-                      //       fontWeight: FontWeight.w900,
-                      //     ),
-                      //   ),
-                      // ),
-                      SizedBox(
-                        height: 15,
-                      ),
                       Container(
-                        padding: EdgeInsets.all(13),
+                        height: 40,
+                        width: 40,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(15),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.short_text_rounded,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: descriptionField,
-                                // focusNode: descriptionFocus,
-                                maxLines: 2,
-                                minLines: 1,
-                                cursorColor: Colors.black,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Add description',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            size: 20,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Expanded(
+                        child: TransactTypeCard(
+                          icon: Icons.file_download_outlined,
+                          label: 'Income',
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        width: 10,
                       ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 13, vertical: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.punch_clock,
-                                  size: 20,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Created on',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      _selectedDateMap = await selectDate(
-                                          context, setState, DateTime.now());
-                                      // _selectedTimeStamp =
-                                      //     await convertTimeToTS(
-                                      //         _selectedDateMap['tsDate'],
-                                      //         _selectedTimeMap['tsTime']);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white,
-                                      ),
-                                      child: Text(
-                                        _selectedDateMap['displayDate'],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 6,
-                                ),
-                                InkWell(
-                                  onTap: () async {
-                                    _selectedTimeMap =
-                                        await selectTime(context, setState);
-                                    // _selectedTimeStamp = await convertTimeToTS(
-                                    //     _selectedDateMap['tsDate'],
-                                    //     _selectedTimeMap['tsTime']);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                    ),
-                                    child: Text(
-                                      _selectedTimeMap['displayTime'],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.person,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: sourceField,
-                                // focusNode: sourceFocus,
-                                maxLines: 4,
-                                minLines: 1,
-                                cursorColor: Colors.black,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Add source',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                      Expanded(
+                        child: TransactTypeCard(
+                          icon: Icons.file_upload_outlined,
+                          label: 'Expense',
                         ),
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(13),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.short_text_rounded,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: descriptionField,
+                            // focusNode: descriptionFocus,
+                            maxLines: 2,
+                            minLines: 1,
+                            cursorColor: Colors.black,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Add description (Optional)',
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 13, vertical: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.schedule,
+                              size: 20,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              'Created on',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  _selectedDateMap = await selectDate(
+                                      context, setState, DateTime.now());
+                                  // _selectedTimeStamp =
+                                  //     await convertTimeToTS(
+                                  //         _selectedDateMap['tsDate'],
+                                  //         _selectedTimeMap['tsTime']);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                  child: Text(
+                                    _selectedDateMap['displayDate'],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 6,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                _selectedTimeMap =
+                                    await selectTime(context, setState);
+                                // _selectedTimeStamp = await convertTimeToTS(
+                                //     _selectedDateMap['tsDate'],
+                                //     _selectedTimeMap['tsTime']);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Text(
+                                  _selectedTimeMap['displayTime'],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.person,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: sourceField,
+                            textCapitalization: TextCapitalization.sentences,
+                            maxLines: 4,
+                            minLines: 1,
+                            cursorColor: Colors.black,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Add source (Optional)',
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             Container(
               width: double.infinity,
+              height: sdp(context, 140),
               padding: EdgeInsets.all(20),
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -583,7 +546,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 width: 10,
                               ),
                               Text(
-                                'Update ' + transactType,
+                                'Add ' + transactType,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: transactType == 'Income'
@@ -630,6 +593,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
@@ -639,12 +603,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
             SizedBox(
               width: 7,
             ),
-            Text(
-              label,
-              style: TextStyle(
-                // fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: label == 'Income' ? Colors.green.shade700 : Colors.red,
+            FittedBox(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: sdp(context, 11),
+                  fontWeight: FontWeight.w500,
+                  color: label == 'Income' ? Colors.green.shade700 : Colors.red,
+                ),
               ),
             ),
           ],
