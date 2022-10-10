@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/loginUI.dart';
@@ -23,6 +24,8 @@ class AuthMethods {
 
   Future<String> signInWithgoogle(context) async {
     try {
+      await Hive.openBox('User');
+      final _UserBox = Hive.box('User');
       final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -42,13 +45,27 @@ class AuthMethods {
 
       User? userDetails = result.user;
 
-      final SharedPreferences prefs = await _prefs;
+      // final SharedPreferences prefs = await _prefs;
 
-      prefs.setString('USERKEY', userDetails!.uid);
-      prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
-      prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
-      prefs.setString('USEREMAILKEY', userDetails.email!);
-      prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
+      Map<String, dynamic> userMap = {
+        'uid': userDetails!.uid,
+        "email": userDetails.email,
+        "username": userDetails.email!.split('@').first,
+        "name": userDetails.displayName,
+        "imgUrl": userDetails.photoURL,
+      };
+
+      await _UserBox.put('userMap', userMap).whenComplete(() {
+        print('Data Saved locally!');
+      });
+
+      // prefs.setString('USERKEY', userDetails!.uid);
+      // prefs.setString('USERNAMEKEY', userDetails.email!.split('@').first);
+      // prefs.setString('USERDISPLAYNAMEKEY', userDetails.displayName!);
+      // prefs.setString('USEREMAILKEY', userDetails.email!);
+      // prefs.setString('USERPROFILEKEY', userDetails.photoURL!);
+
+      //  Svaing in local session ------->
 
       UserDetails.userEmail = userDetails.email!;
       UserDetails.userDisplayName = userDetails.displayName!;
@@ -64,6 +81,8 @@ class AuthMethods {
         (value) {
           if (value.exists) {
             UserDetails.userDisplayName = value.data()!['name'];
+            userMap.update('name', (value) => UserDetails.userDisplayName);
+            _UserBox.put('userMap', userMap);
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => HomeUi()));
           } else {
@@ -94,10 +113,13 @@ class AuthMethods {
   }
 
   signOut(BuildContext context) async {
-    print('object');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.clear();
+
+    await Hive.openBox('userData');
+    Hive.box('userData').delete('userMap');
     await auth.signOut();
     NavPushReplacement(context, LoginUI());
+    // Navigator.popUntil(context, (route) => false);
   }
 }

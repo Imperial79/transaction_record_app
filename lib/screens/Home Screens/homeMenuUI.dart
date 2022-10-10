@@ -91,7 +91,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
         Container(
           decoration: BoxDecoration(
               color: btnColor,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(50),
               border: Border.all(color: textColor)),
           child: IconButton(
             onPressed: onPress,

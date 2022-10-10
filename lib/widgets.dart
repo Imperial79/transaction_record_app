@@ -252,8 +252,9 @@ setSystemUIColors() {
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarColor: bgColor,
       statusBarBrightness: Brightness.light,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 }
@@ -312,6 +313,7 @@ Widget ALertBox(BuildContext context, {final label, content, onPress}) {
 }
 
 Widget NewBookCard(BuildContext context) => Container(
+      margin: EdgeInsets.all(10),
       width: double.infinity,
       padding: EdgeInsets.all(13),
       decoration: BoxDecoration(

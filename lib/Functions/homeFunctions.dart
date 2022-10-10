@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+
 import 'package:transaction_record_app/services/user.dart';
 
 getUserDetailsFromPreference(StateSetter setState) async {
   if (UserDetails.userName == '') {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserDetails.userName = prefs.getString('USERNAMEKEY')!;
-    UserDetails.userEmail = prefs.getString('USEREMAILKEY')!;
-    UserDetails.uid = prefs.getString('USERKEY')!;
-    UserDetails.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
-    UserDetails.userProfilePic = prefs.getString('USERPROFILEKEY')!;
+    await Hive.openBox('User');
+    Map<dynamic, dynamic> userMap = await Hive.box('User').get('userMap');
+
+    UserDetails.uid = userMap['uid'];
+    UserDetails.userDisplayName = userMap['name'];
+    UserDetails.userEmail = userMap['email'];
+    UserDetails.userProfilePic = userMap['imgUrl'];
+    UserDetails.uid = userMap['uid'];
+    UserDetails.userName = userMap['username'];
     setState(() {});
   }
 }

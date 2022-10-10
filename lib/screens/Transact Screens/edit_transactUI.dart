@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../colors.dart';
 import '../../services/database.dart';
+import '../../widgets.dart';
 
 class EditTransactUI extends StatefulWidget {
   final snap;
@@ -241,14 +242,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    setSystemUIColors();
     return Scaffold(
       body: SafeArea(
         child: Stack(

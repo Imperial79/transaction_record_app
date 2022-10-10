@@ -184,25 +184,31 @@ class _HomeUiState extends State<HomeUi> {
                                                 email: UserDetails.userEmail,
                                               ));
                                         },
-                                        child: CircleAvatar(
-                                          radius: 15,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            child: UserDetails.userProfilePic ==
-                                                    ''
-                                                ? Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      color: primaryAccentColor,
-                                                      strokeWidth: 1.5,
-                                                    ),
-                                                  )
-                                                : CachedNetworkImage(
-                                                    imageUrl: UserDetails
-                                                        .userProfilePic,
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                        child: Hero(
+                                          tag: 'profImg',
+                                          child: CircleAvatar(
+                                            backgroundColor: primaryAccentColor,
+                                            radius: 15,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              child:
+                                                  UserDetails.userProfilePic ==
+                                                          ''
+                                                      ? Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color:
+                                                                primaryAccentColor,
+                                                            strokeWidth: 1.5,
+                                                          ),
+                                                        )
+                                                      : CachedNetworkImage(
+                                                          imageUrl: UserDetails
+                                                              .userProfilePic,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                            ),
                                           ),
                                         ),
                                       ),

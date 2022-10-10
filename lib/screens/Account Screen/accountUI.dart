@@ -76,9 +76,12 @@ class _AccountUIState extends State<AccountUI> {
                       SizedBox(
                         height: 20,
                       ),
-                      CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(UserDetails.userProfilePic),
+                      Hero(
+                        tag: 'profImg',
+                        child: CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(UserDetails.userProfilePic),
+                        ),
                       ),
                       SizedBox(
                         height: 10,
