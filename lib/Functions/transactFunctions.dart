@@ -20,7 +20,7 @@ Future<Map<String, dynamic>> selectDate(
     initialDate: selectedDate,
     initialDatePickerMode: DatePickerMode.day,
     firstDate: DateTime(2015),
-    lastDate: DateTime(2101),
+    lastDate: DateTime.now(),
     currentDate: currentDate,
   );
   if (picked != null) {
@@ -45,10 +45,10 @@ Future<Map<String, dynamic>> selectDate(
 }
 
 Future<Map<String, dynamic>> selectTime(
-    BuildContext context, StateSetter setState) async {
+    BuildContext context, StateSetter setState, TimeOfDay initialTime) async {
   final TimeOfDay? picked = await showTimePicker(
     context: context,
-    initialTime: TimeOfDay.now(),
+    initialTime: initialTime,
   );
   if (picked != null) {
     setState(() {

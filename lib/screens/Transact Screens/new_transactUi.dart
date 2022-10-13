@@ -141,8 +141,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void dispose() {
     super.dispose();
-    // amountFocus.removeListener(_onFocusChange);
-    // amountFocus.dispose();
     _scrollController.dispose();
     amountField.dispose();
     title.dispose();
@@ -162,6 +160,9 @@ class _NewTransactUiState extends State<NewTransactUi> {
             Expanded(
               child: ListView(
                 controller: _scrollController,
+                physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 padding: EdgeInsets.all(sdp(context, 10)),
                 children: [
                   Row(
@@ -307,8 +308,8 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             ),
                             InkWell(
                               onTap: () async {
-                                _selectedTimeMap =
-                                    await selectTime(context, setState);
+                                _selectedTimeMap = await selectTime(
+                                    context, setState, TimeOfDay.now());
                                 // _selectedTimeStamp = await convertTimeToTS(
                                 //     _selectedDateMap['tsDate'],
                                 //     _selectedTimeMap['tsTime']);
@@ -441,36 +442,47 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           SizedBox(
                             height: 5,
                           ),
-                          DropdownButton(
-                            value: transactMode,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black,
-                              fontSize: 16,
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            elevation: 2,
-                            dropdownColor: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(8),
-                            underline: SizedBox(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                transactMode = newValue!;
-                              });
-                            },
-                            items: <String>['CASH', 'ONLINE']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.black,
-                                    fontSize: 16,
+                            child: DropdownButton(
+                              value: transactMode,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
+                              elevation: 2,
+                              icon: Icon(Icons.keyboard_arrow_down_rounded),
+                              iconSize: 17,
+                              dropdownColor: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(8),
+                              underline: SizedBox(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  transactMode = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'CASH',
+                                'ONLINE'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ],
                       ),
@@ -571,50 +583,56 @@ class _NewTransactUiState extends State<NewTransactUi> {
   }
 
   Widget TransactTypeCard({final label, icon}) {
-    return InkWell(
-      onTap: () {
+    bool isIncome = label == 'Income';
+    bool isSelected = transactType == label;
+    return MaterialButton(
+      onPressed: () {
         setState(() {
           transactType = label;
         });
       },
-      borderRadius: BorderRadius.circular(50),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(
-            color: transactType == label
-                ? label == 'Income'
-                    ? Colors.green.shade700
-                    : Colors.red
-                : Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50),
+      ),
+      color: isIncome
+          ? isSelected
+              ? primaryAccentColor
+              : Colors.grey.shade200
+          : isSelected
+              ? Colors.black
+              : Colors.grey.shade200,
+      elevation: 0,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: isIncome
+                ? Colors.black
+                : isSelected
+                    ? Colors.white
+                    : Colors.black,
           ),
-          color: label == 'Income' ? Color(0xFFD7FFD9) : Color(0xFFFFDEDC),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: label == 'Income' ? Colors.green.shade700 : Colors.red,
-            ),
-            SizedBox(
-              width: 7,
-            ),
-            FittedBox(
+          SizedBox(
+            width: 7,
+          ),
+          Flexible(
+            child: FittedBox(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: sdp(context, 11),
                   fontWeight: FontWeight.w500,
-                  color: label == 'Income' ? Colors.green.shade700 : Colors.red,
+                  color: isIncome
+                      ? Colors.black
+                      : isSelected
+                          ? Colors.white
+                          : Colors.black,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -292,35 +292,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               ),
                             ],
                           ),
-                          // TextField(
-                          //   controller: title,
-                          //   style: TextStyle(
-                          //     fontSize: 40,
-                          //     fontWeight: FontWeight.w900,
-                          //   ),
-                          //   cursorWidth: 1,
-                          //   cursorColor: Colors.black,
-                          //   decoration: InputDecoration(
-                          //     focusColor: Colors.black,
-                          //     focusedBorder: UnderlineInputBorder(
-                          //       borderSide: BorderSide(
-                          //         color: Colors.black,
-                          //         width: 2,
-                          //       ),
-                          //     ),
-                          //     enabledBorder: UnderlineInputBorder(
-                          //       borderSide: BorderSide(
-                          //         color: Colors.grey.shade300,
-                          //       ),
-                          //     ),
-                          //     hintText: 'Transact title',
-                          //     hintStyle: TextStyle(
-                          //       fontSize: 40,
-                          //       color: Colors.grey.shade400,
-                          //       fontWeight: FontWeight.w900,
-                          //     ),
-                          //   ),
-                          // ),
                           SizedBox(
                             height: 15,
                           ),
@@ -376,7 +347,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 Row(
                                   children: [
                                     Icon(
-                                      Icons.punch_clock,
+                                      Icons.schedule,
                                       size: 20,
                                     ),
                                     SizedBox(
@@ -423,8 +394,15 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        _selectedTimeMap =
-                                            await selectTime(context, setState);
+                                        _selectedTimeMap = await selectTime(
+                                          context,
+                                          setState,
+                                          TimeOfDay.fromDateTime(
+                                            DateTime.parse(
+                                              _selectedDateMap['tsDate'],
+                                            ),
+                                          ),
+                                        );
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(10),
@@ -610,38 +588,46 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               SizedBox(
                                 height: 5,
                               ),
-                              DropdownButton(
-                                value: transactMode,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black,
-                                  fontSize: 16,
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                elevation: 2,
-                                dropdownColor: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(8),
-                                underline: SizedBox(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    transactMode = newValue!;
-                                  });
-                                },
-                                items: <String>[
-                                  'CASH',
-                                  'ONLINE'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(
-                                      value,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.black,
-                                        fontSize: 16,
+                                child: DropdownButton(
+                                  value: transactMode,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                  elevation: 2,
+                                  icon: Icon(Icons.keyboard_arrow_down_rounded),
+                                  iconSize: 17,
+                                  dropdownColor: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(8),
+                                  underline: SizedBox(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      transactMode = newValue!;
+                                    });
+                                  },
+                                  items: <String>['CASH', 'ONLINE']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ],
                           ),
@@ -776,47 +762,32 @@ class _EditTransactUIState extends State<EditTransactUI> {
   }
 
   Widget TransactTypeCard({final label, icon}) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          transactType = label;
-        });
-      },
-      borderRadius: BorderRadius.circular(50),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(
-            color: transactType == label
-                ? label == 'Income'
-                    ? Colors.green.shade700
-                    : Colors.red
-                : Colors.transparent,
+    return MaterialButton(
+      onPressed: () {},
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50),
+      ),
+      color: label == 'Expense' ? Colors.black : primaryAccentColor,
+      elevation: 0,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: label == 'Expense' ? Colors.white : Colors.black,
           ),
-          color: label == 'Income' ? Color(0xFFD7FFD9) : Color(0xFFFFDEDC),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: label == 'Income' ? Colors.green.shade700 : Colors.red,
+          SizedBox(
+            width: 7,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: label == 'Expense' ? Colors.white : Colors.black,
             ),
-            SizedBox(
-              width: 7,
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                // fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: label == 'Income' ? Colors.green.shade700 : Colors.red,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

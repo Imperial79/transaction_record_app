@@ -19,6 +19,7 @@ class _LoginUIState extends State<LoginUI> {
       Uri.parse('https://github.com/Imperial79/transaction_record_app');
 
   bool _isLoading = false;
+  String logoPath = 'lib/assets/logo/logo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -57,11 +58,18 @@ class _LoginUIState extends State<LoginUI> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 6,
+                      // flex: 6,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Image.asset(
+                            logoPath,
+                            height: 100,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text(
                             'Transact Record',
                             style: TextStyle(

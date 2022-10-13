@@ -586,13 +586,11 @@ class _HomeUiState extends State<HomeUi> {
                   Icons.search,
                   size: 20,
                 ),
-                hintText: 'SEARCH FOR BOOKS',
+                hintText: 'Search for Name or Description',
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: Colors.grey.shade600,
                   fontSize: 15,
-                  letterSpacing: 1,
-                  wordSpacing: 10,
                 ),
               ),
               onChanged: (val) {

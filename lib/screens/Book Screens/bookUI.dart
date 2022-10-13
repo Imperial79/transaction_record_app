@@ -29,7 +29,7 @@ class _BookUIState extends State<BookUI> {
   final oCcy = new NumberFormat("#,##0.00", "en_US");
   bool _isLoading = false;
   final _searchController = TextEditingController();
-  String _selectedType = 'All';
+  String _selectedSortType = 'All';
   // List of items in our dropdown menu
   var items = ['All', 'Income', 'Expense'];
 
@@ -129,11 +129,13 @@ class _BookUIState extends State<BookUI> {
                     ),
                     Flexible(
                       child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: EdgeInsets.only(right: 10),
+                        margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.horizontal(
+                            left: Radius.circular(8),
+                          ),
                         ),
                         child: TextField(
                           controller: _searchController,
@@ -142,7 +144,7 @@ class _BookUIState extends State<BookUI> {
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w400,
                             ),
-                            hintText: 'Search transacts ...',
+                            hintText: 'Search amount, description, etc',
                             prefixIcon: Icon(
                               Icons.search,
                             ),
@@ -287,45 +289,81 @@ class _BookUIState extends State<BookUI> {
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            border: Border.all(
-                                              color: Colors.grey,
-                                              width: 0.5,
-                                            ),
-                                          ),
-                                          child: DropdownButton(
-                                            // Initial Value
-                                            value: _selectedType,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            elevation: 2,
-                                            underline: SizedBox(),
+                                        // Container(
+                                        //   padding: EdgeInsets.symmetric(
+                                        //       horizontal: 10, vertical: 2),
+                                        //   decoration: BoxDecoration(
+                                        //     color: Colors.grey.shade100,
+                                        //     borderRadius:
+                                        //         BorderRadius.circular(5),
+                                        //     // border: Border.all(
+                                        //     //   color: Colors.grey,
+                                        //     //   width: 0.5,
+                                        //     // ),
+                                        //   ),
+                                        //   child: DropdownButton(
+                                        //     // Initial Value
+                                        //     value: _selectedType,
+                                        //     borderRadius:
+                                        //         BorderRadius.circular(5),
+                                        //     elevation: 2,
+                                        //     underline: SizedBox(),
 
-                                            // Down Arrow Icon
-                                            icon: Icon(
-                                              Icons.keyboard_arrow_down_rounded,
-                                              size: 15,
-                                            ),
-                                            isDense: true,
-                                            // Array list of items
-                                            items: items.map((String items) {
-                                              return DropdownMenuItem(
-                                                value: items,
-                                                child: Text(items),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                _selectedType = newValue!;
-                                                print(_selectedType);
-                                              });
-                                            },
+                                        //     // Down Arrow Icon
+                                        //     icon: Icon(
+                                        //       Icons.keyboard_arrow_down_rounded,
+                                        //       size: 15,
+                                        //     ),
+                                        //     isDense: true,
+                                        //     // Array list of items
+                                        //     items: items.map((String items) {
+                                        //       return DropdownMenuItem(
+                                        //         value: items,
+                                        //         child: Text(items),
+                                        //       );
+                                        //     }).toList(),
+                                        //     onChanged: (String? newValue) {
+                                        //       setState(() {
+                                        //         _selectedType = newValue!;
+                                        //         print(_selectedType);
+                                        //       });
+                                        //     },
+                                        //   ),
+                                        // ),
+
+                                        IconButton(
+                                          onPressed: () {
+                                            showMenu(
+                                              context: context,
+                                              color: Colors.blueGrey.shade800,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              position: RelativeRect.fromLTRB(
+                                                  sdp(context, 100),
+                                                  sdp(context, 120),
+                                                  sdp(context, 0),
+                                                  sdp(context, 0)),
+                                              items: [
+                                                MenuBtns(
+                                                  setState: setState,
+                                                  label: 'All',
+                                                ),
+                                                MenuBtns(
+                                                  setState: setState,
+                                                  label: 'Income',
+                                                ),
+                                                MenuBtns(
+                                                  setState: setState,
+                                                  label: 'Expense',
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                          icon: Icon(
+                                            Icons.filter_list,
+                                            color: Colors.black,
                                           ),
                                         ),
                                       ],
@@ -521,7 +559,7 @@ class _BookUIState extends State<BookUI> {
                 loopCounter += 1;
                 DocumentSnapshot ds = snapshot.data.docs[index];
                 final searchKey = _searchController.text.toLowerCase().trim();
-                if (_selectedType == 'All') {
+                if (_selectedSortType == 'All') {
                   if (_searchController.text.isEmpty) {
                     dataCounter++;
                     return TransactTile(ds);
@@ -538,7 +576,7 @@ class _BookUIState extends State<BookUI> {
                     return TransactTile(ds);
                   }
                 } else if (ds['type'].toLowerCase() ==
-                    _selectedType.toLowerCase()) {
+                    _selectedSortType.toLowerCase()) {
                   if (_searchController.text.isEmpty) {
                     dataCounter++;
                     return TransactTile(ds);
@@ -891,5 +929,30 @@ class _BookUIState extends State<BookUI> {
     await DatabaseMethods().updateBookTransactions(
         widget.snap['bookId'], {"income": 0, "expense": 0});
     setState(() => _isLoading = false);
+  }
+
+  PopupMenuItem MenuBtns({final label, required StateSetter setState}) {
+    bool isSelected = _selectedSortType == label;
+    return PopupMenuItem(
+      onTap: () {
+        _selectedSortType = label;
+        setState(() {});
+      },
+      child: Row(
+        children: [
+          Visibility(
+            visible: isSelected,
+            child: Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(Icons.done, color: Colors.white),
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 }
