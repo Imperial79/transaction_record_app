@@ -95,6 +95,7 @@ class _HomeUiState extends State<HomeUi> {
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
+                            dateTitle = '';
                             DocumentSnapshot ds = snapshot.data.docs[index];
                             if (_searchController.text.isEmpty) {
                               return TransactBookCard(ds);
@@ -273,8 +274,6 @@ class _HomeUiState extends State<HomeUi> {
                     );
                   }),
             ),
-
-            //  Scrollable body
             Expanded(
               child: ListView(
                 controller: _scrollController,
@@ -327,8 +326,10 @@ class _HomeUiState extends State<HomeUi> {
                     ) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: showFullAddBtn ? 15 : 12,
-                          vertical: 12,
+                          horizontal: showFullAddBtn
+                              ? sdp(context, 11)
+                              : sdp(context, 9),
+                          vertical: sdp(context, 9),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -342,10 +343,10 @@ class _HomeUiState extends State<HomeUi> {
                             if (showFullAddBtn) const SizedBox(width: 10),
                             if (showFullAddBtn)
                               Text(
-                                'New Book',
+                                'Create Book',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: sdp(context, 11),
                                   color: Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
@@ -416,123 +417,140 @@ class _HomeUiState extends State<HomeUi> {
           child: Container(
             width: double.infinity,
             margin: EdgeInsets.only(bottom: 10),
-            padding: EdgeInsets.symmetric(
-              vertical: 17,
-              horizontal: 15,
-            ),
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: amtPercentage > 100
+                  ? Colors.red.shade100
+                  : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          value: amtPercentage / 100,
-                          backgroundColor: bgColor,
-                          color: fgColor,
-                        ),
-                        amtPercentage < 100
-                            ? Text(
-                                amtPercentage.toString() + '%',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: sdp(context, 8),
-                                ),
-                              )
-                            : Icon(
-                                Icons.warning_amber_rounded,
-                                color: Colors.red,
-                              ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: sdp(context, 8.5),
+                    right: sdp(context, 8.5),
+                    top: sdp(context, 10),
+                    bottom: 10,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Text(
-                            ds['bookName'],
-                            style: TextStyle(
-                              fontSize: sdp(context, 15.5),
-                              fontWeight: FontWeight.w700,
-                            ),
+                          CircularProgressIndicator(
+                            value: amtPercentage / 100,
+                            backgroundColor: bgColor,
+                            color: fgColor,
                           ),
-                          Visibility(
-                            visible:
-                                ds['bookDescription'].toString().isNotEmpty,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.segment),
-                                  SizedBox(
-                                    width: 5,
+                          amtPercentage < 100
+                              ? Text(
+                                  amtPercentage.toString() + '%',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: sdp(context, 8.5),
                                   ),
-                                  Text(ds['bookDescription']),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                size: 15,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                ds['date'] + ' at ' + ds['time'],
-                                style: TextStyle(
-                                  fontSize: 12,
+                                )
+                              : Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: Colors.red,
                                 ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ds['bookName'],
+                              style: TextStyle(
+                                fontSize: sdp(context, 15.5),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  ds['bookDescription'].toString().isNotEmpty,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.segment),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(ds['bookDescription']),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  size: 15,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  ds['date'] + ' at ' + ds['time'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Divider(),
                 Row(
                   children: [
                     TransactStatsCard(
                       child: Text(
                         "₹ " + oCcy.format(ds['income']),
-                        style: TextStyle(fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: sdp(context, 10),
+                        ),
                       ),
                       cardColor: primaryAccentColor,
+                      icon: Icon(
+                        Icons.file_download_outlined,
+                        color: Colors.black,
+                        size: sdp(context, 10),
+                      ),
                     ),
                     SizedBox(
-                      width: 10,
+                      width: sdp(context, 5),
                     ),
                     TransactStatsCard(
-                      child: FittedBox(
-                        child: Text(
-                          "₹ " + oCcy.format(ds['expense']),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
+                      child: Text(
+                        "₹ " + oCcy.format(ds['expense']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: sdp(context, 10),
                         ),
                       ),
                       cardColor: Colors.black,
+                      icon: Icon(
+                        Icons.file_upload_outlined,
+                        color: Colors.white,
+                        size: sdp(context, 10),
+                      ),
                     ),
                     SizedBox(
-                      width: 10,
+                      width: sdp(context, 5),
                     ),
                     TransactStatsCard(
                       child: Text(
@@ -540,7 +558,13 @@ class _HomeUiState extends State<HomeUi> {
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
+                          fontSize: sdp(context, 10),
                         ),
+                      ),
+                      icon: Icon(
+                        Icons.wallet,
+                        color: Colors.white,
+                        size: sdp(context, 10),
                       ),
                       cardColor: Colors.blue.shade700,
                     ),
@@ -554,16 +578,28 @@ class _HomeUiState extends State<HomeUi> {
     );
   }
 
-  Widget TransactStatsCard({child, cardColor}) {
+  Widget TransactStatsCard({required Widget child, cardColor, icon}) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(
+          vertical: sdp(context, 3),
+          horizontal: sdp(context, 6),
+        ),
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(100),
         ),
-        child: child,
+        child: Center(
+          child: Row(
+            children: [
+              icon,
+              SizedBox(
+                width: sdp(context, 5),
+              ),
+              Expanded(child: child),
+            ],
+          ),
+        ),
       ),
     );
   }

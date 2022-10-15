@@ -173,13 +173,48 @@ class _BookUIState extends State<BookUI> {
                                     //  Created On Date -------------------------->
 
                                     Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        '( ${widget.snap['date']} • ${widget.snap['time']} )',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 12,
-                                        ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(child: Text('Created On')),
+                                          SizedBox(width: 10),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              '${widget.snap['date']}',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(left: 5),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              '${widget.snap['time']}',
+                                              style: TextStyle(
+                                                color: Colors.blue.shade900,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     Padding(
@@ -255,83 +290,44 @@ class _BookUIState extends State<BookUI> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    color: Colors.transparent,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: RichText(
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: 'INR ',
-                                                  style: TextStyle(
-                                                    fontSize: 30,
-                                                    color: Colors.black,
-                                                    fontFamily: 'Product',
-                                                    fontWeight: FontWeight.w200,
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: oCcy.format(
-                                                      ds['income'] -
-                                                          ds['expense']),
-                                                  style: TextStyle(
-                                                    fontSize: 30,
-                                                    color: Colors.black,
-                                                    fontFamily: 'Product',
-                                                    fontWeight: FontWeight.w900,
-                                                  ),
-                                                ),
-                                              ],
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'INR ',
+                                              style: TextStyle(
+                                                fontSize: 30,
+                                                color: Colors.black,
+                                                fontFamily: 'Product',
+                                                fontWeight: FontWeight.w200,
+                                              ),
                                             ),
-                                          ),
+                                            TextSpan(
+                                              text: oCcy.format(
+                                                  ds['income'] - ds['expense']),
+                                              style: TextStyle(
+                                                fontSize: 30,
+                                                color: Colors.black,
+                                                fontFamily: 'Product',
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        // Container(
-                                        //   padding: EdgeInsets.symmetric(
-                                        //       horizontal: 10, vertical: 2),
-                                        //   decoration: BoxDecoration(
-                                        //     color: Colors.grey.shade100,
-                                        //     borderRadius:
-                                        //         BorderRadius.circular(5),
-                                        //     // border: Border.all(
-                                        //     //   color: Colors.grey,
-                                        //     //   width: 0.5,
-                                        //     // ),
-                                        //   ),
-                                        //   child: DropdownButton(
-                                        //     // Initial Value
-                                        //     value: _selectedType,
-                                        //     borderRadius:
-                                        //         BorderRadius.circular(5),
-                                        //     elevation: 2,
-                                        //     underline: SizedBox(),
-
-                                        //     // Down Arrow Icon
-                                        //     icon: Icon(
-                                        //       Icons.keyboard_arrow_down_rounded,
-                                        //       size: 15,
-                                        //     ),
-                                        //     isDense: true,
-                                        //     // Array list of items
-                                        //     items: items.map((String items) {
-                                        //       return DropdownMenuItem(
-                                        //         value: items,
-                                        //         child: Text(items),
-                                        //       );
-                                        //     }).toList(),
-                                        //     onChanged: (String? newValue) {
-                                        //       setState(() {
-                                        //         _selectedType = newValue!;
-                                        //         print(_selectedType);
-                                        //       });
-                                        //     },
-                                        //   ),
-                                        // ),
-
-                                        IconButton(
+                                      ),
+                                    ),
+                                    Container(
+                                      height: sdp(context, 30),
+                                      width: sdp(context, 30),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.grey),
+                                      ),
+                                      child: FittedBox(
+                                        child: IconButton(
                                           onPressed: () {
                                             showMenu(
                                               context: context,
@@ -362,13 +358,19 @@ class _BookUIState extends State<BookUI> {
                                             );
                                           },
                                           icon: Icon(
-                                            Icons.filter_list,
+                                            _selectedSortType == 'All'
+                                                ? Icons.filter_list
+                                                : _selectedSortType == 'Income'
+                                                    ? Icons
+                                                        .file_download_outlined
+                                                    : Icons
+                                                        .file_upload_outlined,
                                             color: Colors.black,
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 15,
