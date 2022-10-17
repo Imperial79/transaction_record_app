@@ -310,9 +310,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
                               onTap: () async {
                                 _selectedTimeMap = await selectTime(
                                     context, setState, TimeOfDay.now());
-                                // _selectedTimeStamp = await convertTimeToTS(
-                                //     _selectedDateMap['tsDate'],
-                                //     _selectedTimeMap['tsTime']);
                               },
                               child: Container(
                                 padding: EdgeInsets.all(10),
@@ -372,6 +369,54 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: sdp(context, 10),
+                  ),
+                  Row(
+                    children: [
+                      RotatedBox(
+                        quarterTurns: 45,
+                        child: Text(
+                          'CASH',
+                          style: TextStyle(
+                            color: profitColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: sdp(context, 6),
+                      ),
+                      transactTypeToggle(context),
+                      SizedBox(
+                        width: sdp(context, 6),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'ON',
+                              style: TextStyle(
+                                fontFamily: 'Product',
+                                fontWeight: FontWeight.w800,
+                                fontSize: sdp(context, 13),
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '\nLINE',
+                              style: TextStyle(
+                                fontFamily: 'Product',
+                                fontWeight: FontWeight.w500,
+                                fontSize: sdp(context, 11),
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -427,64 +472,26 @@ class _NewTransactUiState extends State<NewTransactUi> {
                         ),
                       ),
                       SizedBox(
-                        width: 20,
+                        width: sdp(context, 10),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            'Add money to',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: transactMode == 'ONLINE'
+                              ? Colors.blue.shade100
+                              : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          transactMode,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: transactMode == 'ONLINE'
+                                ? Colors.blue.shade900
+                                : Colors.black,
                           ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: DropdownButton(
-                              value: transactMode,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                              elevation: 2,
-                              icon: Icon(Icons.keyboard_arrow_down_rounded),
-                              iconSize: 17,
-                              dropdownColor: Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(8),
-                              underline: SizedBox(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  transactMode = newValue!;
-                                });
-                              },
-                              items: <String>[
-                                'CASH',
-                                'ONLINE'
-                              ].map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(
-                                    value,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -577,6 +584,56 @@ class _NewTransactUiState extends State<NewTransactUi> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  GestureDetector transactTypeToggle(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (transactMode == 'ONLINE') {
+            transactMode = 'CASH';
+            setState(() {});
+          } else {
+            transactMode = 'ONLINE';
+            setState(() {});
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        width: sdp(context, 220),
+        decoration: BoxDecoration(
+          color: transactMode == 'ONLINE'
+              ? Colors.blue.shade100
+              : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: AnimatedAlign(
+          duration: Duration(milliseconds: 250),
+          alignment:
+              transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
+          child: CircleAvatar(
+            backgroundColor:
+                transactMode == 'ONLINE' ? Colors.blue.shade700 : Colors.black,
+            radius: sdp(context, 15),
+            child: transactMode == 'ONLINE'
+                ? Icon(
+                    Icons.wallet,
+                    color: Colors.white,
+                    size: sdp(context, 13),
+                  )
+                : Text(
+                    '₹',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: sdp(context, 13),
+                    ),
+                  ),
+          ),
         ),
       ),
     );
