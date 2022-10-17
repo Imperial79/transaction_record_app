@@ -258,8 +258,10 @@ class _HomeUiState extends State<HomeUi> {
                                             },
                                             icon: Icon(
                                               _showHomeMenu.value
-                                                  ? Icons.arrow_upward
-                                                  : Icons.arrow_downward,
+                                                  ? Icons
+                                                      .keyboard_arrow_up_rounded
+                                                  : Icons
+                                                      .keyboard_arrow_down_rounded,
                                               size: 17,
                                             ),
                                           ),
@@ -513,62 +515,42 @@ class _HomeUiState extends State<HomeUi> {
                     ],
                   ),
                 ),
-                Row(
-                  children: [
-                    TransactStatsCard(
-                      child: Text(
-                        "₹ " + oCcy.format(ds['income']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: sdp(context, 10),
-                        ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
+                  child: Row(
+                    children: [
+                      TransactStatsCard(
+                        crossAlign: CrossAxisAlignment.start,
+                        amount: "₹ " + oCcy.format(ds['income']),
+                        label: 'Income',
+                        cardColor: primaryAccentColor.withOpacity(0.2),
+                        icon: Icons.file_download_outlined,
                       ),
-                      cardColor: primaryAccentColor,
-                      icon: Icon(
-                        Icons.file_download_outlined,
-                        color: Colors.black,
-                        size: sdp(context, 10),
+                      Text(
+                        ' - ',
+                        style: TextStyle(fontSize: sdp(context, 20)),
                       ),
-                    ),
-                    SizedBox(
-                      width: sdp(context, 5),
-                    ),
-                    TransactStatsCard(
-                      child: Text(
-                        "₹ " + oCcy.format(ds['expense']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                          fontSize: sdp(context, 10),
-                        ),
+                      TransactStatsCard(
+                        crossAlign: CrossAxisAlignment.center,
+                        amount: "₹ " + oCcy.format(ds['expense']),
+                        label: 'Expense',
+                        cardColor: Colors.grey.shade300,
+                        icon: Icons.file_upload_outlined,
                       ),
-                      cardColor: Colors.black,
-                      icon: Icon(
-                        Icons.file_upload_outlined,
-                        color: Colors.white,
-                        size: sdp(context, 10),
+                      Text(
+                        ' = ',
+                        style: TextStyle(fontSize: sdp(context, 15)),
                       ),
-                    ),
-                    SizedBox(
-                      width: sdp(context, 5),
-                    ),
-                    TransactStatsCard(
-                      child: Text(
-                        "₹ " + oCcy.format(ds['income'] - ds['expense']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                          fontSize: sdp(context, 10),
-                        ),
+                      TransactStatsCard(
+                        crossAlign: CrossAxisAlignment.end,
+                        label: 'Final',
+                        amount:
+                            "₹ " + oCcy.format(ds['income'] - ds['expense']),
+                        icon: Icons.wallet,
+                        cardColor: Colors.blue.shade100,
                       ),
-                      icon: Icon(
-                        Icons.wallet,
-                        color: Colors.white,
-                        size: sdp(context, 10),
-                      ),
-                      cardColor: Colors.blue.shade700,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -578,30 +560,59 @@ class _HomeUiState extends State<HomeUi> {
     );
   }
 
-  Widget TransactStatsCard({required Widget child, cardColor, icon}) {
+  Widget TransactStatsCard({
+    final amount,
+    cardColor,
+    label,
+    icon,
+    required CrossAxisAlignment crossAlign,
+  }) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: sdp(context, 3),
-          horizontal: sdp(context, 6),
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: BorderRadius.circular(100),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Center(
-          child: Row(
-            children: [
-              icon,
-              SizedBox(
-                width: sdp(context, 5),
+        child: Column(
+          crossAxisAlignment: crossAlign,
+          children: [
+            Text(label),
+            Text(
+              amount,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: sdp(context, 10),
               ),
-              Expanded(child: child),
-            ],
-          ),
+              textAlign: TextAlign.end,
+            ),
+          ],
         ),
       ),
     );
+    // return Expanded(
+    //   child: Container(
+    //     // padding: EdgeInsets.symmetric(
+    //     //   vertical: sdp(context, 3),
+    //     //   horizontal: sdp(context, 6),
+    //     // ),
+    //     // decoration: BoxDecoration(
+    //     //   color: cardColor,
+    //     //   borderRadius: BorderRadius.circular(100),
+    //     // ),
+    //     child: Center(
+    //       child: Row(
+    //         children: [
+    //           icon,
+    //           SizedBox(
+    //             width: sdp(context, 5),
+    //           ),
+    //           Expanded(child: child),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   Widget SearchBar() {

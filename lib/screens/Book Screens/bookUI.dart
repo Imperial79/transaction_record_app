@@ -102,28 +102,35 @@ class _BookUIState extends State<BookUI> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      child: IconButton(
-                        color: textLinkColor,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.arrow_back,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Return',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 200),
+                      child: Container(
+                        child: IconButton(
+                          color: textLinkColor,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_back,
                               ),
-                            ),
-                          ],
+                              _searchController.text.isEmpty
+                                  ? SizedBox(
+                                      width: 10,
+                                    )
+                                  : SizedBox(),
+                              _searchController.text.isEmpty
+                                  ? Text(
+                                      'Return',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  : SizedBox()
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -299,7 +306,7 @@ class _BookUIState extends State<BookUI> {
                                             TextSpan(
                                               text: 'INR ',
                                               style: TextStyle(
-                                                fontSize: 30,
+                                                fontSize: sdp(context, 22),
                                                 color: Colors.black,
                                                 fontFamily: 'Product',
                                                 fontWeight: FontWeight.w200,
@@ -309,7 +316,7 @@ class _BookUIState extends State<BookUI> {
                                               text: oCcy.format(
                                                   ds['income'] - ds['expense']),
                                               style: TextStyle(
-                                                fontSize: 30,
+                                                fontSize: sdp(context, 22),
                                                 color: Colors.black,
                                                 fontFamily: 'Product',
                                                 fontWeight: FontWeight.w900,

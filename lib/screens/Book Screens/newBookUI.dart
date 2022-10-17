@@ -18,8 +18,8 @@ class _NewBookUIState extends State<NewBookUI> {
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
 
-  final bookTitleController =
-      TextEditingController(text: DateFormat('d EEEE').format(DateTime.now()));
+  final bookTitleController = TextEditingController(
+      text: DateFormat('MMMM, yy ').format(DateTime.now()));
   final bookDescriptionController = TextEditingController();
   final dbMethod = DatabaseMethods();
 
