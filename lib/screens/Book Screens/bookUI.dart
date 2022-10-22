@@ -128,7 +128,7 @@ class _BookUIState extends State<BookUI> {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     )
-                                  : SizedBox()
+                                  : SizedBox(),
                             ],
                           ),
                         ),
@@ -772,9 +772,9 @@ class _BookUIState extends State<BookUI> {
                                     child: Text(
                                       ds['source'],
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: sdp(context, 10),
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade700,
+                                        color: Colors.grey.shade800,
                                       ),
                                     ),
                                   ),
@@ -787,6 +787,7 @@ class _BookUIState extends State<BookUI> {
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 10),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Icon(
                                     Icons.short_text,
@@ -795,15 +796,17 @@ class _BookUIState extends State<BookUI> {
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  Text(
-                                    ds["description"],
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade800,
+                                  Flexible(
+                                    child: Text(
+                                      ds["description"],
+                                      style: TextStyle(
+                                        fontSize: sdp(context, 10),
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade800,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -893,7 +896,7 @@ class _BookUIState extends State<BookUI> {
                         );
                       });
                 },
-                label: 'Delete',
+                label: 'Delete Book',
                 icon: Icons.delete,
                 btnColor: Colors.black,
                 textColor: Colors.white,

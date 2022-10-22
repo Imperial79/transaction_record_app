@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
+import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/widgets.dart';
 
@@ -52,26 +54,49 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  // HomeMenuBtn(
+                  //   onPress: () {
+                  //     NavPush(
+                  //         context,
+                  //         AccountUI(
+                  //           name: UserDetails.userDisplayName,
+                  //           email: UserDetails.userEmail,
+                  //         ));
+                  //   },
+                  //   label: 'Account',
+                  //   icon: Icon(Icons.person, color: Colors.blue.shade700),
+                  //   btnColor: Color.fromARGB(255, 210, 235, 255),
+                  //   textColor: Colors.blue.shade700,
+                  // ),
                   HomeMenuBtn(
-                    onPress: () {
-                      NavPush(
-                          context,
-                          AccountUI(
-                            name: UserDetails.userDisplayName,
-                            email: UserDetails.userEmail,
-                          ));
-                    },
                     label: 'Account',
-                    icon: Icon(Icons.person, color: Colors.blue.shade700),
+                    child: GestureDetector(
+                      onTap: () {
+                        NavPush(
+                            context,
+                            AccountUI(
+                              name: UserDetails.userDisplayName,
+                              email: UserDetails.userEmail,
+                            ));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: CachedNetworkImage(
+                          imageUrl: UserDetails.userProfilePic,
+                        ),
+                      ),
+                    ),
                     btnColor: Color.fromARGB(255, 210, 235, 255),
-                    textColor: Colors.blue.shade700,
+                    textColor: Colors.grey.shade100,
                   ),
                   HomeMenuBtn(
-                    onPress: () {
-                      AuthMethods().signOut(context);
-                    },
                     label: 'Logout',
-                    icon: Icon(Icons.logout, color: Colors.red),
+                    child: IconButton(
+                      onPressed: () {
+                        AuthMethods().signOut(context);
+                      },
+                      icon: Icon(Icons.logout, color: Colors.red),
+                    ),
                     btnColor: Color.fromARGB(255, 255, 208, 205),
                     textColor: Colors.red,
                   ),
@@ -85,18 +110,17 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
   }
 
   Widget HomeMenuBtn(
-      {required VoidCallback onPress, final label, icon, btnColor, textColor}) {
+      {final label, required Widget child, btnColor, textColor}) {
     return Column(
       children: [
         Container(
+          height: sdp(context, 40),
+          width: sdp(context, 40),
           decoration: BoxDecoration(
               color: btnColor,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: textColor)),
-          child: IconButton(
-            onPressed: onPress,
-            icon: icon,
-          ),
+          child: child,
         ),
         SizedBox(
           height: 5,

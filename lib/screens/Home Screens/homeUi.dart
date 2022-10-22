@@ -523,7 +523,7 @@ class _HomeUiState extends State<HomeUi> {
                         crossAlign: CrossAxisAlignment.start,
                         amount: "₹ " + oCcy.format(ds['income']),
                         label: 'Income',
-                        cardColor: primaryAccentColor.withOpacity(0.2),
+                        cardColor: Color.fromARGB(255, 181, 255, 183),
                         icon: Icons.file_download_outlined,
                       ),
                       Text(
@@ -547,7 +547,7 @@ class _HomeUiState extends State<HomeUi> {
                         amount:
                             "₹ " + oCcy.format(ds['income'] - ds['expense']),
                         icon: Icons.wallet,
-                        cardColor: Colors.blue.shade100,
+                        cardColor: Color.fromARGB(255, 197, 226, 250),
                       ),
                     ],
                   ),
@@ -573,6 +573,7 @@ class _HomeUiState extends State<HomeUi> {
         decoration: BoxDecoration(
           color: cardColor,
           borderRadius: BorderRadius.circular(10),
+          // border: Border.all(color: )
         ),
         child: Column(
           crossAxisAlignment: crossAlign,
@@ -590,29 +591,6 @@ class _HomeUiState extends State<HomeUi> {
         ),
       ),
     );
-    // return Expanded(
-    //   child: Container(
-    //     // padding: EdgeInsets.symmetric(
-    //     //   vertical: sdp(context, 3),
-    //     //   horizontal: sdp(context, 6),
-    //     // ),
-    //     // decoration: BoxDecoration(
-    //     //   color: cardColor,
-    //     //   borderRadius: BorderRadius.circular(100),
-    //     // ),
-    //     child: Center(
-    //       child: Row(
-    //         children: [
-    //           icon,
-    //           SizedBox(
-    //             width: sdp(context, 5),
-    //           ),
-    //           Expanded(child: child),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 
   Widget SearchBar() {

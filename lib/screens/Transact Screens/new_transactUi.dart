@@ -160,9 +160,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
             Expanded(
               child: ListView(
                 controller: _scrollController,
-                physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
+                physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.all(sdp(context, 10)),
                 children: [
                   Row(
@@ -226,7 +224,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                         Expanded(
                           child: TextField(
                             controller: descriptionField,
-                            // focusNode: descriptionFocus,
+                            textCapitalization: TextCapitalization.sentences,
                             maxLines: 2,
                             minLines: 1,
                             cursorColor: Colors.black,
@@ -373,14 +371,17 @@ class _NewTransactUiState extends State<NewTransactUi> {
                     height: sdp(context, 10),
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RotatedBox(
                         quarterTurns: 45,
                         child: Text(
                           'CASH',
                           style: TextStyle(
-                            color: profitColor,
-                            fontWeight: FontWeight.w700,
+                            color: transactMode == 'ONLINE'
+                                ? Colors.grey
+                                : Colors.black,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                       ),
@@ -393,23 +394,25 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       ),
                       RichText(
                         text: TextSpan(
+                          style: TextStyle(
+                            fontFamily: 'Product',
+                            color: transactMode == 'ONLINE'
+                                ? Colors.blue.shade700
+                                : Colors.grey,
+                          ),
                           children: [
                             TextSpan(
                               text: 'ON',
                               style: TextStyle(
-                                fontFamily: 'Product',
                                 fontWeight: FontWeight.w800,
                                 fontSize: sdp(context, 13),
-                                color: Colors.blue.shade700,
                               ),
                             ),
                             TextSpan(
                               text: '\nLINE',
                               style: TextStyle(
-                                fontFamily: 'Product',
                                 fontWeight: FontWeight.w500,
                                 fontSize: sdp(context, 11),
-                                color: Colors.blue.shade700,
                               ),
                             ),
                           ],
@@ -523,58 +526,61 @@ class _NewTransactUiState extends State<NewTransactUi> {
                           : SizedBox(
                               width: 20,
                             ),
-                      MaterialButton(
-                        onPressed: () {
-                          saveTransacts();
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        child: Ink(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 25,
-                          ),
-                          decoration: BoxDecoration(
+                      AnimatedSize(
+                        duration: Duration(milliseconds: 100),
+                        child: MaterialButton(
+                          onPressed: () {
+                            saveTransacts();
+                          },
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
-                            gradient: LinearGradient(
-                              colors: [
-                                transactType == 'Income'
-                                    ? primaryColor
-                                    : Colors.black,
-                                transactType == 'Income'
-                                    ? primaryAccentColor
-                                    : Colors.grey,
-                              ],
-                            ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                transactType == 'Income'
-                                    ? Icons.file_download_outlined
-                                    : Icons.file_upload_outlined,
-                                color: transactType == 'Income'
-                                    ? Colors.green.shade900
-                                    : Colors.white,
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          child: Ink(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 25,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              gradient: LinearGradient(
+                                colors: [
+                                  transactType == 'Income'
+                                      ? primaryColor
+                                      : Colors.black,
+                                  transactType == 'Income'
+                                      ? primaryAccentColor
+                                      : Colors.grey,
+                                ],
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Add ' + transactType,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  transactType == 'Income'
+                                      ? Icons.file_download_outlined
+                                      : Icons.file_upload_outlined,
                                   color: transactType == 'Income'
                                       ? Colors.green.shade900
                                       : Colors.white,
-                                  fontSize: 18,
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Add ' + transactType,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: transactType == 'Income'
+                                        ? Colors.green.shade900
+                                        : Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

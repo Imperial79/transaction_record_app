@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/auth.dart';
+import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/widgets.dart';
 
 class LoginUI extends StatefulWidget {
@@ -28,199 +29,222 @@ class _LoginUIState extends State<LoginUI> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(20),
-          child: _isLoading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Transform.scale(
-                        scale: 0.5,
-                        child: CircularProgressIndicator(
-                          color: textLinkColor,
-                          // strokeWidth: 4,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Fetching Your Transacts',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
+          child: Column(
+            children: [
+              Spacer(),
+              Flexible(
+                flex: 1,
+                child: AnimatedAlign(
+                  duration: Duration(milliseconds: 300),
+                  alignment: _isLoading
+                      ? Alignment.bottomCenter
+                      : Alignment.bottomLeft,
+                  child: Image.asset(
+                    logoPath,
+                    height: sdp(context, 60),
                   ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      // flex: 6,
+                ),
+              ),
+              _isLoading
+                  ? Flexible(
+                      flex: 6,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Transform.scale(
+                              scale: 0.5,
+                              child: CircularProgressIndicator(
+                                color: textLinkColor,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Fetching Your Transacts',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Flexible(
+                      flex: 6,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            logoPath,
-                            height: 100,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Transact Record',
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w900,
+                          Expanded(
+                            // flex: 6,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Image.asset(
+                                //   logoPath,
+                                //   height: 100,
+                                // ),
+                                // SizedBox(
+                                //   height: 10,
+                                // ),
+                                Text(
+                                  'Transact Record',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Text(
+                                  'Your Personal Money Manager',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  '#OpenSource',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: textLinkColor,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.7,
+                                  ),
+                                ),
+                                TextLink(
+                                  link: _githubLink,
+                                  color: Colors.grey.shade700,
+                                  alignment: Alignment.topLeft,
+                                  text: '#Github',
+                                )
+                              ],
                             ),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.backup,
+                                color: textLinkColor,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'SYNC YOUR DATA ON TRANSACT CLOUD',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    color: textLinkColor,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(
                             height: 30,
                           ),
-                          Text(
-                            'Your Personal Money Manager',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
+                          InkWell(
+                            borderRadius: BorderRadius.circular(15),
+                            splashColor: Colors.red,
+                            onTap: () async {
+                              setState(() => _isLoading = true);
+                              String res =
+                                  await AuthMethods().signInWithgoogle(context);
+                              if (res == 'fail') {
+                                setState(() => _isLoading = false);
+                              }
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.pink,
+                                    Colors.pink.shade200,
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.pink.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    spreadRadius: 6,
+                                    offset: Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 7, horizontal: 20),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'G',
+                                    style: TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Login with Google",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text(
-                            '#OpenSource',
+                            'By signing in, you agree with our ',
                             style: TextStyle(
-                              fontSize: 17,
-                              color: textLinkColor,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              height: 1.7,
                             ),
                           ),
-                          TextLink(
-                            link: _githubLink,
-                            color: Colors.grey.shade700,
-                            alignment: Alignment.topLeft,
-                            text: '#Github',
-                          )
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: TextLink(
+                                  text: 'Terms and Conditions',
+                                  link: Uri.parse(''),
+                                  color: textLinkColor,
+                                  alignment: Alignment.bottomLeft,
+                                ),
+                              ),
+                              Expanded(
+                                child: TextLink(
+                                  text: 'Privacy Policy',
+                                  link: _privacyPolicyUrl,
+                                  color: textLinkColor,
+                                  alignment: Alignment.bottomRight,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.backup,
-                          color: textLinkColor,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            'SYNC YOUR DATA ON TRANSACT CLOUD',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              color: textLinkColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(15),
-                      splashColor: Colors.red,
-                      onTap: () async {
-                        setState(() => _isLoading = true);
-                        String res =
-                            await AuthMethods().signInWithgoogle(context);
-                        if (res == 'fail') {
-                          setState(() => _isLoading = false);
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.pink,
-                              Colors.pink.shade200,
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.pink.withOpacity(0.1),
-                              blurRadius: 10,
-                              spreadRadius: 6,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 7, horizontal: 20),
-                        child: Row(
-                          children: [
-                            Text(
-                              'G',
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Login with Google",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Text(
-                      'By signing in, you agree with our ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: TextLink(
-                            text: 'Terms and Conditions',
-                            link: Uri.parse(''),
-                            color: textLinkColor,
-                            alignment: Alignment.bottomLeft,
-                          ),
-                        ),
-                        Expanded(
-                          child: TextLink(
-                            text: 'Privacy Policy',
-                            link: _privacyPolicyUrl,
-                            color: textLinkColor,
-                            alignment: Alignment.bottomRight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            ],
+          ),
         ),
       ),
     );

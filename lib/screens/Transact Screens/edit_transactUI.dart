@@ -469,14 +469,17 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             height: 10,
                           ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               RotatedBox(
                                 quarterTurns: 45,
                                 child: Text(
                                   'CASH',
                                   style: TextStyle(
-                                    color: profitColor,
-                                    fontWeight: FontWeight.w700,
+                                    color: transactMode == 'ONLINE'
+                                        ? Colors.grey
+                                        : Colors.black,
+                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
                               ),
@@ -489,23 +492,25 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               ),
                               RichText(
                                 text: TextSpan(
+                                  style: TextStyle(
+                                    fontFamily: 'Product',
+                                    color: transactMode == 'ONLINE'
+                                        ? Colors.blue.shade700
+                                        : Colors.grey,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'ON',
                                       style: TextStyle(
-                                        fontFamily: 'Product',
                                         fontWeight: FontWeight.w800,
                                         fontSize: sdp(context, 13),
-                                        color: Colors.blue.shade700,
                                       ),
                                     ),
                                     TextSpan(
                                       text: '\nLINE',
                                       style: TextStyle(
-                                        fontFamily: 'Product',
                                         fontWeight: FontWeight.w500,
                                         fontSize: sdp(context, 11),
-                                        color: Colors.blue.shade700,
                                       ),
                                     ),
                                   ],
