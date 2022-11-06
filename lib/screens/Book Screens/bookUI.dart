@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/size.dart';
@@ -567,11 +568,12 @@ class _BookUIState extends State<BookUI> {
               itemBuilder: (context, index) {
                 loopCounter += 1;
                 DocumentSnapshot ds = snapshot.data.docs[index];
+                Transact currTransact = Transact.fromDocumentSnap(ds);
                 final searchKey = _searchController.text.toLowerCase().trim();
                 if (_selectedSortType == 'All') {
                   if (_searchController.text.isEmpty) {
                     dataCounter++;
-                    return TransactTile(ds);
+                    return TransactTile(currTransact);
                   } else if (ds['amount'].toString().contains(searchKey) ||
                       ds['description']
                           .toString()
@@ -582,13 +584,13 @@ class _BookUIState extends State<BookUI> {
                           .toLowerCase()
                           .contains(searchKey)) {
                     dataCounter++;
-                    return TransactTile(ds);
+                    return TransactTile(currTransact);
                   }
                 } else if (ds['type'].toLowerCase() ==
                     _selectedSortType.toLowerCase()) {
                   if (_searchController.text.isEmpty) {
                     dataCounter++;
-                    return TransactTile(ds);
+                    return TransactTile(currTransact);
                   } else if (ds['amount'].toString().contains(searchKey) ||
                       ds['description']
                           .toString()
@@ -599,7 +601,7 @@ class _BookUIState extends State<BookUI> {
                           .toLowerCase()
                           .contains(searchKey)) {
                     dataCounter++;
-                    return TransactTile(ds);
+                    return TransactTile(currTransact);
                   }
                 }
                 if (dataCounter == 0 &&
@@ -618,16 +620,16 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Widget TransactTile(ds) {
+  Widget TransactTile(Transact data) {
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == ds['date']) {
+    if (dateTitle == data.date) {
       showDateWidget = false;
     } else {
-      dateTitle = ds['date'];
+      dateTitle = data.date!;
       showDateWidget = true;
     }
-    String ts = DateFormat("yMMMMd").parse(ds['date']).toString();
+    String ts = DateFormat("yMMMMd").parse(data.date!).toString();
     // print(DateTime.now().difference(DateTime.parse(ts)).inDays);
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
@@ -658,7 +660,7 @@ class _BookUIState extends State<BookUI> {
           onTap: () {
             NavPush(
               context,
-              EditTransactUI(snap: ds),
+              EditTransactUI(trData: data),
             );
           },
           child: Container(
@@ -680,14 +682,14 @@ class _BookUIState extends State<BookUI> {
                         children: [
                           CircleAvatar(
                             radius: 15,
-                            backgroundColor: ds["type"] == 'Income'
+                            backgroundColor: data.type == 'Income'
                                 ? primaryAccentColor
                                 : Colors.black,
                             child: Icon(
-                              ds["type"] == 'Income'
+                              data.type == 'Income'
                                   ? Icons.file_download_outlined
                                   : Icons.file_upload_outlined,
-                              color: ds["type"] == 'Income'
+                              color: data.type == 'Income'
                                   ? Colors.black
                                   : Colors.white,
                               size: 17,
@@ -702,11 +704,11 @@ class _BookUIState extends State<BookUI> {
                                 children: [
                                   TextSpan(
                                     text:
-                                        oCcy.format(double.parse(ds["amount"])),
+                                        oCcy.format(double.parse(data.amount!)),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
-                                      color: ds["type"] == 'Income'
+                                      color: data.type == 'Income'
                                           ? primaryColor
                                           : lossColor,
                                       fontFamily: 'Product',
@@ -717,7 +719,7 @@ class _BookUIState extends State<BookUI> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 20,
-                                      color: ds["type"] == 'Income'
+                                      color: data.type == 'Income'
                                           ? primaryColor
                                           : lossColor,
                                       fontFamily: 'Product',
@@ -731,16 +733,16 @@ class _BookUIState extends State<BookUI> {
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: ds['transactMode'] == 'CASH'
+                              color: data.transactMode! == 'CASH'
                                   ? Colors.white
                                   : Colors.blue.shade100,
                             ),
                             child: Text(
-                              ds['transactMode'],
+                              data.transactMode!,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: ds['transactMode'] == 'CASH'
+                                color: data.transactMode! == 'CASH'
                                     ? Colors.black
                                     : Colors.blue.shade900,
                               ),
@@ -755,7 +757,7 @@ class _BookUIState extends State<BookUI> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Visibility(
-                            visible: ds['source'] != '',
+                            visible: data.source! != '',
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 5),
                               child: Row(
@@ -770,7 +772,7 @@ class _BookUIState extends State<BookUI> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      ds['source'],
+                                      data.source!,
                                       style: TextStyle(
                                         fontSize: sdp(context, 10),
                                         fontWeight: FontWeight.w500,
@@ -783,7 +785,7 @@ class _BookUIState extends State<BookUI> {
                             ),
                           ),
                           Visibility(
-                            visible: ds["description"] != '',
+                            visible: data.description! != '',
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 10),
                               child: Row(
@@ -798,7 +800,7 @@ class _BookUIState extends State<BookUI> {
                                   ),
                                   Flexible(
                                     child: Text(
-                                      ds["description"],
+                                      data.description!,
                                       style: TextStyle(
                                         fontSize: sdp(context, 10),
                                         fontWeight: FontWeight.w600,
@@ -822,7 +824,7 @@ class _BookUIState extends State<BookUI> {
                                 width: 5,
                               ),
                               Text(
-                                ds['time'].toString(),
+                                data.time.toString(),
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   fontSize: 13,

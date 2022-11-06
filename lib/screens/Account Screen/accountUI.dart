@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Functions/transactFunctions.dart';
+
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
@@ -40,8 +40,8 @@ class _AccountUIState extends State<AccountUI> {
           .updateAccountDetails(UserDetails.uid, accountMap);
 
       //  updating details in shared preferences
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('USERDISPLAYNAMEKEY', nameController.text);
+      // final SharedPreferences prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('USERDISPLAYNAMEKEY', nameController.text);
 
       //  updating details in current session
       UserDetails.userDisplayName = nameController.text;

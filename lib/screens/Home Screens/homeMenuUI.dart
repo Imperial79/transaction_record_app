@@ -5,7 +5,6 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
-import 'package:transaction_record_app/widgets.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);
@@ -54,20 +53,6 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // HomeMenuBtn(
-                  //   onPress: () {
-                  //     NavPush(
-                  //         context,
-                  //         AccountUI(
-                  //           name: UserDetails.userDisplayName,
-                  //           email: UserDetails.userEmail,
-                  //         ));
-                  //   },
-                  //   label: 'Account',
-                  //   icon: Icon(Icons.person, color: Colors.blue.shade700),
-                  //   btnColor: Color.fromARGB(255, 210, 235, 255),
-                  //   textColor: Colors.blue.shade700,
-                  // ),
                   HomeMenuBtn(
                     label: 'Account',
                     child: GestureDetector(

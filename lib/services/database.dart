@@ -19,7 +19,8 @@ class DatabaseMethods {
   }
 
   //  UPDATE TRANSACTS
-  updateTransacts(String bookId, transactId, transactMap) async {
+  updateTransacts(
+      String bookId, transactId, Map<String, dynamic> transactMap) async {
     await _firestore
         .collection('users')
         .doc(UserDetails.uid)

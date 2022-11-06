@@ -37,7 +37,6 @@ dependencies:
   firebase_auth: ^3.2.0
   firebase_core:
   google_sign_in:
-  shared_preferences:
   cloud_firestore:
   cached_network_image: ^3.1.0+1
   intl: ^0.17.0

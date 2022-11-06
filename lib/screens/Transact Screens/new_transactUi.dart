@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -26,7 +27,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
-  final title = TextEditingController();
+  // final title = TextEditingController();
   final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
   final ScrollController _scrollController = ScrollController();
 
@@ -39,8 +40,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
     'tsDate': DateTime.now().toString(),
   };
   String _selectedTimeStamp = DateTime.now().toString();
-  // String _selectedTime =
-  //     DateFormat().add_jm().format(DateTime.now()).toString();
 
   Map<String, dynamic> _selectedTimeMap = {
     'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
@@ -108,22 +107,26 @@ class _NewTransactUiState extends State<NewTransactUi> {
       transactId = _selectedTimeStamp;
       final _uploadableAmount =
           amountField.text.replaceAll(' ', '').replaceAll(',', '');
-      Map<String, dynamic> transactMap = {
-        'transactId': transactId,
-        'title': title.text,
-        "amount": _uploadableAmount,
-        "source": sourceField.text,
-        "transactMode": transactMode,
-        "description": descriptionField.text,
-        "type": transactType,
-        'date': _selectedDateMap['displayDate'],
-        'time': _selectedTimeMap['displayTime'],
-        'bookId': widget.bookId,
-        'ts': _selectedTimeStamp,
-      };
+
+      Transact newTransact = Transact(
+        transactId: transactId,
+        amount: _uploadableAmount,
+        source: sourceField.text,
+        transactMode: transactMode,
+        description: descriptionField.text,
+        type: transactType,
+        date: _selectedDateMap['displayDate'],
+        time: _selectedTimeMap['displayTime'],
+        bookId: widget.bookId,
+        ts: _selectedTimeStamp,
+      );
 
       databaseMethods.uploadTransacts(
-          UserDetails.uid, transactMap, widget.bookId, transactId);
+        UserDetails.uid,
+        newTransact.toMap(),
+        widget.bookId,
+        transactId,
+      );
 
       handleNewNoteTransaction(_uploadableAmount);
 
@@ -143,7 +146,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
     super.dispose();
     _scrollController.dispose();
     amountField.dispose();
-    title.dispose();
     descriptionField.dispose();
     sourceField.dispose();
   }
@@ -155,7 +157,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
     return Scaffold(
       body: SafeArea(
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: ListView(

@@ -4,12 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/size.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../colors.dart';
+import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../../widgets.dart';
 
 class EditTransactUI extends StatefulWidget {
-  final snap;
-  const EditTransactUI({Key? key, this.snap}) : super(key: key);
+  final Transact trData;
+  const EditTransactUI({Key? key, required this.trData}) : super(key: key);
 
   @override
   State<EditTransactUI> createState() => _EditTransactUIState();
@@ -48,17 +49,17 @@ class _EditTransactUIState extends State<EditTransactUI> {
   @override
   void initState() {
     super.initState();
-    title.text = widget.snap['title'];
-    amountField.text = widget.snap['amount'];
-    descriptionField.text = widget.snap['description'];
-    sourceField.text = widget.snap['source'];
-    _selectedDateMap['displayDate'] = widget.snap['date'];
-    _selectedDateMap['tsDate'] = widget.snap['ts'];
-    _selectedTimeMap['displayTime'] = widget.snap['time'];
-    _selectedTimeStamp = widget.snap['ts'];
-    transactId = widget.snap['transactId'];
-    transactType = widget.snap['type'];
-    transactMode = widget.snap['transactMode'];
+    // title.text = widget.snap['title'];
+    amountField.text = widget.trData.amount!;
+    descriptionField.text = widget.trData.description!;
+    sourceField.text = widget.trData.source!;
+    _selectedDateMap['displayDate'] = widget.trData.date!;
+    _selectedDateMap['tsDate'] = widget.trData.ts!;
+    _selectedTimeMap['displayTime'] = widget.trData.time!;
+    _selectedTimeStamp = widget.trData.ts!;
+    transactId = widget.trData.transactId!;
+    transactType = widget.trData.type!;
+    transactMode = widget.trData.transactMode!;
     setState(() {});
   }
 
@@ -68,34 +69,34 @@ class _EditTransactUIState extends State<EditTransactUI> {
       //  If newType is INCOME
       //--------------------------------------------
 
-      double _oldAmount = double.parse(widget.snap['amount']);
+      double _oldAmount = double.parse(widget.trData.amount!);
       double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.snap['type'];
+      String _oldType = widget.trData.type!;
 
       //--------------------------------------------
 
       if (_oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.snap['bookId'],
+        databaseMethods.updateBookTransactions(widget.trData.bookId!,
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.snap['bookId'],
+        databaseMethods.updateBookTransactions(widget.trData.bookId!,
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     } else {
       //  If newType is Expense ---------------->
 
-      double _oldAmount = double.parse(widget.snap['amount']);
+      double _oldAmount = double.parse(widget.trData.amount!);
       double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.snap['type'];
+      String _oldType = widget.trData.type!;
 
       //--------------------------------------------
       if (_oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.snap['bookId'],
+        databaseMethods.updateBookTransactions(widget.trData.bookId!,
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.snap['bookId'],
+        databaseMethods.updateBookTransactions(widget.trData.bookId!,
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     }
@@ -103,28 +104,30 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   updateTransacts() async {
     if (amountField.text != '') {
-      if (widget.snap['date'] != _selectedDateMap['displayDate'] ||
-          widget.snap['time'] != _selectedTimeMap['displayTime']) {
+      if (widget.trData.date! != _selectedDateMap['displayDate'] ||
+          widget.trData.time! != _selectedTimeMap['displayTime']) {
         _selectedTimeStamp = await convertTimeToTS(
             _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
       }
 
-      Map<String, dynamic> transactMap = {
-        'transactId': widget.snap['transactId'],
-        'title': title.text,
-        "amount": amountField.text,
-        "source": sourceField.text,
-        "transactMode": transactMode,
-        "description": descriptionField.text,
-        "type": transactType,
-        'date': _selectedDateMap['displayDate'],
-        'time': _selectedTimeMap['displayTime'],
-        'bookId': widget.snap['bookId'],
-        'ts': _selectedTimeStamp,
-      };
+      Transact updatedTransact = Transact(
+        transactId: widget.trData.transactId!,
+        amount: amountField.text,
+        source: sourceField.text,
+        transactMode: transactMode,
+        description: descriptionField.text,
+        type: transactType,
+        date: _selectedDateMap['displayDate'],
+        time: _selectedTimeMap['displayTime'],
+        bookId: widget.trData.bookId!,
+        ts: _selectedTimeStamp,
+      );
 
       databaseMethods.updateTransacts(
-          widget.snap['bookId'], widget.snap['transactId'], transactMap);
+        widget.trData.bookId!,
+        widget.trData.transactId!,
+        updatedTransact.toMap(),
+      );
 
       handleEditedNoteTransaction();
 
@@ -200,23 +203,23 @@ class _EditTransactUIState extends State<EditTransactUI> {
       _isLoading = true;
     });
     await DatabaseMethods()
-        .deleteTransact(widget.snap['bookId'], widget.snap['transactId']);
+        .deleteTransact(widget.trData.bookId!, widget.trData.transactId!);
     if (transactType == 'Income') {
       Map<String, dynamic> _updatedMap = {
         'income':
-            FieldValue.increment(0.0 - double.parse(widget.snap['amount'])),
+            FieldValue.increment(0.0 - double.parse(widget.trData.amount!)),
       };
       await DatabaseMethods().updateBookTransactions(
-        widget.snap['bookId'],
+        widget.trData.bookId!,
         _updatedMap,
       );
     } else {
       Map<String, dynamic> _updatedMap = {
         'expense':
-            FieldValue.increment(0.0 - double.parse(widget.snap['amount'])),
+            FieldValue.increment(0.0 - double.parse(widget.trData.amount!)),
       };
       await DatabaseMethods().updateBookTransactions(
-        widget.snap['bookId'],
+        widget.trData.bookId!,
         _updatedMap,
       );
     }
@@ -285,10 +288,10 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               ),
                               Spacer(),
                               TransactTypeCard(
-                                icon: widget.snap['type'] == 'Income'
+                                icon: widget.trData.type! == 'Income'
                                     ? Icons.file_download_outlined
                                     : Icons.file_upload_outlined,
-                                label: widget.snap['type'],
+                                label: widget.trData.type!,
                               ),
                             ],
                           ),
@@ -374,7 +377,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                               context,
                                               setState,
                                               DateTime.parse(
-                                                  widget.snap['ts']));
+                                                  widget.trData.ts!));
                                         },
                                         child: Container(
                                           padding: EdgeInsets.all(10),
