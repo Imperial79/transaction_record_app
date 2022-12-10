@@ -630,7 +630,7 @@ class _BookUIState extends State<BookUI> {
       showDateWidget = true;
     }
     String ts = DateFormat("yMMMMd").parse(data.date!).toString();
-    // print(DateTime.now().difference(DateTime.parse(ts)).inDays);
+    
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
     } else if (DateTime.now().difference(DateTime.parse(ts)).inDays == 1) {
