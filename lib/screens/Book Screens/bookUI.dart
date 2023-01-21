@@ -90,7 +90,7 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
     bool isKeyboardOpen =
         MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
     _searchController.text.isEmpty ? _showAdd.value = true : false;
@@ -127,6 +127,9 @@ class _BookUIState extends State<BookUI> {
                                       'Return',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
+                                        color: isDarkMode
+                                            ? whiteColor
+                                            : blackColor,
                                       ),
                                     )
                                   : SizedBox(),
@@ -140,21 +143,30 @@ class _BookUIState extends State<BookUI> {
                         padding: EdgeInsets.only(right: 10),
                         margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: isDarkMode
+                              ? greyColorDarker
+                              : Colors.grey.shade200,
                           borderRadius: BorderRadius.horizontal(
                             left: Radius.circular(8),
                           ),
                         ),
                         child: TextField(
                           controller: _searchController,
+                          cursorColor:
+                              isDarkMode ? Colors.greenAccent : primaryColor,
+                          style: TextStyle(
+                            color: isDarkMode ? whiteColor : blackColor,
+                          ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w400,
+                              color: isDarkMode ? greyColorAccent : Colors.grey,
                             ),
                             hintText: 'Search amount, description, etc',
                             prefixIcon: Icon(
                               Icons.search,
+                              color: isDarkMode ? whiteColor : blackColor,
                             ),
                           ),
                           onChanged: (val) {
@@ -184,21 +196,25 @@ class _BookUIState extends State<BookUI> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 10.0),
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
-                                          Expanded(child: Text('Created On')),
-                                          SizedBox(width: 10),
                                           Container(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.shade300,
+                                              color: isDarkMode
+                                                  ? darkGreyColor
+                                                  : Colors.grey.shade300,
                                               borderRadius:
                                                   BorderRadius.circular(50),
                                             ),
                                             child: Text(
                                               '${widget.snap['date']}',
                                               style: TextStyle(
-                                                color: Colors.black,
+                                                color: isDarkMode
+                                                    ? greyColorAccent
+                                                    : Colors.black,
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
                                               ),
@@ -209,14 +225,18 @@ class _BookUIState extends State<BookUI> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.blue.shade100,
+                                              color: isDarkMode
+                                                  ? Colors.blue.shade900
+                                                  : Colors.blue.shade100,
                                               borderRadius:
                                                   BorderRadius.circular(50),
                                             ),
                                             child: Text(
                                               '${widget.snap['time']}',
                                               style: TextStyle(
-                                                color: Colors.blue.shade900,
+                                                color: isDarkMode
+                                                    ? whiteColor
+                                                    : Colors.blue.shade900,
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
                                               ),
@@ -235,6 +255,9 @@ class _BookUIState extends State<BookUI> {
                                               widget.snap['bookName'],
                                               style: TextStyle(
                                                 fontSize: sdp(context, 15),
+                                                color: isDarkMode
+                                                    ? whiteColor
+                                                    : blackColor,
                                               ),
                                             ),
                                           ),
@@ -250,6 +273,9 @@ class _BookUIState extends State<BookUI> {
                                             },
                                             icon: Icon(
                                               Icons.more_horiz,
+                                              color: isDarkMode
+                                                  ? whiteColor
+                                                  : blackColor,
                                             ),
                                           ),
                                         ],
@@ -258,7 +284,7 @@ class _BookUIState extends State<BookUI> {
                                     //  Book Menu -------------------------->
 
                                     AnimatedSize(
-                                      duration: Duration(milliseconds: 200),
+                                      duration: Duration(milliseconds: 300),
                                       child: ValueListenableBuilder<bool>(
                                         valueListenable: _showBookMenu,
                                         builder: (BuildContext context,
@@ -308,7 +334,9 @@ class _BookUIState extends State<BookUI> {
                                               text: 'INR ',
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: Colors.black,
+                                                color: isDarkMode
+                                                    ? whiteColor
+                                                    : blackColor,
                                                 fontFamily: 'Product',
                                                 fontWeight: FontWeight.w200,
                                               ),
@@ -318,7 +346,9 @@ class _BookUIState extends State<BookUI> {
                                                   ds['income'] - ds['expense']),
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: Colors.black,
+                                                color: isDarkMode
+                                                    ? whiteColor
+                                                    : blackColor,
                                                 fontFamily: 'Product',
                                                 fontWeight: FontWeight.w900,
                                               ),
@@ -373,7 +403,9 @@ class _BookUIState extends State<BookUI> {
                                                         .file_download_outlined
                                                     : Icons
                                                         .file_upload_outlined,
-                                            color: Colors.black,
+                                            color: isDarkMode
+                                                ? whiteColor
+                                                : blackColor,
                                           ),
                                         ),
                                       ),
@@ -630,7 +662,7 @@ class _BookUIState extends State<BookUI> {
       showDateWidget = true;
     }
     String ts = DateFormat("yMMMMd").parse(data.date!).toString();
-    
+
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
     } else if (DateTime.now().difference(DateTime.parse(ts)).inDays == 1) {
@@ -650,7 +682,7 @@ class _BookUIState extends State<BookUI> {
               dateLabel,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.black,
+                color: isDarkMode ? whiteColor : blackColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -670,7 +702,7 @@ class _BookUIState extends State<BookUI> {
                   padding: EdgeInsets.all(10),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: isDarkMode ? greyColorDarker : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
@@ -710,7 +742,9 @@ class _BookUIState extends State<BookUI> {
                                       fontSize: 20,
                                       color: data.type == 'Income'
                                           ? primaryColor
-                                          : lossColor,
+                                          : isDarkMode
+                                              ? Colors.redAccent
+                                              : lossColor,
                                       fontFamily: 'Product',
                                     ),
                                   ),
@@ -721,7 +755,9 @@ class _BookUIState extends State<BookUI> {
                                       fontSize: 20,
                                       color: data.type == 'Income'
                                           ? primaryColor
-                                          : lossColor,
+                                          : isDarkMode
+                                              ? Colors.redAccent
+                                              : lossColor,
                                       fontFamily: 'Product',
                                     ),
                                   ),
@@ -734,8 +770,12 @@ class _BookUIState extends State<BookUI> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
                               color: data.transactMode! == 'CASH'
-                                  ? Colors.white
-                                  : Colors.blue.shade100,
+                                  ? isDarkMode
+                                      ? darkGreyColor
+                                      : Colors.white
+                                  : isDarkMode
+                                      ? Color.fromARGB(255, 0, 34, 85)
+                                      : Colors.blue.shade100,
                             ),
                             child: Text(
                               data.transactMode!,
@@ -743,8 +783,12 @@ class _BookUIState extends State<BookUI> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: data.transactMode! == 'CASH'
-                                    ? Colors.black
-                                    : Colors.blue.shade900,
+                                    ? isDarkMode
+                                        ? greyColorAccent
+                                        : Colors.black
+                                    : isDarkMode
+                                        ? Colors.blueAccent
+                                        : Colors.blue.shade900,
                               ),
                             ),
                           ),
@@ -765,6 +809,8 @@ class _BookUIState extends State<BookUI> {
                                 children: [
                                   Icon(
                                     Icons.person,
+                                    color:
+                                        isDarkMode ? whiteColor : darkGreyColor,
                                     size: 15,
                                   ),
                                   SizedBox(
@@ -776,7 +822,9 @@ class _BookUIState extends State<BookUI> {
                                       style: TextStyle(
                                         fontSize: sdp(context, 10),
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade800,
+                                        color: isDarkMode
+                                            ? whiteColor
+                                            : darkGreyColor,
                                       ),
                                     ),
                                   ),
@@ -794,6 +842,8 @@ class _BookUIState extends State<BookUI> {
                                   Icon(
                                     Icons.short_text,
                                     size: 15,
+                                    color:
+                                        isDarkMode ? whiteColor : darkGreyColor,
                                   ),
                                   SizedBox(
                                     width: 5,
@@ -804,7 +854,9 @@ class _BookUIState extends State<BookUI> {
                                       style: TextStyle(
                                         fontSize: sdp(context, 10),
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.grey.shade800,
+                                        color: isDarkMode
+                                            ? whiteColor
+                                            : darkGreyColor,
                                       ),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
@@ -818,6 +870,7 @@ class _BookUIState extends State<BookUI> {
                             children: [
                               Icon(
                                 Icons.schedule,
+                                color: isDarkMode ? whiteColor : darkGreyColor,
                                 size: 15,
                               ),
                               SizedBox(
@@ -826,7 +879,8 @@ class _BookUIState extends State<BookUI> {
                               Text(
                                 data.time.toString(),
                                 style: TextStyle(
-                                  color: Colors.grey.shade600,
+                                  color:
+                                      isDarkMode ? whiteColor : darkGreyColor,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),

@@ -247,14 +247,18 @@ MaterialButton BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
   );
 }
 
-setSystemUIColors() {
+setSystemUIColors({
+  Brightness? statusBarIconBrightness,
+  Brightness? systemNavigationBarIconBrightness,
+  Brightness? statusBarBrightness,
+}) {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: bgColor,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: statusBarIconBrightness,
+      systemNavigationBarColor: Colors.transparent,
+      statusBarBrightness: statusBarBrightness,
+      systemNavigationBarIconBrightness: systemNavigationBarIconBrightness,
     ),
   );
 }

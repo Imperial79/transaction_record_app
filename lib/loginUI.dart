@@ -24,7 +24,8 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -65,7 +66,7 @@ class _LoginUIState extends State<LoginUI> {
                               'Fetching Your Transacts',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: Colors.black,
+                                color: isDarkMode ? whiteColor : Colors.black,
                                 fontSize: 20,
                               ),
                             ),
@@ -84,18 +85,14 @@ class _LoginUIState extends State<LoginUI> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Image.asset(
-                                //   logoPath,
-                                //   height: 100,
-                                // ),
-                                // SizedBox(
-                                //   height: 10,
-                                // ),
                                 Text(
                                   'Transact Record',
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.w900,
+                                    color: isDarkMode
+                                        ? greyColorAccent
+                                        : blackColor,
                                   ),
                                 ),
                                 SizedBox(
@@ -106,6 +103,9 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w500,
+                                    color: isDarkMode
+                                        ? greyColorAccent
+                                        : blackColor,
                                   ),
                                 ),
                                 Text(
@@ -214,6 +214,7 @@ class _LoginUIState extends State<LoginUI> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: isDarkMode ? greyColorAccent : blackColor,
                             ),
                           ),
                           SizedBox(

@@ -24,7 +24,9 @@ class MyApp extends StatelessWidget {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: [SystemUiOverlay.top]);
 
-    setSystemUIColors();
+    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
+
+    setSystemUIColors(statusBarBrightness: Theme.of(context).brightness);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
@@ -33,6 +35,15 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Product',
         useMaterial3: true,
         scaffoldBackgroundColor: bgColor,
+        colorSchemeSeed: primaryColor,
+      ),
+      darkTheme: ThemeData(
+        fontFamily: 'Product',
+        useMaterial3: true,
+        scaffoldBackgroundColor: darkScaffoldColor,
+        textTheme: TextTheme(
+          button: TextStyle(color: whiteColor),
+        ),
         colorSchemeSeed: primaryColor,
       ),
       home: FutureBuilder(

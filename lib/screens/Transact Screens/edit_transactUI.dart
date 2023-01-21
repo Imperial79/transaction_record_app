@@ -245,7 +245,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -282,7 +282,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   icon: Icon(
                                     Icons.close,
                                     size: 20,
-                                    color: Colors.black,
+                                    color:
+                                        isDarkMode ? whiteColor : Colors.black,
                                   ),
                                 ),
                               ),
@@ -301,7 +302,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           Container(
                             padding: EdgeInsets.all(13),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
+                              color: isDarkMode
+                                  ? greyColorDarker
+                                  : Colors.grey.shade200,
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Row(

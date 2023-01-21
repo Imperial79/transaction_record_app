@@ -152,8 +152,8 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
-
+    // setSystemUIColors();
+    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
     return Scaffold(
       body: SafeArea(
         child: Column(
