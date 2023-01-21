@@ -9,7 +9,7 @@ import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/widgets.dart';
+import 'package:transaction_record_app/components.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;
@@ -152,8 +152,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
-    // setSystemUIColors();
-    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
     return Scaffold(
       body: SafeArea(
         child: Column(

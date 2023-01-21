@@ -3,7 +3,7 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
-import 'package:transaction_record_app/widgets.dart';
+import 'package:transaction_record_app/components.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);
@@ -24,8 +24,6 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -66,7 +64,8 @@ class _LoginUIState extends State<LoginUI> {
                               'Fetching Your Transacts',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: isDarkMode ? whiteColor : Colors.black,
+                                color:
+                                    isDark(context) ? whiteColor : Colors.black,
                                 fontSize: 20,
                               ),
                             ),
@@ -90,7 +89,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.w900,
-                                    color: isDarkMode
+                                    color: isDark(context)
                                         ? greyColorAccent
                                         : blackColor,
                                   ),
@@ -103,7 +102,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w500,
-                                    color: isDarkMode
+                                    color: isDark(context)
                                         ? greyColorAccent
                                         : blackColor,
                                   ),
@@ -214,7 +213,9 @@ class _LoginUIState extends State<LoginUI> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: isDarkMode ? greyColorAccent : blackColor,
+                              color: isDark(context)
+                                  ? greyColorAccent
+                                  : blackColor,
                             ),
                           ),
                           SizedBox(

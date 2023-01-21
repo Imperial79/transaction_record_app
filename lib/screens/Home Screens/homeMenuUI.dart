@@ -7,6 +7,7 @@ import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 import '../../colors.dart';
+import '../../components.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
               Icon(
                 Icons.settings,
                 size: 19,
-                color: isDarkMode ? whiteColor : blackColor,
+                color: isDark(context) ? whiteColor : blackColor,
               ),
               SizedBox(
                 width: 10,
@@ -38,7 +39,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
-                  color: isDarkMode ? whiteColor : blackColor,
+                  color: isDark(context) ? whiteColor : blackColor,
                 ),
               ),
             ],
@@ -86,7 +87,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                       },
                       icon: Icon(Icons.logout, color: Colors.red),
                     ),
-                    btnColor: isDarkMode
+                    btnColor: isDark(context)
                         ? Color.fromARGB(255, 75, 0, 0)
                         : Color.fromARGB(255, 255, 208, 205),
                     textColor: Colors.red,
@@ -120,7 +121,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
           label,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: isDarkMode ? whiteColor : blackColor,
+            color: isDark(context) ? whiteColor : blackColor,
           ),
         ),
       ],

@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +14,7 @@ import '../../Functions/navigatorFns.dart';
 import '../../colors.dart';
 import '../../services/database.dart';
 import '../../services/user.dart';
-import '../../widgets.dart';
+import '../../components.dart';
 
 class BookUI extends StatefulWidget {
   final snap;
@@ -31,14 +34,16 @@ class _BookUIState extends State<BookUI> {
   bool _isLoading = false;
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
-  // List of items in our dropdown menu
   var items = ['All', 'Income', 'Expense'];
+  List<Map<String, dynamic>> transactList = [];
+  bool isFetching = true;
 
   //------------------------------------>
 
   @override
   void initState() {
     super.initState();
+    fetchBookTransacts();
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -80,6 +85,27 @@ class _BookUIState extends State<BookUI> {
 
   //------------------------------------>
 
+  Future<void> fetchBookTransacts() async {
+    QuerySnapshot<Map<String, dynamic>> data = await firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('transact_books')
+        .doc(widget.snap['bookId'])
+        .collection('transacts')
+        .orderBy('ts', descending: true)
+        .get();
+
+    for (var i = 0; i < data.docs.length; i++) {
+      transactList.add(data.docs[i].data());
+    }
+
+    setState(() {
+      isFetching = false;
+    });
+  }
+
+  ///------------------------------->
+
   @override
   void dispose() {
     super.dispose();
@@ -90,9 +116,6 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
-    bool isKeyboardOpen =
-        MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     return Scaffold(
       body: SafeArea(
@@ -104,7 +127,10 @@ class _BookUIState extends State<BookUI> {
                 Row(
                   children: [
                     AnimatedSize(
-                      duration: Duration(milliseconds: 200),
+                      duration: Duration(milliseconds: 300),
+                      reverseDuration: Duration(milliseconds: 300),
+                      alignment: Alignment.centerLeft,
+                      curve: Curves.ease,
                       child: Container(
                         child: IconButton(
                           color: textLinkColor,
@@ -116,6 +142,9 @@ class _BookUIState extends State<BookUI> {
                             children: [
                               Icon(
                                 Icons.arrow_back,
+                                color: isDark(context)
+                                    ? primaryAccentColor
+                                    : Colors.black,
                               ),
                               _searchController.text.isEmpty
                                   ? SizedBox(
@@ -127,7 +156,7 @@ class _BookUIState extends State<BookUI> {
                                       'Return',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: isDarkMode
+                                        color: isDark(context)
                                             ? whiteColor
                                             : blackColor,
                                       ),
@@ -143,7 +172,7 @@ class _BookUIState extends State<BookUI> {
                         padding: EdgeInsets.only(right: 10),
                         margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
                         decoration: BoxDecoration(
-                          color: isDarkMode
+                          color: isDark(context)
                               ? greyColorDarker
                               : Colors.grey.shade200,
                           borderRadius: BorderRadius.horizontal(
@@ -152,21 +181,24 @@ class _BookUIState extends State<BookUI> {
                         ),
                         child: TextField(
                           controller: _searchController,
-                          cursorColor:
-                              isDarkMode ? Colors.greenAccent : primaryColor,
+                          cursorColor: isDark(context)
+                              ? Colors.greenAccent
+                              : primaryColor,
                           style: TextStyle(
-                            color: isDarkMode ? whiteColor : blackColor,
+                            color: isDark(context) ? whiteColor : blackColor,
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w400,
-                              color: isDarkMode ? greyColorAccent : Colors.grey,
+                              color: isDark(context)
+                                  ? greyColorAccent
+                                  : Colors.grey,
                             ),
                             hintText: 'Search amount, description, etc',
                             prefixIcon: Icon(
                               Icons.search,
-                              color: isDarkMode ? whiteColor : blackColor,
+                              color: isDark(context) ? whiteColor : blackColor,
                             ),
                           ),
                           onChanged: (val) {
@@ -180,7 +212,10 @@ class _BookUIState extends State<BookUI> {
                   ],
                 ),
                 AnimatedSize(
-                  duration: Duration(milliseconds: 200),
+                  reverseDuration: Duration(milliseconds: 300),
+                  duration: Duration(milliseconds: 300),
+                  alignment: Alignment.topCenter,
+                  curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
                       valueListenable: _showAdd,
                       builder: (BuildContext context, bool showFullAppBar,
@@ -190,7 +225,7 @@ class _BookUIState extends State<BookUI> {
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    //  Created On Date -------------------------->
+                                    //  Created On Date ---------------->
 
                                     Padding(
                                       padding: EdgeInsets.symmetric(
@@ -203,7 +238,7 @@ class _BookUIState extends State<BookUI> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: isDarkMode
+                                              color: isDark(context)
                                                   ? darkGreyColor
                                                   : Colors.grey.shade300,
                                               borderRadius:
@@ -212,7 +247,7 @@ class _BookUIState extends State<BookUI> {
                                             child: Text(
                                               '${widget.snap['date']}',
                                               style: TextStyle(
-                                                color: isDarkMode
+                                                color: isDark(context)
                                                     ? greyColorAccent
                                                     : Colors.black,
                                                 fontWeight: FontWeight.w600,
@@ -225,7 +260,7 @@ class _BookUIState extends State<BookUI> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: isDarkMode
+                                              color: isDark(context)
                                                   ? Colors.blue.shade900
                                                   : Colors.blue.shade100,
                                               borderRadius:
@@ -234,7 +269,7 @@ class _BookUIState extends State<BookUI> {
                                             child: Text(
                                               '${widget.snap['time']}',
                                               style: TextStyle(
-                                                color: isDarkMode
+                                                color: isDark(context)
                                                     ? whiteColor
                                                     : Colors.blue.shade900,
                                                 fontWeight: FontWeight.w600,
@@ -255,7 +290,7 @@ class _BookUIState extends State<BookUI> {
                                               widget.snap['bookName'],
                                               style: TextStyle(
                                                 fontSize: sdp(context, 15),
-                                                color: isDarkMode
+                                                color: isDark(context)
                                                     ? whiteColor
                                                     : blackColor,
                                               ),
@@ -273,7 +308,7 @@ class _BookUIState extends State<BookUI> {
                                             },
                                             icon: Icon(
                                               Icons.more_horiz,
-                                              color: isDarkMode
+                                              color: isDark(context)
                                                   ? whiteColor
                                                   : blackColor,
                                             ),
@@ -334,7 +369,7 @@ class _BookUIState extends State<BookUI> {
                                               text: 'INR ',
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: isDarkMode
+                                                color: isDark(context)
                                                     ? whiteColor
                                                     : blackColor,
                                                 fontFamily: 'Product',
@@ -346,7 +381,7 @@ class _BookUIState extends State<BookUI> {
                                                   ds['income'] - ds['expense']),
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: isDarkMode
+                                                color: isDark(context)
                                                     ? whiteColor
                                                     : blackColor,
                                                 fontFamily: 'Product',
@@ -403,7 +438,7 @@ class _BookUIState extends State<BookUI> {
                                                         .file_download_outlined
                                                     : Icons
                                                         .file_upload_outlined,
-                                            color: isDarkMode
+                                            color: isDark(context)
                                                 ? whiteColor
                                                 : blackColor,
                                           ),
@@ -460,7 +495,11 @@ class _BookUIState extends State<BookUI> {
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
                       child: Column(
                         children: [
-                          TransactList(widget.snap['bookId']),
+                          isFetching
+                              ? DummyTransactList()
+                              : TransactList(
+                                  widget.snap['bookId'],
+                                ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
                           ),
@@ -508,8 +547,8 @@ class _BookUIState extends State<BookUI> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: isKeyboardOpen
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: isKeyboardOpen(context)
           ? Container()
           : InkWell(
               onTap: () {
@@ -522,16 +561,14 @@ class _BookUIState extends State<BookUI> {
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black,
-                      Colors.grey,
-                    ],
-                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  color: isDark(context) ? Colors.greenAccent : blackColor,
                 ),
                 child: AnimatedSize(
-                  duration: Duration(milliseconds: 100),
+                  reverseDuration: Duration(milliseconds: 300),
+                  duration: Duration(milliseconds: 300),
+                  alignment: Alignment.centerLeft,
+                  curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
                     valueListenable: _showAdd,
                     builder: (
@@ -550,8 +587,9 @@ class _BookUIState extends State<BookUI> {
                           children: [
                             Icon(
                               Icons.add_circle_outline,
-                              color: Colors.white,
-                              size: !_showAdd.value ? 30 : 24.0,
+                              color:
+                                  isDark(context) ? blackColor : Colors.white,
+                              size: 30,
                             ),
                             if (showFullAddBtn) const SizedBox(width: 10),
                             if (showFullAddBtn)
@@ -560,7 +598,9 @@ class _BookUIState extends State<BookUI> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15,
-                                  color: Colors.white,
+                                  color: isDark(context)
+                                      ? blackColor
+                                      : Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -575,79 +615,199 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
+  Widget DummyTransactList() {
+    return ListView.builder(
+      itemCount: 5,
+      shrinkWrap: true,
+      padding: EdgeInsets.all(0),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 20),
+          child: Container(
+            padding: EdgeInsets.all(10),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: isDark(context) ? Color(0xFF333333) : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                height: sdp(context, 30),
+                                width: sdp(context, 30),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                width: 200,
+                                height: 20,
+                                color: Colors.grey,
+                              ),
+                              Spacer(),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            width: 200,
+                            height: 20,
+                            color: Colors.grey,
+                          ),
+                          Container(
+                            width: 200,
+                            height: 20,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: !isDark(context) ? greyColorAccent : darkGreyColor,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Container(
+                    width: 200,
+                    height: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget TransactList(String bookId) {
-    return StreamBuilder<dynamic>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('transact_books')
-          .doc(bookId)
-          .collection('transacts')
-          .orderBy('ts', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.docs.length == 0) {
-            return FirstTransactCard(context, bookId);
-          } else {
-            int dataCounter = 0;
-            int loopCounter = 0;
-            dateTitle = '';
-            return ListView.builder(
-              physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data.docs.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                loopCounter += 1;
-                DocumentSnapshot ds = snapshot.data.docs[index];
-                Transact currTransact = Transact.fromDocumentSnap(ds);
-                final searchKey = _searchController.text.toLowerCase().trim();
-                if (_selectedSortType == 'All') {
-                  if (_searchController.text.isEmpty) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  } else if (ds['amount'].toString().contains(searchKey) ||
-                      ds['description']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      ds['source']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                } else if (ds['type'].toLowerCase() ==
-                    _selectedSortType.toLowerCase()) {
-                  if (_searchController.text.isEmpty) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  } else if (ds['amount'].toString().contains(searchKey) ||
-                      ds['description']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      ds['source']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                }
-                if (dataCounter == 0 &&
-                    loopCounter == snapshot.data.docs.length) {
-                  return Text('No Item Found');
-                }
-                return SizedBox();
-              },
-            );
+    // return StreamBuilder<dynamic>(
+    //   stream: FirebaseFirestore.instance
+    //       .collection('users')
+    //       .doc(FirebaseAuth.instance.currentUser!.uid)
+    //       .collection('transact_books')
+    //       .doc(bookId)
+    //       .collection('transacts')
+    //       .orderBy('ts', descending: true)
+    //       .snapshots(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.hasData) {
+    //       if (snapshot.data.docs.length == 0) {
+    //         return FirstTransactCard(context, bookId);
+    //       } else {
+    //         int dataCounter = 0;
+    //         int loopCounter = 0;
+    //         dateTitle = '';
+    //         return ListView.builder(
+    //           physics: BouncingScrollPhysics(),
+    //           itemCount: snapshot.data.docs.length,
+    //           shrinkWrap: true,
+    //           itemBuilder: (context, index) {
+    //             loopCounter += 1;
+    //             DocumentSnapshot ds = snapshot.data.docs[index];
+    //             Transact currTransact = Transact.fromDocumentSnap(ds);
+    //             final searchKey = _searchController.text.toLowerCase().trim();
+    //             if (_selectedSortType == 'All') {
+    //               if (_searchController.text.isEmpty) {
+    //                 dataCounter++;
+    //                 return TransactTile(currTransact);
+    //               } else if (ds['amount'].toString().contains(searchKey) ||
+    //                   ds['description']
+    //                       .toString()
+    //                       .toLowerCase()
+    //                       .contains(searchKey) ||
+    //                   ds['source']
+    //                       .toString()
+    //                       .toLowerCase()
+    //                       .contains(searchKey)) {
+    //                 dataCounter++;
+    //                 return TransactTile(currTransact);
+    //               }
+    //             } else if (ds['type'].toLowerCase() ==
+    //                 _selectedSortType.toLowerCase()) {
+    //               if (_searchController.text.isEmpty) {
+    //                 dataCounter++;
+    //                 return TransactTile(currTransact);
+    //               } else if (ds['amount'].toString().contains(searchKey) ||
+    //                   ds['description']
+    //                       .toString()
+    //                       .toLowerCase()
+    //                       .contains(searchKey) ||
+    //                   ds['source']
+    //                       .toString()
+    //                       .toLowerCase()
+    //                       .contains(searchKey)) {
+    //                 dataCounter++;
+    //                 return TransactTile(currTransact);
+    //               }
+    //             }
+    //             if (dataCounter == 0 &&
+    //                 loopCounter == snapshot.data.docs.length) {
+    //               return Text('No Item Found');
+    //             }
+    //             return SizedBox();
+    //           },
+    //         );
+    //       }
+    //     }
+    //     return Center(
+    //       child: CircularProgressIndicator(),
+    //     );
+    //   },
+    // );
+    return ListView.builder(
+      physics: BouncingScrollPhysics(),
+      itemCount: transactList.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        Transact currTransact = Transact.fromMap(transactList[index]);
+        final searchKey = _searchController.text.toLowerCase().trim();
+        if (_selectedSortType == 'All') {
+          if (_searchController.text.isEmpty) {
+            return TransactTile(currTransact);
+          } else if (currTransact.amount!.contains(searchKey) ||
+              currTransact.description!.toLowerCase().contains(searchKey) ||
+              currTransact.source!.toLowerCase().contains(searchKey)) {
+            return TransactTile(currTransact);
+          }
+        } else if (currTransact.type!.toLowerCase() ==
+            _selectedSortType.toLowerCase()) {
+          if (_searchController.text.isEmpty) {
+            return TransactTile(currTransact);
+          } else if (currTransact.amount!.contains(searchKey) ||
+              currTransact.description!.toLowerCase().contains(searchKey) ||
+              currTransact.source!.toLowerCase().contains(searchKey)) {
+            return TransactTile(currTransact);
           }
         }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        // if (dataCounter == 0 && loopCounter == snapshot.data.docs.length) {
+        //   return Text('No Item Found');
+        // }
+        return SizedBox();
       },
     );
   }
@@ -682,7 +842,7 @@ class _BookUIState extends State<BookUI> {
               dateLabel,
               style: TextStyle(
                 fontSize: 14,
-                color: isDarkMode ? whiteColor : blackColor,
+                color: isDark(context) ? whiteColor : blackColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -696,210 +856,213 @@ class _BookUIState extends State<BookUI> {
             );
           },
           child: Container(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? greyColorDarker : Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
+            margin: EdgeInsets.only(bottom: 20),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color:
+                    isDark(context) ? Color(0xFF333333) : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            backgroundColor: data.type == 'Income'
-                                ? primaryAccentColor
-                                : Colors.black,
-                            child: Icon(
-                              data.type == 'Income'
-                                  ? Icons.file_download_outlined
-                                  : Icons.file_upload_outlined,
-                              color: data.type == 'Income'
-                                  ? Colors.black
-                                  : Colors.white,
-                              size: 17,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        oCcy.format(double.parse(data.amount!)),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: data.type == 'Income'
-                                          ? primaryColor
-                                          : isDarkMode
-                                              ? Colors.redAccent
-                                              : lossColor,
-                                      fontFamily: 'Product',
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: ' INR',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 20,
-                                      color: data.type == 'Income'
-                                          ? primaryColor
-                                          : isDarkMode
-                                              ? Colors.redAccent
-                                              : lossColor,
-                                      fontFamily: 'Product',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: data.transactMode! == 'CASH'
-                                  ? isDarkMode
-                                      ? darkGreyColor
-                                      : Colors.white
-                                  : isDarkMode
-                                      ? Color.fromARGB(255, 0, 34, 85)
-                                      : Colors.blue.shade100,
-                            ),
-                            child: Text(
-                              data.transactMode!,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: data.transactMode! == 'CASH'
-                                    ? isDarkMode
-                                        ? greyColorAccent
-                                        : Colors.black
-                                    : isDarkMode
-                                        ? Colors.blueAccent
-                                        : Colors.blue.shade900,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Visibility(
-                            visible: data.source! != '',
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    color:
-                                        isDarkMode ? whiteColor : darkGreyColor,
-                                    size: 15,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      data.source!,
-                                      style: TextStyle(
-                                        fontSize: sdp(context, 10),
-                                        fontWeight: FontWeight.w500,
-                                        color: isDarkMode
-                                            ? whiteColor
-                                            : darkGreyColor,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  height: sdp(context, 30),
+                                  width: sdp(context, 30),
+                                  decoration: BoxDecoration(
+                                    color: data.type == 'Income'
+                                        ? primaryAccentColor
+                                        : Colors.black,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: data.type == 'Income'
+                                            ? primaryAccentColor
+                                                .withOpacity(0.5)
+                                            : greyColorAccent.withOpacity(0.5),
+                                        blurRadius: 30,
+                                        spreadRadius: 1,
                                       ),
+                                    ],
+                                  ),
+                                  child: FittedBox(
+                                    child: Icon(
+                                      data.type == 'Income'
+                                          ? Icons.file_download_outlined
+                                          : Icons.file_upload_outlined,
+                                      color: data.type == 'Income'
+                                          ? Colors.black
+                                          : Colors.white,
+                                      size: 17,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: data.description! != '',
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.short_text,
-                                    size: 15,
-                                    color:
-                                        isDarkMode ? whiteColor : darkGreyColor,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      data.description!,
-                                      style: TextStyle(
-                                        fontSize: sdp(context, 10),
-                                        fontWeight: FontWeight.w600,
-                                        color: isDarkMode
-                                            ? whiteColor
-                                            : darkGreyColor,
-                                      ),
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                color: isDarkMode ? whiteColor : darkGreyColor,
-                                size: 15,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                data.time.toString(),
-                                style: TextStyle(
-                                  color:
-                                      isDarkMode ? whiteColor : darkGreyColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: oCcy.format(
+                                              double.parse(data.amount!)),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: data.type == 'Income'
+                                                ? primaryColor
+                                                : isDark(context)
+                                                    ? Color(0xFFFFC1C1)
+                                                    : lossColor,
+                                            fontFamily: 'Product',
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' INR',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20,
+                                            color: data.type == 'Income'
+                                                ? primaryColor
+                                                : isDark(context)
+                                                    ? Color(0xFFFF8787)
+                                                    : lossColor,
+                                            fontFamily: 'Product',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Spacer(),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            StatsRow(
+                              color: Colors.amber.shade900,
+                              content: data.source!,
+                              icon: Icons.person,
+                            ),
+                            StatsRow(
+                              color: Colors.blue,
+                              content: data.description!,
+                              icon: Icons.short_text_rounded,
+                            ),
+                          ],
+                        ),
+                      ),
+                      RotatedBox(
+                        quarterTurns: 45,
+                        child: Text(
+                          data.transactMode!,
+                          style: TextStyle(
+                            letterSpacing: 10,
+                            fontWeight: FontWeight.w700,
+                            color: data.transactMode! == 'CASH'
+                                ? isDark(context)
+                                    ? Colors.grey
+                                    : Colors.white
+                                : isDark(context)
+                                    ? Color(0xFF9DC4FF)
+                                    : Colors.blue.shade100,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: !isDark(context) ? greyColorAccent : darkGreyColor,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          color: isDark(context) ? whiteColor : darkGreyColor,
+                          size: 15,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          data.time.toString(),
+                          style: TextStyle(
+                            color: isDark(context) ? whiteColor : darkGreyColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Padding StatsRow(
+      {required String content, required IconData icon, required Color color}) {
+    bool isEmpty = content.trim() == '';
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 10,
+            child: Icon(
+              icon,
+              size: 15,
+              color: isDark(context) ? whiteColor : darkGreyColor,
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Flexible(
+            child: Text(
+              isEmpty ? 'No Information Provided' : content,
+              style: TextStyle(
+                fontSize: sdp(context, 11),
+                fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
+                color: isDark(context)
+                    ? isEmpty
+                        ? Colors.grey
+                        : whiteColor
+                    : darkGreyColor,
+                fontStyle: isEmpty ? FontStyle.italic : null,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

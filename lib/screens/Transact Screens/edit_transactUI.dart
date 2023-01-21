@@ -6,7 +6,7 @@ import '../../Functions/transactFunctions.dart';
 import '../../colors.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
-import '../../widgets.dart';
+import '../../components.dart';
 
 class EditTransactUI extends StatefulWidget {
   final Transact trData;
@@ -245,7 +245,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -282,8 +281,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   icon: Icon(
                                     Icons.close,
                                     size: 20,
-                                    color:
-                                        isDarkMode ? whiteColor : Colors.black,
+                                    color: isDark(context)
+                                        ? whiteColor
+                                        : Colors.black,
                                   ),
                                 ),
                               ),
@@ -302,7 +302,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           Container(
                             padding: EdgeInsets.all(13),
                             decoration: BoxDecoration(
-                              color: isDarkMode
+                              color: isDark(context)
                                   ? greyColorDarker
                                   : Colors.grey.shade200,
                               borderRadius: BorderRadius.circular(15),

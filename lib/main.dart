@@ -5,7 +5,7 @@ import 'package:transaction_record_app/colors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/loginUI.dart';
-import 'package:transaction_record_app/widgets.dart';
+import 'package:transaction_record_app/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
@@ -21,10 +21,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.top]);
-
-    isDarkMode = Theme.of(context).brightness == Brightness.dark ? false : true;
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+      overlays: [SystemUiOverlay.top],
+    );
 
     setSystemUIColors(statusBarBrightness: Theme.of(context).brightness);
     return MaterialApp(
@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Product',
         useMaterial3: true,
         scaffoldBackgroundColor: darkScaffoldColor,
+        brightness: Theme.of(context).brightness,
         textTheme: TextTheme(
           button: TextStyle(color: whiteColor),
         ),

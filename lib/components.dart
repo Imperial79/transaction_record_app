@@ -263,6 +263,14 @@ setSystemUIColors({
   );
 }
 
+bool isKeyboardOpen(BuildContext context) {
+  return MediaQuery.of(context).viewInsets.bottom != 0;
+}
+
+bool isDark(BuildContext context) {
+  return Theme.of(context).brightness != Brightness.dark;
+}
+
 Widget ALertBox(BuildContext context, {final label, content, onPress}) {
   return StatefulBuilder(
     builder: (context, StateSetter setState) {

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-bool isDarkMode = false;
-
 final buttonGradient = LinearGradient(
   colors: [
     blackColor,
     Colors.grey.shade800,
+    Colors.grey.shade900,
   ],
-  begin: Alignment.centerLeft,
-  end: Alignment.centerRight,
+  begin: Alignment.bottomCenter,
+  end: Alignment.topCenter,
 );
 
 //  common colors
-Color blackColor = Colors.black;
+// Color blackColor = Colors.black;
+Color get blackColor => Colors.black;
 Color whiteColor = Colors.white;
 Color greyColorAccent = Colors.grey.shade300;
 Color primaryColor = Color(0xFF04C282);
