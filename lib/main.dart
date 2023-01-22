@@ -26,22 +26,24 @@ class MyApp extends StatelessWidget {
       overlays: [SystemUiOverlay.top],
     );
 
-    setSystemUIColors(statusBarBrightness: Theme.of(context).brightness);
+    setSystemUIColors();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
+      themeMode: ThemeMode.system,
       theme: ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
-        scaffoldBackgroundColor: bgColor,
+        scaffoldBackgroundColor: lightScaffoldColor,
+        brightness: Brightness.light,
         colorSchemeSeed: primaryColor,
       ),
       darkTheme: ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
         scaffoldBackgroundColor: darkScaffoldColor,
-        brightness: Theme.of(context).brightness,
+        brightness: Brightness.dark,
         textTheme: TextTheme(
           button: TextStyle(color: whiteColor),
         ),

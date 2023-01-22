@@ -5,7 +5,6 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
-
 import '../../colors.dart';
 import '../../components.dart';
 
@@ -19,6 +18,8 @@ class HomeMenuUI extends StatefulWidget {
 class _HomeMenuUIState extends State<HomeMenuUI> {
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Column(
       children: [
         Padding(
@@ -29,7 +30,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
               Icon(
                 Icons.settings,
                 size: 19,
-                color: isDark(context) ? whiteColor : blackColor,
+                color: isDark ? whiteColor : blackColor,
               ),
               SizedBox(
                 width: 10,
@@ -39,7 +40,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
-                  color: isDark(context) ? whiteColor : blackColor,
+                  color: isDark ? whiteColor : blackColor,
                 ),
               ),
             ],
@@ -87,7 +88,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                       },
                       icon: Icon(Icons.logout, color: Colors.red),
                     ),
-                    btnColor: isDark(context)
+                    btnColor: isDark
                         ? Color.fromARGB(255, 75, 0, 0)
                         : Color.fromARGB(255, 255, 208, 205),
                     textColor: Colors.red,
@@ -121,7 +122,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
           label,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: isDark(context) ? whiteColor : blackColor,
+            color: isDark ? whiteColor : blackColor,
           ),
         ),
       ],

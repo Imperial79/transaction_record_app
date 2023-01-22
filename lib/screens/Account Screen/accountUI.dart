@@ -5,6 +5,9 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
+import '../../colors.dart';
+import '../../components.dart';
+
 class AccountUI extends StatefulWidget {
   final name, email;
 
@@ -56,6 +59,8 @@ class _AccountUIState extends State<AccountUI> {
 
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -182,12 +187,7 @@ class _AccountUIState extends State<AccountUI> {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black,
-                  Colors.grey,
-                ],
-              ),
+              color: isDark ? primaryAccentColor : blackColor,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

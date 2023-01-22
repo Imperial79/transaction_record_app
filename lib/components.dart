@@ -137,11 +137,11 @@ Widget StatsCard({final label, content, isBook, bookId}) {
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           gradient: LinearGradient(
             colors: [
-              label == 'Expenses' ? Colors.red : primaryColor,
-              label == 'Expenses' ? Colors.red.shade100 : Color(0xFF1FFFB4),
+              label == 'Expenses' ? Colors.red.shade900 : primaryColor,
+              label == 'Expenses' ? Colors.red : Colors.lightGreenAccent,
             ],
           ),
         ),
@@ -247,6 +247,18 @@ MaterialButton BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
   );
 }
 
+Widget CustomCard(BuildContext context, {required Widget child}) {
+  return Container(
+    margin: EdgeInsets.only(bottom: 13),
+    padding: EdgeInsets.all(13),
+    decoration: BoxDecoration(
+      color: isDark ? cardColordark : cardColorlight,
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: child,
+  );
+}
+
 setSystemUIColors({
   Brightness? statusBarIconBrightness,
   Brightness? systemNavigationBarIconBrightness,
@@ -255,9 +267,9 @@ setSystemUIColors({
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: statusBarIconBrightness,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       systemNavigationBarColor: Colors.transparent,
-      statusBarBrightness: statusBarBrightness,
       systemNavigationBarIconBrightness: systemNavigationBarIconBrightness,
     ),
   );
@@ -265,10 +277,6 @@ setSystemUIColors({
 
 bool isKeyboardOpen(BuildContext context) {
   return MediaQuery.of(context).viewInsets.bottom != 0;
-}
-
-bool isDark(BuildContext context) {
-  return Theme.of(context).brightness != Brightness.dark;
 }
 
 Widget ALertBox(BuildContext context, {final label, content, onPress}) {

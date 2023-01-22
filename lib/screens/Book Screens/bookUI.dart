@@ -116,7 +116,9 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
     _searchController.text.isEmpty ? _showAdd.value = true : false;
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -142,9 +144,8 @@ class _BookUIState extends State<BookUI> {
                             children: [
                               Icon(
                                 Icons.arrow_back,
-                                color: isDark(context)
-                                    ? primaryAccentColor
-                                    : Colors.black,
+                                color:
+                                    isDark ? primaryAccentColor : Colors.black,
                               ),
                               _searchController.text.isEmpty
                                   ? SizedBox(
@@ -156,9 +157,7 @@ class _BookUIState extends State<BookUI> {
                                       'Return',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: isDark(context)
-                                            ? whiteColor
-                                            : blackColor,
+                                        color: isDark ? whiteColor : blackColor,
                                       ),
                                     )
                                   : SizedBox(),
@@ -172,33 +171,28 @@ class _BookUIState extends State<BookUI> {
                         padding: EdgeInsets.only(right: 10),
                         margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
                         decoration: BoxDecoration(
-                          color: isDark(context)
-                              ? greyColorDarker
-                              : Colors.grey.shade200,
+                          color: isDark ? cardColordark : cardColorlight,
                           borderRadius: BorderRadius.horizontal(
                             left: Radius.circular(8),
                           ),
                         ),
                         child: TextField(
                           controller: _searchController,
-                          cursorColor: isDark(context)
-                              ? Colors.greenAccent
-                              : primaryColor,
+                          cursorColor:
+                              isDark ? Colors.greenAccent : primaryColor,
                           style: TextStyle(
-                            color: isDark(context) ? whiteColor : blackColor,
+                            color: isDark ? whiteColor : blackColor,
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w400,
-                              color: isDark(context)
-                                  ? greyColorAccent
-                                  : Colors.grey,
+                              color: isDark ? greyColorAccent : Colors.grey,
                             ),
                             hintText: 'Search amount, description, etc',
                             prefixIcon: Icon(
                               Icons.search,
-                              color: isDark(context) ? whiteColor : blackColor,
+                              color: isDark ? whiteColor : blackColor,
                             ),
                           ),
                           onChanged: (val) {
@@ -238,7 +232,7 @@ class _BookUIState extends State<BookUI> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: isDark(context)
+                                              color: isDark
                                                   ? darkGreyColor
                                                   : Colors.grey.shade300,
                                               borderRadius:
@@ -247,7 +241,7 @@ class _BookUIState extends State<BookUI> {
                                             child: Text(
                                               '${widget.snap['date']}',
                                               style: TextStyle(
-                                                color: isDark(context)
+                                                color: isDark
                                                     ? greyColorAccent
                                                     : Colors.black,
                                                 fontWeight: FontWeight.w600,
@@ -260,7 +254,7 @@ class _BookUIState extends State<BookUI> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: isDark(context)
+                                              color: isDark
                                                   ? Colors.blue.shade900
                                                   : Colors.blue.shade100,
                                               borderRadius:
@@ -269,7 +263,7 @@ class _BookUIState extends State<BookUI> {
                                             child: Text(
                                               '${widget.snap['time']}',
                                               style: TextStyle(
-                                                color: isDark(context)
+                                                color: isDark
                                                     ? whiteColor
                                                     : Colors.blue.shade900,
                                                 fontWeight: FontWeight.w600,
@@ -290,7 +284,7 @@ class _BookUIState extends State<BookUI> {
                                               widget.snap['bookName'],
                                               style: TextStyle(
                                                 fontSize: sdp(context, 15),
-                                                color: isDark(context)
+                                                color: isDark
                                                     ? whiteColor
                                                     : blackColor,
                                               ),
@@ -308,7 +302,7 @@ class _BookUIState extends State<BookUI> {
                                             },
                                             icon: Icon(
                                               Icons.more_horiz,
-                                              color: isDark(context)
+                                              color: isDark
                                                   ? whiteColor
                                                   : blackColor,
                                             ),
@@ -369,7 +363,7 @@ class _BookUIState extends State<BookUI> {
                                               text: 'INR ',
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: isDark(context)
+                                                color: isDark
                                                     ? whiteColor
                                                     : blackColor,
                                                 fontFamily: 'Product',
@@ -381,7 +375,7 @@ class _BookUIState extends State<BookUI> {
                                                   ds['income'] - ds['expense']),
                                               style: TextStyle(
                                                 fontSize: sdp(context, 22),
-                                                color: isDark(context)
+                                                color: isDark
                                                     ? whiteColor
                                                     : blackColor,
                                                 fontFamily: 'Product',
@@ -438,7 +432,7 @@ class _BookUIState extends State<BookUI> {
                                                         .file_download_outlined
                                                     : Icons
                                                         .file_upload_outlined,
-                                            color: isDark(context)
+                                            color: isDark
                                                 ? whiteColor
                                                 : blackColor,
                                           ),
@@ -562,7 +556,7 @@ class _BookUIState extends State<BookUI> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: isDark(context) ? Colors.greenAccent : blackColor,
+                  color: isDark ? Colors.greenAccent : blackColor,
                 ),
                 child: AnimatedSize(
                   reverseDuration: Duration(milliseconds: 300),
@@ -587,8 +581,7 @@ class _BookUIState extends State<BookUI> {
                           children: [
                             Icon(
                               Icons.add_circle_outline,
-                              color:
-                                  isDark(context) ? blackColor : Colors.white,
+                              color: isDark ? blackColor : Colors.white,
                               size: 30,
                             ),
                             if (showFullAddBtn) const SizedBox(width: 10),
@@ -598,9 +591,7 @@ class _BookUIState extends State<BookUI> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15,
-                                  color: isDark(context)
-                                      ? blackColor
-                                      : Colors.white,
+                                  color: isDark ? blackColor : Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -627,7 +618,7 @@ class _BookUIState extends State<BookUI> {
             padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: isDark(context) ? Color(0xFF333333) : Colors.grey.shade200,
+              color: isDark ? Color(0xFF333333) : cardColorlight,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -688,7 +679,7 @@ class _BookUIState extends State<BookUI> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: !isDark(context) ? greyColorAccent : darkGreyColor,
+                    color: !isDark ? greyColorAccent : darkGreyColor,
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Container(
@@ -705,111 +696,109 @@ class _BookUIState extends State<BookUI> {
   }
 
   Widget TransactList(String bookId) {
-    // return StreamBuilder<dynamic>(
-    //   stream: FirebaseFirestore.instance
-    //       .collection('users')
-    //       .doc(FirebaseAuth.instance.currentUser!.uid)
-    //       .collection('transact_books')
-    //       .doc(bookId)
-    //       .collection('transacts')
-    //       .orderBy('ts', descending: true)
-    //       .snapshots(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasData) {
-    //       if (snapshot.data.docs.length == 0) {
-    //         return FirstTransactCard(context, bookId);
-    //       } else {
-    //         int dataCounter = 0;
-    //         int loopCounter = 0;
-    //         dateTitle = '';
-    //         return ListView.builder(
-    //           physics: BouncingScrollPhysics(),
-    //           itemCount: snapshot.data.docs.length,
-    //           shrinkWrap: true,
-    //           itemBuilder: (context, index) {
-    //             loopCounter += 1;
-    //             DocumentSnapshot ds = snapshot.data.docs[index];
-    //             Transact currTransact = Transact.fromDocumentSnap(ds);
-    //             final searchKey = _searchController.text.toLowerCase().trim();
-    //             if (_selectedSortType == 'All') {
-    //               if (_searchController.text.isEmpty) {
-    //                 dataCounter++;
-    //                 return TransactTile(currTransact);
-    //               } else if (ds['amount'].toString().contains(searchKey) ||
-    //                   ds['description']
-    //                       .toString()
-    //                       .toLowerCase()
-    //                       .contains(searchKey) ||
-    //                   ds['source']
-    //                       .toString()
-    //                       .toLowerCase()
-    //                       .contains(searchKey)) {
-    //                 dataCounter++;
-    //                 return TransactTile(currTransact);
-    //               }
-    //             } else if (ds['type'].toLowerCase() ==
-    //                 _selectedSortType.toLowerCase()) {
-    //               if (_searchController.text.isEmpty) {
-    //                 dataCounter++;
-    //                 return TransactTile(currTransact);
-    //               } else if (ds['amount'].toString().contains(searchKey) ||
-    //                   ds['description']
-    //                       .toString()
-    //                       .toLowerCase()
-    //                       .contains(searchKey) ||
-    //                   ds['source']
-    //                       .toString()
-    //                       .toLowerCase()
-    //                       .contains(searchKey)) {
-    //                 dataCounter++;
-    //                 return TransactTile(currTransact);
-    //               }
-    //             }
-    //             if (dataCounter == 0 &&
-    //                 loopCounter == snapshot.data.docs.length) {
-    //               return Text('No Item Found');
-    //             }
-    //             return SizedBox();
-    //           },
-    //         );
-    //       }
-    //     }
-    //     return Center(
-    //       child: CircularProgressIndicator(),
-    //     );
-    //   },
-    // );
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: transactList.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        Transact currTransact = Transact.fromMap(transactList[index]);
-        final searchKey = _searchController.text.toLowerCase().trim();
-        if (_selectedSortType == 'All') {
-          if (_searchController.text.isEmpty) {
-            return TransactTile(currTransact);
-          } else if (currTransact.amount!.contains(searchKey) ||
-              currTransact.description!.toLowerCase().contains(searchKey) ||
-              currTransact.source!.toLowerCase().contains(searchKey)) {
-            return TransactTile(currTransact);
-          }
-        } else if (currTransact.type!.toLowerCase() ==
-            _selectedSortType.toLowerCase()) {
-          if (_searchController.text.isEmpty) {
-            return TransactTile(currTransact);
-          } else if (currTransact.amount!.contains(searchKey) ||
-              currTransact.description!.toLowerCase().contains(searchKey) ||
-              currTransact.source!.toLowerCase().contains(searchKey)) {
-            return TransactTile(currTransact);
+    return StreamBuilder<dynamic>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('transact_books')
+          .doc(bookId)
+          .collection('transacts')
+          .orderBy('ts', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length == 0) {
+            return FirstTransactCard(context, bookId);
+          } else {
+            int dataCounter = 0;
+            int loopCounter = 0;
+            dateTitle = '';
+            return ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: snapshot.data.docs.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                loopCounter += 1;
+                DocumentSnapshot ds = snapshot.data.docs[index];
+                Transact currTransact = Transact.fromDocumentSnap(ds);
+                final searchKey = _searchController.text.toLowerCase().trim();
+                if (_selectedSortType == 'All') {
+                  if (_searchController.text.isEmpty) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  } else if (ds['amount'].toString().contains(searchKey) ||
+                      ds['description']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      ds['source']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  }
+                } else if (ds['type'].toLowerCase() ==
+                    _selectedSortType.toLowerCase()) {
+                  if (_searchController.text.isEmpty) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  } else if (ds['amount'].toString().contains(searchKey) ||
+                      ds['description']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      ds['source']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  }
+                }
+                if (dataCounter == 0 &&
+                    loopCounter == snapshot.data.docs.length) {
+                  return Text('No Item Found');
+                }
+                return SizedBox();
+              },
+            );
           }
         }
-        // if (dataCounter == 0 && loopCounter == snapshot.data.docs.length) {
-        //   return Text('No Item Found');
-        // }
         return SizedBox();
       },
     );
+    // return ListView.builder(
+    //   physics: BouncingScrollPhysics(),
+    //   itemCount: transactList.length,
+    //   shrinkWrap: true,
+    //   itemBuilder: (context, index) {
+    //     Transact currTransact = Transact.fromMap(transactList[index]);
+    //     final searchKey = _searchController.text.toLowerCase().trim();
+    //     if (_selectedSortType == 'All') {
+    //       if (_searchController.text.isEmpty) {
+    //         return TransactTile(currTransact);
+    //       } else if (currTransact.amount!.contains(searchKey) ||
+    //           currTransact.description!.toLowerCase().contains(searchKey) ||
+    //           currTransact.source!.toLowerCase().contains(searchKey)) {
+    //         return TransactTile(currTransact);
+    //       }
+    //     } else if (currTransact.type!.toLowerCase() ==
+    //         _selectedSortType.toLowerCase()) {
+    //       if (_searchController.text.isEmpty) {
+    //         return TransactTile(currTransact);
+    //       } else if (currTransact.amount!.contains(searchKey) ||
+    //           currTransact.description!.toLowerCase().contains(searchKey) ||
+    //           currTransact.source!.toLowerCase().contains(searchKey)) {
+    //         return TransactTile(currTransact);
+    //       }
+    //     }
+    //     // if (dataCounter == 0 && loopCounter == snapshot.data.docs.length) {
+    //     //   return Text('No Item Found');
+    //     // }
+    //     return SizedBox();
+    //   },
+    // );
   }
 
   Widget TransactTile(Transact data) {
@@ -842,7 +831,7 @@ class _BookUIState extends State<BookUI> {
               dateLabel,
               style: TextStyle(
                 fontSize: 14,
-                color: isDark(context) ? whiteColor : blackColor,
+                color: isDark ? whiteColor : blackColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -861,8 +850,7 @@ class _BookUIState extends State<BookUI> {
               padding: EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
-                color:
-                    isDark(context) ? Color(0xFF333333) : Colors.grey.shade200,
+                color: isDark ? Color(0xFF333333) : cardColorlight,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -891,9 +879,14 @@ class _BookUIState extends State<BookUI> {
                                     boxShadow: [
                                       BoxShadow(
                                         color: data.type == 'Income'
-                                            ? primaryAccentColor
-                                                .withOpacity(0.5)
-                                            : greyColorAccent.withOpacity(0.5),
+                                            ? isDark
+                                                ? primaryAccentColor
+                                                    .withOpacity(0.5)
+                                                : primaryAccentColor
+                                            : isDark
+                                                ? greyColorAccent
+                                                    .withOpacity(0.5)
+                                                : Colors.grey,
                                         blurRadius: 30,
                                         spreadRadius: 1,
                                       ),
@@ -926,7 +919,7 @@ class _BookUIState extends State<BookUI> {
                                             fontSize: 20,
                                             color: data.type == 'Income'
                                                 ? primaryColor
-                                                : isDark(context)
+                                                : isDark
                                                     ? Color(0xFFFFC1C1)
                                                     : lossColor,
                                             fontFamily: 'Product',
@@ -939,7 +932,7 @@ class _BookUIState extends State<BookUI> {
                                             fontSize: 20,
                                             color: data.type == 'Income'
                                                 ? primaryColor
-                                                : isDark(context)
+                                                : isDark
                                                     ? Color(0xFFFF8787)
                                                     : lossColor,
                                             fontFamily: 'Product',
@@ -974,14 +967,14 @@ class _BookUIState extends State<BookUI> {
                           data.transactMode!,
                           style: TextStyle(
                             letterSpacing: 10,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w900,
                             color: data.transactMode! == 'CASH'
-                                ? isDark(context)
+                                ? isDark
                                     ? Colors.grey
-                                    : Colors.white
-                                : isDark(context)
+                                    : Colors.lightGreen.shade600
+                                : isDark
                                     ? Color(0xFF9DC4FF)
-                                    : Colors.blue.shade100,
+                                    : Colors.blue.shade700,
                           ),
                         ),
                       ),
@@ -990,7 +983,7 @@ class _BookUIState extends State<BookUI> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: !isDark(context) ? greyColorAccent : darkGreyColor,
+                      color: !isDark ? greyColorAccent : darkGreyColor,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Row(
@@ -998,7 +991,7 @@ class _BookUIState extends State<BookUI> {
                       children: [
                         Icon(
                           Icons.schedule,
-                          color: isDark(context) ? whiteColor : darkGreyColor,
+                          color: isDark ? whiteColor : darkGreyColor,
                           size: 15,
                         ),
                         SizedBox(
@@ -1007,7 +1000,7 @@ class _BookUIState extends State<BookUI> {
                         Text(
                           data.time.toString(),
                           style: TextStyle(
-                            color: isDark(context) ? whiteColor : darkGreyColor,
+                            color: isDark ? whiteColor : darkGreyColor,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
@@ -1034,11 +1027,11 @@ class _BookUIState extends State<BookUI> {
         children: [
           CircleAvatar(
             backgroundColor: color,
-            radius: 10,
+            radius: 11,
             child: Icon(
               icon,
               size: 15,
-              color: isDark(context) ? whiteColor : darkGreyColor,
+              color: whiteColor,
             ),
           ),
           SizedBox(
@@ -1050,7 +1043,7 @@ class _BookUIState extends State<BookUI> {
               style: TextStyle(
                 fontSize: sdp(context, 11),
                 fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
-                color: isDark(context)
+                color: isDark
                     ? isEmpty
                         ? Colors.grey
                         : whiteColor
@@ -1071,7 +1064,7 @@ class _BookUIState extends State<BookUI> {
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.only(bottom: 10),
       width: double.infinity,
-      color: Colors.grey.shade200,
+      color: cardColorlight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

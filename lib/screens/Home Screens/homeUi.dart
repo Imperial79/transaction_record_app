@@ -83,16 +83,14 @@ class _HomeUiState extends State<HomeUi> {
                                 'Recent Books',
                                 style: TextStyle(
                                   fontSize: 25,
-                                  color:
-                                      isDark(context) ? whiteColor : blackColor,
+                                  color: isDark ? whiteColor : blackColor,
                                 ),
                               )
                             : Text(
                                 'Searching for "${_searchController.text}"',
                                 style: TextStyle(
-                                  color: isDark(context)
-                                      ? greyColorAccent
-                                      : darkGreyColor,
+                                  color:
+                                      isDark ? greyColorAccent : darkGreyColor,
                                 ),
                               ),
                         SizedBox(
@@ -140,12 +138,9 @@ class _HomeUiState extends State<HomeUi> {
 
   @override
   Widget build(BuildContext context) {
-    isKeyboardOpen =
-        MediaQuery.of(context).viewInsets.bottom != 0 ? true : false;
-
+    setSystemUIColors();
     _searchController.text.isEmpty ? _showAdd.value = true : false;
-
-    Size size = MediaQuery.of(context).size;
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -182,7 +177,7 @@ class _HomeUiState extends State<HomeUi> {
                           ? Column(
                               children: [
                                 SizedBox(
-                                  height: size.height * 0.01,
+                                  height: 10,
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 20),
@@ -240,7 +235,7 @@ class _HomeUiState extends State<HomeUi> {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w400,
-                                                  color: isDark(context)
+                                                  color: isDark
                                                       ? whiteColor
                                                       : blackColor,
                                                 ),
@@ -253,7 +248,7 @@ class _HomeUiState extends State<HomeUi> {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w900,
-                                                  color: isDark(context)
+                                                  color: isDark
                                                       ? whiteColor
                                                       : blackColor,
                                                 ),
@@ -264,9 +259,9 @@ class _HomeUiState extends State<HomeUi> {
                                       ),
                                       CircleAvatar(
                                         radius: 20,
-                                        backgroundColor: isDark(context)
-                                            ? darkGreyColor
-                                            : Colors.white,
+                                        backgroundColor: isDark
+                                            ? cardColordark
+                                            : Colors.grey.shade300,
                                         child: IconButton(
                                           onPressed: () {
                                             setState(() {
@@ -281,7 +276,7 @@ class _HomeUiState extends State<HomeUi> {
                                                 : Icons
                                                     .keyboard_arrow_down_rounded,
                                             size: 17,
-                                            color: isDark(context)
+                                            color: isDark
                                                 ? whiteColor
                                                 : blackColor,
                                           ),
@@ -309,7 +304,7 @@ class _HomeUiState extends State<HomeUi> {
                   ),
                   BookList(),
                   SizedBox(
-                    height: size.height * 0.07,
+                    height: 70,
                   ),
                 ],
               ),
@@ -330,7 +325,7 @@ class _HomeUiState extends State<HomeUi> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: isDark(context) ? Colors.greenAccent : blackColor,
+                  color: isDark ? Colors.greenAccent : blackColor,
                 ),
                 child: AnimatedSize(
                   reverseDuration: Duration(milliseconds: 300),
@@ -357,8 +352,7 @@ class _HomeUiState extends State<HomeUi> {
                           children: [
                             Icon(
                               Icons.add_circle_outline,
-                              color:
-                                  isDark(context) ? blackColor : Colors.white,
+                              color: isDark ? blackColor : Colors.white,
                               size: 30,
                             ),
                             if (showFullAddBtn) const SizedBox(width: 10),
@@ -368,9 +362,7 @@ class _HomeUiState extends State<HomeUi> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: sdp(context, 11),
-                                  color: isDark(context)
-                                      ? blackColor
-                                      : Colors.white,
+                                  color: isDark ? blackColor : Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -427,7 +419,7 @@ class _HomeUiState extends State<HomeUi> {
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
                 fontSize: 15,
-                color: isDark(context) ? greyColorAccent : blackColor,
+                color: isDark ? greyColorAccent : blackColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -442,12 +434,12 @@ class _HomeUiState extends State<HomeUi> {
             margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               color: amtPercentage > 100
-                  ? isDark(context)
+                  ? isDark
                       ? Colors.red.shade700
                       : Colors.red.shade100
-                  : isDark(context)
+                  : isDark
                       ? Color(0xFF303030)
-                      : Colors.grey.shade200,
+                      : cardColorlight,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Column(
@@ -476,9 +468,7 @@ class _HomeUiState extends State<HomeUi> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: sdp(context, 8.5),
-                                    color: isDark(context)
-                                        ? whiteColor
-                                        : blackColor,
+                                    color: isDark ? whiteColor : blackColor,
                                   ),
                                 )
                               : Icon(
@@ -499,8 +489,7 @@ class _HomeUiState extends State<HomeUi> {
                               style: TextStyle(
                                 fontSize: sdp(context, 15.5),
                                 fontWeight: FontWeight.w700,
-                                color:
-                                    isDark(context) ? whiteColor : blackColor,
+                                color: isDark ? whiteColor : blackColor,
                               ),
                             ),
                             Visibility(
@@ -512,9 +501,7 @@ class _HomeUiState extends State<HomeUi> {
                                   children: [
                                     Icon(
                                       Icons.segment,
-                                      color: isDark(context)
-                                          ? whiteColor
-                                          : blackColor,
+                                      color: isDark ? whiteColor : blackColor,
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -522,9 +509,7 @@ class _HomeUiState extends State<HomeUi> {
                                     Text(
                                       ds['bookDescription'],
                                       style: TextStyle(
-                                        color: isDark(context)
-                                            ? whiteColor
-                                            : blackColor,
+                                        color: isDark ? whiteColor : blackColor,
                                       ),
                                     ),
                                   ],
@@ -538,8 +523,7 @@ class _HomeUiState extends State<HomeUi> {
                               children: [
                                 Icon(
                                   Icons.schedule,
-                                  color:
-                                      isDark(context) ? whiteColor : blackColor,
+                                  color: isDark ? whiteColor : blackColor,
                                   size: 15,
                                 ),
                                 SizedBox(
@@ -549,9 +533,8 @@ class _HomeUiState extends State<HomeUi> {
                                   ds['date'] + ' at ' + ds['time'],
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isDark(context)
-                                        ? greyColorAccent
-                                        : blackColor,
+                                    color:
+                                        isDark ? greyColorAccent : blackColor,
                                   ),
                                 ),
                               ],
@@ -570,7 +553,7 @@ class _HomeUiState extends State<HomeUi> {
                         crossAlign: CrossAxisAlignment.start,
                         amount: "₹ " + oCcy.format(ds['income']),
                         label: 'Income',
-                        cardColor: isDark(context)
+                        cardColor: isDark
                             ? Color.fromARGB(255, 0, 66, 2)
                             : Color.fromARGB(255, 181, 255, 183),
                         icon: Icons.file_download_outlined,
@@ -579,14 +562,14 @@ class _HomeUiState extends State<HomeUi> {
                         ' - ',
                         style: TextStyle(
                           fontSize: sdp(context, 20),
-                          color: isDark(context) ? whiteColor : blackColor,
+                          color: isDark ? whiteColor : blackColor,
                         ),
                       ),
                       TransactStatsCard(
                         crossAlign: CrossAxisAlignment.center,
                         amount: "₹ " + oCcy.format(ds['expense']),
                         label: 'Expense',
-                        cardColor: isDark(context)
+                        cardColor: isDark
                             ? Colors.grey.shade700
                             : Colors.grey.shade300,
                         icon: Icons.file_upload_outlined,
@@ -595,7 +578,7 @@ class _HomeUiState extends State<HomeUi> {
                         ' = ',
                         style: TextStyle(
                           fontSize: sdp(context, 15),
-                          color: isDark(context) ? whiteColor : blackColor,
+                          color: isDark ? whiteColor : blackColor,
                         ),
                       ),
                       TransactStatsCard(
@@ -604,7 +587,7 @@ class _HomeUiState extends State<HomeUi> {
                         amount:
                             "₹ " + oCcy.format(ds['income'] - ds['expense']),
                         icon: Icons.wallet,
-                        cardColor: isDark(context)
+                        cardColor: isDark
                             ? Color.fromARGB(255, 0, 82, 150)
                             : Color.fromARGB(255, 197, 226, 250),
                       ),
@@ -640,7 +623,7 @@ class _HomeUiState extends State<HomeUi> {
             Text(
               label,
               style: TextStyle(
-                color: isDark(context) ? greyColorAccent : blackColor,
+                color: isDark ? greyColorAccent : blackColor,
               ),
             ),
             Text(
@@ -648,7 +631,7 @@ class _HomeUiState extends State<HomeUi> {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: sdp(context, 10),
-                color: isDark(context) ? greyColorAccent : blackColor,
+                color: isDark ? greyColorAccent : blackColor,
               ),
               textAlign: TextAlign.end,
             ),
@@ -665,7 +648,7 @@ class _HomeUiState extends State<HomeUi> {
           child: AnimatedContainer(
             duration: Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: isDark(context) ? greyColorDarker : Colors.grey.shade200,
+              color: isDark ? cardColordark : cardColorlight,
               borderRadius: BorderRadius.horizontal(
                 right:
                     Radius.circular(_searchController.text.isNotEmpty ? 15 : 0),
@@ -676,7 +659,7 @@ class _HomeUiState extends State<HomeUi> {
               keyboardType: TextInputType.text,
               style: TextStyle(
                 fontSize: sdp(context, 15),
-                color: isDark(context) ? whiteColor : blackColor,
+                color: isDark ? whiteColor : blackColor,
               ),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(15),
@@ -684,14 +667,12 @@ class _HomeUiState extends State<HomeUi> {
                 prefixIcon: Icon(
                   Icons.search,
                   size: sdp(context, 20),
-                  color:
-                      isDark(context) ? greyColorAccent : Colors.grey.shade600,
+                  color: isDark ? greyColorAccent : Colors.grey.shade600,
                 ),
                 hintText: 'Search for Name or Description',
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color:
-                      isDark(context) ? greyColorAccent : Colors.grey.shade600,
+                  color: isDark ? greyColorAccent : Colors.grey.shade600,
                   fontSize: sdp(context, 15),
                 ),
               ),

@@ -27,9 +27,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
-  // final title = TextEditingController();
-  final ValueNotifier<bool> _showAmountField = ValueNotifier<bool>(true);
-  final ScrollController _scrollController = ScrollController();
 
   String source = 'From';
   String transactType = "Income";
@@ -53,14 +50,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        _showAmountField.value = false;
-      } else {
-        _showAmountField.value = true;
-      }
-    });
   }
 
   handleNewNoteTransaction(String uploadableAmount) {
@@ -144,7 +133,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   @override
   void dispose() {
     super.dispose();
-    _scrollController.dispose();
     amountField.dispose();
     descriptionField.dispose();
     sourceField.dispose();
@@ -152,444 +140,452 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                controller: _scrollController,
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.all(sdp(context, 10)),
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            size: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                      Expanded(
-                        child: TransactTypeCard(
-                          icon: Icons.file_download_outlined,
-                          label: 'Income',
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: TransactTypeCard(
-                          icon: Icons.file_upload_outlined,
-                          label: 'Expense',
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(13),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Row(
                       children: [
-                        Icon(
-                          Icons.short_text_rounded,
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark ? Colors.grey.shade800 : Colors.grey,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(
+                              Icons.close,
+                              size: 20,
+                              color: isDark ? whiteColor : Colors.black,
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Expanded(
+                          child: TransactTypeCard(
+                            icon: Icons.file_download_outlined,
+                            label: 'Income',
+                          ),
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         Expanded(
-                          child: TextField(
-                            controller: descriptionField,
-                            textCapitalization: TextCapitalization.sentences,
-                            maxLines: 2,
-                            minLines: 1,
-                            cursorColor: Colors.black,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Add description (Optional)',
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                          child: TransactTypeCard(
+                            icon: Icons.file_upload_outlined,
+                            label: 'Expense',
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 13, vertical: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(15),
+                    SizedBox(
+                      height: 15,
                     ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.schedule,
-                              size: 20,
+                    CustomCard(
+                      context,
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.blue,
+                            child: Icon(
+                              Icons.short_text_rounded,
+                              color: isDark ? whiteColor : Colors.black,
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Created on',
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: TextField(
+                              controller: descriptionField,
+                              maxLines: 5,
+                              minLines: 1,
+                              cursorColor: isDark ? whiteColor : Colors.black,
                               style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
+                                color: isDark ? whiteColor : Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Add description (Optional)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InkWell(
+                          ),
+                        ],
+                      ),
+                    ),
+                    CustomCard(
+                      context,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: sdp(context, 15),
+                                color: isDark ? whiteColor : Colors.black,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'Created on',
+                                style: TextStyle(
+                                  color: isDark ? whiteColor : Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    _selectedDateMap = await selectDate(
+                                        context, setState, DateTime.now());
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color:
+                                          isDark ? darkGreyColor : Colors.white,
+                                    ),
+                                    child: Text(
+                                      _selectedDateMap['displayDate'],
+                                      style: TextStyle(
+                                        color: isDark ? whiteColor : blackColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              InkWell(
                                 onTap: () async {
-                                  _selectedDateMap = await selectDate(
-                                      context, setState, DateTime.now());
-                                  // _selectedTimeStamp =
-                                  //     await convertTimeToTS(
-                                  //         _selectedDateMap['tsDate'],
-                                  //         _selectedTimeMap['tsTime']);
+                                  _selectedTimeMap = await selectTime(
+                                      context, setState, TimeOfDay.now());
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
+                                    color:
+                                        isDark ? darkGreyColor : Colors.white,
                                   ),
                                   child: Text(
-                                    _selectedDateMap['displayDate'],
+                                    _selectedTimeMap['displayTime'],
+                                    style: TextStyle(
+                                      color: isDark ? whiteColor : blackColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    CustomCard(
+                      context,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.amber.shade900,
+                            child: Icon(
+                              Icons.person,
+                              color: isDark ? whiteColor : blackColor,
+                              size: sdp(context, 12),
                             ),
-                            SizedBox(
-                              width: 6,
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                _selectedTimeMap = await selectTime(
-                                    context, setState, TimeOfDay.now());
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                ),
-                                child: Text(
-                                  _selectedTimeMap['displayTime'],
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: TextField(
+                              controller: sourceField,
+                              maxLines: 4,
+                              minLines: 1,
+                              textCapitalization: TextCapitalization.sentences,
+                              cursorColor: isDark ? whiteColor : Colors.black,
+                              style: TextStyle(
+                                color: isDark ? whiteColor : Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Add source (Optional)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RotatedBox(
+                          quarterTurns: 45,
+                          child: Text(
+                            'CASH',
+                            style: TextStyle(
+                              color: transactMode == 'ONLINE'
+                                  ? Colors.grey
+                                  : isDark
+                                      ? Colors.lightGreenAccent
+                                      : Colors.lightGreen,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: sdp(context, 6),
+                        ),
+                        transactTypeToggle(context),
+                        SizedBox(
+                          width: sdp(context, 6),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontFamily: 'Product',
+                              color: transactMode == 'ONLINE'
+                                  ? isDark
+                                      ? Colors.blue.shade200
+                                      : Colors.blue.shade700
+                                  : Colors.grey,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'ON',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: sdp(context, 13),
+                                ),
+                              ),
+                              TextSpan(
+                                text: '\nLINE',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: sdp(context, 11),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
+                  ],
+                ),
+              ),
+            ),
+            BottomCard(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container BottomCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade900 : whiteColor,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: transactType == 'Income'
+                ? Colors.lightGreen.withOpacity(0.2)
+                : isDark
+                    ? Colors.grey.shade800
+                    : Colors.red.withOpacity(0.2),
+            spreadRadius: 10,
+            blurRadius: 100,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transactMode,
+                  style: TextStyle(
+                    letterSpacing: 10,
+                    fontSize: sdp(context, 15),
+                    fontWeight: FontWeight.w800,
+                    color: transactMode == 'CASH'
+                        ? isDark
+                            ? Colors.lightGreenAccent
+                            : Colors.lightGreen
+                        : isDark
+                            ? Colors.blue.shade200
+                            : Colors.blue.shade700,
                   ),
-                  SizedBox(
-                    height: 10,
+                ),
+                Text(
+                  DateFormat('dd MMMM, yyyy').format(DateTime.now()),
+                  style: TextStyle(color: isDark ? whiteColor : darkGreyColor),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            color: isDark ? Colors.grey.shade800 : Colors.grey,
+            child: Flexible(
+              child: TextField(
+                controller: amountField,
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? whiteColor : Colors.black,
+                  fontSize: sdp(context, 20),
+                ),
+                cursorColor: isDark ? whiteColor : Colors.black,
+                decoration: InputDecoration(
+                  prefixText: 'INR ',
+                  prefixStyle: TextStyle(
+                    color: isDark ? whiteColor : Colors.grey.shade700,
+                    fontSize: sdp(context, 20),
+                    fontWeight: FontWeight.w300,
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                  border: InputBorder.none,
+                  hintText: '0.00',
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.grey.shade400,
+                    fontSize: sdp(context, 20),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MediaQuery.of(context).viewInsets.bottom != 0
+                    ? Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isDark ? darkGreyColor : cardColorlight,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                          },
+                          icon: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        width: 20,
+                      ),
+                MaterialButton(
+                  onPressed: () {
+                    saveTransacts();
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 0,
+                  padding: EdgeInsets.zero,
+                  child: Ink(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 25,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        colors: [
+                          transactType == 'Income'
+                              ? primaryColor
+                              : Colors.black,
+                          transactType == 'Income'
+                              ? Colors.lightGreenAccent
+                              : Colors.grey,
+                        ],
+                      ),
                     ),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.person,
+                          transactType == 'Income'
+                              ? Icons.file_download_outlined
+                              : Icons.file_upload_outlined,
+                          color: transactType == 'Income'
+                              ? Colors.black
+                              : Colors.white,
                         ),
                         SizedBox(
                           width: 10,
                         ),
-                        Expanded(
-                          child: TextField(
-                            controller: sourceField,
-                            textCapitalization: TextCapitalization.sentences,
-                            maxLines: 4,
-                            minLines: 1,
-                            cursorColor: Colors.black,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Add source (Optional)',
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                        Text(
+                          'Update ' + transactType,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: transactType == 'Income'
+                                ? Colors.black
+                                : Colors.white,
+                            fontSize: 18,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: sdp(context, 10),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RotatedBox(
-                        quarterTurns: 45,
-                        child: Text(
-                          'CASH',
-                          style: TextStyle(
-                            color: transactMode == 'ONLINE'
-                                ? Colors.grey
-                                : Colors.black,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: sdp(context, 6),
-                      ),
-                      transactTypeToggle(context),
-                      SizedBox(
-                        width: sdp(context, 6),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontFamily: 'Product',
-                            color: transactMode == 'ONLINE'
-                                ? Colors.blue.shade700
-                                : Colors.grey,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: 'ON',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: sdp(context, 13),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '\nLINE',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: sdp(context, 11),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Container(
-              width: double.infinity,
-              height: sdp(context, 140),
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade100,
-                    spreadRadius: 10,
-                    blurRadius: 10,
-                    offset: Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '₹ ',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: amountField,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black,
-                            fontSize: 40,
-                          ),
-                          cursorColor: Colors.black,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: '0.00',
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.grey.shade400,
-                              fontSize: 40,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: sdp(context, 10),
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: transactMode == 'ONLINE'
-                              ? Colors.blue.shade100
-                              : Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          transactMode,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: transactMode == 'ONLINE'
-                                ? Colors.blue.shade900
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MediaQuery.of(context).viewInsets.bottom != 0
-                          ? Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1,
-                                ),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-                                },
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down_rounded,
-                                  size: 20,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            )
-                          : SizedBox(
-                              width: 20,
-                            ),
-                      AnimatedSize(
-                        duration: Duration(milliseconds: 100),
-                        child: MaterialButton(
-                          onPressed: () {
-                            saveTransacts();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          elevation: 0,
-                          padding: EdgeInsets.zero,
-                          child: Ink(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 25,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              gradient: LinearGradient(
-                                colors: [
-                                  transactType == 'Income'
-                                      ? primaryColor
-                                      : Colors.black,
-                                  transactType == 'Income'
-                                      ? primaryAccentColor
-                                      : Colors.grey,
-                                ],
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  transactType == 'Income'
-                                      ? Icons.file_download_outlined
-                                      : Icons.file_upload_outlined,
-                                  color: transactType == 'Income'
-                                      ? Colors.green.shade900
-                                      : Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Add ' + transactType,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: transactType == 'Income'
-                                        ? Colors.green.shade900
-                                        : Colors.white,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -611,18 +607,19 @@ class _NewTransactUiState extends State<NewTransactUi> {
         padding: EdgeInsets.all(10),
         width: sdp(context, 220),
         decoration: BoxDecoration(
-          color: transactMode == 'ONLINE'
-              ? Colors.blue.shade100
-              : Colors.grey.shade200,
+          color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
+              .withOpacity(0.2),
           borderRadius: BorderRadius.circular(50),
         ),
         child: AnimatedAlign(
+          curve: Curves.ease,
           duration: Duration(milliseconds: 250),
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
-            backgroundColor:
-                transactMode == 'ONLINE' ? Colors.blue.shade700 : Colors.black,
+            backgroundColor: transactMode == 'ONLINE'
+                ? Colors.blue.shade700
+                : Colors.lightGreen,
             radius: sdp(context, 15),
             child: transactMode == 'ONLINE'
                 ? Icon(
@@ -647,54 +644,53 @@ class _NewTransactUiState extends State<NewTransactUi> {
   Widget TransactTypeCard({final label, icon}) {
     bool isIncome = label == 'Income';
     bool isSelected = transactType == label;
-    return MaterialButton(
+    return ElevatedButton.icon(
       onPressed: () {
         setState(() {
           transactType = label;
         });
       },
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isIncome
+            ? isSelected
+                ? primaryAccentColor
+                : isDark
+                    ? cardColordark
+                    : cardColorlight
+            : isSelected
+                ? isDark
+                    ? Colors.redAccent
+                    : blackColor
+                : isDark
+                    ? cardColordark
+                    : cardColorlight,
       ),
-      color: isIncome
-          ? isSelected
-              ? primaryAccentColor
-              : Colors.grey.shade200
-          : isSelected
-              ? Colors.black
-              : Colors.grey.shade200,
-      elevation: 0,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 20,
+      icon: Icon(
+        icon,
+        color: isIncome
+            ? isSelected
+                ? blackColor
+                : Colors.grey
+            : isSelected
+                ? whiteColor
+                : Colors.grey,
+      ),
+      label: FittedBox(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
             color: isIncome
-                ? Colors.black
+                ? isSelected
+                    ? Colors.black
+                    : Colors.grey
                 : isSelected
                     ? Colors.white
-                    : Colors.black,
+                    : isDark
+                        ? Colors.grey
+                        : Colors.black,
           ),
-          SizedBox(
-            width: 7,
-          ),
-          Flexible(
-            child: FittedBox(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: isIncome
-                      ? Colors.black
-                      : isSelected
-                          ? Colors.white
-                          : Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
