@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -94,10 +91,11 @@ class _BookUIState extends State<BookUI> {
         .collection('transacts')
         .orderBy('ts', descending: true)
         .get();
-
+    List<Map<String, dynamic>> tList = [];
     for (var i = 0; i < data.docs.length; i++) {
-      transactList.add(data.docs[i].data());
+      tList.add(data.docs[i].data());
     }
+    transactList = tList;
 
     setState(() {
       isFetching = false;
@@ -219,97 +217,43 @@ class _BookUIState extends State<BookUI> {
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    //  Created On Date ---------------->
-
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? darkGreyColor
-                                                  : Colors.grey.shade300,
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              '${widget.snap['date']}',
-                                              style: TextStyle(
-                                                color: isDark
-                                                    ? greyColorAccent
-                                                    : Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? Colors.blue.shade900
-                                                  : Colors.blue.shade100,
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              '${widget.snap['time']}',
-                                              style: TextStyle(
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : Colors.blue.shade900,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                     Padding(
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 10),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              widget.snap['bookName'],
-                                              style: TextStyle(
-                                                fontSize: sdp(context, 15),
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
+                                      child: TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _showBookMenu.value =
+                                                !_showBookMenu.value;
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                widget.snap['bookName'],
+                                                style: TextStyle(
+                                                  fontSize: sdp(context, 15),
+                                                  color: isDark
+                                                      ? whiteColor
+                                                      : blackColor,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _showBookMenu.value =
-                                                    !_showBookMenu.value;
-                                              });
-                                            },
-                                            icon: Icon(
-                                              Icons.more_horiz,
+                                            Icon(
+                                              Icons.keyboard_arrow_down_rounded,
                                               color: isDark
-                                                  ? whiteColor
+                                                  ? Colors.grey
                                                   : blackColor,
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
+
                                     //  Book Menu -------------------------->
 
                                     AnimatedSize(
@@ -391,38 +335,25 @@ class _BookUIState extends State<BookUI> {
                                       width: sdp(context, 30),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.grey),
+                                        color: isDark
+                                            ? cardColordark
+                                            : Colors.grey.shade300,
                                       ),
                                       child: FittedBox(
                                         child: IconButton(
                                           onPressed: () {
-                                            showMenu(
+                                            showModalBottomSheet(
                                               context: context,
-                                              color: Colors.blueGrey.shade800,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              position: RelativeRect.fromLTRB(
-                                                  sdp(context, 100),
-                                                  sdp(context, 120),
-                                                  sdp(context, 0),
-                                                  sdp(context, 0)),
-                                              items: [
-                                                MenuBtns(
-                                                  setState: setState,
-                                                  label: 'All',
-                                                ),
-                                                MenuBtns(
-                                                  setState: setState,
-                                                  label: 'Income',
-                                                ),
-                                                MenuBtns(
-                                                  setState: setState,
-                                                  label: 'Expense',
-                                                ),
-                                              ],
-                                            );
+                                              enableDrag: true,
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              builder: (context) {
+                                                return FilterBottomSheet(
+                                                    setState);
+                                              },
+                                            ).then((value) {
+                                              setState(() {});
+                                            });
                                           },
                                           icon: Icon(
                                             _selectedSortType == 'All'
@@ -489,11 +420,14 @@ class _BookUIState extends State<BookUI> {
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
                       child: Column(
                         children: [
-                          isFetching
-                              ? DummyTransactList()
-                              : TransactList(
-                                  widget.snap['bookId'],
-                                ),
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 500),
+                            child: isFetching
+                                ? DummyTransactList()
+                                : TransactList(
+                                    widget.snap['bookId'],
+                                  ),
+                          ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
                           ),
@@ -542,7 +476,7 @@ class _BookUIState extends State<BookUI> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: isKeyboardOpen(context)
+      floatingActionButton: isKeyboardOpen(context) || _isLoading
           ? Container()
           : InkWell(
               onTap: () {
@@ -551,7 +485,11 @@ class _BookUIState extends State<BookUI> {
                   NewTransactUi(
                     bookId: widget.snap['bookId'],
                   ),
-                );
+                ).then((value) {
+                  setState(() {
+                    fetchBookTransacts();
+                  });
+                });
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -607,198 +545,216 @@ class _BookUIState extends State<BookUI> {
   }
 
   Widget DummyTransactList() {
-    return ListView.builder(
-      itemCount: 5,
-      shrinkWrap: true,
-      padding: EdgeInsets.all(0),
-      itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 20),
-          child: Container(
-            padding: EdgeInsets.all(10),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: isDark ? Color(0xFF333333) : cardColorlight,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                height: sdp(context, 30),
-                                width: sdp(context, 30),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  shape: BoxShape.circle,
+    return Column(
+      children: [
+        for (int i = 0; i <= 10; i++)
+          Container(
+            margin: EdgeInsets.only(bottom: 20),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isDark ? Color(0xFF333333) : cardColorlight,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  height: sdp(context, 30),
+                                  width: sdp(context, 30),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Container(
-                                width: 200,
-                                height: 20,
-                                color: Colors.grey,
-                              ),
-                              Spacer(),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            width: 200,
-                            height: 20,
-                            color: Colors.grey,
-                          ),
-                          Container(
-                            width: 200,
-                            height: 20,
-                            color: Colors.grey,
-                          ),
-                        ],
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  width: 200,
+                                  height: 20,
+                                  color: Colors.grey,
+                                ),
+                                Spacer(),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: 200,
+                              height: 20,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 200,
+                              height: 20,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: !isDark ? greyColorAccent : darkGreyColor,
-                    borderRadius: BorderRadius.circular(100),
+                    ],
                   ),
-                  child: Container(
-                    width: 200,
+                  SizedBox(
                     height: 20,
                   ),
-                ),
-              ],
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: !isDark ? greyColorAccent : darkGreyColor,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Container(
+                      width: 200,
+                      height: 20,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        );
-      },
+      ],
     );
   }
 
   Widget TransactList(String bookId) {
-    return StreamBuilder<dynamic>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('transact_books')
-          .doc(bookId)
-          .collection('transacts')
-          .orderBy('ts', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.docs.length == 0) {
-            return FirstTransactCard(context, bookId);
-          } else {
-            int dataCounter = 0;
-            int loopCounter = 0;
-            dateTitle = '';
-            return ListView.builder(
-              physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data.docs.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                loopCounter += 1;
-                DocumentSnapshot ds = snapshot.data.docs[index];
-                Transact currTransact = Transact.fromDocumentSnap(ds);
-                final searchKey = _searchController.text.toLowerCase().trim();
-                if (_selectedSortType == 'All') {
-                  if (_searchController.text.isEmpty) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  } else if (ds['amount'].toString().contains(searchKey) ||
-                      ds['description']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      ds['source']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                } else if (ds['type'].toLowerCase() ==
-                    _selectedSortType.toLowerCase()) {
-                  if (_searchController.text.isEmpty) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  } else if (ds['amount'].toString().contains(searchKey) ||
-                      ds['description']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      ds['source']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                }
-                if (dataCounter == 0 &&
-                    loopCounter == snapshot.data.docs.length) {
-                  return Text('No Item Found');
-                }
-                return SizedBox();
-              },
-            );
+    // return StreamBuilder<dynamic>(
+    //   stream: FirebaseFirestore.instance
+    //       .collection('users')
+    //       .doc(FirebaseAuth.instance.currentUser!.uid)
+    //       .collection('transact_books')
+    //       .doc(bookId)
+    //       .collection('transacts')
+    //       .orderBy('ts', descending: true)
+    //       .snapshots(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.hasData) {
+    //       if (snapshot.data.docs.length == 0) {
+    //         return FirstTransactCard(context, bookId);
+    //       } else {
+    // int dataCounter = 0;
+    // int loopCounter = 0;
+    // dateTitle = '';
+    // return ListView.builder(
+    //   physics: BouncingScrollPhysics(),
+    //   itemCount: snapshot.data.docs.length,
+    //   shrinkWrap: true,
+    //   itemBuilder: (context, index) {
+    //     loopCounter += 1;
+    //     DocumentSnapshot ds = snapshot.data.docs[index];
+    //     Transact currTransact = Transact.fromDocumentSnap(ds);
+    //     final searchKey = _searchController.text.toLowerCase().trim();
+    //     if (_selectedSortType == 'All') {
+    //       if (_searchController.text.isEmpty) {
+    //         dataCounter++;
+    //         return TransactTile(currTransact);
+    //       } else if (ds['amount'].toString().contains(searchKey) ||
+    //           ds['description']
+    //               .toString()
+    //               .toLowerCase()
+    //               .contains(searchKey) ||
+    //           ds['source']
+    //               .toString()
+    //               .toLowerCase()
+    //               .contains(searchKey)) {
+    //         dataCounter++;
+    //         return TransactTile(currTransact);
+    //       }
+    //     } else if (ds['type'].toLowerCase() ==
+    //         _selectedSortType.toLowerCase()) {
+    //       if (_searchController.text.isEmpty) {
+    //         dataCounter++;
+    //         return TransactTile(currTransact);
+    //       } else if (ds['amount'].toString().contains(searchKey) ||
+    //           ds['description']
+    //               .toString()
+    //               .toLowerCase()
+    //               .contains(searchKey) ||
+    //           ds['source']
+    //               .toString()
+    //               .toLowerCase()
+    //               .contains(searchKey)) {
+    //         dataCounter++;
+    //         return TransactTile(currTransact);
+    //       }
+    //     }
+    //     if (dataCounter == 0 &&
+    //         loopCounter == snapshot.data.docs.length) {
+    //       return Text('No Item Found');
+    //     }
+    //     return SizedBox();
+    //   },
+    // );
+    //       }
+    //     }
+    //     return SizedBox();
+    //   },
+    // );
+
+    ///////////////
+    int dataCounter = 0;
+    int loopCounter = 0;
+    dateTitle = '';
+    if (transactList.length == 0) {
+      return FirstTransactCard(context, bookId);
+    }
+    return ListView.builder(
+      physics: BouncingScrollPhysics(),
+      itemCount: transactList.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        loopCounter += 1;
+        Transact currTransact = Transact.fromMap(transactList[index]);
+        final searchKey = _searchController.text.toLowerCase().trim();
+        if (_selectedSortType == 'All') {
+          if (_searchController.text.isEmpty) {
+            dataCounter++;
+            return TransactTile(currTransact);
+          } else if (currTransact.amount!.contains(searchKey) ||
+              currTransact.description!.toLowerCase().contains(searchKey) ||
+              currTransact.source!.toLowerCase().contains(searchKey)) {
+            dataCounter++;
+            return TransactTile(currTransact);
           }
+        } else if (currTransact.type!.toLowerCase() ==
+            _selectedSortType.toLowerCase()) {
+          dataCounter++;
+          if (_searchController.text.isEmpty) {
+            return TransactTile(currTransact);
+          } else if (currTransact.amount!.contains(searchKey) ||
+              currTransact.description!.toLowerCase().contains(searchKey) ||
+              currTransact.source!.toLowerCase().contains(searchKey)) {
+            dataCounter++;
+            return TransactTile(currTransact);
+          }
+        }
+        if (dataCounter == 0 && loopCounter == transactList.length) {
+          return Text(
+            'No Item Found',
+            style: TextStyle(
+              color: isDark ? Colors.grey.shade700 : Colors.grey,
+              fontSize: sdp(context, 16),
+              fontWeight: FontWeight.w600,
+            ),
+          );
         }
         return SizedBox();
       },
     );
-    // return ListView.builder(
-    //   physics: BouncingScrollPhysics(),
-    //   itemCount: transactList.length,
-    //   shrinkWrap: true,
-    //   itemBuilder: (context, index) {
-    //     Transact currTransact = Transact.fromMap(transactList[index]);
-    //     final searchKey = _searchController.text.toLowerCase().trim();
-    //     if (_selectedSortType == 'All') {
-    //       if (_searchController.text.isEmpty) {
-    //         return TransactTile(currTransact);
-    //       } else if (currTransact.amount!.contains(searchKey) ||
-    //           currTransact.description!.toLowerCase().contains(searchKey) ||
-    //           currTransact.source!.toLowerCase().contains(searchKey)) {
-    //         return TransactTile(currTransact);
-    //       }
-    //     } else if (currTransact.type!.toLowerCase() ==
-    //         _selectedSortType.toLowerCase()) {
-    //       if (_searchController.text.isEmpty) {
-    //         return TransactTile(currTransact);
-    //       } else if (currTransact.amount!.contains(searchKey) ||
-    //           currTransact.description!.toLowerCase().contains(searchKey) ||
-    //           currTransact.source!.toLowerCase().contains(searchKey)) {
-    //         return TransactTile(currTransact);
-    //       }
-    //     }
-    //     // if (dataCounter == 0 && loopCounter == snapshot.data.docs.length) {
-    //     //   return Text('No Item Found');
-    //     // }
-    //     return SizedBox();
-    //   },
-    // );
   }
 
   Widget TransactTile(Transact data) {
@@ -842,7 +798,11 @@ class _BookUIState extends State<BookUI> {
             NavPush(
               context,
               EditTransactUI(trData: data),
-            );
+            ).then((value) {
+              setState(() {
+                fetchBookTransacts();
+              });
+            });
           },
           child: Container(
             margin: EdgeInsets.only(bottom: 20),
@@ -1062,9 +1022,12 @@ class _BookUIState extends State<BookUI> {
   Container BookMenu(String bookId, BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
-      margin: EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.all(10),
       width: double.infinity,
-      color: cardColorlight,
+      decoration: BoxDecoration(
+        color: isDark ? cardColordark : Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1082,6 +1045,38 @@ class _BookUIState extends State<BookUI> {
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
+                ),
+              ),
+              Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isDark ? darkGreyColor : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  '${widget.snap['date']}',
+                  style: TextStyle(
+                    color: isDark ? greyColorAccent : Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 5),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.blue.shade900 : Colors.blue.shade100,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  '${widget.snap['time']}',
+                  style: TextStyle(
+                    color: isDark ? whiteColor : Colors.blue.shade900,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -1147,6 +1142,117 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
+  Widget FilterBottomSheet(StateSetter setState) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: isDark ? cardColordark : Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              'Filter',
+                              style: TextStyle(
+                                color: isDark ? whiteColor : blackColor,
+                                fontWeight: FontWeight.w500,
+                                fontSize: sdp(context, 16),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDark
+                                  ? Colors.blue.shade100
+                                  : Colors.blue.shade700,
+                            ),
+                            icon: Icon(
+                              Icons.done,
+                              color: isDark ? blackColor : whiteColor,
+                            ),
+                            label: Text(
+                              'Apply',
+                              style: TextStyle(
+                                color: isDark ? blackColor : whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          FilterBtns(
+                            setState: setState,
+                            icon: Icon(
+                              Icons.all_inbox,
+                              color: isDark ? blackColor : whiteColor,
+                            ),
+                            label: 'All',
+                            color: isDark ? whiteColor : blackColor,
+                          ),
+                          FilterBtns(
+                            setState: setState,
+                            icon: Icon(
+                              Icons.file_download_outlined,
+                              color: isDark ? blackColor : whiteColor,
+                            ),
+                            label: 'Income',
+                            color: isDark ? primaryAccentColor : primaryColor,
+                          ),
+                          FilterBtns(
+                            setState: setState,
+                            icon: Icon(
+                              Icons.file_upload_outlined,
+                              color: isDark ? blackColor : whiteColor,
+                            ),
+                            label: 'Expense',
+                            color: isDark ? Colors.red.shade300 : Colors.red,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   _clearAllTransacts() async {
     setState(() => _isLoading = true);
     await DatabaseMethods().deleteAllTransacts(widget.snap['bookId']);
@@ -1155,25 +1261,52 @@ class _BookUIState extends State<BookUI> {
     setState(() => _isLoading = false);
   }
 
-  PopupMenuItem MenuBtns({final label, required StateSetter setState}) {
+  GestureDetector FilterBtns({
+    label,
+    icon,
+    color,
+    required StateSetter setState,
+  }) {
     bool isSelected = _selectedSortType == label;
-    return PopupMenuItem(
+    return GestureDetector(
       onTap: () {
-        _selectedSortType = label;
-        setState(() {});
+        setState(() {
+          _selectedSortType = label;
+        });
+        // Navigator.pop(context);
       },
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Visibility(
-            visible: isSelected,
-            child: Padding(
-              padding: EdgeInsets.only(right: 10),
-              child: Icon(Icons.done, color: Colors.white),
+          Container(
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isSelected ? color : Colors.grey,
+              boxShadow: [
+                BoxShadow(
+                  color: isSelected ? color : Colors.transparent,
+                  blurRadius: 100,
+                  spreadRadius: 10,
+                ),
+              ],
             ),
+            child: icon,
+          ),
+          SizedBox(
+            height: 10,
           ),
           Text(
             label,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isSelected
+                  ? isDark
+                      ? color
+                      : blackColor
+                  : Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

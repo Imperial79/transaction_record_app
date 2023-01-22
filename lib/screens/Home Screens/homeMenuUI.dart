@@ -21,9 +21,13 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
     setSystemUIColors();
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(
+          height: 20,
+        ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 15),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -50,9 +54,15 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
           height: 10,
         ),
         Container(
-          color: Colors.blueGrey.withOpacity(0.1),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.blueGrey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
           width: double.infinity,
           padding: EdgeInsets.all(20),
+          margin: EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -71,14 +81,14 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                             ));
                       },
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: BorderRadius.circular(20),
                         child: CachedNetworkImage(
                           imageUrl: UserDetails.userProfilePic,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     btnColor: Color.fromARGB(255, 210, 235, 255),
-                    textColor: Colors.grey.shade100,
                   ),
                   HomeMenuBtn(
                     label: 'Logout',
@@ -86,12 +96,14 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                       onPressed: () {
                         AuthMethods().signOut(context);
                       },
-                      icon: Icon(Icons.logout, color: Colors.red),
+                      icon: Icon(
+                        Icons.logout,
+                        color: isDark ? Colors.red.shade300 : Colors.red,
+                      ),
                     ),
                     btnColor: isDark
-                        ? Color.fromARGB(255, 75, 0, 0)
+                        ? Color(0xFF4B0000)
                         : Color.fromARGB(255, 255, 208, 205),
-                    textColor: Colors.red,
                   ),
                 ],
               ),
@@ -102,17 +114,16 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
     );
   }
 
-  Widget HomeMenuBtn(
-      {final label, required Widget child, btnColor, textColor}) {
+  Widget HomeMenuBtn({final label, required Widget child, btnColor}) {
     return Column(
       children: [
         Container(
           height: sdp(context, 40),
           width: sdp(context, 40),
           decoration: BoxDecoration(
-              color: btnColor,
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: textColor)),
+            color: btnColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: child,
         ),
         SizedBox(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/components.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
-import 'package:transaction_record_app/components.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);
@@ -24,6 +24,8 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
+    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -38,9 +40,20 @@ class _LoginUIState extends State<LoginUI> {
                   alignment: _isLoading
                       ? Alignment.bottomCenter
                       : Alignment.bottomLeft,
-                  child: Image.asset(
-                    logoPath,
-                    height: sdp(context, 60),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark ? Colors.grey : blackColor,
+                          blurRadius: 100,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      logoPath,
+                      height: sdp(context, 60),
+                    ),
                   ),
                 ),
               ),
@@ -54,7 +67,8 @@ class _LoginUIState extends State<LoginUI> {
                             Transform.scale(
                               scale: 0.5,
                               child: CircularProgressIndicator(
-                                color: textLinkColor,
+                                color:
+                                    isDark ? primaryAccentColor : primaryColor,
                               ),
                             ),
                             SizedBox(
@@ -78,7 +92,6 @@ class _LoginUIState extends State<LoginUI> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            // flex: 6,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +99,7 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   'Transact Record',
                                   style: TextStyle(
-                                    fontSize: 30,
+                                    fontSize: sdp(context, 40),
                                     fontWeight: FontWeight.w900,
                                     color:
                                         isDark ? greyColorAccent : blackColor,
@@ -107,15 +120,18 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   '#OpenSource',
                                   style: TextStyle(
-                                    fontSize: 17,
-                                    color: textLinkColor,
+                                    color: isDark
+                                        ? primaryAccentColor
+                                        : textLinkColor,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
                                   ),
                                 ),
                                 TextLink(
                                   link: _githubLink,
-                                  color: Colors.grey.shade700,
+                                  color: isDark
+                                      ? primaryAccentColor
+                                      : textLinkColor,
                                   alignment: Alignment.topLeft,
                                   text: '#Github',
                                 )
@@ -125,8 +141,9 @@ class _LoginUIState extends State<LoginUI> {
                           Row(
                             children: [
                               Icon(
-                                Icons.backup,
-                                color: textLinkColor,
+                                Icons.cloud_circle,
+                                color:
+                                    isDark ? primaryAccentColor : textLinkColor,
                               ),
                               SizedBox(
                                 width: 10,
@@ -136,7 +153,9 @@ class _LoginUIState extends State<LoginUI> {
                                   'SYNC YOUR DATA ON TRANSACT CLOUD',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    color: textLinkColor,
+                                    color: isDark
+                                        ? primaryAccentColor
+                                        : textLinkColor,
                                   ),
                                 ),
                               ),
@@ -168,10 +187,11 @@ class _LoginUIState extends State<LoginUI> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.pink.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    spreadRadius: 6,
-                                    offset: Offset(0, 10),
+                                    color: isDark
+                                        ? Colors.pink.withOpacity(0.5)
+                                        : Colors.pink.withOpacity(0.1),
+                                    blurRadius: 90,
+                                    spreadRadius: 10,
                                   ),
                                 ],
                               ),
@@ -223,7 +243,9 @@ class _LoginUIState extends State<LoginUI> {
                                 child: TextLink(
                                   text: 'Terms and Conditions',
                                   link: Uri.parse(''),
-                                  color: textLinkColor,
+                                  color: isDark
+                                      ? primaryAccentColor
+                                      : textLinkColor,
                                   alignment: Alignment.bottomLeft,
                                 ),
                               ),
@@ -231,7 +253,9 @@ class _LoginUIState extends State<LoginUI> {
                                 child: TextLink(
                                   text: 'Privacy Policy',
                                   link: _privacyPolicyUrl,
-                                  color: textLinkColor,
+                                  color: isDark
+                                      ? primaryAccentColor
+                                      : textLinkColor,
                                   alignment: Alignment.bottomRight,
                                 ),
                               ),
@@ -248,21 +272,15 @@ class _LoginUIState extends State<LoginUI> {
   }
 
   Widget TextLink({final text, alignment, color, Uri? link}) {
-    return InkWell(
-      onTap: () {
+    return TextButton(
+      onPressed: () {
         launchTheUrl(link!);
       },
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      child: Align(
-        alignment: alignment,
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

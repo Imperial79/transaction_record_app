@@ -293,6 +293,7 @@ class _HomeUiState extends State<HomeUi> {
             ),
             Expanded(
               child: ListView(
+                physics: BouncingScrollPhysics(),
                 controller: _scrollController,
                 children: [
                   SizedBox(
@@ -392,7 +393,7 @@ class _HomeUiState extends State<HomeUi> {
     if (amtPercentage == 0) {
       bgColor = Colors.grey.shade300;
     } else if (amtPercentage <= 40) {
-      bgColor = primaryAccentColor;
+      bgColor = primaryAccentColor.withOpacity(0.5);
       fgColor = primaryColor;
     } else if (amtPercentage > 40 && amtPercentage <= 60) {
       bgColor = Colors.amber.shade100;
@@ -459,7 +460,8 @@ class _HomeUiState extends State<HomeUi> {
                         children: [
                           CircularProgressIndicator(
                             value: amtPercentage / 100,
-                            backgroundColor: bgColor.withOpacity(0.2),
+                            backgroundColor:
+                                isDark ? bgColor.withOpacity(0.2) : bgColor,
                             color: fgColor,
                           ),
                           amtPercentage < 100
@@ -551,12 +553,15 @@ class _HomeUiState extends State<HomeUi> {
                     children: [
                       TransactStatsCard(
                         crossAlign: CrossAxisAlignment.start,
+                        textColor: Colors.black,
                         amount: "₹ " + oCcy.format(ds['income']),
                         label: 'Income',
                         cardColor: isDark
-                            ? Color.fromARGB(255, 0, 66, 2)
+                            ? Colors.lightGreen
                             : Color.fromARGB(255, 181, 255, 183),
-                        icon: Icons.file_download_outlined,
+                        amountColor: isDark
+                            ? Colors.lightGreenAccent
+                            : Colors.lightGreen.shade900,
                       ),
                       Text(
                         ' - ',
@@ -569,10 +574,9 @@ class _HomeUiState extends State<HomeUi> {
                         crossAlign: CrossAxisAlignment.center,
                         amount: "₹ " + oCcy.format(ds['expense']),
                         label: 'Expense',
-                        cardColor: isDark
-                            ? Colors.grey.shade700
-                            : Colors.grey.shade300,
-                        icon: Icons.file_upload_outlined,
+                        cardColor: isDark ? Colors.black : Colors.grey.shade300,
+                        textColor: isDark ? Colors.white : Colors.black,
+                        amountColor: isDark ? Colors.white : Colors.black,
                       ),
                       Text(
                         ' = ',
@@ -583,13 +587,16 @@ class _HomeUiState extends State<HomeUi> {
                       ),
                       TransactStatsCard(
                         crossAlign: CrossAxisAlignment.end,
-                        label: 'Final',
+                        label: 'Current',
                         amount:
                             "₹ " + oCcy.format(ds['income'] - ds['expense']),
-                        icon: Icons.wallet,
                         cardColor: isDark
-                            ? Color.fromARGB(255, 0, 82, 150)
+                            ? Colors.blue.shade200
                             : Color.fromARGB(255, 197, 226, 250),
+                        textColor: Colors.blue.shade900,
+                        amountColor: isDark
+                            ? Colors.blue.shade100
+                            : Colors.blue.shade900,
                       ),
                     ],
                   ),
@@ -604,34 +611,42 @@ class _HomeUiState extends State<HomeUi> {
 
   Widget TransactStatsCard({
     final amount,
-    cardColor,
-    label,
-    icon,
+    final cardColor,
+    final label,
+    final textColor,
+    final amountColor,
     required CrossAxisAlignment crossAlign,
   }) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(10),
-          // border: Border.all(color: )
-        ),
         child: Column(
           crossAxisAlignment: crossAlign,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: isDark ? greyColorAccent : blackColor,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(50),
               ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: sdp(context, 10),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 5,
             ),
             Text(
               amount,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: sdp(context, 10),
-                color: isDark ? greyColorAccent : blackColor,
+                color: amountColor,
               ),
               textAlign: TextAlign.end,
             ),

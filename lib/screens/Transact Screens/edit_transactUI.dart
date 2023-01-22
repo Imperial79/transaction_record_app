@@ -286,7 +286,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   BoxShadow(
                                     color: widget.trData.type! == 'Income'
                                         ? primaryAccentColor.withOpacity(0.3)
-                                        : Colors.grey.shade200,
+                                        : isDark
+                                            ? Colors.grey.shade600
+                                            : Colors.grey.shade200,
                                     blurRadius: 50,
                                     spreadRadius: 10,
                                   ),
@@ -594,11 +596,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             ),
                           ),
                         ),
+                        BottomCard(context),
                       ],
                     ),
                   ),
                 ),
-                BottomCard(context),
+                // BottomCard(context),
               ],
             ),
             Visibility(
@@ -642,22 +645,14 @@ class _EditTransactUIState extends State<EditTransactUI> {
   Container BottomCard(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.only(top: 15),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : whiteColor,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: transactType == 'Income'
-                ? primaryAccentColor.withOpacity(0.2)
-                : Colors.red.withOpacity(0.2),
-            spreadRadius: 10,
-            blurRadius: 100,
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -688,31 +683,38 @@ class _EditTransactUIState extends State<EditTransactUI> {
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
-            color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-            child: Flexible(
-              child: TextField(
-                controller: amountField,
-                keyboardType: TextInputType.number,
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: isDark ? whiteColor : Colors.black,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  isDark ? Colors.grey.shade900 : whiteColor,
+                  isDark ? Colors.grey.withOpacity(0) : Colors.grey.shade300,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            child: TextField(
+              controller: amountField,
+              keyboardType: TextInputType.number,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: isDark ? whiteColor : Colors.black,
+                fontSize: sdp(context, 20),
+              ),
+              cursorColor: isDark ? whiteColor : Colors.black,
+              decoration: InputDecoration(
+                prefixText: 'INR ',
+                prefixStyle: TextStyle(
+                  color: isDark ? whiteColor : Colors.grey.shade700,
                   fontSize: sdp(context, 20),
+                  fontWeight: FontWeight.w300,
                 ),
-                cursorColor: isDark ? whiteColor : Colors.black,
-                decoration: InputDecoration(
-                  prefixText: 'INR ',
-                  prefixStyle: TextStyle(
-                    color: isDark ? whiteColor : Colors.grey.shade700,
-                    fontSize: sdp(context, 20),
-                    fontWeight: FontWeight.w300,
-                  ),
-                  border: InputBorder.none,
-                  hintText: '0.00',
-                  hintStyle: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Colors.grey.shade400,
-                    fontSize: sdp(context, 20),
-                  ),
+                border: InputBorder.none,
+                hintText: '0.00',
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: Colors.grey.shade400,
+                  fontSize: sdp(context, 20),
                 ),
               ),
             ),
@@ -744,58 +746,75 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     : SizedBox(
                         width: 20,
                       ),
-                MaterialButton(
-                  onPressed: () {
-                    updateTransacts();
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 0,
-                  padding: EdgeInsets.zero,
-                  child: Ink(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 25,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        colors: [
-                          transactType == 'Income'
-                              ? primaryColor
-                              : Colors.black,
-                          transactType == 'Income'
-                              ? Colors.lightGreenAccent
-                              : Colors.grey,
-                        ],
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: transactType == 'Income'
+                            ? isDark
+                                ? primaryAccentColor.withOpacity(0.5)
+                                : primaryAccentColor.withOpacity(0.2)
+                            : isDark
+                                ? Colors.redAccent.withOpacity(0.6)
+                                : Colors.red.withOpacity(0.2),
+                        blurRadius: 100,
+                        spreadRadius: 10,
                       ),
+                    ],
+                  ),
+                  child: MaterialButton(
+                    onPressed: () {
+                      updateTransacts();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          transactType == 'Income'
-                              ? Icons.file_download_outlined
-                              : Icons.file_upload_outlined,
-                          color: transactType == 'Income'
-                              ? Colors.black
-                              : Colors.white,
+                    elevation: 0,
+                    padding: EdgeInsets.zero,
+                    child: Ink(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 15,
+                        horizontal: 25,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          colors: [
+                            transactType == 'Income'
+                                ? primaryColor
+                                : Colors.redAccent,
+                            transactType == 'Income'
+                                ? Colors.lightGreenAccent
+                                : Color.fromARGB(255, 189, 56, 56),
+                          ],
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          'Update ' + transactType,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            transactType == 'Income'
+                                ? Icons.file_download_outlined
+                                : Icons.file_upload_outlined,
                             color: transactType == 'Income'
                                 ? Colors.black
                                 : Colors.white,
-                            fontSize: 18,
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            'Update ' + transactType,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: transactType == 'Income'
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -13,10 +13,10 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
     margin: EdgeInsets.only(top: 0),
     width: double.infinity,
-    padding: EdgeInsets.all(13),
+    padding: EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Color.fromARGB(255, 73, 55, 0),
-      borderRadius: BorderRadius.circular(12),
+      color: isDark ? Colors.amber : Colors.amber.shade100,
+      borderRadius: BorderRadius.circular(30),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,8 +24,8 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
         Text(
           'Create your first Transact',
           style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            color: blackColor,
             fontSize: 20,
           ),
         ),
@@ -36,7 +36,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: blackColor,
             fontSize: 15,
           ),
         ),
@@ -45,37 +45,38 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: MaterialButton(
-            onPressed: () {
-              NavPush(
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? Colors.amberAccent : Colors.orange,
+                  blurRadius: 100,
+                  spreadRadius: 10,
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                NavPush(
                   context,
                   NewTransactUi(
                     bookId: bookId,
-                  ));
-            },
-            color: Colors.amber,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              alignment: Alignment.center,
-              width: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.bolt_outlined,
-                    color: Colors.black,
                   ),
-                  Text(
-                    'Create',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? Colors.amber.shade100 : Colors.orange,
+                elevation: 0,
+              ),
+              icon: Icon(
+                Icons.bolt,
+                color: isDark ? blackColor : whiteColor,
+              ),
+              label: Text(
+                'Create',
+                style: TextStyle(
+                  color: isDark ? blackColor : whiteColor,
+                ),
               ),
             ),
           ),
