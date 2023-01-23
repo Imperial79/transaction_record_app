@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
+import 'package:transaction_record_app/services/size.dart';
 
 import 'Functions/navigatorFns.dart';
 import 'colors.dart';
@@ -220,32 +221,128 @@ Widget StatsCard({final label, content, isBook, bookId}) {
   );
 }
 
-MaterialButton BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
-  return MaterialButton(
-    onPressed: onPress,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(5),
-    ),
-    elevation: 0,
-    color: btnColor,
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: textColor,
-          size: 15,
+Widget ConfirmDeleteModal({
+  required String label,
+  required String content,
+  required VoidCallback onDelete,
+}) {
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: isDark ? cardColordark : cardColorlight,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundColor:
+                      isDark ? Colors.red.shade100 : Colors.redAccent,
+                  child: Text(
+                    '!',
+                    style: TextStyle(
+                      fontSize: sdp(context, 16),
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? Colors.red.shade800 : whiteColor,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isDark ? whiteColor : blackColor,
+                    fontSize: sdp(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  content,
+                  style: TextStyle(
+                    color: isDark ? Colors.red.shade300 : Colors.redAccent,
+                    fontSize: sdp(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark ? blackColor : lossColor,
+                        foregroundColor:
+                            isDark ? Colors.red.shade300 : whiteColor,
+                      ),
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: onDelete,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark ? blackColor : primaryColor,
+                        foregroundColor:
+                            isDark ? primaryAccentColor : whiteColor,
+                      ),
+                      child: Text('Yes'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
-        SizedBox(
-          width: 5,
-        ),
-        Text(
-          label,
-          style: TextStyle(color: textColor),
-        ),
-      ],
-    ),
+      );
+    },
   );
+}
+
+Widget BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
+  return ElevatedButton.icon(
+    onPressed: onPress,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: btnColor,
+      foregroundColor: textColor,
+      elevation: 0,
+    ),
+    icon: Icon(icon),
+    label: Text(label),
+  );
+  // return MaterialButton(
+  //   onPressed: onPress,
+  //   shape: RoundedRectangleBorder(
+  //     borderRadius: BorderRadius.circular(100),
+  //   ),
+  //   elevation: 0,
+  //   color: btnColor,
+  //   child: Row(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       Icon(
+  //         icon,
+  //         color: textColor,
+  //         size: 15,
+  //       ),
+  //       SizedBox(
+  //         width: 5,
+  //       ),
+  //       Text(
+  //         label,
+  //         style: TextStyle(color: textColor),
+  //       ),
+  //     ],
+  //   ),
+  // );
 }
 
 Widget CustomCard(BuildContext context, {required Widget child}) {

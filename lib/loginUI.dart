@@ -44,7 +44,7 @@ class _LoginUIState extends State<LoginUI> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: isDark ? Colors.grey : blackColor,
+                          color: isDark ? Colors.grey : Colors.tealAccent,
                           blurRadius: 100,
                           spreadRadius: 10,
                         ),
@@ -189,7 +189,7 @@ class _LoginUIState extends State<LoginUI> {
                                   BoxShadow(
                                     color: isDark
                                         ? Colors.pink.withOpacity(0.5)
-                                        : Colors.pink.withOpacity(0.1),
+                                        : Colors.pinkAccent.withOpacity(0.4),
                                     blurRadius: 90,
                                     spreadRadius: 10,
                                   ),

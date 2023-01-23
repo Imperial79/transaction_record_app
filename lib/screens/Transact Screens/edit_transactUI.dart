@@ -596,12 +596,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             ),
                           ),
                         ),
-                        BottomCard(context),
+                        BottomCard(context,
+                            date: _selectedDateMap['displayDate']),
                       ],
                     ),
                   ),
                 ),
-                // BottomCard(context),
               ],
             ),
             Visibility(
@@ -642,7 +642,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     );
   }
 
-  Container BottomCard(BuildContext context) {
+  Container BottomCard(BuildContext context, {String? date}) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(top: 15),
@@ -675,7 +675,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                   ),
                 ),
                 Text(
-                  DateFormat('dd MMMM, yyyy').format(DateTime.now()),
+                  date!,
                   style: TextStyle(color: isDark ? whiteColor : darkGreyColor),
                 ),
               ],

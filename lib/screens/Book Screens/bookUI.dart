@@ -165,41 +165,7 @@ class _BookUIState extends State<BookUI> {
                       ),
                     ),
                     Flexible(
-                      child: Container(
-                        padding: EdgeInsets.only(right: 10),
-                        margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                        decoration: BoxDecoration(
-                          color: isDark ? cardColordark : cardColorlight,
-                          borderRadius: BorderRadius.horizontal(
-                            left: Radius.circular(8),
-                          ),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          cursorColor:
-                              isDark ? Colors.greenAccent : primaryColor,
-                          style: TextStyle(
-                            color: isDark ? whiteColor : blackColor,
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: isDark ? greyColorAccent : Colors.grey,
-                            ),
-                            hintText: 'Search amount, description, etc',
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: isDark ? whiteColor : blackColor,
-                            ),
-                          ),
-                          onChanged: (val) {
-                            setState(() {
-                              _showAdd.value = false;
-                            });
-                          },
-                        ),
-                      ),
+                      child: SearchBar(),
                     ),
                   ],
                 ),
@@ -244,7 +210,11 @@ class _BookUIState extends State<BookUI> {
                                               ),
                                             ),
                                             Icon(
-                                              Icons.keyboard_arrow_down_rounded,
+                                              !_showBookMenu.value
+                                                  ? Icons
+                                                      .keyboard_arrow_down_rounded
+                                                  : Icons
+                                                      .keyboard_arrow_up_rounded,
                                               color: isDark
                                                   ? Colors.grey
                                                   : blackColor,
@@ -257,7 +227,11 @@ class _BookUIState extends State<BookUI> {
                                     //  Book Menu -------------------------->
 
                                     AnimatedSize(
+                                      reverseDuration:
+                                          Duration(milliseconds: 300),
                                       duration: Duration(milliseconds: 300),
+                                      alignment: Alignment.topCenter,
+                                      curve: Curves.ease,
                                       child: ValueListenableBuilder<bool>(
                                         valueListenable: _showBookMenu,
                                         builder: (BuildContext context,
@@ -336,8 +310,27 @@ class _BookUIState extends State<BookUI> {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: isDark
-                                            ? cardColordark
-                                            : Colors.grey.shade300,
+                                            ? _selectedSortType == 'All'
+                                                ? greyColorAccent
+                                                : _selectedSortType == 'Income'
+                                                    ? primaryAccentColor
+                                                    : Colors.red
+                                            : _selectedSortType == 'All'
+                                                ? Colors.black
+                                                : _selectedSortType == 'Income'
+                                                    ? primaryAccentColor
+                                                    : Colors.red,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _selectedSortType == 'All'
+                                                ? Colors.grey.shade500
+                                                : _selectedSortType == 'Income'
+                                                    ? primaryAccentColor
+                                                    : Colors.red,
+                                            blurRadius: 100,
+                                            spreadRadius: 10,
+                                          ),
+                                        ],
                                       ),
                                       child: FittedBox(
                                         child: IconButton(
@@ -364,8 +357,17 @@ class _BookUIState extends State<BookUI> {
                                                     : Icons
                                                         .file_upload_outlined,
                                             color: isDark
-                                                ? whiteColor
-                                                : blackColor,
+                                                ? _selectedSortType ==
+                                                            'Income' ||
+                                                        _selectedSortType ==
+                                                            'All'
+                                                    ? blackColor
+                                                    : whiteColor
+                                                : _selectedSortType == 'All' ||
+                                                        _selectedSortType ==
+                                                            'Expense'
+                                                    ? whiteColor
+                                                    : blackColor,
                                           ),
                                         ),
                                       ),
@@ -422,6 +424,8 @@ class _BookUIState extends State<BookUI> {
                         children: [
                           AnimatedSwitcher(
                             duration: Duration(milliseconds: 500),
+                            switchInCurve: Curves.ease,
+                            switchOutCurve: Curves.ease,
                             child: isFetching
                                 ? DummyTransactList()
                                 : TransactList(
@@ -446,7 +450,9 @@ class _BookUIState extends State<BookUI> {
                 alignment: Alignment.center,
                 height: double.infinity,
                 width: double.infinity,
-                color: Colors.white.withOpacity(0.9),
+                color: isDark
+                    ? Colors.grey.shade800.withOpacity(0.9)
+                    : Colors.white.withOpacity(0.9),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -454,7 +460,7 @@ class _BookUIState extends State<BookUI> {
                       child: Transform.scale(
                         scale: 0.7,
                         child: CircularProgressIndicator(
-                          color: Colors.red,
+                          color: isDark ? Colors.red.shade200 : Colors.red,
                         ),
                       ),
                     ),
@@ -477,7 +483,7 @@ class _BookUIState extends State<BookUI> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: isKeyboardOpen(context) || _isLoading
-          ? Container()
+          ? SizedBox.shrink()
           : InkWell(
               onTap: () {
                 NavPush(
@@ -525,7 +531,7 @@ class _BookUIState extends State<BookUI> {
                             if (showFullAddBtn) const SizedBox(width: 10),
                             if (showFullAddBtn)
                               Text(
-                                'New Transact',
+                                'Transact',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15,
@@ -541,6 +547,43 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
             ),
+    );
+  }
+
+  Container SearchBar() {
+    return Container(
+      padding: EdgeInsets.only(right: 10),
+      margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
+      decoration: BoxDecoration(
+        color: isDark ? cardColordark : cardColorlight,
+        borderRadius: BorderRadius.horizontal(
+          left: Radius.circular(8),
+        ),
+      ),
+      child: TextField(
+        controller: _searchController,
+        cursorColor: isDark ? Colors.greenAccent : primaryColor,
+        style: TextStyle(
+          color: isDark ? whiteColor : blackColor,
+        ),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintStyle: TextStyle(
+            fontWeight: FontWeight.w400,
+            color: isDark ? greyColorAccent : Colors.grey,
+          ),
+          hintText: 'Search amount, description, etc',
+          prefixIcon: Icon(
+            Icons.search,
+            color: isDark ? whiteColor : blackColor,
+          ),
+        ),
+        onChanged: (val) {
+          setState(() {
+            _showAdd.value = false;
+          });
+        },
+      ),
     );
   }
 
@@ -576,7 +619,7 @@ class _BookUIState extends State<BookUI> {
                                   height: sdp(context, 30),
                                   width: sdp(context, 30),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey,
+                                    color: Colors.grey.withOpacity(0.5),
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -586,7 +629,7 @@ class _BookUIState extends State<BookUI> {
                                 Container(
                                   width: 200,
                                   height: 20,
-                                  color: Colors.grey,
+                                  color: Colors.grey.withOpacity(0.5),
                                 ),
                                 Spacer(),
                               ],
@@ -597,12 +640,12 @@ class _BookUIState extends State<BookUI> {
                             Container(
                               width: 200,
                               height: 20,
-                              color: Colors.grey,
+                              color: Colors.grey.withOpacity(0.5),
                             ),
                             Container(
                               width: 200,
                               height: 20,
-                              color: Colors.grey,
+                              color: Colors.grey.withOpacity(0.5),
                             ),
                           ],
                         ),
@@ -615,7 +658,7 @@ class _BookUIState extends State<BookUI> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: !isDark ? greyColorAccent : darkGreyColor,
+                      color: Colors.grey.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Container(
@@ -1019,7 +1062,7 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Container BookMenu(String bookId, BuildContext context) {
+  Widget BookMenu(String bookId, BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.all(10),
@@ -1048,32 +1091,49 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
               Spacer(),
+              // GestureDetector(
+              //   onTap: () {
+              //     showModalBottomSheet(
+              //       context: context,
+              //       backgroundColor: Colors.transparent,
+              //       builder: (context) {
+              //         return ConfirmDeleteModal(
+              //           onDelete: () {
+              //             _deleteBook();
+              //             Navigator.pop(context);
+              //           },
+              //           label: 'Really want to delete this Book?',
+              //           content: 'This action cannot be undone !',
+              //         );
+              //       },
+              //     );
+              //   },
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(100),
+              //       color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
+              //     ),
+              //     child: Text(
+              //       'Edit',
+              //       style: TextStyle(
+              //         color: isDark ? Colors.blue.shade900 : whiteColor,
+              //         fontWeight: FontWeight.w600,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(width: 5),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: isDark ? darkGreyColor : Colors.grey.shade300,
+                  color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
                   '${widget.snap['date']}',
                   style: TextStyle(
                     color: isDark ? greyColorAccent : Colors.black,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 5),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.blue.shade900 : Colors.blue.shade100,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Text(
-                  '${widget.snap['time']}',
-                  style: TextStyle(
-                    color: isDark ? whiteColor : Colors.blue.shade900,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -1088,20 +1148,20 @@ class _BookUIState extends State<BookUI> {
             children: [
               BookMenuBtn(
                 onPress: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ALertBox(
-                          context,
-                          label: 'Delete Book',
-                          content:
-                              'Do you really want to delete this Book ? This cannot be undone!',
-                          onPress: () {
-                            _deleteBook();
-                            Navigator.pop(context);
-                          },
-                        );
-                      });
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) {
+                      return ConfirmDeleteModal(
+                        onDelete: () {
+                          _deleteBook();
+                          Navigator.pop(context);
+                        },
+                        label: 'Really want to delete this Book?',
+                        content: 'This action cannot be undone !',
+                      );
+                    },
+                  );
                 },
                 label: 'Delete Book',
                 icon: Icons.delete,
@@ -1114,24 +1174,25 @@ class _BookUIState extends State<BookUI> {
               Expanded(
                 child: BookMenuBtn(
                   onPress: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ALertBox(
-                            context,
-                            label: 'Clear all Transacts ?',
-                            content:
-                                'Do you really want to delete all transacts in this Book ? This cannot be undone!',
-                            onPress: () {
-                              _clearAllTransacts();
-                              Navigator.pop(context);
-                            },
-                          );
-                        });
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) {
+                        return ConfirmDeleteModal(
+                          onDelete: () {
+                            _clearAllTransacts();
+                            Navigator.pop(context);
+                          },
+                          label: 'Really want to clear all Transacts?',
+                          content: 'This action cannot be undone !',
+                        );
+                      },
+                    );
                   },
                   label: 'Clear all Transacts',
                   icon: Icons.restore,
-                  btnColor: Colors.blueGrey.shade600,
+                  btnColor:
+                      isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
                   textColor: Colors.white,
                 ),
               ),
