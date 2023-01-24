@@ -4,12 +4,12 @@ import 'package:flutter/rendering.dart';
 
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
-import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/components.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;

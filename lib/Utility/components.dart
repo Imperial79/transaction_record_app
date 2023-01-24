@@ -4,11 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/size.dart';
 
-import 'Functions/navigatorFns.dart';
+import '../Functions/navigatorFns.dart';
 import 'colors.dart';
-import 'screens/Transact Screens/new_transactUi.dart';
+import '../screens/Transact Screens/new_transactUi.dart';
 
 final oCcy = new NumberFormat("#,##0.00", "en_US");
+const String appLogoPath = 'lib/assets/logo/logo.png';
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(

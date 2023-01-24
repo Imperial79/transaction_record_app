@@ -5,8 +5,8 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
-import '../../colors.dart';
-import '../../components.dart';
+import '../../Utility/colors.dart';
+import '../../Utility/components.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);

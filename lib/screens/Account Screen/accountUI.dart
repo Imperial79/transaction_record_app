@@ -5,8 +5,8 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
-import '../../colors.dart';
-import '../../components.dart';
+import '../../Utility/colors.dart';
+import '../../Utility/components.dart';
 
 class AccountUI extends StatefulWidget {
   final name, email;

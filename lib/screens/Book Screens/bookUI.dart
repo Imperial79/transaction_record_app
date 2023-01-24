@@ -8,10 +8,10 @@ import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactU
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/size.dart';
 import '../../Functions/navigatorFns.dart';
-import '../../colors.dart';
+import '../../Utility/colors.dart';
 import '../../services/database.dart';
 import '../../services/user.dart';
-import '../../components.dart';
+import '../../Utility/components.dart';
 
 class BookUI extends StatefulWidget {
   final snap;

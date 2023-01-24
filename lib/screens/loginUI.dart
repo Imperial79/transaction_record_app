@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/colors.dart';
-import 'package:transaction_record_app/components.dart';
+import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/size.dart';
 

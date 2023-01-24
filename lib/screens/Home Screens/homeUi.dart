@@ -6,14 +6,14 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/colors.dart';
+import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/size.dart';
 import '../../services/user.dart';
-import '../../components.dart';
+import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
 
 class HomeUi extends StatefulWidget {

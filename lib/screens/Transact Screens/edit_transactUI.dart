@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/size.dart';
 import '../../Functions/transactFunctions.dart';
-import '../../colors.dart';
+import '../../Utility/colors.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
-import '../../components.dart';
+import '../../Utility/components.dart';
 
 class EditTransactUI extends StatefulWidget {
   final Transact trData;
