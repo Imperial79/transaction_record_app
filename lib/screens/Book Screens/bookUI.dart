@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
@@ -340,6 +341,7 @@ class _BookUIState extends State<BookUI> {
                                               enableDrag: true,
                                               backgroundColor:
                                                   Colors.transparent,
+                                              elevation: 0,
                                               builder: (context) {
                                                 return FilterBottomSheet(
                                                     setState);
@@ -430,7 +432,7 @@ class _BookUIState extends State<BookUI> {
                                 ? DummyTransactList()
                                 : TransactList(
                                     widget.snap['bookId'],
-                                  ),
+                                  ).animate().fade().moveY(),
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
@@ -675,80 +677,6 @@ class _BookUIState extends State<BookUI> {
   }
 
   Widget TransactList(String bookId) {
-    // return StreamBuilder<dynamic>(
-    //   stream: FirebaseFirestore.instance
-    //       .collection('users')
-    //       .doc(FirebaseAuth.instance.currentUser!.uid)
-    //       .collection('transact_books')
-    //       .doc(bookId)
-    //       .collection('transacts')
-    //       .orderBy('ts', descending: true)
-    //       .snapshots(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasData) {
-    //       if (snapshot.data.docs.length == 0) {
-    //         return FirstTransactCard(context, bookId);
-    //       } else {
-    // int dataCounter = 0;
-    // int loopCounter = 0;
-    // dateTitle = '';
-    // return ListView.builder(
-    //   physics: BouncingScrollPhysics(),
-    //   itemCount: snapshot.data.docs.length,
-    //   shrinkWrap: true,
-    //   itemBuilder: (context, index) {
-    //     loopCounter += 1;
-    //     DocumentSnapshot ds = snapshot.data.docs[index];
-    //     Transact currTransact = Transact.fromDocumentSnap(ds);
-    //     final searchKey = _searchController.text.toLowerCase().trim();
-    //     if (_selectedSortType == 'All') {
-    //       if (_searchController.text.isEmpty) {
-    //         dataCounter++;
-    //         return TransactTile(currTransact);
-    //       } else if (ds['amount'].toString().contains(searchKey) ||
-    //           ds['description']
-    //               .toString()
-    //               .toLowerCase()
-    //               .contains(searchKey) ||
-    //           ds['source']
-    //               .toString()
-    //               .toLowerCase()
-    //               .contains(searchKey)) {
-    //         dataCounter++;
-    //         return TransactTile(currTransact);
-    //       }
-    //     } else if (ds['type'].toLowerCase() ==
-    //         _selectedSortType.toLowerCase()) {
-    //       if (_searchController.text.isEmpty) {
-    //         dataCounter++;
-    //         return TransactTile(currTransact);
-    //       } else if (ds['amount'].toString().contains(searchKey) ||
-    //           ds['description']
-    //               .toString()
-    //               .toLowerCase()
-    //               .contains(searchKey) ||
-    //           ds['source']
-    //               .toString()
-    //               .toLowerCase()
-    //               .contains(searchKey)) {
-    //         dataCounter++;
-    //         return TransactTile(currTransact);
-    //       }
-    //     }
-    //     if (dataCounter == 0 &&
-    //         loopCounter == snapshot.data.docs.length) {
-    //       return Text('No Item Found');
-    //     }
-    //     return SizedBox();
-    //   },
-    // );
-    //       }
-    //     }
-    //     return SizedBox();
-    //   },
-    // );
-
-    ///////////////
     int dataCounter = 0;
     int loopCounter = 0;
     dateTitle = '';
@@ -1091,39 +1019,6 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
               Spacer(),
-              // GestureDetector(
-              //   onTap: () {
-              //     showModalBottomSheet(
-              //       context: context,
-              //       backgroundColor: Colors.transparent,
-              //       builder: (context) {
-              //         return ConfirmDeleteModal(
-              //           onDelete: () {
-              //             _deleteBook();
-              //             Navigator.pop(context);
-              //           },
-              //           label: 'Really want to delete this Book?',
-              //           content: 'This action cannot be undone !',
-              //         );
-              //       },
-              //     );
-              //   },
-              //   child: Container(
-              //     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(100),
-              //       color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
-              //     ),
-              //     child: Text(
-              //       'Edit',
-              //       style: TextStyle(
-              //         color: isDark ? Colors.blue.shade900 : whiteColor,
-              //         fontWeight: FontWeight.w600,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // SizedBox(width: 5),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
@@ -1151,6 +1046,7 @@ class _BookUIState extends State<BookUI> {
                   showModalBottomSheet(
                     context: context,
                     backgroundColor: Colors.transparent,
+                    elevation: 0,
                     builder: (context) {
                       return ConfirmDeleteModal(
                         onDelete: () {
@@ -1177,6 +1073,7 @@ class _BookUIState extends State<BookUI> {
                     showModalBottomSheet(
                       context: context,
                       backgroundColor: Colors.transparent,
+                      elevation: 0,
                       builder: (context) {
                         return ConfirmDeleteModal(
                           onDelete: () {

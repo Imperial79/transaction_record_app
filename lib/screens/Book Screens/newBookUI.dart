@@ -20,7 +20,7 @@ class _NewBookUIState extends State<NewBookUI> {
       DateFormat().add_jm().format(DateTime.now()).toString();
 
   final bookTitleController = TextEditingController(
-      text: DateFormat('MMMM, dd ').format(DateTime.now()));
+      text: DateFormat('MMMM, yyyy').format(DateTime.now()));
   final bookDescriptionController = TextEditingController();
   final dbMethod = DatabaseMethods();
 

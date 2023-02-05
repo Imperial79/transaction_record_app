@@ -436,7 +436,7 @@ class _HomeUiState extends State<HomeUi> {
             decoration: BoxDecoration(
               color: amtPercentage > 100
                   ? isDark
-                      ? Colors.red.shade700
+                      ? Color.fromARGB(255, 88, 0, 0)
                       : Colors.red.shade100
                   : isDark
                       ? Color(0xFF303030)
@@ -473,9 +473,12 @@ class _HomeUiState extends State<HomeUi> {
                                     color: isDark ? whiteColor : blackColor,
                                   ),
                                 )
-                              : Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: Colors.red,
+                              : Text(
+                                  '!',
+                                  style: TextStyle(
+                                    fontSize: sdp(context, 12),
+                                    color: Colors.white,
+                                  ),
                                 ),
                         ],
                       ),
