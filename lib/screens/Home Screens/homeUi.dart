@@ -477,7 +477,8 @@ class _HomeUiState extends State<HomeUi> {
                                   '!',
                                   style: TextStyle(
                                     fontSize: sdp(context, 12),
-                                    color: Colors.white,
+                                    color: isDark ? Colors.white : Colors.red,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ],
