@@ -135,17 +135,28 @@ class AppTitle extends StatelessWidget {
 }
 
 Widget StatsCard({final label, content, isBook, bookId}) {
+  bool isExpense = label == 'Expenses';
   return Stack(
     children: [
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            colors: [
-              label == 'Expenses' ? Colors.red.shade900 : primaryColor,
-              label == 'Expenses' ? Colors.red : Colors.lightGreenAccent,
-            ],
+          // gradient: LinearGradient(
+          //   colors: [
+          //     label == 'Expenses' ? Colors.red.shade900 : primaryColor,
+          //     label == 'Expenses' ? Colors.red : Colors.lightGreenAccent,
+          //   ],
+          // ),
+          color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
+          border: Border.all(
+            color: isExpense
+                ? isDark
+                    ? Colors.red.shade100
+                    : Colors.red.shade900
+                : isDark
+                    ? Colors.white
+                    : Colors.teal.shade700,
           ),
         ),
         child: Column(
@@ -154,10 +165,10 @@ Widget StatsCard({final label, content, isBook, bookId}) {
             Row(
               children: [
                 Icon(
-                  label == 'Expenses'
+                  isExpense
                       ? Icons.file_upload_outlined
                       : Icons.file_download_outlined,
-                  color: label == 'Expenses' ? Colors.white : Colors.black,
+                  color: isExpense ? Colors.white : Colors.black,
                 ),
                 SizedBox(
                   width: 6,
@@ -165,7 +176,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
                 Text(
                   label,
                   style: TextStyle(
-                    color: label == 'Expenses' ? Colors.white : Colors.black,
+                    color: isExpense ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -177,7 +188,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
             Text(
               oCcy.format(double.parse(content)) + ' INR',
               style: TextStyle(
-                color: label == 'Expenses' ? Colors.white : Colors.black,
+                color: isExpense ? Colors.white : Colors.black,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),
@@ -293,7 +304,7 @@ Widget ConfirmDeleteModal({
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark ? blackColor : primaryColor,
                         foregroundColor:
-                            isDark ? primaryAccentColor : whiteColor,
+                            isDark ? darkProfitColorAccent : whiteColor,
                       ),
                       child: Text('Yes'),
                     ),

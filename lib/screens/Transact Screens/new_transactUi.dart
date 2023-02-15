@@ -538,8 +538,8 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       BoxShadow(
                         color: transactType == 'Income'
                             ? isDark
-                                ? primaryAccentColor.withOpacity(0.5)
-                                : primaryAccentColor.withOpacity(0.2)
+                                ? darkProfitColorAccent.withOpacity(0.5)
+                                : lightProfitColorAccent.withOpacity(0.2)
                             : isDark
                                 ? Colors.redAccent.withOpacity(0.6)
                                 : Colors.red.withOpacity(0.2),
@@ -676,7 +676,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         elevation: 0,
         backgroundColor: isIncome
             ? isSelected
-                ? primaryAccentColor
+                ? darkProfitColorAccent
                 : isDark
                     ? cardColordark
                     : cardColorlight

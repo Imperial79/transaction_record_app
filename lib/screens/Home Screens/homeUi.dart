@@ -198,7 +198,8 @@ class _HomeUiState extends State<HomeUi> {
                                         child: Hero(
                                           tag: 'profImg',
                                           child: CircleAvatar(
-                                            backgroundColor: primaryAccentColor,
+                                            backgroundColor:
+                                                darkProfitColorAccent,
                                             radius: 15,
                                             child: ClipRRect(
                                               borderRadius:
@@ -210,7 +211,7 @@ class _HomeUiState extends State<HomeUi> {
                                                           child:
                                                               CircularProgressIndicator(
                                                             color:
-                                                                primaryAccentColor,
+                                                                darkProfitColorAccent,
                                                             strokeWidth: 1.5,
                                                           ),
                                                         )
@@ -393,7 +394,7 @@ class _HomeUiState extends State<HomeUi> {
     if (amtPercentage == 0) {
       bgColor = Colors.grey.shade300;
     } else if (amtPercentage <= 40) {
-      bgColor = primaryAccentColor.withOpacity(0.5);
+      bgColor = darkProfitColorAccent.withOpacity(0.5);
       fgColor = primaryColor;
     } else if (amtPercentage > 40 && amtPercentage <= 60) {
       bgColor = Colors.amber.shade100;
@@ -436,12 +437,15 @@ class _HomeUiState extends State<HomeUi> {
             decoration: BoxDecoration(
               color: amtPercentage > 100
                   ? isDark
-                      ? Color.fromARGB(255, 88, 0, 0)
-                      : Colors.red.shade100
+                      ? darkLossColorAccent
+                      : Colors.red.shade100.withOpacity(0.4)
                   : isDark
                       ? Color(0xFF303030)
                       : cardColorlight,
               borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: isDark ? greyColorAccent : Colors.grey.shade300,
+              ),
             ),
             child: Column(
               children: [

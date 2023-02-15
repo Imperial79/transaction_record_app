@@ -187,7 +187,7 @@ class _AccountUIState extends State<AccountUI> {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: isDark ? primaryAccentColor : blackColor,
+              color: isDark ? darkProfitColorAccent : blackColor,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

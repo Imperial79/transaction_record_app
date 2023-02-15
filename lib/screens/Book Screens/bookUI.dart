@@ -143,8 +143,9 @@ class _BookUIState extends State<BookUI> {
                             children: [
                               Icon(
                                 Icons.arrow_back,
-                                color:
-                                    isDark ? primaryAccentColor : Colors.black,
+                                color: isDark
+                                    ? darkProfitColorAccent
+                                    : Colors.black,
                               ),
                               _searchController.text.isEmpty
                                   ? SizedBox(
@@ -314,19 +315,19 @@ class _BookUIState extends State<BookUI> {
                                             ? _selectedSortType == 'All'
                                                 ? greyColorAccent
                                                 : _selectedSortType == 'Income'
-                                                    ? primaryAccentColor
+                                                    ? darkProfitColorAccent
                                                     : Colors.red
                                             : _selectedSortType == 'All'
                                                 ? Colors.black
                                                 : _selectedSortType == 'Income'
-                                                    ? primaryAccentColor
+                                                    ? darkProfitColorAccent
                                                     : Colors.red,
                                         boxShadow: [
                                           BoxShadow(
                                             color: _selectedSortType == 'All'
                                                 ? Colors.grey.shade500
                                                 : _selectedSortType == 'Income'
-                                                    ? primaryAccentColor
+                                                    ? darkProfitColorAccent
                                                     : Colors.red,
                                             blurRadius: 100,
                                             spreadRadius: 10,
@@ -502,7 +503,7 @@ class _BookUIState extends State<BookUI> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: isDark ? Colors.greenAccent : blackColor,
+                  color: isDark ? darkProfitColorAccent : blackColor,
                 ),
                 child: AnimatedSize(
                   reverseDuration: Duration(milliseconds: 300),
@@ -804,16 +805,17 @@ class _BookUIState extends State<BookUI> {
                                   width: sdp(context, 30),
                                   decoration: BoxDecoration(
                                     color: data.type == 'Income'
-                                        ? primaryAccentColor
+                                        ? darkProfitColorAccent
                                         : Colors.black,
+                                    // border: Border.all(color: ),
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
                                         color: data.type == 'Income'
                                             ? isDark
-                                                ? primaryAccentColor
+                                                ? darkProfitColorAccent
                                                     .withOpacity(0.5)
-                                                : primaryAccentColor
+                                                : darkProfitColorAccent
                                             : isDark
                                                 ? greyColorAccent
                                                     .withOpacity(0.5)
@@ -1184,7 +1186,8 @@ class _BookUIState extends State<BookUI> {
                               color: isDark ? blackColor : whiteColor,
                             ),
                             label: 'Income',
-                            color: isDark ? primaryAccentColor : primaryColor,
+                            color:
+                                isDark ? darkProfitColorAccent : primaryColor,
                           ),
                           FilterBtns(
                             setState: setState,

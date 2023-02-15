@@ -67,8 +67,9 @@ class _LoginUIState extends State<LoginUI> {
                             Transform.scale(
                               scale: 0.5,
                               child: CircularProgressIndicator(
-                                color:
-                                    isDark ? primaryAccentColor : primaryColor,
+                                color: isDark
+                                    ? darkProfitColorAccent
+                                    : primaryColor,
                               ),
                             ),
                             SizedBox(
@@ -121,7 +122,7 @@ class _LoginUIState extends State<LoginUI> {
                                   '#OpenSource',
                                   style: TextStyle(
                                     color: isDark
-                                        ? primaryAccentColor
+                                        ? darkProfitColorAccent
                                         : textLinkColor,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
@@ -130,7 +131,7 @@ class _LoginUIState extends State<LoginUI> {
                                 TextLink(
                                   link: _githubLink,
                                   color: isDark
-                                      ? primaryAccentColor
+                                      ? darkProfitColorAccent
                                       : textLinkColor,
                                   alignment: Alignment.topLeft,
                                   text: '#Github',
@@ -142,8 +143,9 @@ class _LoginUIState extends State<LoginUI> {
                             children: [
                               Icon(
                                 Icons.cloud_circle,
-                                color:
-                                    isDark ? primaryAccentColor : textLinkColor,
+                                color: isDark
+                                    ? darkProfitColorAccent
+                                    : textLinkColor,
                               ),
                               SizedBox(
                                 width: 10,
@@ -154,7 +156,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
                                     color: isDark
-                                        ? primaryAccentColor
+                                        ? darkProfitColorAccent
                                         : textLinkColor,
                                   ),
                                 ),
@@ -179,12 +181,14 @@ class _LoginUIState extends State<LoginUI> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.pink,
-                                    Colors.pink.shade200,
-                                  ],
-                                ),
+                                color: Color(0xffda8363),
+                                border: Border.all(color: Colors.red.shade100),
+                                // gradient: LinearGradient(
+                                //   colors: [
+                                //     Colors.pink,
+                                //     Colors.pink.shade200,
+                                //   ],
+                                // ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: isDark
@@ -244,9 +248,9 @@ class _LoginUIState extends State<LoginUI> {
                                   text: 'Terms and Conditions',
                                   link: Uri.parse(''),
                                   color: isDark
-                                      ? primaryAccentColor
+                                      ? darkProfitColorAccent
                                       : textLinkColor,
-                                  alignment: Alignment.bottomLeft,
+                                  alignment: Alignment.topLeft,
                                 ),
                               ),
                               Expanded(
@@ -254,9 +258,9 @@ class _LoginUIState extends State<LoginUI> {
                                   text: 'Privacy Policy',
                                   link: _privacyPolicyUrl,
                                   color: isDark
-                                      ? primaryAccentColor
+                                      ? darkProfitColorAccent
                                       : textLinkColor,
-                                  alignment: Alignment.bottomRight,
+                                  alignment: Alignment.topRight,
                                 ),
                               ),
                             ],
@@ -272,8 +276,8 @@ class _LoginUIState extends State<LoginUI> {
   }
 
   Widget TextLink({final text, alignment, color, Uri? link}) {
-    return TextButton(
-      onPressed: () {
+    return InkWell(
+      onTap: () {
         launchTheUrl(link!);
       },
       child: Text(

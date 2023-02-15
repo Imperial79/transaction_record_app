@@ -279,7 +279,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           boxShadow: [
                             BoxShadow(
                               color: widget.trData.type! == 'Income'
-                                  ? primaryAccentColor.withOpacity(0.3)
+                                  ? lightProfitColorAccent.withOpacity(0.3)
                                   : isDark
                                       ? Colors.grey.shade600
                                       : Colors.grey.shade200,
@@ -759,8 +759,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       BoxShadow(
                         color: transactType == 'Income'
                             ? isDark
-                                ? primaryAccentColor.withOpacity(0.5)
-                                : primaryAccentColor.withOpacity(0.2)
+                                ? darkProfitColorAccent.withOpacity(0.5)
+                                : lightProfitColorAccent.withOpacity(0.2)
                             : isDark
                                 ? Colors.redAccent.withOpacity(0.6)
                                 : Colors.red.withOpacity(0.2),
@@ -839,7 +839,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50),
       ),
-      color: label == 'Expense' ? Colors.black : primaryAccentColor,
+      color: label == 'Expense' ? Colors.black : darkLossColorAccent,
       elevation: 0,
       child: Row(
         mainAxisSize: MainAxisSize.min,

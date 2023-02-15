@@ -257,7 +257,7 @@ class _NewBookUIState extends State<NewBookUI> {
             createBook();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: isDark ? primaryAccentColor : Colors.black,
+            backgroundColor: isDark ? darkProfitColorAccent : Colors.black,
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
