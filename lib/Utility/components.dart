@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/size.dart';
 
@@ -142,12 +144,6 @@ Widget StatsCard({final label, content, isBook, bookId}) {
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          // gradient: LinearGradient(
-          //   colors: [
-          //     label == 'Expenses' ? Colors.red.shade900 : primaryColor,
-          //     label == 'Expenses' ? Colors.red : Colors.lightGreenAccent,
-          //   ],
-          // ),
           color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
           border: Border.all(
             color: isExpense
@@ -516,3 +512,90 @@ Widget NewBookCard(BuildContext context) => Container(
         ],
       ),
     );
+
+Widget bookOptionsModal({required String bookName, required String bookId}) {
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            color: isDark ? cardColordark : cardColorlight,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundColor: isDark ? Colors.grey.shade300 : Colors.black,
+                  child: SvgPicture.asset(
+                    'lib/assets/icons/options.svg',
+                    colorFilter: svgColor(
+                      isDark ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Book Options",
+                  style: TextStyle(
+                    color: isDark ? whiteColor : blackColor,
+                    fontSize: sdp(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    BookMethods.deleteBook(context,
+                        bookName: bookName, bookId: bookId);
+                  },
+                  child: Card(
+                    color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          Card(
+                            color: isDark ? Colors.red.shade100 : Colors.red,
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                'lib/assets/icons/delete.svg',
+                                colorFilter: svgColor(
+                                  isDark ? Colors.black : Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: Text(
+                              "Delete book",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: sdp(context, 15),
+                                color: Colors.red.shade200,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}

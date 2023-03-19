@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
@@ -50,35 +51,6 @@ class _BookUIState extends State<BookUI> {
         _showAdd.value = true;
       }
     });
-  }
-
-  //--------- DELETE BOOK--------------------------->
-  _deleteBook() async {
-    final bookName = widget.snap['bookName'];
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await DatabaseMethods().deleteBookWithCollections(widget.snap['bookId']);
-      setState(() {
-        _isLoading = false;
-      });
-      ShowSnackBar(
-        context,
-        '"$bookName"' + ' book has been deleted',
-      );
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ShowSnackBar(
-        context,
-        'Something went wrong. Please try again after sometime',
-      );
-    }
-
-    Navigator.pop(context);
   }
 
   //------------------------------------>
@@ -730,6 +702,7 @@ class _BookUIState extends State<BookUI> {
   }
 
   Widget TransactTile(Transact data) {
+    bool isIncome = data.type == 'Income';
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
     if (dateTitle == data.date) {
@@ -804,33 +777,36 @@ class _BookUIState extends State<BookUI> {
                                   height: sdp(context, 30),
                                   width: sdp(context, 30),
                                   decoration: BoxDecoration(
-                                    color: data.type == 'Income'
+                                    color: isIncome
                                         ? darkProfitColorAccent
-                                        : Colors.black,
-                                    // border: Border.all(color: ),
+                                        : kLossColorAccent,
+                                    border: !isDark
+                                        ? Border.all(
+                                            color: isIncome
+                                                ? kProfitColor
+                                                : lossColor,
+                                          )
+                                        : null,
                                     shape: BoxShape.circle,
                                     boxShadow: [
-                                      BoxShadow(
-                                        color: data.type == 'Income'
-                                            ? isDark
-                                                ? darkProfitColorAccent
-                                                    .withOpacity(0.5)
-                                                : darkProfitColorAccent
-                                            : isDark
-                                                ? greyColorAccent
-                                                    .withOpacity(0.5)
-                                                : Colors.grey,
-                                        blurRadius: 30,
-                                        spreadRadius: 1,
-                                      ),
+                                      isDark
+                                          ? BoxShadow(
+                                              color: isIncome
+                                                  ? darkProfitColorAccent
+                                                      .withOpacity(0.5)
+                                                  : lossColor.withOpacity(0.5),
+                                              blurRadius: 30,
+                                              spreadRadius: 1,
+                                            )
+                                          : BoxShadow(),
                                     ],
                                   ),
                                   child: FittedBox(
                                     child: Icon(
-                                      data.type == 'Income'
+                                      isIncome
                                           ? Icons.file_download_outlined
                                           : Icons.file_upload_outlined,
-                                      color: data.type == 'Income'
+                                      color: isIncome
                                           ? Colors.black
                                           : Colors.white,
                                       size: 17,
@@ -841,41 +817,34 @@ class _BookUIState extends State<BookUI> {
                                   width: 10,
                                 ),
                                 Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: oCcy
+                                          .format(double.parse(data.amount!)),
+                                      style: TextStyle(
+                                        fontFamily: "Product",
+                                        fontSize: sdp(context, 16),
+                                        fontWeight: FontWeight.w800,
+                                        color: isIncome
+                                            ? isDark
+                                                ? kProfitColorAccent
+                                                : kProfitColor
+                                            : isDark
+                                                ? Color(0xFFFFC1C1)
+                                                : lossColor,
+                                      ),
                                       children: [
                                         TextSpan(
-                                          text: oCcy.format(
-                                              double.parse(data.amount!)),
+                                          text: " INR",
                                           style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: data.type == 'Income'
-                                                ? primaryColor
-                                                : isDark
-                                                    ? Color(0xFFFFC1C1)
-                                                    : lossColor,
-                                            fontFamily: 'Product',
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: ' INR',
-                                          style: TextStyle(
+                                            fontSize: sdp(context, 10),
                                             fontWeight: FontWeight.w400,
-                                            fontSize: 20,
-                                            color: data.type == 'Income'
-                                                ? primaryColor
-                                                : isDark
-                                                    ? Color(0xFFFF8787)
-                                                    : lossColor,
-                                            fontFamily: 'Product',
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                Spacer(),
                               ],
                             ),
                             SizedBox(
@@ -1051,8 +1020,18 @@ class _BookUIState extends State<BookUI> {
                     elevation: 0,
                     builder: (context) {
                       return ConfirmDeleteModal(
-                        onDelete: () {
-                          _deleteBook();
+                        onDelete: () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          await BookMethods.deleteBook(
+                            context,
+                            bookName: widget.snap['bookName'],
+                            bookId: widget.snap['bookId'],
+                          );
+                          setState(() {
+                            _isLoading = false;
+                          });
                           Navigator.pop(context);
                         },
                         label: 'Really want to delete this Book?',

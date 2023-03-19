@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -390,7 +391,7 @@ class _HomeUiState extends State<HomeUi> {
     } else {
       amtPercentage = 0;
     }
-
+    bool isCompleted = amtPercentage == 100;
     if (amtPercentage == 0) {
       bgColor = Colors.grey.shade300;
     } else if (amtPercentage <= 40) {
@@ -399,9 +400,12 @@ class _HomeUiState extends State<HomeUi> {
     } else if (amtPercentage > 40 && amtPercentage <= 60) {
       bgColor = Colors.amber.shade100;
       fgColor = Colors.amber;
+    } else if (isCompleted) {
+      bgColor = Colors.green.shade700;
+      fgColor = Colors.white;
     } else {
-      bgColor = Colors.red.shade100;
-      fgColor = Colors.red;
+      bgColor = Colors.grey;
+      fgColor = isDark ? Colors.red.shade200 : Colors.red;
     }
 
     if (dateTitle == ds['date']) {
@@ -409,6 +413,17 @@ class _HomeUiState extends State<HomeUi> {
     } else {
       dateTitle = ds['date'];
       showDateWidget = true;
+    }
+
+    Color _kCardColor = cardColordark;
+    if (amtPercentage > 100) {
+      _kCardColor = isDark
+          ? kLossColorAccent.withOpacity(0.5)
+          : Colors.redAccent.withOpacity(0.2);
+    } else if (amtPercentage == 100) {
+      _kCardColor = isDark ? kProfitColor.withOpacity(0.5) : kProfitColorAccent;
+    } else {
+      _kCardColor = isDark ? Color(0xFF303030) : cardColorlight;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,20 +446,27 @@ class _HomeUiState extends State<HomeUi> {
           onTap: () {
             NavPush(context, BookUI(snap: ds));
           },
+          onLongPress: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              builder: (context) {
+                return bookOptionsModal(
+                  bookId: ds['bookId'],
+                  bookName: ds['bookName'],
+                );
+              },
+            );
+          },
           child: Container(
             width: double.infinity,
             margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: amtPercentage > 100
-                  ? isDark
-                      ? darkLossColorAccent
-                      : Colors.red.shade100.withOpacity(0.4)
-                  : isDark
-                      ? Color(0xFF303030)
-                      : cardColorlight,
+              color: _kCardColor,
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                color: isDark ? greyColorAccent : Colors.grey.shade300,
+                color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
               ),
             ),
             child: Column(
@@ -459,34 +481,44 @@ class _HomeUiState extends State<HomeUi> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            value: amtPercentage / 100,
-                            backgroundColor:
-                                isDark ? bgColor.withOpacity(0.2) : bgColor,
-                            color: fgColor,
-                          ),
-                          amtPercentage < 100
-                              ? Text(
-                                  amtPercentage.toString() + '%',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: sdp(context, 8.5),
-                                    color: isDark ? whiteColor : blackColor,
-                                  ),
-                                )
-                              : Text(
-                                  '!',
-                                  style: TextStyle(
-                                    fontSize: sdp(context, 12),
-                                    color: isDark ? Colors.white : Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                      isCompleted
+                          ? CircleAvatar(
+                              backgroundColor: bgColor,
+                              foregroundColor: fgColor,
+                              child: Icon(Icons.done),
+                            )
+                          : Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  value: amtPercentage / 100,
+                                  backgroundColor: isDark
+                                      ? bgColor.withOpacity(0.2)
+                                      : bgColor,
+                                  color: fgColor,
                                 ),
-                        ],
-                      ),
+                                amtPercentage < 100
+                                    ? Text(
+                                        amtPercentage.toString() + '%',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: sdp(context, 8.5),
+                                          color:
+                                              isDark ? whiteColor : blackColor,
+                                        ),
+                                      )
+                                    : Text(
+                                        '!',
+                                        style: TextStyle(
+                                          fontSize: sdp(context, 12),
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ],
+                            ),
                       SizedBox(
                         width: 10,
                       ),
@@ -687,10 +719,18 @@ class _HomeUiState extends State<HomeUi> {
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(15),
                 border: InputBorder.none,
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: sdp(context, 20),
-                  color: isDark ? greyColorAccent : Colors.grey.shade600,
+                prefixIconConstraints: BoxConstraints(
+                  maxHeight: sdp(context, 50),
+                  // maxWidth: sdp(context, 20),
+                ),
+                prefixIcon: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SvgPicture.asset(
+                    "lib/assets/icons/search.svg",
+                    // height: sdp(context, 10),
+                    colorFilter: svgColor(
+                        isDark ? greyColorAccent : Colors.grey.shade600),
+                  ),
                 ),
                 hintText: 'Search for Name or Description',
                 hintStyle: TextStyle(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
@@ -68,7 +69,7 @@ class _LoginUIState extends State<LoginUI> {
                               scale: 0.5,
                               child: CircularProgressIndicator(
                                 color: isDark
-                                    ? darkProfitColorAccent
+                                    ? profitHighlightColor
                                     : primaryColor,
                               ),
                             ),
@@ -101,7 +102,7 @@ class _LoginUIState extends State<LoginUI> {
                                   'Transact Record',
                                   style: TextStyle(
                                     fontSize: sdp(context, 40),
-                                    fontWeight: FontWeight.w900,
+                                    fontWeight: FontWeight.bold,
                                     color:
                                         isDark ? greyColorAccent : blackColor,
                                   ),
@@ -122,7 +123,7 @@ class _LoginUIState extends State<LoginUI> {
                                   '#OpenSource',
                                   style: TextStyle(
                                     color: isDark
-                                        ? darkProfitColorAccent
+                                        ? profitHighlightColor
                                         : textLinkColor,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
@@ -131,9 +132,8 @@ class _LoginUIState extends State<LoginUI> {
                                 TextLink(
                                   link: _githubLink,
                                   color: isDark
-                                      ? darkProfitColorAccent
+                                      ? profitHighlightColor
                                       : textLinkColor,
-                                  alignment: Alignment.topLeft,
                                   text: '#Github',
                                 )
                               ],
@@ -141,11 +141,12 @@ class _LoginUIState extends State<LoginUI> {
                           ),
                           Row(
                             children: [
-                              Icon(
-                                Icons.cloud_circle,
-                                color: isDark
-                                    ? darkProfitColorAccent
-                                    : textLinkColor,
+                              SvgPicture.asset(
+                                'lib/assets/icons/cloud.svg',
+                                colorFilter: svgColor(
+                                  isDark ? profitHighlightColor : textLinkColor,
+                                ),
+                                height: sdp(context, 30),
                               ),
                               SizedBox(
                                 width: 10,
@@ -156,7 +157,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
                                     color: isDark
-                                        ? darkProfitColorAccent
+                                        ? profitHighlightColor
                                         : textLinkColor,
                                   ),
                                 ),
@@ -248,9 +249,9 @@ class _LoginUIState extends State<LoginUI> {
                                   text: 'Terms and Conditions',
                                   link: Uri.parse(''),
                                   color: isDark
-                                      ? darkProfitColorAccent
+                                      ? profitHighlightColor
                                       : textLinkColor,
-                                  alignment: Alignment.topLeft,
+                                  textAlign: TextAlign.start,
                                 ),
                               ),
                               Expanded(
@@ -258,9 +259,9 @@ class _LoginUIState extends State<LoginUI> {
                                   text: 'Privacy Policy',
                                   link: _privacyPolicyUrl,
                                   color: isDark
-                                      ? darkProfitColorAccent
+                                      ? profitHighlightColor
                                       : textLinkColor,
-                                  alignment: Alignment.topRight,
+                                  textAlign: TextAlign.end,
                                 ),
                               ),
                             ],
@@ -275,7 +276,7 @@ class _LoginUIState extends State<LoginUI> {
     );
   }
 
-  Widget TextLink({final text, alignment, color, Uri? link}) {
+  Widget TextLink({final text, Color? color, Uri? link, TextAlign? textAlign}) {
     return InkWell(
       onTap: () {
         launchTheUrl(link!);
@@ -286,6 +287,7 @@ class _LoginUIState extends State<LoginUI> {
           color: color,
           fontWeight: FontWeight.w600,
         ),
+        textAlign: textAlign,
       ),
     );
   }
