@@ -700,43 +700,42 @@ class _HomeUiState extends State<HomeUi> {
     return Row(
       children: [
         Flexible(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               color: isDark ? cardColordark : cardColorlight,
-              borderRadius: BorderRadius.horizontal(
-                right:
-                    Radius.circular(_searchController.text.isNotEmpty ? 15 : 0),
-              ),
+              borderRadius: BorderRadius.circular(100),
             ),
             child: TextField(
               controller: _searchController,
               keyboardType: TextInputType.text,
               style: TextStyle(
-                fontSize: sdp(context, 15),
+                fontSize: sdp(context, 12),
                 color: isDark ? whiteColor : blackColor,
               ),
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(15),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                 border: InputBorder.none,
                 prefixIconConstraints: BoxConstraints(
                   maxHeight: sdp(context, 50),
-                  // maxWidth: sdp(context, 20),
                 ),
                 prefixIcon: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: SvgPicture.asset(
                     "lib/assets/icons/search.svg",
-                    // height: sdp(context, 10),
+                    height: sdp(context, 15),
                     colorFilter: svgColor(
                         isDark ? greyColorAccent : Colors.grey.shade600),
                   ),
                 ),
-                hintText: 'Search for Name or Description',
+                hintText: 'Search books ...',
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color: isDark ? greyColorAccent : Colors.grey.shade600,
-                  fontSize: sdp(context, 15),
+                  color: isDark
+                      ? greyColorAccent.withOpacity(0.5)
+                      : Colors.grey.shade600,
+                  fontSize: sdp(context, 12),
                 ),
               ),
               onChanged: (val) {

@@ -136,6 +136,93 @@ class AppTitle extends StatelessWidget {
   }
 }
 
+Widget DummyTransactList(BuildContext context) {
+  return Column(
+    children: [
+      for (int i = 0; i <= 10; i++)
+        Container(
+          margin: EdgeInsets.only(bottom: 20),
+          child: Container(
+            padding: EdgeInsets.all(10),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: isDark ? Color(0xFF333333) : cardColorlight,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                height: sdp(context, 30),
+                                width: sdp(context, 30),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                width: 200,
+                                height: 20,
+                                color: Colors.grey.withOpacity(0.5),
+                              ),
+                              Spacer(),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            width: 200,
+                            height: 20,
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                          Container(
+                            width: 200,
+                            height: 20,
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Container(
+                    width: 200,
+                    height: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
 Widget StatsCard({final label, content, isBook, bookId}) {
   bool isExpense = label == 'Expenses';
   return Stack(

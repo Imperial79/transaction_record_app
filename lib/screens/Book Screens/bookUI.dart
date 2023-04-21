@@ -36,6 +36,7 @@ class _BookUIState extends State<BookUI> {
   var items = ['All', 'Income', 'Expense'];
   List<Map<String, dynamic>> transactList = [];
   bool isFetching = true;
+  // List<Map<String, dynamic>> filteredTransacts = [];
 
   //------------------------------------>
 
@@ -43,6 +44,7 @@ class _BookUIState extends State<BookUI> {
   void initState() {
     super.initState();
     fetchBookTransacts();
+
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -81,6 +83,7 @@ class _BookUIState extends State<BookUI> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+    _searchController.dispose();
   }
 
   //------------------------------------>
@@ -90,6 +93,7 @@ class _BookUIState extends State<BookUI> {
     setSystemUIColors();
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
+    bool isSearching = _searchController.text.isNotEmpty;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -648,6 +652,30 @@ class _BookUIState extends State<BookUI> {
       ],
     );
   }
+
+  // filterTransacts() {
+  //   List<Map<String, dynamic>> _transacts = [];
+  //   _transacts.addAll(transactList);
+  //   if (_searchController.text.isNotEmpty) {
+  //     _transacts.retainWhere((transact) {
+  //       String searchTerm = _searchController.text.toLowerCase().trim();
+
+  //       String amount = transact['amount'];
+  //       String date = transact['date'];
+  //       String description = transact['description'];
+  //       String source = transact['source'];
+
+  //       return amount.contains(searchTerm) ||
+  //           description.contains(searchTerm) ||
+  //           source.contains(searchTerm) ||
+  //           date.contains(searchTerm);
+  //     });
+
+  //     setState(() {
+  //       filteredTransacts = _transacts;
+  //     });
+  //   }
+  // }
 
   Widget TransactList(String bookId) {
     int dataCounter = 0;
