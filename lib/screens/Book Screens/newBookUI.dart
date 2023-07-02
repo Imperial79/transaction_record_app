@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -5,6 +8,7 @@ import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/services/size.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class NewBookUI extends StatefulWidget {
   const NewBookUI({Key? key}) : super(key: key);
@@ -24,12 +28,15 @@ class _NewBookUIState extends State<NewBookUI> {
   final bookDescriptionController = TextEditingController();
   final dbMethod = DatabaseMethods();
 
+  String selectedBookType = 'Regular Book';
+
   createBook() {
     try {
       if (bookTitleController.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime =
             DateFormat().add_jm().format(_selectedTimeStamp).toString();
+        String _type = selectedBookType.split(' ').first.trim().toLowerCase();
 
         Map<String, dynamic> newBookMap = {
           'bookName': bookTitleController.text,
@@ -39,6 +46,7 @@ class _NewBookUIState extends State<NewBookUI> {
           'bookId': _selectedTimeStamp.toString(),
           'income': 0,
           'expense': 0,
+          'type': _type,
         };
         dbMethod.createNewTransactBook(
             _selectedTimeStamp.toString(), newBookMap);
@@ -49,6 +57,38 @@ class _NewBookUIState extends State<NewBookUI> {
       ShowSnackBar(context, e.toString());
     }
   }
+
+  ///     Code for updating attributes in one click ------------>
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   log('init');
+
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(UserDetails.uid)
+  //       .collection('transact_books')
+  //       .get()
+  //       .then((value) {
+  //     List<String> bookIds = [];
+  //     value.docs.forEach((element) {
+  //       bookIds.add(element.get('bookId'));
+  //       String currBookId = element.get('bookId');
+
+  //       FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(UserDetails.uid)
+  //           .collection('transact_books')
+  //           .doc(currBookId)
+  //           .update({'type': 'regular'}).then((value) {
+  //         print("updated");
+  //       });
+  //     });
+
+  //     // log(bookIds.toString());
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +104,7 @@ class _NewBookUIState extends State<NewBookUI> {
                 child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -241,6 +282,12 @@ class _NewBookUIState extends State<NewBookUI> {
                           ],
                         ),
                       ),
+                      height20,
+                      Text("Book Type"),
+                      height10,
+                      bookTypeBtn('Regular Book'),
+                      height5,
+                      bookTypeBtn('Due Book'),
                     ],
                   ),
                 ),
@@ -318,6 +365,48 @@ class _NewBookUIState extends State<NewBookUI> {
         //     ),
         //   ),
         // ),
+      ),
+    );
+  }
+
+  Widget bookTypeBtn(String label) {
+    bool isSelected = selectedBookType == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedBookType = label;
+        });
+      },
+      child: Card(
+        elevation: 0,
+        color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: BorderSide(
+            color: isSelected
+                ? isDark
+                    ? kProfitColorAccent
+                    : kProfitColor
+                : Colors.transparent,
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: isSelected
+                    ? isDark
+                        ? kProfitColorAccent
+                        : kProfitColor
+                    : Colors.grey.shade400,
+                radius: 5,
+              ),
+              width10,
+              Expanded(child: Text(label))
+            ],
+          ),
+        ),
       ),
     );
   }

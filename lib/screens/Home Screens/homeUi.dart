@@ -263,7 +263,7 @@ class _HomeUiState extends State<HomeUi> {
                                         radius: 20,
                                         backgroundColor: isDark
                                             ? cardColordark
-                                            : Colors.grey.shade300,
+                                            : Colors.grey.shade200,
                                         child: IconButton(
                                           onPressed: () {
                                             setState(() {
@@ -481,7 +481,7 @@ class _HomeUiState extends State<HomeUi> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      isCompleted
+                      isCompleted && ds['type'] == 'due'
                           ? CircleAvatar(
                               backgroundColor: bgColor,
                               foregroundColor: fgColor,
@@ -497,7 +497,7 @@ class _HomeUiState extends State<HomeUi> {
                                       : bgColor,
                                   color: fgColor,
                                 ),
-                                amtPercentage < 100
+                                amtPercentage <= 100
                                     ? Text(
                                         amtPercentage.toString() + '%',
                                         style: TextStyle(
@@ -729,7 +729,7 @@ class _HomeUiState extends State<HomeUi> {
                         isDark ? greyColorAccent : Colors.grey.shade600),
                   ),
                 ),
-                hintText: 'Search books ...',
+                hintText: 'Search by name or amount',
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: isDark

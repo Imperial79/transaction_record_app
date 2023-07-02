@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: darkScaffoldColor,
         brightness: Brightness.dark,
         textTheme: TextTheme(
-          button: TextStyle(color: whiteColor),
+          labelLarge: TextStyle(color: whiteColor),
         ),
         colorSchemeSeed: primaryColor,
       ),
