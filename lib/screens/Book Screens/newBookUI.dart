@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -8,7 +5,6 @@ import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/services/size.dart';
-import 'package:transaction_record_app/services/user.dart';
 
 class NewBookUI extends StatefulWidget {
   const NewBookUI({Key? key}) : super(key: key);

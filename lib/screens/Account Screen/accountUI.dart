@@ -60,7 +60,7 @@ class _AccountUIState extends State<AccountUI> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors();
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
+    isDark = checkForTheme(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -105,24 +105,27 @@ class _AccountUIState extends State<AccountUI> {
                           fontWeight: FontWeight.w900,
                         ),
                         cursorWidth: 1,
-                        cursorColor: Colors.black,
+                        cursorColor: isDark ? Colors.white : Colors.black,
                         decoration: InputDecoration(
-                          focusColor: Colors.black,
+                          focusColor: isDark ? Colors.white : Colors.black,
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.black,
+                              color: isDark ? Colors.white : Colors.black,
                               width: 2,
                             ),
                           ),
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.grey.shade300,
+                              color:
+                                  isDark ? Colors.grey : Colors.grey.shade300,
                             ),
                           ),
                           hintText: 'Name',
                           hintStyle: TextStyle(
                             fontSize: 25,
-                            color: Colors.grey.shade400,
+                            color: isDark
+                                ? Colors.grey.shade600
+                                : Colors.grey.shade400,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -194,7 +197,7 @@ class _AccountUIState extends State<AccountUI> {
               children: [
                 Icon(
                   Icons.file_upload_outlined,
-                  color: Colors.white,
+                  color: isDark ? Colors.black : Colors.white,
                 ),
                 SizedBox(
                   width: 5,
@@ -203,7 +206,7 @@ class _AccountUIState extends State<AccountUI> {
                   'UPDATE',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: isDark ? Colors.black : Colors.white,
                     fontSize: 18,
                   ),
                 ),

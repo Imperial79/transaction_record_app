@@ -44,3 +44,7 @@ final Color darkGreyColor = Colors.grey.shade600;
 final Color kProfitColor = Colors.teal.shade700;
 final Color kProfitColorAccent = Color(0xff98d3cb);
 final Color kLossColorAccent = Color(0xffca705f);
+
+bool checkForTheme(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark;
+}

@@ -98,7 +98,7 @@ class _HomeUiState extends State<HomeUi> {
                           height: 5,
                         ),
                         ListView.builder(
-                          physics: BouncingScrollPhysics(),
+                          physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -383,8 +383,8 @@ class _HomeUiState extends State<HomeUi> {
   Widget TransactBookCard(ds) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
     int amtPercentage = 0;
-    Color bgColor = Colors.white;
-    Color fgColor = Colors.white;
+    Color _bgColor = Colors.white;
+    Color _fgColor = Colors.white;
 
     if (ds['expense'] != 0 && ds['income'] != 0) {
       amtPercentage = ((ds['expense'] / ds['income']) * 100).round();
@@ -393,19 +393,19 @@ class _HomeUiState extends State<HomeUi> {
     }
     bool isCompleted = amtPercentage == 100;
     if (amtPercentage == 0) {
-      bgColor = Colors.grey.shade300;
+      _bgColor = Colors.grey.shade300;
     } else if (amtPercentage <= 40) {
-      bgColor = darkProfitColorAccent.withOpacity(0.5);
-      fgColor = primaryColor;
+      _bgColor = darkProfitColorAccent.withOpacity(0.5);
+      _fgColor = primaryColor;
     } else if (amtPercentage > 40 && amtPercentage <= 60) {
-      bgColor = Colors.amber.shade100;
-      fgColor = Colors.amber;
+      _bgColor = Colors.amber.shade100;
+      _fgColor = Colors.amber;
     } else if (isCompleted) {
-      bgColor = Colors.green.shade700;
-      fgColor = Colors.white;
+      _bgColor = Colors.green.shade700;
+      _fgColor = Colors.white;
     } else {
-      bgColor = Colors.grey;
-      fgColor = isDark ? Colors.red.shade200 : Colors.red;
+      _bgColor = Colors.grey;
+      _fgColor = isDark ? Colors.red.shade200 : Colors.red;
     }
 
     if (dateTitle == ds['date']) {
@@ -483,8 +483,8 @@ class _HomeUiState extends State<HomeUi> {
                     children: [
                       isCompleted && ds['type'] == 'due'
                           ? CircleAvatar(
-                              backgroundColor: bgColor,
-                              foregroundColor: fgColor,
+                              backgroundColor: _bgColor,
+                              foregroundColor: _fgColor,
                               child: Icon(Icons.done),
                             )
                           : Stack(
@@ -493,9 +493,9 @@ class _HomeUiState extends State<HomeUi> {
                                 CircularProgressIndicator(
                                   value: amtPercentage / 100,
                                   backgroundColor: isDark
-                                      ? bgColor.withOpacity(0.2)
-                                      : bgColor,
-                                  color: fgColor,
+                                      ? _bgColor.withOpacity(0.2)
+                                      : _bgColor,
+                                  color: _fgColor,
                                 ),
                                 amtPercentage <= 100
                                     ? Text(

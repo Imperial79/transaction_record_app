@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
@@ -34,16 +33,18 @@ class _BookUIState extends State<BookUI> {
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
-  List<Map<String, dynamic>> transactList = [];
   bool isFetching = true;
-  // List<Map<String, dynamic>> filteredTransacts = [];
+
+  int bookListCounter = 5;
+  int searchingBookListCounter = 50;
+  bool isSearching = false;
 
   //------------------------------------>
 
   @override
   void initState() {
     super.initState();
-    fetchBookTransacts();
+    // fetchBookTransacts();
 
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
@@ -52,28 +53,12 @@ class _BookUIState extends State<BookUI> {
       } else {
         _showAdd.value = true;
       }
-    });
-  }
 
-  //------------------------------------>
-
-  Future<void> fetchBookTransacts() async {
-    QuerySnapshot<Map<String, dynamic>> data = await firestore
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('transact_books')
-        .doc(widget.snap['bookId'])
-        .collection('transacts')
-        .orderBy('ts', descending: true)
-        .get();
-    List<Map<String, dynamic>> tList = [];
-    for (var i = 0; i < data.docs.length; i++) {
-      tList.add(data.docs[i].data());
-    }
-    transactList = tList;
-
-    setState(() {
-      isFetching = false;
+      if (_scrollController.position.atEdge) {
+        setState(() {
+          bookListCounter += 5;
+        });
+      }
     });
   }
 
@@ -93,7 +78,7 @@ class _BookUIState extends State<BookUI> {
     setSystemUIColors();
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
-    bool isSearching = _searchController.text.isNotEmpty;
+    isSearching = _searchController.text.isNotEmpty;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -394,27 +379,24 @@ class _BookUIState extends State<BookUI> {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    physics: BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Column(
-                        children: [
-                          AnimatedSwitcher(
-                            duration: Duration(milliseconds: 500),
-                            switchInCurve: Curves.ease,
-                            switchOutCurve: Curves.ease,
-                            child: isFetching
-                                ? DummyTransactList()
-                                : TransactList(
-                                    widget.snap['bookId'],
-                                  ).animate().fade().moveY(),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.07,
-                          ),
-                        ],
+                  child: Scrollbar(
+                    interactive: true,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: BouncingScrollPhysics(),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TransactList(
+                              widget.snap['bookId'],
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.07,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -472,7 +454,7 @@ class _BookUIState extends State<BookUI> {
                   ),
                 ).then((value) {
                   setState(() {
-                    fetchBookTransacts();
+                    // fetchBookTransacts();
                   });
                 });
               },
@@ -529,6 +511,82 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
+  Widget TransactList(String bookId) {
+    int dataCounter = 0;
+    int loopCounter = 0;
+    dateTitle = '';
+    return StreamBuilder<dynamic>(
+      stream: firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('transact_books')
+          .doc(widget.snap['bookId'])
+          .collection('transacts')
+          .orderBy('ts', descending: true)
+          .limit(bookListCounter)
+          .snapshots(),
+      builder: (context, snapshot) {
+        dateTitle = '';
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            return ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: snapshot.data!.docs.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                loopCounter += 1;
+                Transact currTransact =
+                    Transact.fromDocumentSnap(snapshot.data.docs[index]);
+
+                final searchKey = _searchController.text.toLowerCase().trim();
+                if (_selectedSortType == 'All') {
+                  if (_searchController.text.isEmpty) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  } else if (currTransact.amount!.contains(searchKey) ||
+                      currTransact.description!
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      currTransact.source!.toLowerCase().contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  }
+                } else if (currTransact.type!.toLowerCase() ==
+                    _selectedSortType.toLowerCase()) {
+                  dataCounter++;
+                  if (_searchController.text.isEmpty) {
+                    return TransactTile(currTransact);
+                  } else if (currTransact.amount!.contains(searchKey) ||
+                      currTransact.description!
+                          .toLowerCase()
+                          .contains(searchKey) ||
+                      currTransact.source!.toLowerCase().contains(searchKey)) {
+                    dataCounter++;
+                    return TransactTile(currTransact);
+                  }
+                }
+                if (dataCounter == 0 &&
+                    loopCounter == snapshot.data.docs.length) {
+                  return Text(
+                    'No Item Found',
+                    style: TextStyle(
+                      color: isDark ? Colors.grey.shade700 : Colors.grey,
+                      fontSize: sdp(context, 16),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  );
+                }
+                return SizedBox();
+              },
+            );
+          }
+          return Text('No data');
+        }
+        return DummyTransactList();
+      },
+    );
+  }
+
   Container SearchBar() {
     return Container(
       padding: EdgeInsets.only(right: 10),
@@ -569,7 +627,7 @@ class _BookUIState extends State<BookUI> {
   Widget DummyTransactList() {
     return Column(
       children: [
-        for (int i = 0; i <= 10; i++)
+        for (int i = 0; i <= 5; i++)
           Container(
             margin: EdgeInsets.only(bottom: 20),
             child: Container(
@@ -653,82 +711,6 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  // filterTransacts() {
-  //   List<Map<String, dynamic>> _transacts = [];
-  //   _transacts.addAll(transactList);
-  //   if (_searchController.text.isNotEmpty) {
-  //     _transacts.retainWhere((transact) {
-  //       String searchTerm = _searchController.text.toLowerCase().trim();
-
-  //       String amount = transact['amount'];
-  //       String date = transact['date'];
-  //       String description = transact['description'];
-  //       String source = transact['source'];
-
-  //       return amount.contains(searchTerm) ||
-  //           description.contains(searchTerm) ||
-  //           source.contains(searchTerm) ||
-  //           date.contains(searchTerm);
-  //     });
-
-  //     setState(() {
-  //       filteredTransacts = _transacts;
-  //     });
-  //   }
-  // }
-
-  Widget TransactList(String bookId) {
-    int dataCounter = 0;
-    int loopCounter = 0;
-    dateTitle = '';
-    if (transactList.length == 0) {
-      return FirstTransactCard(context, bookId);
-    }
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: transactList.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        loopCounter += 1;
-        Transact currTransact = Transact.fromMap(transactList[index]);
-        final searchKey = _searchController.text.toLowerCase().trim();
-        if (_selectedSortType == 'All') {
-          if (_searchController.text.isEmpty) {
-            dataCounter++;
-            return TransactTile(currTransact);
-          } else if (currTransact.amount!.contains(searchKey) ||
-              currTransact.description!.toLowerCase().contains(searchKey) ||
-              currTransact.source!.toLowerCase().contains(searchKey)) {
-            dataCounter++;
-            return TransactTile(currTransact);
-          }
-        } else if (currTransact.type!.toLowerCase() ==
-            _selectedSortType.toLowerCase()) {
-          dataCounter++;
-          if (_searchController.text.isEmpty) {
-            return TransactTile(currTransact);
-          } else if (currTransact.amount!.contains(searchKey) ||
-              currTransact.description!.toLowerCase().contains(searchKey) ||
-              currTransact.source!.toLowerCase().contains(searchKey)) {
-            dataCounter++;
-            return TransactTile(currTransact);
-          }
-        }
-        if (dataCounter == 0 && loopCounter == transactList.length) {
-          return Text(
-            'No Item Found',
-            style: TextStyle(
-              color: isDark ? Colors.grey.shade700 : Colors.grey,
-              fontSize: sdp(context, 16),
-              fontWeight: FontWeight.w600,
-            ),
-          );
-        }
-        return SizedBox();
-      },
-    );
-  }
-
   Widget TransactTile(Transact data) {
     bool isIncome = data.type == 'Income';
     String dateLabel = '';
@@ -768,14 +750,7 @@ class _BookUIState extends State<BookUI> {
         ),
         GestureDetector(
           onTap: () {
-            NavPush(
-              context,
-              EditTransactUI(trData: data),
-            ).then((value) {
-              setState(() {
-                fetchBookTransacts();
-              });
-            });
+            NavPush(context, EditTransactUI(trData: data));
           },
           child: Container(
             margin: EdgeInsets.only(bottom: 20),
@@ -910,33 +885,26 @@ class _BookUIState extends State<BookUI> {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: !isDark ? greyColorAccent : darkGreyColor,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.schedule,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.schedule,
+                        color: isDark ? whiteColor : darkGreyColor,
+                        size: 15,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        data.time.toString(),
+                        style: TextStyle(
                           color: isDark ? whiteColor : darkGreyColor,
-                          size: 15,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          data.time.toString(),
-                          style: TextStyle(
-                            color: isDark ? whiteColor : darkGreyColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
