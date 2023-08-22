@@ -83,7 +83,7 @@ class _HomeUiState extends State<HomeUi> {
                             ? Text(
                                 'Recent Books',
                                 style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: sdp(context, 14),
                                   color: isDark ? whiteColor : blackColor,
                                 ),
                               )
