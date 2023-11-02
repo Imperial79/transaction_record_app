@@ -975,17 +975,17 @@ class _BookUIState extends State<BookUI> {
                 Icons.settings,
                 size: 17,
               ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                'Actions',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
+              width10,
+              Expanded(
+                child: Text(
+                  'Actions',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-              Spacer(),
+              width10,
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
@@ -1006,10 +1006,33 @@ class _BookUIState extends State<BookUI> {
           SizedBox(
             height: 10,
           ),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 5,
+            runSpacing: 5,
             children: [
               BookMenuBtn(
-                onPress: () {
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return kRenameModal(widget.snap['bookName']);
+                    },
+                  );
+                },
+                label: 'Edit',
+                icon: Icons.edit,
+                iconSize: sdp(context, 11),
+                btnColor: Colors.black,
+                textColor: Colors.white,
+              ),
+              BookMenuBtn(
+                onPressed: () {
                   showModalBottomSheet(
                     context: context,
                     backgroundColor: Colors.transparent,
@@ -1037,38 +1060,37 @@ class _BookUIState extends State<BookUI> {
                   );
                 },
                 label: 'Delete Book',
+                iconSize: sdp(context, 11),
+                labelSize: sdp(context, 8),
                 icon: Icons.delete,
                 btnColor: Colors.black,
                 textColor: Colors.white,
               ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: BookMenuBtn(
-                  onPress: () {
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      builder: (context) {
-                        return ConfirmDeleteModal(
-                          onDelete: () {
-                            _clearAllTransacts();
-                            Navigator.pop(context);
-                          },
-                          label: 'Really want to clear all Transacts?',
-                          content: 'This action cannot be undone !',
-                        );
-                      },
-                    );
-                  },
-                  label: 'Clear all Transacts',
-                  icon: Icons.restore,
-                  btnColor:
-                      isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
-                  textColor: Colors.white,
-                ),
+              BookMenuBtn(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    builder: (context) {
+                      return ConfirmDeleteModal(
+                        onDelete: () {
+                          _clearAllTransacts();
+                          Navigator.pop(context);
+                        },
+                        label: 'Really want to clear all Transacts?',
+                        content: 'This action cannot be undone !',
+                      );
+                    },
+                  );
+                },
+                labelSize: sdp(context, 10),
+                label: 'Clear all',
+                iconSize: sdp(context, 10),
+                icon: Icons.restore,
+                btnColor:
+                    isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
+                textColor: Colors.white,
               ),
             ],
           ),

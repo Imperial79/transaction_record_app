@@ -48,3 +48,23 @@ final Color kLossColorAccent = Color(0xffca705f);
 bool checkForTheme(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark;
 }
+
+class KThemeData {
+  static ThemeData light() => ThemeData(
+        fontFamily: 'Product',
+        useMaterial3: true,
+        scaffoldBackgroundColor: lightScaffoldColor,
+        brightness: Brightness.light,
+        colorSchemeSeed: primaryColor,
+      );
+  static ThemeData dark() => ThemeData(
+        fontFamily: 'Product',
+        useMaterial3: true,
+        scaffoldBackgroundColor: darkScaffoldColor,
+        brightness: Brightness.dark,
+        textTheme: TextTheme(
+          labelLarge: TextStyle(color: Colors.white),
+        ),
+        colorSchemeSeed: primaryColor,
+      );
+}

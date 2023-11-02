@@ -323,6 +323,104 @@ Widget StatsCard({final label, content, isBook, bookId}) {
   );
 }
 
+Widget kRenameModal(String oldBookName) {
+  final _bookTitle = new TextEditingController(text: oldBookName);
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          margin: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? cardColordark : cardColorlight,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundColor:
+                      isDark ? Colors.blue.shade100 : Colors.blueAccent,
+                  child: Text(
+                    'Aa',
+                    style: TextStyle(
+                      fontSize: sdp(context, 16),
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? Colors.blue.shade800 : whiteColor,
+                    ),
+                  ),
+                ),
+                height10,
+                Text(
+                  'Rename Book',
+                  style: TextStyle(
+                    color: isDark ? whiteColor : blackColor,
+                    fontSize: sdp(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Change the book name',
+                  style: TextStyle(
+                    color: isDark ? Colors.blue.shade300 : Colors.blueAccent,
+                    fontSize: sdp(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                height20,
+                TextField(
+                  controller: _bookTitle,
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
+                  style: TextStyle(
+                    fontSize: sdp(context, 20),
+                    fontWeight: FontWeight.w900,
+                    color: isDark ? whiteColor : blackColor,
+                  ),
+                  cursorWidth: 1,
+                  cursorColor: isDark ? whiteColor : blackColor,
+                  decoration: InputDecoration(
+                    focusColor: isDark ? whiteColor : blackColor,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: isDark ? darkGreyColor : blackColor,
+                        width: 2,
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: isDark ? darkGreyColor : Colors.grey.shade300,
+                      ),
+                    ),
+                    hintText: 'Book title',
+                    hintStyle: TextStyle(
+                      fontSize: sdp(context, 20),
+                      color: isDark ? darkGreyColor : Colors.grey.shade400,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                height20,
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: Icon(Icons.file_upload_outlined),
+                  label: Text('Update'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 Widget ConfirmDeleteModal({
   required String label,
   required String content,
@@ -409,42 +507,33 @@ Widget ConfirmDeleteModal({
   );
 }
 
-Widget BookMenuBtn({final onPress, label, icon, btnColor, textColor}) {
+Widget BookMenuBtn({
+  required void Function()? onPressed,
+  required String label,
+  required IconData icon,
+  required Color btnColor,
+  required Color textColor,
+  double? labelSize,
+  double? iconSize,
+}) {
   return ElevatedButton.icon(
-    onPressed: onPress,
+    onPressed: onPressed,
     style: ElevatedButton.styleFrom(
       backgroundColor: btnColor,
       foregroundColor: textColor,
       elevation: 0,
     ),
-    icon: Icon(icon),
-    label: Text(label),
+    icon: Icon(
+      icon,
+      size: iconSize,
+    ),
+    label: Text(
+      label,
+      style: TextStyle(
+        fontSize: labelSize,
+      ),
+    ),
   );
-  // return MaterialButton(
-  //   onPressed: onPress,
-  //   shape: RoundedRectangleBorder(
-  //     borderRadius: BorderRadius.circular(100),
-  //   ),
-  //   elevation: 0,
-  //   color: btnColor,
-  //   child: Row(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       Icon(
-  //         icon,
-  //         color: textColor,
-  //         size: 15,
-  //       ),
-  //       SizedBox(
-  //         width: 5,
-  //       ),
-  //       Text(
-  //         label,
-  //         style: TextStyle(color: textColor),
-  //       ),
-  //     ],
-  //   ),
-  // );
 }
 
 Widget CustomCard(BuildContext context, {required Widget child}) {

@@ -32,23 +32,8 @@ class MyApp extends StatelessWidget {
       title: 'Transact Record',
       color: Colors.white,
       themeMode: ThemeMode.system,
-      theme: ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        scaffoldBackgroundColor: lightScaffoldColor,
-        brightness: Brightness.light,
-        colorSchemeSeed: primaryColor,
-      ),
-      darkTheme: ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        scaffoldBackgroundColor: darkScaffoldColor,
-        brightness: Brightness.dark,
-        textTheme: TextTheme(
-          labelLarge: TextStyle(color: whiteColor),
-        ),
-        colorSchemeSeed: primaryColor,
-      ),
+      theme: KThemeData.light(),
+      darkTheme: KThemeData.dark(),
       home: FutureBuilder(
         future: AuthMethods().getCurrentuser(),
         builder: (context, snapshot) {

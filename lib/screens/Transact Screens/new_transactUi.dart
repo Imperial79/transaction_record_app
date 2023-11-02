@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
@@ -673,6 +671,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         });
       },
       style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(10),
         elevation: 0,
         backgroundColor: isIncome
             ? isSelected
@@ -697,22 +696,22 @@ class _NewTransactUiState extends State<NewTransactUi> {
             : isSelected
                 ? whiteColor
                 : Colors.grey,
+        size: sdp(context, 12),
       ),
-      label: FittedBox(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: isIncome
-                ? isSelected
-                    ? Colors.black
-                    : Colors.grey
-                : isSelected
-                    ? Colors.white
-                    : isDark
-                        ? Colors.grey
-                        : Colors.black,
-          ),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          // fontSize: sdp(context, 8),
+          color: isIncome
+              ? isSelected
+                  ? Colors.black
+                  : Colors.grey
+              : isSelected
+                  ? Colors.white
+                  : isDark
+                      ? Colors.grey
+                      : Colors.black,
         ),
       ),
     );
