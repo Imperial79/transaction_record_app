@@ -10,12 +10,13 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/size.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
+
+final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
 
 class HomeUi extends StatefulWidget {
   @override
@@ -50,8 +51,10 @@ class _HomeUiState extends State<HomeUi> {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         _showAdd.value = false;
+        showAdd.value = false;
       } else {
         _showAdd.value = true;
+        showAdd.value = true;
       }
     });
   }
@@ -94,9 +97,7 @@ class _HomeUiState extends State<HomeUi> {
                                       isDark ? greyColorAccent : darkGreyColor,
                                 ),
                               ),
-                        SizedBox(
-                          height: 5,
-                        ),
+                        height5,
                         ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data.docs.length,
@@ -315,67 +316,78 @@ class _HomeUiState extends State<HomeUi> {
           ],
         ),
       ),
+
+      // InkWell(
+      //         onTap: () {
+      //           NavPush(
+      //             context,
+      //             NewBookUI(),
+      //           );
+      //         },
+      //         child: DecoratedBox(
+      //           decoration: BoxDecoration(
+      //             borderRadius: BorderRadius.circular(20),
+      //             color: isDark ? Colors.greenAccent : blackColor,
+      //           ),
+      //           child: AnimatedSize(
+      //             reverseDuration: Duration(milliseconds: 300),
+      //             duration: Duration(milliseconds: 300),
+      //             alignment: Alignment.centerLeft,
+      //             curve: Curves.ease,
+      //             child: ValueListenableBuilder<bool>(
+      //               valueListenable: _showAdd,
+      //               builder: (
+      //                 BuildContext context,
+      //                 bool showFullAddBtn,
+      //                 Widget? child,
+      //               ) {
+      //                 return Padding(
+      //                   padding: EdgeInsets.symmetric(
+      //                     horizontal: showFullAddBtn
+      //                         ? sdp(context, 11)
+      //                         : sdp(context, 9),
+      //                     vertical: sdp(context, 9),
+      //                   ),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.center,
+      //                     mainAxisSize: MainAxisSize.min,
+      //                     children: [
+      //                       Icon(
+      //                         Icons.add_circle_outline,
+      //                         color: isDark ? blackColor : Colors.white,
+      //                         size: 30,
+      //                       ),
+      //                       if (showFullAddBtn) const SizedBox(width: 10),
+      //                       if (showFullAddBtn)
+      //                         Text(
+      //                           'Create Book',
+      //                           style: TextStyle(
+      //                             fontWeight: FontWeight.w600,
+      //                             fontSize: sdp(context, 11),
+      //                             color: isDark ? blackColor : Colors.white,
+      //                           ),
+      //                           textAlign: TextAlign.center,
+      //                         ),
+      //                     ],
+      //                   ),
+      //                 );
+      //               },
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: isKeyboardOpen
           ? Container()
-          : InkWell(
-              onTap: () {
-                NavPush(
-                  context,
-                  NewBookUI(),
-                );
-              },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: isDark ? Colors.greenAccent : blackColor,
-                ),
-                child: AnimatedSize(
-                  reverseDuration: Duration(milliseconds: 300),
-                  duration: Duration(milliseconds: 300),
-                  alignment: Alignment.centerLeft,
-                  curve: Curves.ease,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _showAdd,
-                    builder: (
-                      BuildContext context,
-                      bool showFullAddBtn,
-                      Widget? child,
-                    ) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: showFullAddBtn
-                              ? sdp(context, 11)
-                              : sdp(context, 9),
-                          vertical: sdp(context, 9),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              color: isDark ? blackColor : Colors.white,
-                              size: 30,
-                            ),
-                            if (showFullAddBtn) const SizedBox(width: 10),
-                            if (showFullAddBtn)
-                              Text(
-                                'Create Book',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: sdp(context, 11),
-                                  color: isDark ? blackColor : Colors.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
+          : AnimatedFloatingButton(
+              context,
+              icon: Icon(
+                Icons.add_circle_outline,
+                color: isDark ? blackColor : Colors.white,
+                size: 30,
               ),
+              label: "New Book",
             ),
     );
   }
@@ -545,9 +557,7 @@ class _HomeUiState extends State<HomeUi> {
                                       Icons.segment,
                                       color: isDark ? whiteColor : blackColor,
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
+                                    width5,
                                     Text(
                                       ds['bookDescription'],
                                       style: TextStyle(
@@ -558,9 +568,7 @@ class _HomeUiState extends State<HomeUi> {
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 5,
-                            ),
+                            height5,
                             Row(
                               children: [
                                 Icon(
@@ -568,9 +576,7 @@ class _HomeUiState extends State<HomeUi> {
                                   color: isDark ? whiteColor : blackColor,
                                   size: 15,
                                 ),
-                                SizedBox(
-                                  width: 5,
-                                ),
+                                width5,
                                 Text(
                                   ds['date'] + ' at ' + ds['time'],
                                   style: TextStyle(
@@ -678,9 +684,7 @@ class _HomeUiState extends State<HomeUi> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 5,
-            ),
+            height5,
             Text(
               amount,
               style: TextStyle(

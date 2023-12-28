@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/size.dart';
 
 import '../Functions/navigatorFns.dart';
@@ -780,5 +781,65 @@ Widget bookOptionsModal({required String bookName, required String bookId}) {
         ),
       );
     },
+  );
+}
+
+Widget AnimatedFloatingButton(
+  BuildContext context, {
+  void Function()? onTap,
+  required Widget icon,
+  required String label,
+}) {
+  return InkWell(
+    onTap: onTap,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: isDark ? Colors.greenAccent : blackColor,
+      ),
+      child: AnimatedSize(
+        reverseDuration: Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 300),
+        alignment: Alignment.centerLeft,
+        curve: Curves.ease,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: showAdd,
+          builder: (
+            BuildContext context,
+            bool showFullAddBtn,
+            Widget? child,
+          ) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: showFullAddBtn ? sdp(context, 11) : sdp(context, 9),
+                vertical: sdp(context, 9),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.add_circle_outline,
+                    color: isDark ? blackColor : Colors.white,
+                    size: 30,
+                  ),
+                  if (showFullAddBtn) const SizedBox(width: 10),
+                  if (showFullAddBtn)
+                    Text(
+                      'Create Book',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: sdp(context, 11),
+                        color: isDark ? blackColor : Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    ),
   );
 }
