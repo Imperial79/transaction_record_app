@@ -267,75 +267,7 @@ class _BookUIState extends State<BookUI> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      height: sdp(context, 30),
-                                      width: sdp(context, 30),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: isDark
-                                            ? _selectedSortType == 'All'
-                                                ? greyColorAccent
-                                                : _selectedSortType == 'Income'
-                                                    ? darkProfitColorAccent
-                                                    : Colors.red
-                                            : _selectedSortType == 'All'
-                                                ? Colors.black
-                                                : _selectedSortType == 'Income'
-                                                    ? darkProfitColorAccent
-                                                    : Colors.red,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: _selectedSortType == 'All'
-                                                ? Colors.grey.shade500
-                                                : _selectedSortType == 'Income'
-                                                    ? darkProfitColorAccent
-                                                    : Colors.red,
-                                            blurRadius: 100,
-                                            spreadRadius: 10,
-                                          ),
-                                        ],
-                                      ),
-                                      child: FittedBox(
-                                        child: IconButton(
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              enableDrag: true,
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              elevation: 0,
-                                              builder: (context) {
-                                                return FilterBottomSheet(
-                                                    setState);
-                                              },
-                                            ).then((value) {
-                                              setState(() {});
-                                            });
-                                          },
-                                          icon: Icon(
-                                            _selectedSortType == 'All'
-                                                ? Icons.filter_list
-                                                : _selectedSortType == 'Income'
-                                                    ? Icons
-                                                        .file_download_outlined
-                                                    : Icons
-                                                        .file_upload_outlined,
-                                            color: isDark
-                                                ? _selectedSortType ==
-                                                            'Income' ||
-                                                        _selectedSortType ==
-                                                            'All'
-                                                    ? blackColor
-                                                    : whiteColor
-                                                : _selectedSortType == 'All' ||
-                                                        _selectedSortType ==
-                                                            'Expense'
-                                                    ? whiteColor
-                                                    : blackColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    _filterButton(context),
                                   ],
                                 ),
                                 SizedBox(
@@ -511,6 +443,69 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
+  Container _filterButton(BuildContext context) {
+    return Container(
+      height: sdp(context, 30),
+      width: sdp(context, 30),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isDark
+            ? _selectedSortType == 'All'
+                ? greyColorAccent
+                : _selectedSortType == 'Income'
+                    ? darkProfitColorAccent
+                    : Colors.red
+            : _selectedSortType == 'All'
+                ? Colors.black
+                : _selectedSortType == 'Income'
+                    ? darkProfitColorAccent
+                    : Colors.red,
+        boxShadow: [
+          BoxShadow(
+            color: _selectedSortType == 'All'
+                ? Colors.grey.shade500
+                : _selectedSortType == 'Income'
+                    ? darkProfitColorAccent
+                    : Colors.red,
+            blurRadius: 100,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: FittedBox(
+        child: IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              enableDrag: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              builder: (context) {
+                return FilterBottomSheet(setState);
+              },
+            ).then((value) {
+              setState(() {});
+            });
+          },
+          icon: Icon(
+            _selectedSortType == 'All'
+                ? Icons.filter_list
+                : _selectedSortType == 'Income'
+                    ? Icons.file_download_outlined
+                    : Icons.file_upload_outlined,
+            color: isDark
+                ? _selectedSortType == 'Income' || _selectedSortType == 'All'
+                    ? blackColor
+                    : whiteColor
+                : _selectedSortType == 'All' || _selectedSortType == 'Expense'
+                    ? whiteColor
+                    : blackColor,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget TransactList(String bookId) {
     int dataCounter = 0;
     int loopCounter = 0;
@@ -527,6 +522,7 @@ class _BookUIState extends State<BookUI> {
           .snapshots(),
       builder: (context, snapshot) {
         dateTitle = '';
+
         if (snapshot.hasData) {
           if (snapshot.data.docs.length > 0) {
             return ListView.builder(
@@ -580,7 +576,12 @@ class _BookUIState extends State<BookUI> {
               },
             );
           }
-          return Text('No data');
+          return FittedBox(
+            child: Text(
+              'No\nTransacts',
+              style: TextStyle(fontSize: sdp(context, 100)),
+            ),
+          );
         }
         return DummyTransactList();
       },
@@ -816,9 +817,7 @@ class _BookUIState extends State<BookUI> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
+                                width10,
                                 Expanded(
                                   child: Text.rich(
                                     TextSpan(

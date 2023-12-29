@@ -83,14 +83,10 @@ class AuthMethods {
               "username": userDetails.email!.split('@').first,
               "name": userDetails.displayName,
               "imgUrl": userDetails.photoURL,
-              'income': 0,
-              'expense': 0,
-              'currentBalance': 0,
             };
             databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
               (value) {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => HomeUi()));
+                NavPushReplacement(context, HomeUi());
               },
             );
           }

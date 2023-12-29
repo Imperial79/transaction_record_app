@@ -53,31 +53,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
   handleNewNoteTransaction(String uploadableAmount) {
     //  calculating the Income and Expense for new transact
     if (transactType == 'Income') {
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(double.parse(uploadableAmount)),
-        'income': FieldValue.increment(double.parse(uploadableAmount)),
-      };
-
-      //  UPDATING GLOBALLY
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
-
       //  UPDATING INSIDE BOOK
-      newMap = {
+      Map<String, dynamic> newMap = {
         'income': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateBookTransactions(widget.bookId, newMap);
     } else {
-      final amount = double.parse(uploadableAmount);
-
-      //  UPDATING GLOBALLY
-      Map<String, dynamic> newMap = {
-        'currentBalance': FieldValue.increment(0.0 - amount),
-        'expense': FieldValue.increment(double.parse(uploadableAmount)),
-      };
-      databaseMethods.updateGlobalCurrentBal(UserDetails.uid, newMap);
-
       //  UPDATING INSIDE BOOK
-      newMap = {
+      Map<String, dynamic> newMap = {
         'expense': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateBookTransactions(widget.bookId, newMap);

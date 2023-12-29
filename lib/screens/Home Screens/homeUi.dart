@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +12,7 @@ import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/size.dart';
@@ -26,7 +30,6 @@ class HomeUi extends StatefulWidget {
 class _HomeUiState extends State<HomeUi> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   List? data;
-  int? currentBalance;
   String dateTitle = '';
   bool showDateWidget = false;
 
@@ -38,12 +41,25 @@ class _HomeUiState extends State<HomeUi> {
 
   bool isKeyboardOpen = false;
 
+  late StreamSubscription<QuerySnapshot> _subscription;
+
   @override
   void initState() {
     dateTitle = '';
     getUserDetailsFromPreference(setState);
     _scrollFunction();
     super.initState();
+    _subscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('transact_books')
+        .orderBy('bookId', descending: true)
+        .snapshots()
+        .listen((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot document) {
+        log(document['bookName'].toString());
+      });
+    });
   }
 
   _scrollFunction() {
@@ -316,72 +332,17 @@ class _HomeUiState extends State<HomeUi> {
           ],
         ),
       ),
-
-      // InkWell(
-      //         onTap: () {
-      //           NavPush(
-      //             context,
-      //             NewBookUI(),
-      //           );
-      //         },
-      //         child: DecoratedBox(
-      //           decoration: BoxDecoration(
-      //             borderRadius: BorderRadius.circular(20),
-      //             color: isDark ? Colors.greenAccent : blackColor,
-      //           ),
-      //           child: AnimatedSize(
-      //             reverseDuration: Duration(milliseconds: 300),
-      //             duration: Duration(milliseconds: 300),
-      //             alignment: Alignment.centerLeft,
-      //             curve: Curves.ease,
-      //             child: ValueListenableBuilder<bool>(
-      //               valueListenable: _showAdd,
-      //               builder: (
-      //                 BuildContext context,
-      //                 bool showFullAddBtn,
-      //                 Widget? child,
-      //               ) {
-      //                 return Padding(
-      //                   padding: EdgeInsets.symmetric(
-      //                     horizontal: showFullAddBtn
-      //                         ? sdp(context, 11)
-      //                         : sdp(context, 9),
-      //                     vertical: sdp(context, 9),
-      //                   ),
-      //                   child: Row(
-      //                     mainAxisAlignment: MainAxisAlignment.center,
-      //                     mainAxisSize: MainAxisSize.min,
-      //                     children: [
-      //                       Icon(
-      //                         Icons.add_circle_outline,
-      //                         color: isDark ? blackColor : Colors.white,
-      //                         size: 30,
-      //                       ),
-      //                       if (showFullAddBtn) const SizedBox(width: 10),
-      //                       if (showFullAddBtn)
-      //                         Text(
-      //                           'Create Book',
-      //                           style: TextStyle(
-      //                             fontWeight: FontWeight.w600,
-      //                             fontSize: sdp(context, 11),
-      //                             color: isDark ? blackColor : Colors.white,
-      //                           ),
-      //                           textAlign: TextAlign.center,
-      //                         ),
-      //                     ],
-      //                   ),
-      //                 );
-      //               },
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: isKeyboardOpen
           ? Container()
           : AnimatedFloatingButton(
               context,
+              onTap: () {
+                NavPush(
+                  context,
+                  NewBookUI(),
+                );
+              },
               icon: Icon(
                 Icons.add_circle_outline,
                 color: isDark ? blackColor : Colors.white,

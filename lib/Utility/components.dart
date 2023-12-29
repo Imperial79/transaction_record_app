@@ -740,7 +740,8 @@ Widget bookOptionsModal({required String bookName, required String bookId}) {
                         bookName: bookName, bookId: bookId);
                   },
                   child: Card(
-                    color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
+                    elevation: 0,
+                    color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: Row(
@@ -766,7 +767,8 @@ Widget bookOptionsModal({required String bookName, required String bookId}) {
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: sdp(context, 15),
-                                color: Colors.red.shade200,
+                                color:
+                                    isDark ? Colors.red.shade200 : Colors.red,
                               ),
                             ),
                           ),
