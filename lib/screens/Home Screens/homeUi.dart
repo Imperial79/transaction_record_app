@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +24,8 @@ class HomeUi extends StatefulWidget {
   _HomeUiState createState() => _HomeUiState();
 }
 
-class _HomeUiState extends State<HomeUi> {
+class _HomeUiState extends State<HomeUi>
+    with AutomaticKeepAliveClientMixin<HomeUi> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   List? data;
   String dateTitle = '';
@@ -41,25 +39,28 @@ class _HomeUiState extends State<HomeUi> {
 
   bool isKeyboardOpen = false;
 
-  late StreamSubscription<QuerySnapshot> _subscription;
+  // late StreamSubscription<QuerySnapshot> _subscription;
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     dateTitle = '';
+    print('home');
     getUserDetailsFromPreference(setState);
     _scrollFunction();
     super.initState();
-    _subscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('transact_books')
-        .orderBy('bookId', descending: true)
-        .snapshots()
-        .listen((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((DocumentSnapshot document) {
-        log(document['bookName'].toString());
-      });
-    });
+    // _subscription = FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .collection('transact_books')
+    //     .orderBy('bookId', descending: true)
+    //     .snapshots()
+    //     .listen((QuerySnapshot snapshot) {
+    //   snapshot.docs.forEach((DocumentSnapshot document) {
+    //     log(document['bookName'].toString());
+    //   });
+    // });
   }
 
   _scrollFunction() {
@@ -115,6 +116,7 @@ class _HomeUiState extends State<HomeUi> {
                               ),
                         height5,
                         ListView.builder(
+                          addAutomaticKeepAlives: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,
@@ -156,6 +158,7 @@ class _HomeUiState extends State<HomeUi> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     setSystemUIColors();
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
@@ -332,24 +335,25 @@ class _HomeUiState extends State<HomeUi> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: isKeyboardOpen
-          ? Container()
-          : AnimatedFloatingButton(
-              context,
-              onTap: () {
-                NavPush(
-                  context,
-                  NewBookUI(),
-                );
-              },
-              icon: Icon(
-                Icons.add_circle_outline,
-                color: isDark ? blackColor : Colors.white,
-                size: 30,
-              ),
-              label: "New Book",
-            ),
+
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: isKeyboardOpen
+      //     ? Container()
+      //     : AnimatedFloatingButton(
+      //         context,
+      //         onTap: () {
+      //           NavPush(
+      //             context,
+      //             NewBookUI(),
+      //           );
+      //         },
+      //         icon: Icon(
+      //           Icons.add_circle_outline,
+      //           color: isDark ? blackColor : Colors.white,
+      //           size: 30,
+      //         ),
+      //         label: "New Book",
+      //       ),
     );
   }
 

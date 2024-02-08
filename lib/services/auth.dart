@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 
@@ -13,10 +16,14 @@ import 'package:transaction_record_app/services/database.dart';
 class AuthMethods {
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  static final FirebaseAuth auth = FirebaseAuth.instance;
 
   getCurrentuser() async {
     return await auth.currentUser;
+  }
+
+  static Stream<User?> ifAuthStateChange() {
+    return auth.authStateChanges();
   }
 
   Future<String> signInWithgoogle(context) async {
@@ -42,8 +49,6 @@ class AuthMethods {
 
       User? userDetails = result.user;
 
-      // final SharedPreferences prefs = await _prefs;
-
       Map<String, dynamic> userMap = {
         'uid': userDetails!.uid,
         "email": userDetails.email,
@@ -64,7 +69,7 @@ class AuthMethods {
       UserDetails.uid = userDetails.uid;
       UserDetails.userProfilePic = userDetails.photoURL!;
 
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(userDetails.uid)
           .get()
@@ -75,7 +80,7 @@ class AuthMethods {
             userMap.update('name', (value) => UserDetails.userDisplayName);
             _UserBox.put('userMap', userMap);
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomeUi()));
+                context, MaterialPageRoute(builder: (context) => RootUI()));
           } else {
             Map<String, dynamic> userInfoMap = {
               'uid': userDetails.uid,
@@ -86,7 +91,7 @@ class AuthMethods {
             };
             databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
               (value) {
-                NavPushReplacement(context, HomeUi());
+                NavPushReplacement(context, RootUI());
               },
             );
           }
@@ -99,12 +104,14 @@ class AuthMethods {
     }
   }
 
-  signOut(BuildContext context) async {
+  static signOut(BuildContext context) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     // prefs.clear();
 
     await Hive.openBox('userData');
     Hive.box('userData').delete('userMap');
+    await GoogleSignIn().signOut();
+
     await auth.signOut();
     NavPushReplacement(context, LoginUI());
     // Navigator.popUntil(context, (route) => false);

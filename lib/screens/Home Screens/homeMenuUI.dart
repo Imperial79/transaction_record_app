@@ -94,7 +94,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                     label: 'Logout',
                     child: IconButton(
                       onPressed: () {
-                        AuthMethods().signOut(context);
+                        AuthMethods.signOut(context);
                       },
                       icon: Icon(
                         Icons.logout,

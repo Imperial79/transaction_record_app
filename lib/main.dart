@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/Utility/components.dart';
@@ -32,13 +33,21 @@ class MyApp extends StatelessWidget {
       title: 'Transact Record',
       color: Colors.white,
       themeMode: ThemeMode.system,
-      theme: KThemeData.light(),
+      // theme: KThemeData.light(),
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+      ).copyWith(
+          pageTransitionsTheme: PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        },
+      )),
       darkTheme: KThemeData.dark(),
-      home: FutureBuilder(
-        future: AuthMethods().getCurrentuser(),
+      home: StreamBuilder(
+        stream: AuthMethods.ifAuthStateChange(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeUi();
+            return RootUI();
           } else {
             return LoginUI();
           }

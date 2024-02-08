@@ -87,6 +87,13 @@ class _NewBookUIState extends State<NewBookUI> {
   // }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('book ui');
+  }
+
+  @override
   Widget build(BuildContext context) {
     setSystemUIColors();
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
