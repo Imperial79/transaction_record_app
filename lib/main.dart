@@ -32,16 +32,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
-      themeMode: ThemeMode.system,
-      // theme: KThemeData.light(),
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-      ).copyWith(
-          pageTransitionsTheme: PageTransitionsTheme(
-        builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android: ZoomPageTransitionsBuilder(),
-        },
-      )),
+      themeMode: ThemeMode.dark,
+      theme: KThemeData.light(),
       darkTheme: KThemeData.dark(),
       home: StreamBuilder(
         stream: AuthMethods.ifAuthStateChange(),

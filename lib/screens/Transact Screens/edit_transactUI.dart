@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/services/size.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../Utility/colors.dart';
+import '../../Utility/sdp.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
@@ -246,12 +246,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
       body: SafeArea(
         child: Stack(
           children: [
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Row(
                     children: [
                       Container(
                         height: 40,
@@ -297,132 +297,94 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      child: Column(
-                        children: [
-                          /// description Box ----------->
-                          CustomCard(
-                            context,
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: Colors.blue,
-                                  child: Icon(
-                                    Icons.short_text_rounded,
-                                    color: whiteColor,
+                ),
+                height10,
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(15),
+                    physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    child: Column(
+                      children: [
+                        /// description Box ----------->
+                        CustomCard(
+                          context,
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.blue,
+                                child: Icon(
+                                  Icons.short_text_rounded,
+                                  color: whiteColor,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Flexible(
+                                child: TextField(
+                                  controller: descriptionField,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  maxLines: 5,
+                                  minLines: 1,
+                                  cursorColor:
+                                      isDark ? whiteColor : Colors.black,
+                                  style: TextStyle(
+                                    color: isDark ? whiteColor : Colors.black,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Flexible(
-                                  child: TextField(
-                                    controller: descriptionField,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    maxLines: 5,
-                                    minLines: 1,
-                                    cursorColor:
-                                        isDark ? whiteColor : Colors.black,
-                                    style: TextStyle(
-                                      color: isDark ? whiteColor : Colors.black,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Add description (Optional)',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey,
                                       fontWeight: FontWeight.w500,
                                     ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Add description (Optional)',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
+                        ),
 
-                          CustomCard(
-                            context,
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.schedule,
-                                      size: sdp(context, 15),
+                        CustomCard(
+                          context,
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    size: sdp(context, 15),
+                                    color: isDark ? whiteColor : Colors.black,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Created on',
+                                    style: TextStyle(
                                       color: isDark ? whiteColor : Colors.black,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'Created on',
-                                      style: TextStyle(
-                                        color:
-                                            isDark ? whiteColor : Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: InkWell(
-                                        onTap: () async {
-                                          _selectedDateMap = await selectDate(
-                                              context,
-                                              setState,
-                                              DateTime.parse(
-                                                  widget.trData.ts!));
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: isDark
-                                                ? darkGreyColor
-                                                : Colors.white,
-                                          ),
-                                          child: Text(
-                                            _selectedDateMap['displayDate'],
-                                            style: TextStyle(
-                                              color: isDark
-                                                  ? whiteColor
-                                                  : blackColor,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 6,
-                                    ),
-                                    InkWell(
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: InkWell(
                                       onTap: () async {
-                                        _selectedTimeMap = await selectTime(
-                                          context,
-                                          setState,
-                                          TimeOfDay.fromDateTime(
-                                            DateTime.parse(
-                                              _selectedDateMap['tsDate'],
-                                            ),
-                                          ),
-                                        );
+                                        _selectedDateMap = await selectDate(
+                                            context,
+                                            setState,
+                                            DateTime.parse(widget.trData.ts!));
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(10),
@@ -434,7 +396,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                               : Colors.white,
                                         ),
                                         child: Text(
-                                          _selectedTimeMap['displayTime'],
+                                          _selectedDateMap['displayDate'],
                                           style: TextStyle(
                                             color: isDark
                                                 ? whiteColor
@@ -444,172 +406,205 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          CustomCard(
-                            context,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: Colors.amber.shade900,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: whiteColor,
-                                    size: sdp(context, 12),
                                   ),
+                                  SizedBox(
+                                    width: 6,
+                                  ),
+                                  InkWell(
+                                    onTap: () async {
+                                      _selectedTimeMap = await selectTime(
+                                        context,
+                                        setState,
+                                        TimeOfDay.fromDateTime(
+                                          DateTime.parse(
+                                            _selectedDateMap['tsDate'],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: isDark
+                                            ? darkGreyColor
+                                            : Colors.white,
+                                      ),
+                                      child: Text(
+                                        _selectedTimeMap['displayTime'],
+                                        style: TextStyle(
+                                          color:
+                                              isDark ? whiteColor : blackColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        CustomCard(
+                          context,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.amber.shade900,
+                                child: Icon(
+                                  Icons.person,
+                                  color: whiteColor,
+                                  size: sdp(context, 12),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: sourceField,
-                                    maxLines: 4,
-                                    minLines: 1,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    cursorColor:
-                                        isDark ? whiteColor : Colors.black,
-                                    style: TextStyle(
-                                      color: isDark ? whiteColor : Colors.black,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: sourceField,
+                                  maxLines: 4,
+                                  minLines: 1,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  cursorColor:
+                                      isDark ? whiteColor : Colors.black,
+                                  style: TextStyle(
+                                    color: isDark ? whiteColor : Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Add source (Optional)',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey,
                                       fontWeight: FontWeight.w500,
                                     ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Add source (Optional)',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              RotatedBox(
-                                quarterTurns: 45,
-                                child: Text(
-                                  'CASH',
-                                  style: TextStyle(
-                                    color: transactMode == 'ONLINE'
-                                        ? Colors.grey
-                                        : isDark
-                                            ? Colors.lightGreenAccent
-                                            : Colors.lightGreen,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: sdp(context, 6),
-                              ),
-                              transactTypeToggle(context),
-                              SizedBox(
-                                width: sdp(context, 6),
-                              ),
-                              RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    fontFamily: 'Product',
-                                    color: transactMode == 'ONLINE'
-                                        ? isDark
-                                            ? Colors.blue.shade200
-                                            : Colors.blue.shade700
-                                        : Colors.grey,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'ON',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: sdp(context, 13),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '\nLINE',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: sdp(context, 11),
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: sdp(context, 10),
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertBox(context);
-                                },
-                              );
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            child: Ink(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 15,
-                                horizontal: 25,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.red,
-                                    Colors.red.shade900,
-                                  ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RotatedBox(
+                              quarterTurns: 45,
+                              child: Text(
+                                'CASH',
+                                style: TextStyle(
+                                  color: transactMode == 'ONLINE'
+                                      ? Colors.grey
+                                      : isDark
+                                          ? Colors.lightGreenAccent
+                                          : Colors.lightGreen,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              child: Row(
+                            ),
+                            SizedBox(
+                              width: sdp(context, 6),
+                            ),
+                            transactTypeToggle(context),
+                            SizedBox(
+                              width: sdp(context, 6),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontFamily: 'Product',
+                                  color: transactMode == 'ONLINE'
+                                      ? isDark
+                                          ? Colors.blue.shade200
+                                          : Colors.blue.shade700
+                                      : Colors.grey,
+                                ),
                                 children: [
-                                  Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Delete Transact',
+                                  TextSpan(
+                                    text: 'ON',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                      fontSize: 18,
+                                      fontSize: sdp(context, 13),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '\nLINE',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: sdp(context, 11),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: sdp(context, 10),
+                        ),
+                        MaterialButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertBox(context);
+                              },
+                            );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          BottomCard(context,
-                              date: _selectedDateMap['displayDate']),
-                        ],
-                      ),
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          child: Ink(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 25,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.red,
+                                  Colors.red.shade900,
+                                ],
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Delete Transact',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        BottomCard(context,
+                            date: _selectedDateMap['displayDate']),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             Visibility(
               visible: _isLoading,

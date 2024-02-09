@@ -4,7 +4,8 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/services/auth.dart';
-import 'package:transaction_record_app/services/size.dart';
+
+import '../Utility/sdp.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);
@@ -59,35 +60,7 @@ class _LoginUIState extends State<LoginUI> {
                 ),
               ),
               _isLoading
-                  ? Flexible(
-                      flex: 6,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Transform.scale(
-                              scale: 0.5,
-                              child: CircularProgressIndicator(
-                                color: isDark
-                                    ? profitHighlightColor
-                                    : primaryColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Fetching Your Transacts',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? whiteColor : Colors.black,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                  ? _loadingScreen()
                   : Flexible(
                       flex: 6,
                       child: Column(
@@ -101,14 +74,14 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   'Transact Record',
                                   style: TextStyle(
-                                    fontSize: sdp(context, 40),
+                                    fontSize: sdp(context, 25),
                                     fontWeight: FontWeight.bold,
                                     color:
                                         isDark ? greyColorAccent : blackColor,
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 30,
+                                  height: sdp(context, 10),
                                 ),
                                 Text(
                                   'Your Personal Money Manager',
@@ -146,16 +119,15 @@ class _LoginUIState extends State<LoginUI> {
                                 colorFilter: svgColor(
                                   isDark ? profitHighlightColor : textLinkColor,
                                 ),
-                                height: sdp(context, 30),
+                                height: sdp(context, 20),
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              width10,
                               Expanded(
                                 child: Text(
-                                  'SYNC YOUR DATA ON TRANSACT CLOUD',
+                                  'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
+                                    fontSize: sdp(context, 10),
                                     color: isDark
                                         ? profitHighlightColor
                                         : textLinkColor,
@@ -212,9 +184,7 @@ class _LoginUIState extends State<LoginUI> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
+                                  width10,
                                   Text(
                                     "Login with Google",
                                     style: TextStyle(
@@ -233,7 +203,7 @@ class _LoginUIState extends State<LoginUI> {
                           Text(
                             'By signing in, you agree with our ',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: sdp(context, 10),
                               fontWeight: FontWeight.w600,
                               color: isDark ? greyColorAccent : blackColor,
                             ),
@@ -244,25 +214,21 @@ class _LoginUIState extends State<LoginUI> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
-                                child: TextLink(
-                                  text: 'Terms and Conditions',
-                                  link: Uri.parse(''),
-                                  color: isDark
-                                      ? profitHighlightColor
-                                      : textLinkColor,
-                                  textAlign: TextAlign.start,
-                                ),
+                              TextLink(
+                                text: 'Terms and Conditions',
+                                link: Uri.parse(''),
+                                color: isDark
+                                    ? profitHighlightColor
+                                    : textLinkColor,
+                                textAlign: TextAlign.start,
                               ),
-                              Expanded(
-                                child: TextLink(
-                                  text: 'Privacy Policy',
-                                  link: _privacyPolicyUrl,
-                                  color: isDark
-                                      ? profitHighlightColor
-                                      : textLinkColor,
-                                  textAlign: TextAlign.end,
-                                ),
+                              TextLink(
+                                text: 'Privacy Policy',
+                                link: _privacyPolicyUrl,
+                                color: isDark
+                                    ? profitHighlightColor
+                                    : textLinkColor,
+                                textAlign: TextAlign.end,
                               ),
                             ],
                           ),
@@ -276,11 +242,45 @@ class _LoginUIState extends State<LoginUI> {
     );
   }
 
+  Flexible _loadingScreen() {
+    return Flexible(
+      flex: 6,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.scale(
+              scale: 0.5,
+              child: CircularProgressIndicator(
+                color: isDark ? profitHighlightColor : primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Fetching Your Transacts',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: isDark ? whiteColor : Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget TextLink({final text, Color? color, Uri? link, TextAlign? textAlign}) {
-    return InkWell(
-      onTap: () {
+    return TextButton(
+      onPressed: () {
         launchTheUrl(link!);
       },
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.all(5),
+        visualDensity: VisualDensity.compact,
+      ),
       child: Text(
         text,
         style: TextStyle(

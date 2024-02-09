@@ -1,18 +1,15 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 
-//creating an instance of Firebase Authentication
 class AuthMethods {
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
@@ -49,55 +46,55 @@ class AuthMethods {
 
       User? userDetails = result.user;
 
-      Map<String, dynamic> userMap = {
-        'uid': userDetails!.uid,
-        "email": userDetails.email,
-        "username": userDetails.email!.split('@').first,
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
-      };
+      if (userDetails != null) {
+        KUser userMap = new KUser(
+          userName: userDetails.email!.split('@').first,
+          userEmail: userDetails.email!,
+          userDisplayName: userDetails.displayName!,
+          uid: userDetails.uid,
+          userProfilePic: userDetails.photoURL!,
+        );
 
-      await _UserBox.put('userMap', userMap).whenComplete(() {
-        print('Data Saved locally!');
-      });
+        await _UserBox.put('userMap', userMap.toMap()).whenComplete(() {
+          print('Data Saved locally!-> ${userMap.toMap()}');
+        });
 
-      //  Svaing in local session ------->
+        //  Svaing in local session ------->
 
-      UserDetails.userEmail = userDetails.email!;
-      UserDetails.userDisplayName = userDetails.displayName!;
-      UserDetails.userName = userDetails.email!.split('@').first;
-      UserDetails.uid = userDetails.uid;
-      UserDetails.userProfilePic = userDetails.photoURL!;
+        UserDetails.userEmail = userDetails.email!;
+        UserDetails.userDisplayName = userDetails.displayName!;
+        UserDetails.userName = userDetails.email!.split('@').first;
+        UserDetails.uid = userDetails.uid;
+        UserDetails.userProfilePic = userDetails.photoURL!;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userDetails.uid)
-          .get()
-          .then(
-        (value) {
-          if (value.exists) {
-            UserDetails.userDisplayName = value.data()!['name'];
-            userMap.update('name', (value) => UserDetails.userDisplayName);
-            _UserBox.put('userMap', userMap);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => RootUI()));
-          } else {
-            Map<String, dynamic> userInfoMap = {
-              'uid': userDetails.uid,
-              "email": userDetails.email,
-              "username": userDetails.email!.split('@').first,
-              "name": userDetails.displayName,
-              "imgUrl": userDetails.photoURL,
-            };
-            databaseMethods.addUserInfoToDB(userDetails.uid, userInfoMap).then(
-              (value) {
-                NavPushReplacement(context, RootUI());
-              },
-            );
-          }
-        },
-      );
-      return 'success';
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userDetails.uid)
+            .get()
+            .then(
+          (value) async {
+            if (value.exists) {
+              UserDetails.userDisplayName = value.data()!['name'];
+              userMap.copyWith(userDisplayName: UserDetails.userDisplayName);
+              // userMap.update('name', (value) => UserDetails.userDisplayName);
+              await _UserBox.put('userMap', userMap.toMap());
+
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => RootUI()));
+            } else {
+              databaseMethods
+                  .addUserInfoToDB(userDetails.uid, userMap.toMap())
+                  .then(
+                (value) {
+                  NavPushReplacement(context, RootUI());
+                },
+              );
+            }
+          },
+        );
+        return 'success';
+      }
+      return 'fail';
     } catch (e) {
       print(e);
       return 'fail';
@@ -105,15 +102,11 @@ class AuthMethods {
   }
 
   static signOut(BuildContext context) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // prefs.clear();
-
     await Hive.openBox('userData');
     Hive.box('userData').delete('userMap');
     await GoogleSignIn().signOut();
 
     await auth.signOut();
     NavPushReplacement(context, LoginUI());
-    // Navigator.popUntil(context, (route) => false);
   }
 }

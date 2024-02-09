@@ -9,10 +9,9 @@ import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/services/size.dart';
+import '../../Utility/sdp.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
@@ -335,25 +334,6 @@ class _HomeUiState extends State<HomeUi>
           ],
         ),
       ),
-
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      // floatingActionButton: isKeyboardOpen
-      //     ? Container()
-      //     : AnimatedFloatingButton(
-      //         context,
-      //         onTap: () {
-      //           NavPush(
-      //             context,
-      //             NewBookUI(),
-      //           );
-      //         },
-      //         icon: Icon(
-      //           Icons.add_circle_outline,
-      //           color: isDark ? blackColor : Colors.white,
-      //           size: 30,
-      //         ),
-      //         label: "New Book",
-      //       ),
     );
   }
 

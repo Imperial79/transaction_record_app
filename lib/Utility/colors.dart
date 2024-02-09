@@ -50,21 +50,27 @@ bool checkForTheme(BuildContext context) {
 }
 
 class KThemeData {
-  // static ThemeData light() => ThemeData(
-  //       fontFamily: 'Product',
-  //       useMaterial3: true,
-  //       scaffoldBackgroundColor: lightScaffoldColor,
-  //       brightness: Brightness.light,
-  //       colorSchemeSeed: primaryColor,
+  static ThemeData light() => ThemeData(
+        fontFamily: 'Product',
+        useMaterial3: true,
+        scaffoldBackgroundColor: lightScaffoldColor,
+        brightness: Brightness.light,
+        colorSchemeSeed: primaryColor,
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+      );
+  // static ThemeData light() => ThemeData.from(
+  //       colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+  //     ).copyWith(
+  //       pageTransitionsTheme: PageTransitionsTheme(
+  //         builders: <TargetPlatform, PageTransitionsBuilder>{
+  //           TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+  //         },
+  //       ),
   //     );
-  static ThemeData light() => ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-      ).copyWith(
-          pageTransitionsTheme: PageTransitionsTheme(
-        builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-        },
-      ));
   static ThemeData dark() => ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,

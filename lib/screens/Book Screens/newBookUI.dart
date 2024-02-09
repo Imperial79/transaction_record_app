@@ -4,7 +4,7 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
-import 'package:transaction_record_app/services/size.dart';
+import '../../Utility/sdp.dart';
 
 class NewBookUI extends StatefulWidget {
   const NewBookUI({Key? key}) : super(key: key);
@@ -87,13 +87,6 @@ class _NewBookUIState extends State<NewBookUI> {
   // }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print('book ui');
-  }
-
-  @override
   Widget build(BuildContext context) {
     setSystemUIColors();
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
@@ -109,32 +102,6 @@ class _NewBookUIState extends State<NewBookUI> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isDark ? darkGreyColor : Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: isDark ? whiteColor : blackColor,
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
                       TextField(
                         controller: bookTitleController,
                         keyboardType: TextInputType.text,

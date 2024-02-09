@@ -1,6 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 
@@ -43,47 +43,69 @@ class _RootUIState extends State<RootUI> {
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
-      // body: PageTransitionSwitcher(
-      //   duration: Duration(milliseconds: 200),
-      //   transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-      //     return FadeThroughTransition(
-      //       animation: primaryAnimation,
-      //       secondaryAnimation: secondaryAnimation,
-      //       child: child,
-      //     );
-      //   },
-      //   child: _pages[activeTab],
-      // ),
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        controller: _pageController,
-        itemCount: _pages.length,
-        onPageChanged: _onPageChanged,
-        itemBuilder: (context, index) {
-          return PageStorage(
-            child: _pages[index],
-            bucket: _pageStorageBucket,
-          );
-        },
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  _changeToPageButton(
+                    context,
+                    index: 0,
+                    label: 'Home',
+                  ),
+                  _changeToPageButton(
+                    context,
+                    index: 1,
+                    label: 'New Book',
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: PageView.builder(
+                scrollDirection: Axis.horizontal,
+                controller: _pageController,
+                itemCount: _pages.length,
+                onPageChanged: _onPageChanged,
+                itemBuilder: (context, index) {
+                  return PageStorage(
+                    child: _pages[index],
+                    bucket: _pageStorageBucket,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: activeTab,
-        selectedItemColor: isDark ? kProfitColorAccent : kProfitColor,
-        unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade300,
-        onTap: (value) {
-          _pageController.animateToPage(value,
-              duration: Duration(milliseconds: 300), curve: Curves.ease);
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.create_new_folder),
-            label: 'New Book',
-          ),
-        ],
+    );
+  }
+
+  TextButton _changeToPageButton(
+    BuildContext context, {
+    required int index,
+    required String label,
+  }) {
+    bool isActive = activeTab == index;
+    return TextButton(
+      onPressed: () {
+        _pageController.animateToPage(index,
+            duration: Duration(milliseconds: 300), curve: Curves.ease);
+      },
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: sdp(context, 15),
+          color: isActive
+              ? isDark
+                  ? Colors.white
+                  : Colors.black
+              : Colors.grey,
+          fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
+        ),
       ),
     );
   }

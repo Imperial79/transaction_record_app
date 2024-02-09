@@ -4,10 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
-import 'package:transaction_record_app/services/size.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
+
+import '../../Utility/sdp.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;
@@ -168,9 +169,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 10,
-              ),
+              height10,
               Expanded(
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(
