@@ -25,7 +25,7 @@ class _NewBookUIState extends State<NewBookUI> {
   final bookDescriptionController = TextEditingController();
   final dbMethod = DatabaseMethods();
 
-  String selectedBookType = 'Regular Book';
+  String selectedBookType = 'regular';
 
   createBook() async {
     try {
@@ -33,7 +33,6 @@ class _NewBookUIState extends State<NewBookUI> {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime =
             DateFormat().add_jm().format(_selectedTimeStamp).toString();
-        String _type = selectedBookType.split(' ').first.trim().toLowerCase();
 
         Map<String, dynamic> newBookMap = {
           'bookName': bookTitleController.text,
@@ -43,11 +42,12 @@ class _NewBookUIState extends State<NewBookUI> {
           'bookId': _selectedTimeStamp.toString(),
           'income': 0,
           'expense': 0,
-          'type': _type,
+          'type': selectedBookType,
         };
         await dbMethod.createNewTransactBook(
             _selectedTimeStamp.toString(), newBookMap);
         ShowSnackBar(context, 'Book Created');
+        FocusScope.of(context).unfocus();
         pageControllerGlobal.value.animateToPage(0,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
         // Navigator.pop(context);
@@ -255,12 +255,12 @@ class _NewBookUIState extends State<NewBookUI> {
                           ],
                         ),
                       ),
-                      height20,
-                      Text("Book Type"),
-                      height10,
-                      bookTypeBtn('Regular Book'),
-                      height5,
-                      bookTypeBtn('Due Book'),
+                      // height20,
+                      // Text("Book Type"),
+                      // height10,
+                      // bookTypeBtn('Regular Book'),
+                      // height5,
+                      // bookTypeBtn('Due Book'),
                     ],
                   ),
                 ),

@@ -576,11 +576,9 @@ class _BookUIState extends State<BookUI> {
               },
             );
           }
-          return FittedBox(
-            child: Text(
-              'No\nTransacts',
-              style: TextStyle(fontSize: sdp(context, 100)),
-            ),
+          return Text(
+            'No\nTransacts',
+            style: TextStyle(fontSize: sdp(context, 40)),
           );
         }
         return DummyTransactList();
