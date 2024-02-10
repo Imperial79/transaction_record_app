@@ -22,7 +22,7 @@ class BookMethods {
       // });
       ShowSnackBar(
         context,
-        '"$bookName"' + ' book has been deleted',
+        content: '"$bookName"' + ' book has been deleted',
       );
     } catch (e) {
       // setState(() {
@@ -30,7 +30,8 @@ class BookMethods {
       // });
       ShowSnackBar(
         context,
-        'Something went wrong. Please try again after sometime',
+        content: 'Something went wrong. Please try again after sometime',
+        isDanger: true,
       );
     }
 

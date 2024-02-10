@@ -233,94 +233,57 @@ Widget DummyTransactList(BuildContext context) {
 
 Widget StatsCard({final label, content, isBook, bookId}) {
   bool isExpense = label == 'Expenses';
-  return Stack(
-    children: [
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
-          border: Border.all(
-            color: isExpense
-                ? isDark
-                    ? Colors.red.shade100
-                    : Colors.red.shade900
-                : isDark
-                    ? Colors.white
-                    : Colors.teal.shade700,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(15),
+      color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
+      border: Border.all(
+        color: isExpense
+            ? isDark
+                ? Colors.red.shade100
+                : Colors.red.shade900
+            : isDark
+                ? Colors.white
+                : Colors.teal.shade700,
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Icon(
-                  isExpense
-                      ? Icons.file_upload_outlined
-                      : Icons.file_download_outlined,
-                  color: isExpense ? Colors.white : Colors.black,
-                ),
-                SizedBox(
-                  width: 6,
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isExpense ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            Icon(
+              isExpense
+                  ? Icons.file_upload_outlined
+                  : Icons.file_download_outlined,
+              color: isExpense ? Colors.white : Colors.black,
             ),
             SizedBox(
-              height: 10,
+              width: 6,
             ),
             Text(
-              oCcy.format(double.parse(content)) + ' INR',
+              label,
               style: TextStyle(
                 color: isExpense ? Colors.white : Colors.black,
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-      ),
-      // Align(
-      //   alignment: Alignment.topRight,
-      //   child: GestureDetector(
-      //     onTap: () {
-      //       print('Reset $label');
-      //       if (isBook) {
-      //         Map<String, dynamic> map =
-      //             label == 'Income' ? {'income': 0} : {'expense': 0};
-      //         DatabaseMethods()
-      //             .resetBookIncomeExpense(bookId, UserDetails.uid, map);
-      //       } else {
-      //         Map<String, dynamic> map =
-      //             label == 'Income' ? {'income': 0} : {'expense': 0};
-      //         DatabaseMethods()
-      //             .resetGlobalIncomeExpense(bookId, UserDetails.uid, map);
-      //       }
-      //     },
-      //     child: Container(
-      //       padding: EdgeInsets.all(5),
-      //       decoration: BoxDecoration(
-      //         color: Colors.white,
-      //         borderRadius: BorderRadius.only(
-      //           topRight: Radius.circular(10),
-      //           bottomLeft: Radius.circular(10),
-      //         ),
-      //       ),
-      //       child: Icon(
-      //         Icons.restore,
-      //         size: 15,
-      //       ),
-      //     ),
-      //   ),
-      // ),
-    ],
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          oCcy.format(double.parse(content)) + ' INR',
+          style: TextStyle(
+            color: isExpense ? Colors.white : Colors.black,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    ),
   );
 }
 
@@ -549,18 +512,17 @@ Widget CustomCard(BuildContext context, {required Widget child}) {
   );
 }
 
-setSystemUIColors({
-  Brightness? statusBarIconBrightness,
-  Brightness? systemNavigationBarIconBrightness,
-  Brightness? statusBarBrightness,
-}) {
+setSystemUIColors() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+      overlays: [SystemUiOverlay.top]);
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
       statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-      systemNavigationBarColor: isDark ? darkScaffoldColor : lightScaffoldColor,
-      systemNavigationBarIconBrightness: systemNavigationBarIconBrightness,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness:
+          isDark ? Brightness.light : Brightness.dark,
     ),
   );
 }

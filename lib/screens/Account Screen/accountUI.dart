@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -61,9 +59,10 @@ class _AccountUIState extends State<AccountUI> {
         globalUser.name = nameController.text;
       });
 
-      ShowSnackBar(context, "Name Updated");
+      ShowSnackBar(context, content: "Name Updated");
     } else {
-      ShowSnackBar(context, 'Please fill all the Fields');
+      ShowSnackBar(context,
+          content: 'Please fill all the Fields', isDanger: true);
     }
   }
 

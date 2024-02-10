@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -87,23 +88,28 @@ class _HomeUiState extends State<HomeUi>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _searchController.text.isEmpty
-                            ? Text(
-                                'Recent Books',
-                                style: TextStyle(
-                                  fontSize: sdp(context, 14),
-                                  color: isDark ? whiteColor : blackColor,
+                            ? Center(
+                                child: Text(
+                                  'RECENT BOOKS',
+                                  style: TextStyle(
+                                    fontSize: sdp(context, 10),
+                                    letterSpacing: 10,
+                                    color: isDark
+                                        ? DarkColors.fadeText
+                                        : LightColors.fadeText,
+                                  ),
                                 ),
                               )
                             : Text(
                                 'Searching for "${_searchController.text}"',
                                 style: TextStyle(
-                                  color:
-                                      isDark ? greyColorAccent : darkGreyColor,
+                                  color: isDark
+                                      ? DarkColors.fadeText
+                                      : LightColors.fadeText,
                                 ),
                               ),
-                        height5,
+                        height10,
                         ListView.builder(
-                          addAutomaticKeepAlives: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
@@ -58,6 +60,12 @@ class _BookUIState extends State<BookUI> {
           bookListCounter += 5;
         });
       }
+    });
+
+    FirebaseRefs.transactBookRef(widget.snap['bookId'])
+        .snapshots()
+        .map((snapshot) {
+      print(snapshot.data()!['bookName']);
     });
   }
 
@@ -214,98 +222,26 @@ class _BookUIState extends State<BookUI> {
                       }),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     children: [
-                      StreamBuilder<dynamic>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(globalUser.uid)
-                            .collection('transact_books')
-                            .where('bookId', isEqualTo: widget.snap['bookId'])
-                            .snapshots(),
+                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream:
+                            FirebaseRefs.transactBookRef(widget.snap['bookId'])
+                                .snapshots(),
                         builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data.docs.length == 0) {
-                              return Text('No Data');
-                            }
-                            DocumentSnapshot ds = snapshot.data.docs[0];
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: 'INR ',
-                                              style: TextStyle(
-                                                fontSize: sdp(context, 22),
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
-                                                fontFamily: 'Product',
-                                                fontWeight: FontWeight.w200,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: oCcy.format(
-                                                  ds['income'] - ds['expense']),
-                                              style: TextStyle(
-                                                fontSize: sdp(context, 22),
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
-                                                fontFamily: 'Product',
-                                                fontWeight: FontWeight.w900,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    _filterButton(context),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: StatsCard(
-                                        label: 'Income',
-                                        content: ds['income'].toString(),
-                                        isBook: true,
-                                        bookId: ds['bookId'],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: StatsCard(
-                                        label: 'Expenses',
-                                        content: ds['expense'].toString(),
-                                        isBook: true,
-                                        bookId: ds['bookId'],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          }
-                          return Center(
-                            child: CircularProgressIndicator(),
+                          return AnimatedSwitcher(
+                            duration: Duration(milliseconds: 600),
+                            switchInCurve: Curves.easeIn,
+                            switchOutCurve: Curves.easeOut,
+                            child: snapshot.hasData &&
+                                    snapshot.data!.data() != null
+                                ? _header(context, snapshot.data!.data()!)
+                                : _dummyStatsCard(),
                           );
                         },
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      height10,
                     ],
                   ),
                 ),
@@ -442,6 +378,90 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
+  Column _header(BuildContext context, Map<String, dynamic> ds) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'INR ',
+                      style: TextStyle(
+                        fontSize: sdp(context, 22),
+                        color: isDark ? whiteColor : blackColor,
+                        fontFamily: 'Product',
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ),
+                    TextSpan(
+                      text: oCcy.format(ds['income'] - ds['expense']),
+                      style: TextStyle(
+                        fontSize: sdp(context, 22),
+                        color: isDark ? whiteColor : blackColor,
+                        fontFamily: 'Product',
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            _filterButton(context),
+          ],
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: StatsCard(
+                label: 'Income',
+                content: ds['income'].toString(),
+                isBook: true,
+                bookId: ds['bookId'],
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: StatsCard(
+                label: 'Expenses',
+                content: ds['expense'].toString(),
+                isBook: true,
+                bookId: ds['bookId'],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row _dummyStatsCard() {
+    return Row(
+      children: [
+        Expanded(
+          child: Card(
+            color: isDark ? DarkColors.card : LightColors.card,
+            child: SizedBox(height: 100),
+          ),
+        ),
+        Expanded(
+          child: Card(
+            color: isDark ? DarkColors.card : LightColors.card,
+            child: SizedBox(height: 100),
+          ),
+        ),
+      ],
+    );
+  }
+
   Container _filterButton(BuildContext context) {
     return Container(
       height: sdp(context, 30),
@@ -522,65 +542,77 @@ class _BookUIState extends State<BookUI> {
       builder: (context, snapshot) {
         dateTitle = '';
 
-        if (snapshot.hasData) {
-          if (snapshot.data.docs.length > 0) {
-            return ListView.builder(
-              physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data!.docs.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                loopCounter += 1;
-                Transact currTransact =
-                    Transact.fromDocumentSnap(snapshot.data.docs[index]);
-
-                final searchKey = _searchController.text.toLowerCase().trim();
-                if (_selectedSortType == 'All') {
-                  if (_searchController.text.isEmpty) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  } else if (currTransact.amount!.contains(searchKey) ||
-                      currTransact.description!
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      currTransact.source!.toLowerCase().contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                } else if (currTransact.type!.toLowerCase() ==
-                    _selectedSortType.toLowerCase()) {
-                  dataCounter++;
-                  if (_searchController.text.isEmpty) {
-                    return TransactTile(currTransact);
-                  } else if (currTransact.amount!.contains(searchKey) ||
-                      currTransact.description!
-                          .toLowerCase()
-                          .contains(searchKey) ||
-                      currTransact.source!.toLowerCase().contains(searchKey)) {
-                    dataCounter++;
-                    return TransactTile(currTransact);
-                  }
-                }
-                if (dataCounter == 0 &&
-                    loopCounter == snapshot.data.docs.length) {
-                  return Text(
-                    'No Item Found',
-                    style: TextStyle(
-                      color: isDark ? Colors.grey.shade700 : Colors.grey,
-                      fontSize: sdp(context, 16),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  );
-                }
-                return SizedBox();
-              },
-            );
-          }
-          return Text(
-            'No\nTransacts',
-            style: TextStyle(fontSize: sdp(context, 40)),
-          );
-        }
-        return DummyTransactList();
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 600),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child: snapshot.hasData
+              ? snapshot.data.docs.length > 0
+                  ? ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        loopCounter += 1;
+                        Transact currTransact = Transact.fromDocumentSnap(
+                            snapshot.data.docs[index]);
+                        final searchKey =
+                            _searchController.text.toLowerCase().trim();
+                        if (_selectedSortType == 'All') {
+                          if (_searchController.text.isEmpty) {
+                            dataCounter++;
+                            return TransactTile(currTransact);
+                          } else if (currTransact.amount!.contains(searchKey) ||
+                              currTransact.description!
+                                  .toLowerCase()
+                                  .contains(searchKey) ||
+                              currTransact.source!
+                                  .toLowerCase()
+                                  .contains(searchKey)) {
+                            dataCounter++;
+                            return TransactTile(currTransact);
+                          }
+                        } else if (currTransact.type!.toLowerCase() ==
+                            _selectedSortType.toLowerCase()) {
+                          dataCounter++;
+                          if (_searchController.text.isEmpty) {
+                            return TransactTile(currTransact);
+                          } else if (currTransact.amount!.contains(searchKey) ||
+                              currTransact.description!
+                                  .toLowerCase()
+                                  .contains(searchKey) ||
+                              currTransact.source!
+                                  .toLowerCase()
+                                  .contains(searchKey)) {
+                            dataCounter++;
+                            return TransactTile(currTransact);
+                          }
+                        }
+                        if (dataCounter == 0 &&
+                            loopCounter == snapshot.data.docs.length) {
+                          return Text(
+                            'No Item Found',
+                            style: TextStyle(
+                              color:
+                                  isDark ? Colors.grey.shade700 : Colors.grey,
+                              fontSize: sdp(context, 16),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        }
+                        return SizedBox();
+                      },
+                    )
+                  : Text(
+                      'No Transacts',
+                      style: TextStyle(
+                        fontSize: sdp(context, 20),
+                        color:
+                            isDark ? DarkColors.fadeText : LightColors.fadeText,
+                      ),
+                    )
+              : DummyTransactList(),
+        );
       },
     );
   }

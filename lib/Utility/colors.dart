@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 
 ColorFilter svgColor(Color color) => ColorFilter.mode(
       color,
@@ -53,32 +54,33 @@ class KThemeData {
   static ThemeData light() => ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
-        scaffoldBackgroundColor: lightScaffoldColor,
+        scaffoldBackgroundColor: LightColors.scaffold,
         brightness: Brightness.light,
-        colorSchemeSeed: primaryColor,
+        colorSchemeSeed: LightColors.profitCard,
+        cardColor: LightColors.card,
+        primaryColorLight: LightColors.profitCard,
+        primaryColorDark: DarkColors.profitCard,
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             visualDensity: VisualDensity.compact,
           ),
         ),
       );
-  // static ThemeData light() => ThemeData.from(
-  //       colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-  //     ).copyWith(
-  //       pageTransitionsTheme: PageTransitionsTheme(
-  //         builders: <TargetPlatform, PageTransitionsBuilder>{
-  //           TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-  //         },
-  //       ),
-  //     );
   static ThemeData dark() => ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
-        scaffoldBackgroundColor: darkScaffoldColor,
+        scaffoldBackgroundColor: DarkColors.scaffold,
         brightness: Brightness.dark,
+        cardColor: DarkColors.card,
         textTheme: TextTheme(
           labelLarge: TextStyle(color: Colors.white),
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+          displayLarge: TextStyle(color: Colors.white),
+          displayMedium: TextStyle(color: Colors.white),
+          displaySmall: TextStyle(color: Colors.white),
         ),
-        colorSchemeSeed: primaryColor,
+        colorSchemeSeed: DarkColors.profitCard,
       );
 }

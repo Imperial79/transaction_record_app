@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.system,
       theme: KThemeData.light(),
       darkTheme: KThemeData.dark(),
       home: StreamBuilder(
