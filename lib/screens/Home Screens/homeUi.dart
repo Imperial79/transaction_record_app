@@ -252,7 +252,7 @@ class _HomeUiState extends State<HomeUi>
                                               builder: (context, String name,
                                                   child) {
                                                 return Text(
-                                                  name,
+                                                  globalUser.name,
                                                   style: TextStyle(
                                                     fontSize: 20,
                                                     fontWeight: FontWeight.w900,
@@ -308,7 +308,16 @@ class _HomeUiState extends State<HomeUi>
                   SizedBox(
                     height: 10,
                   ),
-                  SearchBar(),
+                  KSearchBar(
+                    context,
+                    isDark: isDark,
+                    controller: _searchController,
+                    onChanged: (val) {
+                      setState(() {
+                        _showAdd.value = false;
+                      });
+                    },
+                  ),
                   SizedBox(
                     height: 15,
                   ),
@@ -419,8 +428,9 @@ class _HomeUiState extends State<HomeUi>
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.segment,
+                                      Icons.note,
                                       color: isDark ? whiteColor : blackColor,
+                                      size: sdp(context, 11),
                                     ),
                                     width5,
                                     Text(
@@ -439,7 +449,7 @@ class _HomeUiState extends State<HomeUi>
                                 Icon(
                                   Icons.schedule,
                                   color: isDark ? whiteColor : blackColor,
-                                  size: 15,
+                                  size: sdp(context, 11),
                                 ),
                                 width5,
                                 Text(
@@ -565,68 +575,68 @@ class _HomeUiState extends State<HomeUi>
     );
   }
 
-  Widget SearchBar() {
-    return Row(
-      children: [
-        Flexible(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-              color: isDark ? cardColordark : cardColorlight,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: TextField(
-              controller: _searchController,
-              keyboardType: TextInputType.text,
-              style: TextStyle(
-                fontSize: sdp(context, 12),
-                color: isDark ? whiteColor : blackColor,
-              ),
-              decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                border: InputBorder.none,
-                prefixIconConstraints: BoxConstraints(
-                  maxHeight: sdp(context, 50),
-                ),
-                prefixIcon: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: SvgPicture.asset(
-                    "lib/assets/icons/search.svg",
-                    height: sdp(context, 15),
-                    colorFilter: svgColor(
-                        isDark ? greyColorAccent : Colors.grey.shade600),
-                  ),
-                ),
-                hintText: 'Search by name or amount',
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: isDark
-                      ? greyColorAccent.withOpacity(0.5)
-                      : Colors.grey.shade600,
-                  fontSize: sdp(context, 12),
-                ),
-              ),
-              onChanged: (val) {
-                setState(() {
-                  _showAdd.value = false;
-                });
-              },
-            ),
-          ),
-        ),
-        Visibility(
-          visible: _searchController.text.isNotEmpty,
-          child: IconButton(
-            onPressed: () {
-              setState(() {
-                _searchController.clear();
-              });
-            },
-            icon: Icon(Icons.close),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget SearchBar() {
+  //   return Row(
+  //     children: [
+  //       Flexible(
+  //         child: Container(
+  //           margin: EdgeInsets.symmetric(horizontal: 15),
+  //           decoration: BoxDecoration(
+  //             color: isDark ? cardColordark : cardColorlight,
+  //             borderRadius: BorderRadius.circular(100),
+  //           ),
+  //           child: TextField(
+  //             controller: _searchController,
+  //             keyboardType: TextInputType.text,
+  //             style: TextStyle(
+  //               fontSize: sdp(context, 12),
+  //               color: isDark ? whiteColor : blackColor,
+  //             ),
+  //             decoration: InputDecoration(
+  //               contentPadding:
+  //                   EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+  //               border: InputBorder.none,
+  //               prefixIconConstraints: BoxConstraints(
+  //                 maxHeight: sdp(context, 50),
+  //               ),
+  //               prefixIcon: Padding(
+  //                 padding: EdgeInsets.symmetric(horizontal: 10.0),
+  //                 child: SvgPicture.asset(
+  //                   "lib/assets/icons/search.svg",
+  //                   height: sdp(context, 15),
+  //                   colorFilter: svgColor(
+  //                       isDark ? greyColorAccent : Colors.grey.shade600),
+  //                 ),
+  //               ),
+  //               hintText: 'Search by name or amount',
+  //               hintStyle: TextStyle(
+  //                 fontWeight: FontWeight.w400,
+  //                 color: isDark
+  //                     ? greyColorAccent.withOpacity(0.5)
+  //                     : Colors.grey.shade600,
+  //                 fontSize: sdp(context, 12),
+  //               ),
+  //             ),
+  //             onChanged: (val) {
+  //               setState(() {
+  //                 _showAdd.value = false;
+  //               });
+  //             },
+  //           ),
+  //         ),
+  //       ),
+  //       Visibility(
+  //         visible: _searchController.text.isNotEmpty,
+  //         child: IconButton(
+  //           onPressed: () {
+  //             setState(() {
+  //               _searchController.clear();
+  //             });
+  //           },
+  //           icon: Icon(Icons.close),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

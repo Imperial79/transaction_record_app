@@ -6,6 +6,7 @@ import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
 import 'colors.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
@@ -622,16 +623,18 @@ Widget ALertBox(BuildContext context, {final label, content, onPress}) {
 }
 
 Widget NewBookCard(BuildContext context) => Container(
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.all(15),
       width: double.infinity,
       padding: EdgeInsets.all(13),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           colors: [
-            primaryColor,
+            kProfitColor,
             Colors.black,
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
       child: Column(
@@ -643,12 +646,11 @@ Widget NewBookCard(BuildContext context) => Container(
             style: TextStyle(
               fontWeight: FontWeight.w700,
               color: Colors.white,
-              fontSize: 22,
+              fontSize: sdp(context, 20),
+              letterSpacing: 1,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          height10,
           Text(
             'Track your daily expenses by creating categorised Transact Book',
             style: TextStyle(
@@ -657,39 +659,18 @@ Widget NewBookCard(BuildContext context) => Container(
               fontSize: 16,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          height10,
           Align(
             alignment: Alignment.topRight,
-            child: MaterialButton(
+            child: ElevatedButton(
               onPressed: () {
-                NavPush(context, NewBookUI());
+                pageControllerGlobal.value.animateToPage(
+                  1,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                );
               },
-              color: Colors.white.withOpacity(0.2),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                width: 70,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.bolt_outlined,
-                      color: Colors.yellow,
-                    ),
-                    Text(
-                      'Create',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: Text('Create'),
             ),
           ),
         ],
@@ -842,5 +823,60 @@ Widget AnimatedFloatingButton(
         ),
       ),
     ),
+  );
+}
+
+Widget KSearchBar(
+  BuildContext context, {
+  required bool isDark,
+  TextEditingController? controller,
+  void Function(String)? onChanged,
+}) {
+  return Row(
+    children: [
+      Flexible(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            color: isDark ? cardColordark : cardColorlight,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: TextInputType.text,
+            style: TextStyle(
+              fontSize: sdp(context, 12),
+              color: isDark ? whiteColor : blackColor,
+            ),
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+              border: InputBorder.none,
+              prefixIconConstraints: BoxConstraints(
+                maxHeight: sdp(context, 50),
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: SvgPicture.asset(
+                  "lib/assets/icons/search.svg",
+                  height: sdp(context, 15),
+                  colorFilter:
+                      svgColor(isDark ? greyColorAccent : Colors.grey.shade600),
+                ),
+              ),
+              hintText: 'Search by name or amount',
+              hintStyle: TextStyle(
+                fontWeight: FontWeight.w400,
+                color: isDark
+                    ? greyColorAccent.withOpacity(0.5)
+                    : Colors.grey.shade600,
+                fontSize: sdp(context, 12),
+              ),
+            ),
+            onChanged: onChanged,
+          ),
+        ),
+      ),
+    ],
   );
 }

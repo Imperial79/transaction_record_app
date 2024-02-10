@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,6 @@ class _BookUIState extends State<BookUI> {
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
-  bool isFetching = true;
 
   int bookListCounter = 5;
   int searchingBookListCounter = 50;
@@ -44,8 +45,6 @@ class _BookUIState extends State<BookUI> {
   @override
   void initState() {
     super.initState();
-    // fetchBookTransacts();
-
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
