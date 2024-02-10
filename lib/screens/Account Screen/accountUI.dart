@@ -1,6 +1,11 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
@@ -34,22 +39,26 @@ class _AccountUIState extends State<AccountUI> {
 
   updateAccountDetails() async {
     if (nameController.text.isNotEmpty) {
-      Map<String, dynamic> accountMap = {
-        'name': nameController.text,
-      };
+      FirebaseAuth.instance.currentUser!.updateDisplayName(nameController.text);
 
-      //  updating details in DB
-      String message = await DatabaseMethods()
-          .updateAccountDetails(UserDetails.uid, accountMap);
+      // Map<String, dynamic> accountMap = {
+      //   'name': nameController.text,
+      // };
 
-      //  updating details in shared preferences
-      // final SharedPreferences prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('USERDISPLAYNAMEKEY', nameController.text);
+      // //  updating details in DB
+      // String message = await DatabaseMethods()
+      //     .updateAccountDetails(UserDetails.uid, accountMap);
 
-      //  updating details in current session
-      UserDetails.userDisplayName = nameController.text;
+      // final _userBox = await Hive.openBox("USERBOX");
+      // _userBox.put('userData', {'name': nameController.text});
+      // log("${_userBox.get('userData')}");
 
-      ShowSnackBar(context, message);
+      // setState(() {
+      //   displayNameGlobal.value = nameController.text;
+      //   UserDetails.name = nameController.text;
+      // });
+
+      ShowSnackBar(context, "Name Updated");
     } else {
       ShowSnackBar(context, 'Please fill all the Fields');
     }
@@ -84,8 +93,7 @@ class _AccountUIState extends State<AccountUI> {
                       Hero(
                         tag: 'profImg',
                         child: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(UserDetails.userProfilePic),
+                          backgroundImage: NetworkImage(UserDetails.imgUrl),
                         ),
                       ),
                       SizedBox(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +27,22 @@ class AuthMethods {
 
   Future<String> signInWithgoogle(context) async {
     try {
-      await Hive.openBox('User');
-      final _UserBox = Hive.box('User');
+      // final res = await Hive.boxExists('USERBOX');
+      // if (res) {
+      //   log("USERBOX exists");
+      //   await Hive.deleteBoxFromDisk('USERBOX').then((value) async {
+      //     log("USERBOX deleted from disk");
+      //   });
+      // } else {
+      //   log("USERBOX does not exists");
+      // }
+      // await Hive.openBox('USERBOX').then((value) {
+      //   log("Hive Box USERBOX created/Opened");
+      // });
+      await Hive.close();
+      await Hive.openBox('USERBOX');
+      final _userBox = Hive.box('USERBOX');
+
       final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -41,49 +57,95 @@ class AuthMethods {
         accessToken: googleSignInAuthentication.accessToken,
       );
 
-      UserCredential result =
+      UserCredential _creds =
           await _firebaseAuth.signInWithCredential(credential);
 
-      User? userDetails = result.user;
+      User? gUserData = _creds.user;
 
-      if (userDetails != null) {
-        KUser userMap = new KUser(
-          userName: userDetails.email!.split('@').first,
-          userEmail: userDetails.email!,
-          userDisplayName: userDetails.displayName!,
-          uid: userDetails.uid,
-          userProfilePic: userDetails.photoURL!,
-        );
-
-        await _UserBox.put('userMap', userMap.toMap()).whenComplete(() {
-          print('Data Saved locally!-> ${userMap.toMap()}');
-        });
-
-        //  Svaing in local session ------->
-
-        UserDetails.userEmail = userDetails.email!;
-        UserDetails.userDisplayName = userDetails.displayName!;
-        UserDetails.userName = userDetails.email!.split('@').first;
-        UserDetails.uid = userDetails.uid;
-        UserDetails.userProfilePic = userDetails.photoURL!;
-
+      log("-----------------GOOGLE SIGNIN--------------------");
+      if (gUserData != null) {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userDetails.uid)
+            .doc(gUserData.uid)
             .get()
             .then(
-          (value) async {
-            if (value.exists) {
-              UserDetails.userDisplayName = value.data()!['name'];
-              userMap.copyWith(userDisplayName: UserDetails.userDisplayName);
-              // userMap.update('name', (value) => UserDetails.userDisplayName);
-              await _UserBox.put('userMap', userMap.toMap());
+          (dbUser) async {
+            if (dbUser.exists) {
+              log("User found in DB");
+              log("User Data from DB---------------> ");
+              log("UID-> ${dbUser.data()!['uid']}");
+              log("NAME-> ${dbUser.data()!['name']}");
+              log("EMAIL-> ${dbUser.data()!['email']}");
+              log("Doing nothing if user exists");
+              // ----------------------------------------------------------------------------
 
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => RootUI()));
+              KUser newUser = new KUser(
+                username: dbUser.data()!['email']!.split('@').first,
+                email: dbUser.data()!['email']!,
+                name: dbUser.data()!['name']!,
+                uid: dbUser.data()!['uid'],
+                imgUrl: gUserData.photoURL!,
+              );
+              log("User Model Data-> ${newUser}");
+
+              await _userBox.put('userData', newUser.toMap()).whenComplete(() {
+                print(
+                    'After updating data to Hive----------------------------->');
+              });
+
+              //  Saving in local session ------->
+
+              // UserDetails.email = newUser.email;
+              // UserDetails.name = newUser.name;
+              // UserDetails.username = newUser.username;
+              // UserDetails.uid = newUser.uid;
+              // UserDetails.imgUrl = newUser.imgUrl;
+
+              globalUser = newUser;
+
+              log("Checking for the User in DB");
+
+              // UserDetails.userDisplayName = value.data()!['name'];
+              // userData.copyWith(userDisplayName: UserDetails.userDisplayName);
+              // log("After Changing the Display Name-> ${userData.toMap()}");
+
+              // userMap.update('name', (value) => UserDetails.userDisplayName);
+              // await newUser.copyWith()
+              await _userBox.put('userData', newUser.toMap());
+
+              NavPushReplacement(context, RootUI());
             } else {
-              databaseMethods
-                  .addUserInfoToDB(userDetails.uid, userMap.toMap())
+              log("User Does not exists in the DB");
+              log("User Data to put in DB---------------------->");
+              // log("UID-> ${newUser.uid}");
+              // log("NAME-> ${newUser.name}");
+              // log("EMAIL-> ${newUser.email}");
+              log("Google User is not null");
+              KUser newUser = new KUser(
+                username: gUserData.email!.split('@').first,
+                email: gUserData.email!,
+                name: gUserData.displayName!,
+                uid: gUserData.uid,
+                imgUrl: gUserData.photoURL!,
+              );
+              log("User Model Data-> ${newUser}");
+
+              await _userBox.put('userData', newUser.toMap()).whenComplete(() {
+                print(
+                    'After updating data to Hive----------------------------->');
+              });
+
+              //  Saving in local session ------->
+
+              UserDetails.email = newUser.email;
+              UserDetails.name = newUser.name;
+              UserDetails.username = newUser.username;
+              UserDetails.uid = newUser.uid;
+              UserDetails.imgUrl = newUser.imgUrl;
+
+              log("Checking for the User in DB");
+              await databaseMethods
+                  .addUserInfoToDB(newUser.uid, newUser.toMap())
                   .then(
                 (value) {
                   NavPushReplacement(context, RootUI());
@@ -96,17 +158,28 @@ class AuthMethods {
       }
       return 'fail';
     } catch (e) {
+      await Hive.close();
       print(e);
       return 'fail';
     }
   }
 
   static signOut(BuildContext context) async {
-    await Hive.openBox('userData');
-    Hive.box('userData').delete('userMap');
-    await GoogleSignIn().signOut();
+    log("<-------------------------SIGNOUT FUNCTION---------------------------------->");
 
-    await auth.signOut();
+    Hive.box('USERBOX').delete('userData');
+
+    await Hive.deleteBoxFromDisk('USERBOX').then((value) {
+      log("Box USER deleted from disk");
+    });
+    await Hive.close();
+    await GoogleSignIn().signOut().then((value) {
+      log("Logged Out from GoggleSignIn");
+    });
+
+    await auth.signOut().then((value) {
+      log("Logged Out from Auth");
+    });
     NavPushReplacement(context, LoginUI());
   }
 }

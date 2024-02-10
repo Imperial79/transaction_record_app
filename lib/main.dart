@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       theme: KThemeData.light(),
       darkTheme: KThemeData.dark(),
       home: StreamBuilder(

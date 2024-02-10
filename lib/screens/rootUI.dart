@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class RootUI extends StatefulWidget {
   const RootUI({Key? key}) : super(key: key);
@@ -19,7 +24,32 @@ class _RootUIState extends State<RootUI> {
   @override
   void initState() {
     super.initState();
+    _init();
     _pageController = PageController(initialPage: activeTab);
+  }
+
+  _init() {
+    getUserDetailsFromPreference();
+  }
+
+  getUserDetailsFromPreference() async {
+    try {
+      if (UserDetails.uid == '') {
+        final _userBox = await Hive.openBox('USERBOX');
+        Map<dynamic, dynamic> userMap = await _userBox.get('userData');
+        log("USer MAP from Hive-> ${userMap}");
+        setState(() {
+          displayNameGlobal.value = userMap['userDisplayName'];
+          UserDetails.uid = userMap['uid'];
+          UserDetails.email = userMap['userEmail'];
+          UserDetails.imgUrl = userMap['userProfilePic'];
+          UserDetails.username = userMap['userName'];
+        });
+        await Hive.close();
+      }
+    } catch (e) {
+      log("Error here $e");
+    }
   }
 
   @override

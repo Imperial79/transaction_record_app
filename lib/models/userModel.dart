@@ -2,17 +2,17 @@
 import 'dart:convert';
 
 class KUser {
-  String userName = '';
-  String userEmail = '';
-  String userDisplayName = '';
+  String username = '';
+  String email = '';
+  String name = '';
   String uid = '';
-  String userProfilePic = '';
+  String imgUrl = '';
   KUser({
-    required this.userName,
-    required this.userEmail,
-    required this.userDisplayName,
+    required this.username,
+    required this.email,
+    required this.name,
     required this.uid,
-    required this.userProfilePic,
+    required this.imgUrl,
   });
 
   KUser copyWith({
@@ -23,31 +23,31 @@ class KUser {
     String? userProfilePic,
   }) {
     return KUser(
-      userName: userName ?? this.userName,
-      userEmail: userEmail ?? this.userEmail,
-      userDisplayName: userDisplayName ?? this.userDisplayName,
+      username: userName ?? this.username,
+      email: userEmail ?? this.email,
+      name: userDisplayName ?? this.name,
       uid: uid ?? this.uid,
-      userProfilePic: userProfilePic ?? this.userProfilePic,
+      imgUrl: userProfilePic ?? this.imgUrl,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'userName': userName,
-      'userEmail': userEmail,
-      'userDisplayName': userDisplayName,
+      'userName': username,
+      'userEmail': email,
+      'userDisplayName': name,
       'uid': uid,
-      'userProfilePic': userProfilePic,
+      'userProfilePic': imgUrl,
     };
   }
 
   factory KUser.fromMap(Map<String, dynamic> map) {
     return KUser(
-      userName: map['userName'] as String,
-      userEmail: map['userEmail'] as String,
-      userDisplayName: map['userDisplayName'] as String,
+      username: map['userName'] as String,
+      email: map['userEmail'] as String,
+      name: map['userDisplayName'] as String,
       uid: map['uid'] as String,
-      userProfilePic: map['userProfilePic'] as String,
+      imgUrl: map['userProfilePic'] as String,
     );
   }
 
@@ -58,26 +58,26 @@ class KUser {
 
   @override
   String toString() {
-    return 'KUser(userName: $userName, userEmail: $userEmail, userDisplayName: $userDisplayName, uid: $uid, userProfilePic: $userProfilePic)';
+    return 'KUser(userName: $username, userEmail: $email, userDisplayName: $name, uid: $uid, userProfilePic: $imgUrl)';
   }
 
   @override
   bool operator ==(covariant KUser other) {
     if (identical(this, other)) return true;
 
-    return other.userName == userName &&
-        other.userEmail == userEmail &&
-        other.userDisplayName == userDisplayName &&
+    return other.username == username &&
+        other.email == email &&
+        other.name == name &&
         other.uid == uid &&
-        other.userProfilePic == userProfilePic;
+        other.imgUrl == imgUrl;
   }
 
   @override
   int get hashCode {
-    return userName.hashCode ^
-        userEmail.hashCode ^
-        userDisplayName.hashCode ^
+    return username.hashCode ^
+        email.hashCode ^
+        name.hashCode ^
         uid.hashCode ^
-        userProfilePic.hashCode;
+        imgUrl.hashCode;
   }
 }

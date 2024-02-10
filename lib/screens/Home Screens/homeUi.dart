@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +18,7 @@ import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
 
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
+ValueNotifier<String> displayNameGlobal = ValueNotifier(UserDetails.name);
 
 class HomeUi extends StatefulWidget {
   @override
@@ -44,11 +46,11 @@ class _HomeUiState extends State<HomeUi>
 
   @override
   void initState() {
+    super.initState();
     dateTitle = '';
     print('home');
-    getUserDetailsFromPreference(setState);
+
     _scrollFunction();
-    super.initState();
     // _subscription = FirebaseFirestore.instance
     //     .collection('users')
     //     .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -210,9 +212,8 @@ class _HomeUiState extends State<HomeUi>
                                           NavPush(
                                               context,
                                               AccountUI(
-                                                name:
-                                                    UserDetails.userDisplayName,
-                                                email: UserDetails.userEmail,
+                                                name: UserDetails.name,
+                                                email: UserDetails.email,
                                               ));
                                         },
                                         child: Hero(
@@ -224,22 +225,20 @@ class _HomeUiState extends State<HomeUi>
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(50),
-                                              child:
-                                                  UserDetails.userProfilePic ==
-                                                          ''
-                                                      ? Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            color:
-                                                                darkProfitColorAccent,
-                                                            strokeWidth: 1.5,
-                                                          ),
-                                                        )
-                                                      : CachedNetworkImage(
-                                                          imageUrl: UserDetails
-                                                              .userProfilePic,
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                              child: UserDetails.imgUrl == ''
+                                                  ? Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color:
+                                                            darkProfitColorAccent,
+                                                        strokeWidth: 1.5,
+                                                      ),
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          UserDetails.imgUrl,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                             ),
                                           ),
                                         ),
@@ -248,36 +247,72 @@ class _HomeUiState extends State<HomeUi>
                                         width: 10,
                                       ),
                                       Expanded(
-                                        child: RichText(
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: 'Hi ',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: isDark
-                                                      ? whiteColor
-                                                      : blackColor,
-                                                ),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'Hi',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w400,
+                                                color: isDark
+                                                    ? whiteColor
+                                                    : blackColor,
                                               ),
-                                              TextSpan(
-                                                text: UserDetails
-                                                    .userDisplayName
-                                                    .split(' ')
-                                                    .first,
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: isDark
-                                                      ? whiteColor
-                                                      : blackColor,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                            width10,
+                                            ValueListenableBuilder(
+                                              valueListenable:
+                                                  displayNameGlobal,
+                                              builder: (context, String name,
+                                                  child) {
+                                                return Text(
+                                                  name,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: isDark
+                                                        ? whiteColor
+                                                        : blackColor,
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                          ],
                                         ),
                                       ),
+                                      // Expanded(
+                                      //   child: RichText(
+                                      //     text: TextSpan(
+                                      //       children: [
+                                      //         TextSpan(
+                                      //           text: 'Hi ',
+                                      // style: TextStyle(
+                                      //   fontSize: 20,
+                                      //   fontWeight: FontWeight.w400,
+                                      //   color: isDark
+                                      //       ? whiteColor
+                                      //       : blackColor,
+                                      // ),
+                                      //         ),
+                                      //         TextSpan(
+                                      //           text: UserDetails.name
+                                      //                   .split(' ')
+                                      //                   .first +
+                                      //               "kassjhaksjalsjaHSkjshjha",
+
+                                      // style: TextStyle(
+
+                                      //   fontSize: 20,
+                                      //   fontWeight: FontWeight.w900,
+                                      //   color: isDark
+                                      //       ? whiteColor
+                                      //       : blackColor,
+                                      // ),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // ),
                                       CircleAvatar(
                                         radius: 20,
                                         backgroundColor: isDark
@@ -339,31 +374,8 @@ class _HomeUiState extends State<HomeUi>
 
   Widget TransactBookCard(ds) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    int amtPercentage = 0;
-    Color _bgColor = Colors.white;
-    Color _fgColor = Colors.white;
 
-    if (ds['expense'] != 0 && ds['income'] != 0) {
-      amtPercentage = ((ds['expense'] / ds['income']) * 100).round();
-    } else {
-      amtPercentage = 0;
-    }
-    bool isCompleted = amtPercentage == 100;
-    if (amtPercentage == 0) {
-      _bgColor = Colors.grey.shade300;
-    } else if (amtPercentage <= 40) {
-      _bgColor = darkProfitColorAccent.withOpacity(0.5);
-      _fgColor = primaryColor;
-    } else if (amtPercentage > 40 && amtPercentage <= 60) {
-      _bgColor = Colors.amber.shade100;
-      _fgColor = Colors.amber;
-    } else if (isCompleted) {
-      _bgColor = Colors.green.shade700;
-      _fgColor = Colors.white;
-    } else {
-      _bgColor = Colors.grey;
-      _fgColor = isDark ? Colors.red.shade200 : Colors.red;
-    }
+    bool isCompleted = ds['expense'] != 0 && (ds['income'] == ds['expense']);
 
     if (dateTitle == ds['date']) {
       showDateWidget = false;
@@ -373,15 +385,12 @@ class _HomeUiState extends State<HomeUi>
     }
 
     Color _kCardColor = cardColordark;
-    if (amtPercentage > 100) {
-      _kCardColor = isDark
-          ? kLossColorAccent.withOpacity(0.5)
-          : Colors.redAccent.withOpacity(0.2);
-    } else if (amtPercentage == 100) {
-      _kCardColor = isDark ? kProfitColor.withOpacity(0.5) : kProfitColorAccent;
+    if (isCompleted) {
+      _kCardColor = isDark ? kProfitColor.withOpacity(.7) : kProfitColorAccent;
     } else {
-      _kCardColor = isDark ? Color(0xFF303030) : cardColorlight;
+      _kCardColor = !isDark ? cardColorlight : cardColordark;
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -438,47 +447,6 @@ class _HomeUiState extends State<HomeUi>
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      isCompleted && ds['type'] == 'due'
-                          ? CircleAvatar(
-                              backgroundColor: _bgColor,
-                              foregroundColor: _fgColor,
-                              child: Icon(Icons.done),
-                            )
-                          : Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  value: amtPercentage / 100,
-                                  backgroundColor: isDark
-                                      ? _bgColor.withOpacity(0.2)
-                                      : _bgColor,
-                                  color: _fgColor,
-                                ),
-                                amtPercentage <= 100
-                                    ? Text(
-                                        amtPercentage.toString() + '%',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: sdp(context, 8.5),
-                                          color:
-                                              isDark ? whiteColor : blackColor,
-                                        ),
-                                      )
-                                    : Text(
-                                        '!',
-                                        style: TextStyle(
-                                          fontSize: sdp(context, 12),
-                                          color: isDark
-                                              ? Colors.white
-                                              : Colors.red,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                              ],
-                            ),
-                      SizedBox(
-                        width: 10,
-                      ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
