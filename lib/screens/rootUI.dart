@@ -8,6 +8,11 @@ import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/user.dart';
 
+ValueNotifier<PageController> pageControllerGlobal =
+    ValueNotifier(PageController(initialPage: 0));
+
+ValueNotifier<int> activeTabGlobal = ValueNotifier(0);
+
 class RootUI extends StatefulWidget {
   const RootUI({Key? key}) : super(key: key);
 
@@ -16,22 +21,23 @@ class RootUI extends StatefulWidget {
 }
 
 class _RootUIState extends State<RootUI> {
-  int activeTab = 0;
-  late PageController _pageController;
+  // int activeTab = 0;
+  // late PageController _pageController;
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
   @override
   void initState() {
     super.initState();
     _init();
-    _pageController = PageController(initialPage: activeTab);
+    // pageControllerGlobal.value = PageController(initialPage: activeTab);
+    // _pageController = PageController(initialPage: activeTab);
   }
 
-  _init() {
-    getUserDetailsFromPreference();
+  _init() async {
+    await getUserDetailsFromPreference();
   }
 
-  getUserDetailsFromPreference() async {
+  Future<void> getUserDetailsFromPreference() async {
     try {
       if (globalUser.uid == '') {
         final _userBox = await Hive.openBox('USERBOX');
@@ -55,13 +61,13 @@ class _RootUIState extends State<RootUI> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    pageControllerGlobal.value.dispose();
     super.dispose();
   }
 
   void _onPageChanged(int index) {
     setState(() {
-      activeTab = index;
+      activeTabGlobal.value = index;
     });
   }
 
@@ -96,18 +102,22 @@ class _RootUIState extends State<RootUI> {
               ),
             ),
             Expanded(
-              child: PageView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _pageController,
-                itemCount: _pages.length,
-                onPageChanged: _onPageChanged,
-                itemBuilder: (context, index) {
-                  return PageStorage(
-                    child: _pages[index],
-                    bucket: _pageStorageBucket,
-                  );
-                },
-              ),
+              child: ValueListenableBuilder(
+                  valueListenable: pageControllerGlobal,
+                  builder: (context, PageController _pageController, child) {
+                    return PageView.builder(
+                      scrollDirection: Axis.horizontal,
+                      controller: _pageController,
+                      itemCount: _pages.length,
+                      onPageChanged: _onPageChanged,
+                      itemBuilder: (context, index) {
+                        return PageStorage(
+                          child: _pages[index],
+                          bucket: _pageStorageBucket,
+                        );
+                      },
+                    );
+                  }),
             ),
           ],
         ),
@@ -120,10 +130,10 @@ class _RootUIState extends State<RootUI> {
     required int index,
     required String label,
   }) {
-    bool isActive = activeTab == index;
+    bool isActive = activeTabGlobal.value == index;
     return TextButton(
       onPressed: () {
-        _pageController.animateToPage(index,
+        pageControllerGlobal.value.animateToPage(index,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
       },
       child: Text(

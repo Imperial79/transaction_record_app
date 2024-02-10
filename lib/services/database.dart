@@ -7,7 +7,7 @@ class DatabaseMethods {
   // final firestore = FirebaseFirestore.instance;
 
   //  upload new transact book
-  createNewTransactBook(String bookId, newBookMap) async {
+  Future<void> createNewTransactBook(String bookId, newBookMap) async {
     return await firestore
         .collection('users')
         .doc(globalUser.uid)

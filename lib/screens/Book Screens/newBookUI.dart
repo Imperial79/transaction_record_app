@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import '../../Utility/sdp.dart';
@@ -26,7 +27,7 @@ class _NewBookUIState extends State<NewBookUI> {
 
   String selectedBookType = 'Regular Book';
 
-  createBook() {
+  createBook() async {
     try {
       if (bookTitleController.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
@@ -44,9 +45,11 @@ class _NewBookUIState extends State<NewBookUI> {
           'expense': 0,
           'type': _type,
         };
-        dbMethod.createNewTransactBook(
+        await dbMethod.createNewTransactBook(
             _selectedTimeStamp.toString(), newBookMap);
         ShowSnackBar(context, 'Book Created');
+        pageControllerGlobal.value.animateToPage(0,
+            duration: Duration(milliseconds: 300), curve: Curves.ease);
         // Navigator.pop(context);
       }
     } catch (e) {
