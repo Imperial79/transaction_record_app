@@ -93,7 +93,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       );
 
       databaseMethods.uploadTransacts(
-        UserDetails.uid,
+        globalUser.uid,
         newTransact.toMap(),
         widget.bookId,
         transactId,

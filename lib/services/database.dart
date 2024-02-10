@@ -10,7 +10,7 @@ class DatabaseMethods {
   createNewTransactBook(String bookId, newBookMap) async {
     return await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .set(newBookMap);
@@ -27,7 +27,7 @@ class DatabaseMethods {
       String bookId, transactId, Map<String, dynamic> transactMap) async {
     await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .collection('transacts')
@@ -39,7 +39,7 @@ class DatabaseMethods {
   uploadTransacts(uid, transactMap, bookId, transactId) async {
     await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection("transact_books")
         .doc(bookId)
         .collection('transacts')
@@ -53,7 +53,7 @@ class DatabaseMethods {
     try {
       await firestore
           .collection('users')
-          .doc(UserDetails.uid)
+          .doc(globalUser.uid)
           .update(accountDetails);
       return 'Profile updated successfully';
     } catch (e) {
@@ -65,7 +65,7 @@ class DatabaseMethods {
   updateBookTransactions(String bookId, Map<String, dynamic> newMap) async {
     return await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .update(newMap);
@@ -75,7 +75,7 @@ class DatabaseMethods {
   updateGlobalCurrentBal(String uid, Map<String, dynamic> currentBalMap) async {
     return await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .update(currentBalMap);
   }
 
@@ -83,7 +83,7 @@ class DatabaseMethods {
   resetBookIncomeExpense(String bookId, uid, map) async {
     return await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .update(map);
@@ -91,14 +91,14 @@ class DatabaseMethods {
 
   //  Reset Book Income/Expense
   resetGlobalIncomeExpense(String bookId, uid, map) async {
-    return await firestore.collection('users').doc(UserDetails.uid).update(map);
+    return await firestore.collection('users').doc(globalUser.uid).update(map);
   }
 
   //Delete one book
   _deleteBook(bookId) async {
     await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .where('bookId', isEqualTo: bookId)
         .limit(1)
@@ -116,7 +116,7 @@ class DatabaseMethods {
     try {
       await firestore
           .collection('users')
-          .doc(UserDetails.uid)
+          .doc(globalUser.uid)
           .collection('transact_books')
           .doc(bookId)
           .collection('transacts')
@@ -130,7 +130,7 @@ class DatabaseMethods {
           print('Collection ahead');
           await firestore
               .collection('users')
-              .doc(UserDetails.uid)
+              .doc(globalUser.uid)
               .collection('transact_books')
               .doc(bookId)
               .collection('transacts')
@@ -154,7 +154,7 @@ class DatabaseMethods {
   deleteTransact(bookId, transactId) async {
     await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .collection('transacts')
@@ -174,7 +174,7 @@ class DatabaseMethods {
   deleteAllTransacts(String bookId) async {
     await firestore
         .collection('users')
-        .doc(UserDetails.uid)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .doc(bookId)
         .collection('transacts')

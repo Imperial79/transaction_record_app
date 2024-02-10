@@ -137,11 +137,12 @@ class AuthMethods {
 
               //  Saving in local session ------->
 
-              UserDetails.email = newUser.email;
-              UserDetails.name = newUser.name;
-              UserDetails.username = newUser.username;
-              UserDetails.uid = newUser.uid;
-              UserDetails.imgUrl = newUser.imgUrl;
+              // UserDetails.email = newUser.email;
+              // UserDetails.name = newUser.name;
+              // UserDetails.username = newUser.username;
+              // UserDetails.uid = newUser.uid;
+              // UserDetails.imgUrl = newUser.imgUrl;
+              globalUser = newUser;
 
               log("Checking for the User in DB");
               await databaseMethods
@@ -166,8 +167,8 @@ class AuthMethods {
 
   static signOut(BuildContext context) async {
     log("<-------------------------SIGNOUT FUNCTION---------------------------------->");
-
-    Hive.box('USERBOX').delete('userData');
+    final userBox = await Hive.openBox('USERBOX');
+    userBox.delete('userData');
 
     await Hive.deleteBoxFromDisk('USERBOX').then((value) {
       log("Box USER deleted from disk");

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:transaction_record_app/Functions/homeFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
@@ -34,16 +33,18 @@ class _RootUIState extends State<RootUI> {
 
   getUserDetailsFromPreference() async {
     try {
-      if (UserDetails.uid == '') {
+      if (globalUser.uid == '') {
         final _userBox = await Hive.openBox('USERBOX');
         Map<dynamic, dynamic> userMap = await _userBox.get('userData');
         log("USer MAP from Hive-> ${userMap}");
         setState(() {
           displayNameGlobal.value = userMap['userDisplayName'];
-          UserDetails.uid = userMap['uid'];
-          UserDetails.email = userMap['userEmail'];
-          UserDetails.imgUrl = userMap['userProfilePic'];
-          UserDetails.username = userMap['userName'];
+
+          globalUser.name = userMap['userDisplayName'];
+          globalUser.email = userMap['userEmail'];
+          globalUser.uid = userMap['uid'];
+          globalUser.imgUrl = userMap['userProfilePic'];
+          globalUser.username = userMap['userName'];
         });
         await Hive.close();
       }

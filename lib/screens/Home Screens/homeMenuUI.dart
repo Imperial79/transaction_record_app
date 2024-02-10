@@ -76,14 +76,14 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                         NavPush(
                             context,
                             AccountUI(
-                              name: UserDetails.name,
-                              email: UserDetails.email,
+                              name: globalUser.name,
+                              email: globalUser.email,
                             ));
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: CachedNetworkImage(
-                          imageUrl: UserDetails.imgUrl,
+                          imageUrl: globalUser.imgUrl,
                           fit: BoxFit.cover,
                         ),
                       ),

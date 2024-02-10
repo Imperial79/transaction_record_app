@@ -18,7 +18,7 @@ import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
 
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
-ValueNotifier<String> displayNameGlobal = ValueNotifier(UserDetails.name);
+ValueNotifier<String> displayNameGlobal = ValueNotifier(globalUser.name);
 
 class HomeUi extends StatefulWidget {
   @override
@@ -212,8 +212,8 @@ class _HomeUiState extends State<HomeUi>
                                           NavPush(
                                               context,
                                               AccountUI(
-                                                name: UserDetails.name,
-                                                email: UserDetails.email,
+                                                name: globalUser.name,
+                                                email: globalUser.email,
                                               ));
                                         },
                                         child: Hero(
@@ -225,7 +225,7 @@ class _HomeUiState extends State<HomeUi>
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(50),
-                                              child: UserDetails.imgUrl == ''
+                                              child: globalUser.imgUrl == ''
                                                   ? Center(
                                                       child:
                                                           CircularProgressIndicator(
@@ -236,7 +236,7 @@ class _HomeUiState extends State<HomeUi>
                                                     )
                                                   : CachedNetworkImage(
                                                       imageUrl:
-                                                          UserDetails.imgUrl,
+                                                          globalUser.imgUrl,
                                                       fit: BoxFit.cover,
                                                     ),
                                             ),
@@ -295,7 +295,7 @@ class _HomeUiState extends State<HomeUi>
                                       // ),
                                       //         ),
                                       //         TextSpan(
-                                      //           text: UserDetails.name
+                                      //           text: globalUser.name
                                       //                   .split(' ')
                                       //                   .first +
                                       //               "kassjhaksjalsjaHSkjshjha",
@@ -390,7 +390,6 @@ class _HomeUiState extends State<HomeUi>
     } else {
       _kCardColor = !isDark ? cardColorlight : cardColordark;
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

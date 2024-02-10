@@ -221,7 +221,7 @@ class _BookUIState extends State<BookUI> {
                       StreamBuilder<dynamic>(
                         stream: FirebaseFirestore.instance
                             .collection('users')
-                            .doc(UserDetails.uid)
+                            .doc(globalUser.uid)
                             .collection('transact_books')
                             .where('bookId', isEqualTo: widget.snap['bookId'])
                             .snapshots(),

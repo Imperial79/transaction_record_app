@@ -32,31 +32,34 @@ class _AccountUIState extends State<AccountUI> {
   void initState() {
     super.initState();
     setState(() {
-      nameController.text = widget.name;
-      emailController.text = widget.email;
+      // nameController.text = widget.name;
+
+      nameController.text = globalUser.name;
+      emailController.text = globalUser.email;
+      // emailController.text = widget.email;
     });
   }
 
   updateAccountDetails() async {
     if (nameController.text.isNotEmpty) {
-      FirebaseAuth.instance.currentUser!.updateDisplayName(nameController.text);
+      Map<String, dynamic> accountMap = {
+        'name': nameController.text,
+      };
 
-      // Map<String, dynamic> accountMap = {
-      //   'name': nameController.text,
-      // };
+      await DatabaseMethods().updateAccountDetails(globalUser.uid, accountMap);
 
-      // //  updating details in DB
-      // String message = await DatabaseMethods()
-      //     .updateAccountDetails(UserDetails.uid, accountMap);
+      final _userBox = await Hive.openBox("USERBOX");
+      final _userMap = _userBox.get("userData");
+      if (_userMap != null) {
+        _userMap['userDisplayName'] = nameController.text;
+        _userBox.put('userData', _userMap);
+      }
+      log("After Update-> ${_userBox.get('userData')}");
 
-      // final _userBox = await Hive.openBox("USERBOX");
-      // _userBox.put('userData', {'name': nameController.text});
-      // log("${_userBox.get('userData')}");
-
-      // setState(() {
-      //   displayNameGlobal.value = nameController.text;
-      //   UserDetails.name = nameController.text;
-      // });
+      setState(() {
+        displayNameGlobal.value = nameController.text;
+        globalUser.name = nameController.text;
+      });
 
       ShowSnackBar(context, "Name Updated");
     } else {
@@ -93,14 +96,14 @@ class _AccountUIState extends State<AccountUI> {
                       Hero(
                         tag: 'profImg',
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(UserDetails.imgUrl),
+                          backgroundImage: NetworkImage(globalUser.imgUrl),
                         ),
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        'UID: ${UserDetails.uid}',
+                        'UID: ${globalUser.uid}',
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
                           color: Colors.grey.shade600,

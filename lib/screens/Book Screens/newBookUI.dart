@@ -47,7 +47,7 @@ class _NewBookUIState extends State<NewBookUI> {
         dbMethod.createNewTransactBook(
             _selectedTimeStamp.toString(), newBookMap);
         ShowSnackBar(context, 'Book Created');
-        Navigator.pop(context);
+        // Navigator.pop(context);
       }
     } catch (e) {
       ShowSnackBar(context, e.toString());
