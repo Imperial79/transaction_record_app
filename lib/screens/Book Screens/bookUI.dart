@@ -1248,10 +1248,17 @@ class _BookUIState extends State<BookUI> {
                             'date': Constants.getDisplayDate(currentTime),
                             'time': Constants.getDisplayTime(currentTime),
                             'senderId': FirebaseRefs.myUID,
-                            'users': [],
+                            'users': selectedUsers,
                           };
 
-                          await FirebaseRefs.requestRef.add(_requestMap);
+                          await FirebaseRefs.requestRef.add(_requestMap).then(
+                                (value) => ShowSnackBar(
+                                  context,
+                                  content:
+                                      "Resquest to join book has been sent to ${selectedUsers.length} user(s)",
+                                ),
+                              );
+                          Navigator.pop(context);
                         },
                         child: Text('Send Request'),
                       ),

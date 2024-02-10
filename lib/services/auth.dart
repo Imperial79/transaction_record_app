@@ -12,7 +12,6 @@ import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthMethods {
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -29,7 +28,6 @@ class AuthMethods {
 
   Future<String> signInWithgoogle(context) async {
     try {
-      print(kIsWeb);
       await Hive.openBox('USERBOX');
       final _userBox = Hive.box('USERBOX');
 
