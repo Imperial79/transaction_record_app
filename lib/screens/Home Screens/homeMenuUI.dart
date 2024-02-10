@@ -18,7 +18,7 @@ class HomeMenuUI extends StatefulWidget {
 class _HomeMenuUIState extends State<HomeMenuUI> {
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    setSystemUIColors(context);
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

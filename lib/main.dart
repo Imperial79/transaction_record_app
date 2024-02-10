@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    setSystemUIColors(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',

@@ -1,13 +1,18 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 ValueNotifier<PageController> pageControllerGlobal =
@@ -70,29 +75,74 @@ class _RootUIState extends State<RootUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
+    setSystemUIColors(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  _changeToPageButton(
-                    context,
-                    index: 0,
-                    label: 'Home',
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        _changeToPageButton(
+                          context,
+                          index: 0,
+                          label: 'Home',
+                        ),
+                        _changeToPageButton(
+                          context,
+                          index: 1,
+                          label: 'New Book',
+                        ),
+                      ],
+                    ),
                   ),
-                  _changeToPageButton(
-                    context,
-                    index: 1,
-                    label: 'New Book',
+                ),
+                IconButton(
+                  onPressed: () {
+                    NavPush(context, NotificationsUI());
+                  },
+                  icon: StreamBuilder<dynamic>(
+                    stream: FirebaseRefs.requestRef
+                        .where('users', arrayContains: FirebaseRefs.myUID)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      return AnimatedSwitcher(
+                        duration: Duration(milliseconds: 600),
+                        switchInCurve: Curves.easeIn,
+                        switchOutCurve: Curves.easeOut,
+                        child: !snapshot.hasData
+                            ? Transform.scale(
+                                scale: .5,
+                                child: CircularProgressIndicator(),
+                              )
+                            : snapshot.data!.docs.length == 0
+                                ? Icon(Icons.notifications)
+                                : CircleAvatar(
+                                    radius: sdp(context, 10),
+                                    backgroundColor: isDark
+                                        ? DarkColors.profitText
+                                        : LightColors.profitText,
+                                    foregroundColor:
+                                        isDark ? Colors.black : Colors.white,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5.0),
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Text(
+                                            "${snapshot.data!.docs.length}"),
+                                      ),
+                                    ),
+                                  ),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             Expanded(
               child: ValueListenableBuilder(

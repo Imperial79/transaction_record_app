@@ -26,8 +26,7 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
+    setSystemUIColors(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(

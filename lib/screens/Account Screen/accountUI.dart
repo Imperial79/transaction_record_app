@@ -70,7 +70,7 @@ class _AccountUIState extends State<AccountUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    setSystemUIColors(context);
     isDark = checkForTheme(context);
     return Scaffold(
       body: SafeArea(

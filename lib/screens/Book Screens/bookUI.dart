@@ -81,7 +81,7 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    setSystemUIColors(context);
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     isSearching = _searchController.text.isNotEmpty;
@@ -1124,6 +1124,7 @@ class _BookUIState extends State<BookUI> {
                     builder: (context) => _addUserDialog(
                       isDark,
                       bookId: widget.snap['bookId'],
+                      bookName: widget.snap['bookName'],
                     ),
                   );
                 },
@@ -1145,7 +1146,11 @@ class _BookUIState extends State<BookUI> {
 
   List<String> selectedUsers = [];
   // bool isSelecting = false;
-  Widget _addUserDialog(bool isDark, {required String bookId}) {
+  Widget _addUserDialog(
+    bool isDark, {
+    required String bookId,
+    required String bookName,
+  }) {
     final _searchUser = TextEditingController();
     selectedUsers = [];
     bool isSelecting = false;
@@ -1249,9 +1254,14 @@ class _BookUIState extends State<BookUI> {
                             'time': Constants.getDisplayTime(currentTime),
                             'senderId': FirebaseRefs.myUID,
                             'users': selectedUsers,
+                            'bookName': bookName,
+                            'bookId': bookId,
                           };
 
-                          await FirebaseRefs.requestRef.add(_requestMap).then(
+                          await FirebaseRefs.requestRef
+                              .doc("$currentTime")
+                              .set(_requestMap)
+                              .then(
                                 (value) => ShowSnackBar(
                                   context,
                                   content:

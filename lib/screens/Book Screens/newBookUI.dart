@@ -44,6 +44,7 @@ class _NewBookUIState extends State<NewBookUI> {
           'income': 0,
           'expense': 0,
           'type': selectedBookType,
+          'users': []
         };
         await dbMethod.createNewTransactBook(
             _selectedTimeStamp.toString(), newBookMap);
@@ -92,7 +93,7 @@ class _NewBookUIState extends State<NewBookUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors();
+    setSystemUIColors(context);
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(

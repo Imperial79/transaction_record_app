@@ -151,7 +151,7 @@ class _HomeUiState extends State<HomeUi>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    setSystemUIColors();
+    setSystemUIColors(context);
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
