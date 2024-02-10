@@ -311,18 +311,19 @@ class _HomeUiState extends State<HomeUi>
                 physics: BouncingScrollPhysics(),
                 controller: _scrollController,
                 children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  KSearchBar(
-                    context,
-                    isDark: isDark,
-                    controller: _searchController,
-                    onChanged: (val) {
-                      setState(() {
-                        _showAdd.value = false;
-                      });
-                    },
+                  height10,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: KSearchBar(
+                      context,
+                      isDark: isDark,
+                      controller: _searchController,
+                      onChanged: (val) {
+                        setState(() {
+                          _showAdd.value = false;
+                        });
+                      },
+                    ),
                   ),
                   SizedBox(
                     height: 15,

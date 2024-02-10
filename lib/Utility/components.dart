@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
@@ -798,44 +801,47 @@ Widget KSearchBar(
     children: [
       Flexible(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: isDark ? cardColordark : cardColorlight,
             borderRadius: BorderRadius.circular(100),
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: TextInputType.text,
-            style: TextStyle(
-              fontSize: sdp(context, 12),
-              color: isDark ? whiteColor : blackColor,
-            ),
-            decoration: InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              border: InputBorder.none,
-              prefixIconConstraints: BoxConstraints(
-                maxHeight: sdp(context, 50),
-              ),
-              prefixIcon: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: isDark
+                    ? DarkColors.primaryButton
+                    : LightColors.primaryButton,
                 child: SvgPicture.asset(
                   "lib/assets/icons/search.svg",
                   height: sdp(context, 15),
-                  colorFilter:
-                      svgColor(isDark ? greyColorAccent : Colors.grey.shade600),
+                  colorFilter: svgColor(isDark ? Colors.black : Colors.white),
                 ),
               ),
-              hintText: 'Search by name or amount',
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w400,
-                color: isDark
-                    ? greyColorAccent.withOpacity(0.5)
-                    : Colors.grey.shade600,
-                fontSize: sdp(context, 12),
+              SizedBox(
+                width: 15,
               ),
-            ),
-            onChanged: onChanged,
+              Flexible(
+                child: TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.text,
+                  style: TextStyle(
+                    fontSize: sdp(context, 12),
+                  ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search by name or amount',
+                    hintStyle: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color:
+                          isDark ? DarkColors.fadeText : LightColors.fadeText,
+                      fontSize: sdp(context, 12),
+                    ),
+                  ),
+                  onChanged: onChanged,
+                ),
+              ),
+            ],
           ),
         ),
       ),

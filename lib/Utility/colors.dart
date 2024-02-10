@@ -65,6 +65,12 @@ class KThemeData {
             visualDensity: VisualDensity.compact,
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: LightColors.primaryButton,
+              foregroundColor: Colors.white),
+        ),
       );
   static ThemeData dark() => ThemeData(
         fontFamily: 'Product',
@@ -82,5 +88,11 @@ class KThemeData {
           displaySmall: TextStyle(color: Colors.white),
         ),
         colorSchemeSeed: DarkColors.profitCard,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: DarkColors.primaryButton,
+              foregroundColor: Colors.black),
+        ),
       );
 }

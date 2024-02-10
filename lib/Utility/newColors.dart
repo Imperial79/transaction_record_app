@@ -8,7 +8,7 @@ class LightColors {
   static final Color profitCard = Color(0xff98d3cb);
   static final Color lossCard = Color(0xffca705f);
   static final Color primaryButton = Colors.black;
-  static final Color fadeText = Colors.grey.shade400;
+  static final Color fadeText = Colors.grey;
 }
 
 class DarkColors {

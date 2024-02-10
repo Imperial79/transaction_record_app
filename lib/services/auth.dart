@@ -12,6 +12,7 @@ import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthMethods {
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -28,19 +29,7 @@ class AuthMethods {
 
   Future<String> signInWithgoogle(context) async {
     try {
-      // final res = await Hive.boxExists('USERBOX');
-      // if (res) {
-      //   log("USERBOX exists");
-      //   await Hive.deleteBoxFromDisk('USERBOX').then((value) async {
-      //     log("USERBOX deleted from disk");
-      //   });
-      // } else {
-      //   log("USERBOX does not exists");
-      // }
-      // await Hive.openBox('USERBOX').then((value) {
-      //   log("Hive Box USERBOX created/Opened");
-      // });
-      // await Hive.close();
+      print(kIsWeb);
       await Hive.openBox('USERBOX');
       final _userBox = Hive.box('USERBOX');
 
@@ -85,7 +74,7 @@ class AuthMethods {
               globalUser = oldUser;
             } else {
               KUser newUser = new KUser(
-                username: getUsername(email: gUserData.email!),
+                username: Constants.getUsername(email: gUserData.email!),
                 email: gUserData.email!,
                 name: gUserData.displayName!,
                 uid: gUserData.uid,

@@ -15,7 +15,6 @@ import '../../Functions/navigatorFns.dart';
 import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
 import '../../services/database.dart';
-import '../../services/user.dart';
 import '../../Utility/components.dart';
 
 class BookUI extends StatefulWidget {
@@ -1031,11 +1030,9 @@ class _BookUIState extends State<BookUI> {
               ),
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
+          height10,
           Wrap(
-            alignment: WrapAlignment.center,
+            alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 5,
@@ -1120,10 +1117,191 @@ class _BookUIState extends State<BookUI> {
                     isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
                 textColor: Colors.white,
               ),
+              BookMenuBtn(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => _addUserDialog(
+                      isDark,
+                      bookId: widget.snap['bookId'],
+                    ),
+                  );
+                },
+                labelSize: sdp(context, 10),
+                label: 'Add User(s)',
+                iconSize: sdp(context, 12),
+                icon: Icons.person_add_alt_1,
+                btnColor: isDark
+                    ? Color.fromARGB(255, 20, 215, 192)
+                    : const Color.fromARGB(255, 39, 87, 109),
+                textColor: isDark ? Colors.black : Colors.white,
+              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  List<String> selectedUsers = [];
+  // bool isSelecting = false;
+  Widget _addUserDialog(bool isDark, {required String bookId}) {
+    final _searchUser = TextEditingController();
+    selectedUsers = [];
+    bool isSelecting = false;
+
+    void onSelect(setState, ds) {
+      setState(() {
+        if (!selectedUsers.contains(ds['uid'])) {
+          selectedUsers.add(ds['uid']);
+        } else {
+          selectedUsers.remove(ds['uid']);
+        }
+      });
+
+      if (selectedUsers.length == 0) {
+        setState(() {
+          isSelecting = false;
+        });
+      } else {
+        setState(() {
+          isSelecting = true;
+        });
+      }
+    }
+
+    return StatefulBuilder(
+      builder: (context, setState) => Dialog(
+        elevation: 0,
+        insetPadding: EdgeInsets.all(15),
+        backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KSearchBar(
+                context,
+                isDark: isDark,
+                controller: _searchUser,
+                onChanged: (_) {
+                  setState(() {});
+                },
+              ),
+              Visibility(
+                visible: isSelecting,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text('Selected ${selectedUsers.length} user(s)'),
+                ),
+              ),
+              height20,
+              FutureBuilder<dynamic>(
+                future: FirebaseRefs.userRef
+                    .where('uid', isNotEqualTo: FirebaseRefs.myUID)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.docs.length == 0) {
+                      return Text('No Users');
+                    }
+                    return Flexible(
+                      child: ListView.builder(
+                        itemCount: snapshot.data.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final ds = snapshot.data.docs[index];
+                          if (ds['name']
+                                  .toString()
+                                  .contains(_searchUser.text) ||
+                              ds['username']
+                                  .toString()
+                                  .contains(_searchUser.text)) {
+                            return _userTile(
+                              ds,
+                              isSelecting,
+                              isDark,
+                              onTap: () {
+                                onSelect(setState, ds);
+                              },
+                            );
+                          }
+                          return SizedBox.shrink();
+                        },
+                      ),
+                    );
+                  }
+                  return LinearProgressIndicator();
+                },
+              ),
+              selectedUsers.length > 0
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          int currentTime =
+                              DateTime.now().millisecondsSinceEpoch;
+
+                          Map<String, dynamic> _requestMap = {
+                            'id': "$currentTime",
+                            'date': Constants.getDisplayDate(currentTime),
+                            'time': Constants.getDisplayTime(currentTime),
+                            'senderId': FirebaseRefs.myUID,
+                            'users': [],
+                          };
+
+                          await FirebaseRefs.requestRef.add(_requestMap);
+                        },
+                        child: Text('Send Request'),
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _userTile(ds, bool isSelecting, bool isDark,
+      {void Function()? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: selectedUsers.contains(ds['uid'])
+                  ? isDark
+                      ? DarkColors.profitCard.withOpacity(.2)
+                      : LightColors.profitCard
+                  : Colors.transparent,
+            ),
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                selectedUsers.contains(ds['uid'])
+                    ? CircleAvatar(
+                        child: Icon(Icons.done),
+                      )
+                    : CircleAvatar(
+                        backgroundImage: NetworkImage(ds['imgUrl']),
+                      ),
+                width20,
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("${ds['name']}"),
+                    Text("${ds['username']}"),
+                  ],
+                ))
+              ],
+            ),
+          )),
     );
   }
 

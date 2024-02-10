@@ -14,7 +14,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "621632578553-lquve43plo81d79gpeel6v72ksutue6b.apps.googleusercontent.com",
+          "client_id": "621632578553-6vkriav9n2ld5fvltgelmqk4bcsmha3e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imperial.transactRecord",
+            "certificate_hash": "959a17578501ed219480b0fe49bdb90aa1a66491"
+          }
+        },
+        {
+          "client_id": "621632578553-kqrriioj6cts3n69e41qn0b07jpigd9p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imperial.transactRecord",
+            "certificate_hash": "3bf8a6f3ce7f493db83eb1595ea4145936942d54"
+          }
+        },
+        {
+          "client_id": "621632578553-qsmhrj7it5pj5d5o59ruu9enlhc156sm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.imperial.transactRecord",
@@ -22,11 +38,11 @@
           }
         },
         {
-          "client_id": "621632578553-map4jkbhgfmbt3dl55vgcufvtufbn5cj.apps.googleusercontent.com",
+          "client_id": "621632578553-ubvm4ljl8kun1l61pubfqu2g0modhdsc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.imperial.transactRecord",
-            "certificate_hash": "3bf8a6f3ce7f493db83eb1595ea4145936942d54"
+            "certificate_hash": "a3a08bdb324c9041154afcb533f979958d3d21ce"
           }
         },
         {
