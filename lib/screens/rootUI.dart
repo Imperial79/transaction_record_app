@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
+import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
 import 'package:transaction_record_app/services/user.dart';
@@ -21,16 +23,12 @@ class RootUI extends StatefulWidget {
 }
 
 class _RootUIState extends State<RootUI> {
-  // int activeTab = 0;
-  // late PageController _pageController;
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
   @override
   void initState() {
     super.initState();
     _init();
-    // pageControllerGlobal.value = PageController(initialPage: activeTab);
-    // _pageController = PageController(initialPage: activeTab);
   }
 
   _init() async {
@@ -42,20 +40,14 @@ class _RootUIState extends State<RootUI> {
       if (globalUser.uid == '') {
         final _userBox = await Hive.openBox('USERBOX');
         Map<dynamic, dynamic> userMap = await _userBox.get('userData');
-        log("USer MAP from Hive-> ${userMap}");
         setState(() {
-          displayNameGlobal.value = userMap['userDisplayName'];
-
-          globalUser.name = userMap['userDisplayName'];
-          globalUser.email = userMap['userEmail'];
-          globalUser.uid = userMap['uid'];
-          globalUser.imgUrl = userMap['userProfilePic'];
-          globalUser.username = userMap['userName'];
+          displayNameGlobal.value = userMap['name'];
+          globalUser = KUser.fromMap(userMap);
         });
         await Hive.close();
       }
     } catch (e) {
-      log("Error here $e");
+      log("Error while fetching data from Hive $e");
     }
   }
 
@@ -78,6 +70,7 @@ class _RootUIState extends State<RootUI> {
 
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors();
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(

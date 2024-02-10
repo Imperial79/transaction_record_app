@@ -558,7 +558,7 @@ setSystemUIColors({
       statusBarColor: Colors.transparent,
       statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarColor: isDark ? darkScaffoldColor : lightScaffoldColor,
       systemNavigationBarIconBrightness: systemNavigationBarIconBrightness,
     ),
   );

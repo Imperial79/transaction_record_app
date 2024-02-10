@@ -38,7 +38,6 @@ class _HomeUiState extends State<HomeUi>
 
   bool isKeyboardOpen = false;
 
-  // late StreamSubscription<QuerySnapshot> _subscription;
   @override
   bool get wantKeepAlive => true;
 
@@ -49,17 +48,6 @@ class _HomeUiState extends State<HomeUi>
     print('home');
 
     _scrollFunction();
-    // _subscription = FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(FirebaseAuth.instance.currentUser!.uid)
-    //     .collection('transact_books')
-    //     .orderBy('bookId', descending: true)
-    //     .snapshots()
-    //     .listen((QuerySnapshot snapshot) {
-    //   snapshot.docs.forEach((DocumentSnapshot document) {
-    //     log(document['bookName'].toString());
-    //   });
-    // });
   }
 
   _scrollFunction() {
@@ -278,39 +266,6 @@ class _HomeUiState extends State<HomeUi>
                                           ],
                                         ),
                                       ),
-                                      // Expanded(
-                                      //   child: RichText(
-                                      //     text: TextSpan(
-                                      //       children: [
-                                      //         TextSpan(
-                                      //           text: 'Hi ',
-                                      // style: TextStyle(
-                                      //   fontSize: 20,
-                                      //   fontWeight: FontWeight.w400,
-                                      //   color: isDark
-                                      //       ? whiteColor
-                                      //       : blackColor,
-                                      // ),
-                                      //         ),
-                                      //         TextSpan(
-                                      //           text: globalUser.name
-                                      //                   .split(' ')
-                                      //                   .first +
-                                      //               "kassjhaksjalsjaHSkjshjha",
-
-                                      // style: TextStyle(
-
-                                      //   fontSize: 20,
-                                      //   fontWeight: FontWeight.w900,
-                                      //   color: isDark
-                                      //       ? whiteColor
-                                      //       : blackColor,
-                                      // ),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //   ),
-                                      // ),
                                       CircleAvatar(
                                         radius: 20,
                                         backgroundColor: isDark

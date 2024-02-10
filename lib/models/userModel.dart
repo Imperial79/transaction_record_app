@@ -16,38 +16,38 @@ class KUser {
   });
 
   KUser copyWith({
-    String? userName,
-    String? userEmail,
-    String? userDisplayName,
+    String? username,
+    String? email,
+    String? name,
     String? uid,
-    String? userProfilePic,
+    String? imgUrl,
   }) {
     return KUser(
-      username: userName ?? this.username,
-      email: userEmail ?? this.email,
-      name: userDisplayName ?? this.name,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      name: name ?? this.name,
       uid: uid ?? this.uid,
-      imgUrl: userProfilePic ?? this.imgUrl,
+      imgUrl: imgUrl ?? this.imgUrl,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'userName': username,
-      'userEmail': email,
-      'userDisplayName': name,
+      'username': username,
+      'email': email,
+      'name': name,
       'uid': uid,
-      'userProfilePic': imgUrl,
+      'imgUrl': imgUrl,
     };
   }
 
-  factory KUser.fromMap(Map<String, dynamic> map) {
+  factory KUser.fromMap(Map<dynamic, dynamic> map) {
     return KUser(
-      username: map['userName'] as String,
-      email: map['userEmail'] as String,
-      name: map['userDisplayName'] as String,
+      username: map['username'] as String,
+      email: map['email'] as String,
+      name: map['name'] as String,
       uid: map['uid'] as String,
-      imgUrl: map['userProfilePic'] as String,
+      imgUrl: map['imgUrl'] as String,
     );
   }
 
@@ -58,7 +58,7 @@ class KUser {
 
   @override
   String toString() {
-    return 'KUser(userName: $username, userEmail: $email, userDisplayName: $name, uid: $uid, userProfilePic: $imgUrl)';
+    return 'KUSer(username: $username, email: $email, name: $name, uid: $uid, imgUrl: $imgUrl)';
   }
 
   @override
