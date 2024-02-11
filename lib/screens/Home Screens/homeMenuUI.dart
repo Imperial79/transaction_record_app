@@ -67,6 +67,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   HomeMenuBtn(
@@ -89,6 +90,22 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                       ),
                     ),
                     btnColor: Color.fromARGB(255, 210, 235, 255),
+                  ),
+                  HomeMenuBtn(
+                    label: 'Switch',
+                    child: IconButton(
+                      onPressed: () async {
+                        // await AuthMethods.signOut(context);
+
+                        await AuthMethods.signInWithgoogle(context);
+                      },
+                      icon: Icon(
+                        Icons.switch_account_rounded,
+                        color: isDark ? Colors.black : Colors.amber.shade900,
+                      ),
+                    ),
+                    btnColor:
+                        isDark ? Colors.yellow.shade900 : Colors.amber.shade200,
                   ),
                   HomeMenuBtn(
                     label: 'Logout',
@@ -115,28 +132,31 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
   }
 
   Widget HomeMenuBtn({final label, required Widget child, btnColor}) {
-    return Column(
-      children: [
-        Container(
-          height: sdp(context, 40),
-          width: sdp(context, 40),
-          decoration: BoxDecoration(
-            color: btnColor,
-            borderRadius: BorderRadius.circular(20),
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: sdp(context, 40),
+            width: sdp(context, 40),
+            decoration: BoxDecoration(
+              color: btnColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: child,
           ),
-          child: child,
-        ),
-        SizedBox(
-          height: 5,
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: isDark ? whiteColor : blackColor,
+          height5,
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: isDark ? whiteColor : blackColor,
+              fontSize: sdp(context, 10),
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -153,7 +153,6 @@ class _HomeUiState extends State<HomeUi>
     super.build(context);
     setSystemUIColors(context);
     _searchController.text.isEmpty ? _showAdd.value = true : false;
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     return Scaffold(
       body: SafeArea(
         bottom: false,

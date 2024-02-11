@@ -9,6 +9,7 @@ import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
+import 'package:transaction_record_app/main.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
@@ -56,12 +57,6 @@ class _RootUIState extends State<RootUI> {
     }
   }
 
-  @override
-  void dispose() {
-    pageControllerGlobal.value.dispose();
-    super.dispose();
-  }
-
   void _onPageChanged(int index) {
     setState(() {
       activeTabGlobal.value = index;
@@ -101,6 +96,24 @@ class _RootUIState extends State<RootUI> {
                       ],
                     ),
                   ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (themeMode.value == 'dark') {
+                        themeMode.value = 'light';
+                      } else if (themeMode.value == 'light') {
+                        themeMode.value = 'system';
+                      } else {
+                        themeMode.value = 'dark';
+                      }
+                    });
+                  },
+                  icon: Icon(themeMode.value == "dark"
+                      ? Icons.light_mode
+                      : themeMode.value == "light"
+                          ? Icons.auto_awesome
+                          : Icons.dark_mode),
                 ),
                 IconButton(
                   onPressed: () {
@@ -166,6 +179,12 @@ class _RootUIState extends State<RootUI> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    pageControllerGlobal.value.dispose();
+    super.dispose();
   }
 
   TextButton _changeToPageButton(

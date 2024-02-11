@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,8 +7,8 @@ Future<Null> NavPush(BuildContext context, screen) async {
       context, MaterialPageRoute(builder: (context) => screen));
 }
 
-Future<Null> NavPushReplacement(BuildContext context, screen) async {
-  await Navigator.pushReplacement(
+Future<void> NavPushReplacement(BuildContext context, screen) {
+  return Navigator.pushReplacement(
       context, MaterialPageRoute(builder: (context) => screen));
 }
 
@@ -18,23 +17,27 @@ ShowSnackBar(
   required String content,
   bool isDanger = false,
 }) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: isDanger ? Colors.red.shade900 : Colors.teal.shade800,
+        ),
+      ),
       content: Text(
         content,
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: Colors.white,
+          color: isDanger ? Colors.red.shade900 : Colors.teal.shade900,
         ),
       ),
-      backgroundColor: isDanger
-          ? isDark
-              ? DarkColors.lossCard
-              : LightColors.lossCard
-          : isDark
-              ? DarkColors.profitCard
-              : LightColors.profitCard,
+      backgroundColor: isDanger ? Colors.red.shade100 : LightColors.profitCard,
     ),
   );
 }

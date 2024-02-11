@@ -57,7 +57,13 @@ class KThemeData {
         scaffoldBackgroundColor: LightColors.scaffold,
         brightness: Brightness.light,
         colorSchemeSeed: LightColors.profitCard,
-        cardColor: LightColors.card,
+        cardTheme: CardTheme(
+          elevation: 0,
+          color: LightColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
         primaryColorLight: LightColors.profitCard,
         primaryColorDark: DarkColors.profitCard,
         textButtonTheme: TextButtonThemeData(
@@ -78,6 +84,13 @@ class KThemeData {
         scaffoldBackgroundColor: DarkColors.scaffold,
         brightness: Brightness.dark,
         cardColor: DarkColors.card,
+        cardTheme: CardTheme(
+          elevation: 0,
+          color: DarkColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
         textTheme: TextTheme(
           labelLarge: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),

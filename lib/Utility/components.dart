@@ -849,3 +849,15 @@ Widget KSearchBar(
     ],
   );
 }
+
+Widget NoData(BuildContext context, {String customText = "No Data"}) {
+  return Center(
+    child: Text(
+      customText,
+      style: TextStyle(
+        fontSize: sdp(context, 20),
+        color: isDark ? DarkColors.fadeText : LightColors.fadeText,
+      ),
+    ),
+  );
+}

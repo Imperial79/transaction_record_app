@@ -14,7 +14,7 @@ import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 class AuthMethods {
-  DatabaseMethods databaseMethods = new DatabaseMethods();
+  static DatabaseMethods _databaseMethods = new DatabaseMethods();
 
   static final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -26,7 +26,19 @@ class AuthMethods {
     return auth.authStateChanges();
   }
 
-  Future<String> signInWithgoogle(context) async {
+  static Future<void> switchAccount(BuildContext context) async {
+    // await Hive
+    final userBox = await Hive.openBox('USERBOX');
+    userBox.delete('userData');
+
+    await Hive.deleteBoxFromDisk('USERBOX').then((value) {
+      log("Box USER deleted from disk");
+    });
+    await Hive.close();
+    await signInWithgoogle(context);
+  }
+
+  static Future<String> signInWithgoogle(BuildContext context) async {
     try {
       await Hive.openBox('USERBOX');
       final _userBox = Hive.box('USERBOX');
@@ -82,7 +94,7 @@ class AuthMethods {
               await _userBox.put('userData', newUser.toMap());
 
               globalUser = newUser;
-              await databaseMethods.addUserInfoToDB(
+              await _databaseMethods.addUserInfoToDB(
                   newUser.uid, newUser.toMap());
             }
 
@@ -99,7 +111,7 @@ class AuthMethods {
     }
   }
 
-  static signOut(BuildContext context) async {
+  static Future<void> signOut(BuildContext context) async {
     log("<-------------------------SIGNOUT FUNCTION---------------------------------->");
     final userBox = await Hive.openBox('USERBOX');
     userBox.delete('userData');

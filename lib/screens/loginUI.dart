@@ -144,9 +144,9 @@ class _LoginUIState extends State<LoginUI> {
                             onTap: () async {
                               setState(() => _isLoading = true);
                               String res =
-                                  await AuthMethods().signInWithgoogle(context);
+                                  await AuthMethods.signInWithgoogle(context);
                               if (res == 'fail') {
-                                setState(() => _isLoading = false);
+                                if (mounted) setState(() => _isLoading = false);
                               }
                             },
                             child: Container(
