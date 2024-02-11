@@ -74,7 +74,15 @@ class _HomeUiState extends State<HomeUi>
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('transactBooks')
-          .where('uid', isEqualTo: FirebaseRefs.myUID)
+          .where(
+            Filter.or(
+              Filter(
+                'users',
+                arrayContains: [FirebaseRefs.myUID],
+              ),
+              Filter('uid', isEqualTo: FirebaseRefs.myUID),
+            ),
+          )
           .orderBy('bookId', descending: true)
           .snapshots(),
       builder: (context, snapshot) {

@@ -1309,7 +1309,7 @@ class _BookUIState extends State<BookUI> {
                                 (value) => ShowSnackBar(
                                   context,
                                   content:
-                                      "Resquest to join book has been sent to ${selectedUsers.length} user(s)",
+                                      "Request to join book has been sent to ${selectedUsers.length} user(s)",
                                 ),
                               );
                           Navigator.pop(context);

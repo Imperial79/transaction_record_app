@@ -98,7 +98,7 @@ class AuthMethods {
                   newUser.uid, newUser.toMap());
             }
 
-            NavPushReplacement(context, RootUI());
+            navPopUntilPush(context, RootUI());
           },
         );
         return 'success';

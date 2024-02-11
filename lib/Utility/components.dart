@@ -375,6 +375,11 @@ Widget kRenameModal({
                       fontWeight: FontWeight.w900,
                     ),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      newBookName.text = value;
+                    });
+                  },
                 ),
                 height20,
                 ElevatedButton.icon(

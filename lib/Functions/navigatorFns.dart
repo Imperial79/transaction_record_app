@@ -12,6 +12,11 @@ Future<void> NavPushReplacement(BuildContext context, screen) {
       context, MaterialPageRoute(builder: (context) => screen));
 }
 
+Future<void> navPopUntilPush(BuildContext context, Widget screen) {
+  Navigator.popUntil(context, (route) => false);
+  return NavPush(context, screen);
+}
+
 ShowSnackBar(
   BuildContext context, {
   required String content,
