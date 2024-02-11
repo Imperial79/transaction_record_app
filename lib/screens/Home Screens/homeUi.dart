@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
@@ -72,9 +73,8 @@ class _HomeUiState extends State<HomeUi>
   Widget BookList() {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('transact_books')
+          .collection('transactBooks')
+          .where('uid', isEqualTo: FirebaseRefs.myUID)
           .orderBy('bookId', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
@@ -402,7 +402,7 @@ class _HomeUiState extends State<HomeUi>
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   builder: (context) {
-                    return bookOptionsModal(
+                    return BookDeleteModal(
                       bookId: bookData['bookId'],
                       bookName: bookData['bookName'],
                     );

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -287,8 +288,11 @@ Widget StatsCard({final label, content, isBook, bookId}) {
   );
 }
 
-Widget kRenameModal(String oldBookName) {
-  final _bookTitle = new TextEditingController(text: oldBookName);
+Widget kRenameModal({
+  required String bookId,
+  required String oldBookName,
+}) {
+  final newBookName = new TextEditingController(text: oldBookName);
   return StatefulBuilder(
     builder: (context, setState) {
       return SafeArea(
@@ -339,7 +343,7 @@ Widget kRenameModal(String oldBookName) {
                 ),
                 height20,
                 TextField(
-                  controller: _bookTitle,
+                  controller: newBookName,
                   keyboardType: TextInputType.text,
                   textCapitalization: TextCapitalization.words,
                   style: TextStyle(
@@ -372,7 +376,14 @@ Widget kRenameModal(String oldBookName) {
                 ),
                 height20,
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await BookMethods.editBookName(
+                      context,
+                      newBookName: newBookName.text,
+                      bookId: bookId,
+                    );
+                    Navigator.pop(context);
+                  },
                   icon: Icon(Icons.file_upload_outlined),
                   label: Text('Update'),
                 ),
@@ -640,7 +651,10 @@ Widget NewBookCard(BuildContext context) => Container(
       ),
     );
 
-Widget bookOptionsModal({required String bookName, required String bookId}) {
+Widget BookDeleteModal({
+  required String bookName,
+  required String bookId,
+}) {
   return StatefulBuilder(
     builder: (context, setState) {
       return SafeArea(
@@ -678,9 +692,24 @@ Widget bookOptionsModal({required String bookName, required String bookId}) {
                   height: 20,
                 ),
                 GestureDetector(
-                  onTap: () {
-                    BookMethods.deleteBook(context,
-                        bookName: bookName, bookId: bookId);
+                  onTap: () async {
+                    try {
+                      await BookMethods.deleteBook(
+                        context,
+                        bookName: bookName,
+                        bookId: bookId,
+                      );
+                      Navigator.pop(context);
+                      ShowSnackBar(context,
+                          content: "\"$bookName\" Book Deleted!");
+                    } catch (e) {
+                      ShowSnackBar(
+                        context,
+                        content:
+                            "Unable to delete book! Check your connection or try again later.",
+                        isDanger: true,
+                      );
+                    }
                   },
                   child: Card(
                     elevation: 0,

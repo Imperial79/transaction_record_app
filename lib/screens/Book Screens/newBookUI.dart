@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -43,14 +44,18 @@ class _NewBookUIState extends State<NewBookUI> {
           'bookDescription': bookDescriptionController.text,
           'date': displayDate,
           'time': displayTime,
-          'bookId': _selectedTimeStamp.toString(),
+          'bookId': "$_selectedTimeStamp",
           'income': 0,
           'expense': 0,
           'type': selectedBookType,
-          'users': []
+          'users': [],
+          'uid': FirebaseRefs.myUID,
         };
-        await dbMethod.createNewTransactBook(
-            _selectedTimeStamp.toString(), newBookMap);
+        await FirebaseFirestore.instance
+            .collection('transactBooks')
+            .doc("$_selectedTimeStamp")
+            .set(newBookMap);
+
         ShowSnackBar(context, content: 'Book Created');
         FocusScope.of(context).unfocus();
         pageControllerGlobal.value.animateToPage(0,

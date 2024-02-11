@@ -12,8 +12,9 @@ class FirebaseRefs {
       _firestore.collection('users');
 
   static DocumentReference<Map<String, dynamic>> transactBookRef(
-      String bookId) {
-    return myRef.collection('transact_books').doc(bookId);
+    String bookId,
+  ) {
+    return _firestore.collection('transactBooks').doc(bookId);
   }
 
   static CollectionReference<Map<String, dynamic>> requestRef =

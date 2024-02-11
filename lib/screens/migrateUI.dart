@@ -78,6 +78,7 @@ class _MigrateUIState extends State<MigrateUI> {
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: FirebaseFirestore.instance
                   .collection('transactBooks')
+                  .where('uid', isEqualTo: FirebaseRefs.myRef)
                   .snapshots(),
               builder: (context, snapshot) {
                 return ListView.builder(

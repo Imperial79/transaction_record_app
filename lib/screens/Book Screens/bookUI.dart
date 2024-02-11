@@ -10,6 +10,7 @@ import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
+import 'package:transaction_record_app/services/user.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
@@ -540,10 +541,10 @@ class _BookUIState extends State<BookUI> {
     dateTitle = '';
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: firestore
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('transact_books')
-          .doc(widget.snap['bookId'])
+          // .collection('users')
+          // .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('transactBooks')
+          .doc("${widget.snap['bookId']}")
           .collection('transacts')
           .orderBy('ts', descending: true)
           .limit(bookListCounter)
@@ -791,7 +792,8 @@ class _BookUIState extends State<BookUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Visibility(
-              visible: transactData.uid == FirebaseRefs.myUID,
+              visible: transactData.uid != FirebaseRefs.myUID &&
+                  widget.snap['users'].length > 0,
               child: Padding(
                 padding: EdgeInsets.only(right: 10.0),
                 child: CircleAvatar(
@@ -963,6 +965,17 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
             ),
+            Visibility(
+              visible: transactData.uid == FirebaseRefs.myUID &&
+                  widget.snap['users'].length > 0,
+              child: Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: CircleAvatar(
+                  radius: sdp(context, 10),
+                  backgroundImage: NetworkImage(globalUser.imgUrl),
+                ),
+              ),
+            ),
           ],
         ),
       ],
@@ -1073,7 +1086,10 @@ class _BookUIState extends State<BookUI> {
                     elevation: 0,
                     isScrollControlled: true,
                     builder: (context) {
-                      return kRenameModal(widget.snap['bookName']);
+                      return kRenameModal(
+                        bookId: widget.snap['bookId'],
+                        oldBookName: widget.snap['bookName'],
+                      );
                     },
                   );
                 },

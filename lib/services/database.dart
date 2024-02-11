@@ -9,9 +9,7 @@ class DatabaseMethods {
   //  upload new transact book
   Future<void> createNewTransactBook(String bookId, newBookMap) async {
     return await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .doc(bookId)
         .set(newBookMap);
   }
@@ -26,9 +24,7 @@ class DatabaseMethods {
   updateTransacts(
       String bookId, transactId, Map<String, dynamic> transactMap) async {
     await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .doc(bookId)
         .collection('transacts')
         .doc(transactId)
@@ -36,11 +32,9 @@ class DatabaseMethods {
   }
 
   //Uploading transactions to database QUERY
-  uploadTransacts(uid, transactMap, bookId, transactId) async {
+  uploadTransacts(transactMap, bookId, transactId) async {
     await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection("transact_books")
+        .collection("transactBooks")
         .doc(bookId)
         .collection('transacts')
         .doc(transactId)
@@ -64,9 +58,7 @@ class DatabaseMethods {
   //  Update BOOK transactions
   updateBookTransactions(String bookId, Map<String, dynamic> newMap) async {
     return await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .doc(bookId)
         .update(newMap);
   }
@@ -81,12 +73,7 @@ class DatabaseMethods {
 
   //  Reset Book Income/Expense
   resetBookIncomeExpense(String bookId, uid, map) async {
-    return await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
-        .doc(bookId)
-        .update(map);
+    return await firestore.collection('transactBooks').doc(bookId).update(map);
   }
 
   //  Reset Book Income/Expense
@@ -97,9 +84,7 @@ class DatabaseMethods {
   //Delete one book
   _deleteBook(bookId) async {
     await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .where('bookId', isEqualTo: bookId)
         .limit(1)
         .get()
@@ -115,9 +100,7 @@ class DatabaseMethods {
   Future<String> deleteBookWithCollections(String bookId) async {
     try {
       await firestore
-          .collection('users')
-          .doc(globalUser.uid)
-          .collection('transact_books')
+          .collection('transactBooks')
           .doc(bookId)
           .collection('transacts')
           .limit(1)
@@ -129,9 +112,7 @@ class DatabaseMethods {
         } else {
           print('Collection ahead');
           await firestore
-              .collection('users')
-              .doc(globalUser.uid)
-              .collection('transact_books')
+              .collection('transactBooks')
               .doc(bookId)
               .collection('transacts')
               .get()
@@ -153,9 +134,7 @@ class DatabaseMethods {
   //Delete one transact
   deleteTransact(bookId, transactId) async {
     await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .doc(bookId)
         .collection('transacts')
         .where('transactId', isEqualTo: transactId)
@@ -173,9 +152,7 @@ class DatabaseMethods {
   //  clear all transacts
   deleteAllTransacts(String bookId) async {
     await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .collection('transact_books')
+        .collection('transactBooks')
         .doc(bookId)
         .collection('transacts')
         .get()
