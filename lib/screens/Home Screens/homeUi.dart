@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -113,7 +115,6 @@ class _HomeUiState extends State<HomeUi>
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            dateTitle = '';
                             DocumentSnapshot ds = snapshot.data.docs[index];
                             if (_searchController.text.isEmpty) {
                               return TransactBookCard(ds);
@@ -343,14 +344,16 @@ class _HomeUiState extends State<HomeUi>
   Widget TransactBookCard(ds) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
-    bool isCompleted = ds['expense'] != 0 && (ds['income'] == ds['expense']);
-
     if (dateTitle == ds['date']) {
       showDateWidget = false;
     } else {
       dateTitle = ds['date'];
       showDateWidget = true;
     }
+
+    // Change Card color -------------------->
+
+    bool isCompleted = ds['expense'] != 0 && (ds['income'] == ds['expense']);
 
     Color _kCardColor = cardColordark;
     if (isCompleted) {
@@ -377,9 +380,7 @@ class _HomeUiState extends State<HomeUi>
         ),
         OpenContainer(
           openBuilder: (context, closedContainer) {
-            return BookUI(
-              snap: ds,
-            );
+            return BookUI(snap: ds);
           },
           closedElevation: 0,
           closedShape: RoundedRectangleBorder(
@@ -393,7 +394,6 @@ class _HomeUiState extends State<HomeUi>
           closedBuilder: (context, openContainer) {
             return GestureDetector(
               onTap: () {
-                // NavPush(context, BookUI(snap: ds));
                 openContainer();
               },
               onLongPress: () {
