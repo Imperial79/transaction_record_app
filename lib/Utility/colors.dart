@@ -61,7 +61,7 @@ class KThemeData {
           elevation: 0,
           color: LightColors.card,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
         primaryColorLight: LightColors.profitCard,
@@ -88,7 +88,7 @@ class KThemeData {
           elevation: 0,
           color: DarkColors.card,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
         textTheme: TextTheme(

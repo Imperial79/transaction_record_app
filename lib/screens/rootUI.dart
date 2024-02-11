@@ -182,12 +182,6 @@ class _RootUIState extends State<RootUI> {
     );
   }
 
-  @override
-  void dispose() {
-    pageControllerGlobal.value.dispose();
-    super.dispose();
-  }
-
   TextButton _changeToPageButton(
     BuildContext context, {
     required int index,

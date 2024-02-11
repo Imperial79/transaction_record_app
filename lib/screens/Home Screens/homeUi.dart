@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,7 +46,6 @@ class _HomeUiState extends State<HomeUi>
   void initState() {
     super.initState();
     dateTitle = '';
-    print('home');
 
     _scrollFunction();
   }
@@ -108,7 +108,7 @@ class _HomeUiState extends State<HomeUi>
                                 ),
                               ),
                         height10,
-                        ListView.builder(
+                        ListView.separated(
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data.docs.length,
                           shrinkWrap: true,
@@ -131,6 +131,7 @@ class _HomeUiState extends State<HomeUi>
                               return Container();
                             }
                           },
+                          separatorBuilder: (context, index) => height10,
                         ),
                       ],
                     ),
@@ -374,162 +375,186 @@ class _HomeUiState extends State<HomeUi>
             ),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            NavPush(context, BookUI(snap: ds));
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              builder: (context) {
-                return bookOptionsModal(
-                  bookId: ds['bookId'],
-                  bookName: ds['bookName'],
-                );
-              },
+        OpenContainer(
+          openBuilder: (context, closedContainer) {
+            return BookUI(
+              snap: ds,
             );
           },
-          child: Container(
-            width: double.infinity,
-            margin: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: _kCardColor,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-              ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: sdp(context, 8.5),
-                    right: sdp(context, 8.5),
-                    top: sdp(context, 10),
-                    bottom: 10,
+          closedElevation: 0,
+          closedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          openElevation: 0,
+          transitionType: ContainerTransitionType.fadeThrough,
+          closedColor: isDark ? DarkColors.card : LightColors.card,
+          openColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
+          middleColor: isDark ? Colors.black : Colors.white,
+          closedBuilder: (context, openContainer) {
+            return GestureDetector(
+              onTap: () {
+                // NavPush(context, BookUI(snap: ds));
+                openContainer();
+              },
+              onLongPress: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  builder: (context) {
+                    return bookOptionsModal(
+                      bookId: ds['bookId'],
+                      bookName: ds['bookName'],
+                    );
+                  },
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: _kCardColor,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              ds['bookName'],
-                              style: TextStyle(
-                                fontSize: sdp(context, 15.5),
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? whiteColor : blackColor,
-                              ),
-                            ),
-                            Visibility(
-                              visible:
-                                  ds['bookDescription'].toString().isNotEmpty,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Row(
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: sdp(context, 8.5),
+                        right: sdp(context, 8.5),
+                        top: sdp(context, 10),
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  ds['bookName'],
+                                  style: TextStyle(
+                                    fontSize: sdp(context, 15.5),
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark ? whiteColor : blackColor,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: ds['bookDescription']
+                                      .toString()
+                                      .isNotEmpty,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.note,
+                                          color:
+                                              isDark ? whiteColor : blackColor,
+                                          size: sdp(context, 11),
+                                        ),
+                                        width5,
+                                        Text(
+                                          ds['bookDescription'],
+                                          style: TextStyle(
+                                            color: isDark
+                                                ? whiteColor
+                                                : blackColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                height5,
+                                Row(
                                   children: [
                                     Icon(
-                                      Icons.note,
+                                      Icons.schedule,
                                       color: isDark ? whiteColor : blackColor,
                                       size: sdp(context, 11),
                                     ),
                                     width5,
                                     Text(
-                                      ds['bookDescription'],
+                                      ds['date'] + ' at ' + ds['time'],
                                       style: TextStyle(
-                                        color: isDark ? whiteColor : blackColor,
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? greyColorAccent
+                                            : blackColor,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                            height5,
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.schedule,
-                                  color: isDark ? whiteColor : blackColor,
-                                  size: sdp(context, 11),
-                                ),
-                                width5,
-                                Text(
-                                  ds['date'] + ' at ' + ds['time'],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color:
-                                        isDark ? greyColorAccent : blackColor,
-                                  ),
-                                ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
+                      child: Row(
+                        children: [
+                          TransactStatsCard(
+                            crossAlign: CrossAxisAlignment.start,
+                            textColor: Colors.black,
+                            amount: "₹ " + oCcy.format(ds['income']),
+                            label: 'Income',
+                            cardColor: isDark
+                                ? Colors.lightGreen
+                                : Color.fromARGB(255, 181, 255, 183),
+                            amountColor: isDark
+                                ? Colors.lightGreenAccent
+                                : Colors.lightGreen.shade900,
+                          ),
+                          Text(
+                            ' - ',
+                            style: TextStyle(
+                              fontSize: sdp(context, 20),
+                              color: isDark ? whiteColor : blackColor,
+                            ),
+                          ),
+                          TransactStatsCard(
+                            crossAlign: CrossAxisAlignment.center,
+                            amount: "₹ " + oCcy.format(ds['expense']),
+                            label: 'Expense',
+                            cardColor:
+                                isDark ? Colors.black : Colors.grey.shade300,
+                            textColor: isDark ? Colors.white : Colors.black,
+                            amountColor: isDark ? Colors.white : Colors.black,
+                          ),
+                          Text(
+                            ' = ',
+                            style: TextStyle(
+                              fontSize: sdp(context, 15),
+                              color: isDark ? whiteColor : blackColor,
+                            ),
+                          ),
+                          TransactStatsCard(
+                            crossAlign: CrossAxisAlignment.end,
+                            label: 'Current',
+                            amount: "₹ " +
+                                oCcy.format(ds['income'] - ds['expense']),
+                            cardColor: isDark
+                                ? Colors.blue.shade200
+                                : Color.fromARGB(255, 197, 226, 250),
+                            textColor: Colors.blue.shade900,
+                            amountColor: isDark
+                                ? Colors.blue.shade100
+                                : Colors.blue.shade900,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
-                  child: Row(
-                    children: [
-                      TransactStatsCard(
-                        crossAlign: CrossAxisAlignment.start,
-                        textColor: Colors.black,
-                        amount: "₹ " + oCcy.format(ds['income']),
-                        label: 'Income',
-                        cardColor: isDark
-                            ? Colors.lightGreen
-                            : Color.fromARGB(255, 181, 255, 183),
-                        amountColor: isDark
-                            ? Colors.lightGreenAccent
-                            : Colors.lightGreen.shade900,
-                      ),
-                      Text(
-                        ' - ',
-                        style: TextStyle(
-                          fontSize: sdp(context, 20),
-                          color: isDark ? whiteColor : blackColor,
-                        ),
-                      ),
-                      TransactStatsCard(
-                        crossAlign: CrossAxisAlignment.center,
-                        amount: "₹ " + oCcy.format(ds['expense']),
-                        label: 'Expense',
-                        cardColor: isDark ? Colors.black : Colors.grey.shade300,
-                        textColor: isDark ? Colors.white : Colors.black,
-                        amountColor: isDark ? Colors.white : Colors.black,
-                      ),
-                      Text(
-                        ' = ',
-                        style: TextStyle(
-                          fontSize: sdp(context, 15),
-                          color: isDark ? whiteColor : blackColor,
-                        ),
-                      ),
-                      TransactStatsCard(
-                        crossAlign: CrossAxisAlignment.end,
-                        label: 'Current',
-                        amount:
-                            "₹ " + oCcy.format(ds['income'] - ds['expense']),
-                        cardColor: isDark
-                            ? Colors.blue.shade200
-                            : Color.fromARGB(255, 197, 226, 250),
-                        textColor: Colors.blue.shade900,
-                        amountColor: isDark
-                            ? Colors.blue.shade100
-                            : Colors.blue.shade900,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ],
     );
