@@ -78,7 +78,7 @@ class _HomeUiState extends State<HomeUi>
             Filter.or(
               Filter(
                 'users',
-                arrayContains: [FirebaseRefs.myUID],
+                arrayContains: FirebaseRefs.myUID,
               ),
               Filter('uid', isEqualTo: FirebaseRefs.myUID),
             ),
@@ -86,6 +86,7 @@ class _HomeUiState extends State<HomeUi>
           .orderBy('bookId', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
+        dateTitle = '';
         return (snapshot.hasData)
             ? (snapshot.data!.docs.length == 0)
                 ? NewBookCard(context)
@@ -121,7 +122,6 @@ class _HomeUiState extends State<HomeUi>
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            dateTitle = '';
                             Map<String, dynamic> ds =
                                 snapshot.data!.docs[index].data();
                             if (_searchController.text.isEmpty) {

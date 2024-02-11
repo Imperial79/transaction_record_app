@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -789,17 +790,33 @@ class _BookUIState extends State<BookUI> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Visibility(
-              visible: transactData.uid != FirebaseRefs.myUID &&
-                  widget.snap.containsKey('users') &&
-                  widget.snap['users'].length > 0,
-              child: Padding(
-                padding: EdgeInsets.only(right: 10.0),
-                child: CircleAvatar(
-                  radius: sdp(context, 10),
-                ),
-              ),
-            ),
+            transactData.uid != FirebaseRefs.myUID &&
+                    widget.snap.containsKey('users') &&
+                    widget.snap['users'].length > 0
+                ? Padding(
+                    padding: EdgeInsets.only(right: 10.0),
+                    child:
+                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(transactData.uid)
+                          .get(GetOptions(source: Source.serverAndCache)),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return CircleAvatar(
+                            radius: sdp(context, 10),
+                            backgroundImage:
+                                NetworkImage(snapshot.data!.data()!['imgUrl']),
+                          );
+                        }
+
+                        return CircleAvatar(
+                          radius: sdp(context, 10),
+                        );
+                      },
+                    ),
+                  )
+                : SizedBox.shrink(),
             Flexible(
               child: GestureDetector(
                 onTap: () {
