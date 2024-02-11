@@ -541,10 +541,8 @@ class _BookUIState extends State<BookUI> {
     dateTitle = '';
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: firestore
-          // .collection('users')
-          // .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('transactBooks')
-          .doc("${widget.snap['bookId']}")
+          .doc(bookId)
           .collection('transacts')
           .orderBy('ts', descending: true)
           .limit(bookListCounter)
@@ -793,6 +791,7 @@ class _BookUIState extends State<BookUI> {
           children: [
             Visibility(
               visible: transactData.uid != FirebaseRefs.myUID &&
+                  widget.snap.containsKey('users') &&
                   widget.snap['users'].length > 0,
               child: Padding(
                 padding: EdgeInsets.only(right: 10.0),
@@ -967,6 +966,7 @@ class _BookUIState extends State<BookUI> {
             ),
             Visibility(
               visible: transactData.uid == FirebaseRefs.myUID &&
+                  widget.snap.containsKey('users') &&
                   widget.snap['users'].length > 0,
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),

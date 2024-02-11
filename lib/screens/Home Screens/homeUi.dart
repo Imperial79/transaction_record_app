@@ -113,6 +113,7 @@ class _HomeUiState extends State<HomeUi>
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
+                            dateTitle = '';
                             Map<String, dynamic> ds =
                                 snapshot.data!.docs[index].data();
                             if (_searchController.text.isEmpty) {
@@ -189,9 +190,7 @@ class _HomeUiState extends State<HomeUi>
                       child: showFullAppBar
                           ? Column(
                               children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                height10,
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 20),
                                   child: Row(

@@ -113,9 +113,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                           },
                           icon: Icon(
                             Icons.logout,
-                            color: isDark
-                                ? Colors.red.shade300
-                                : Colors.red.shade900,
+                            color: isDark ? Colors.white : Colors.red.shade900,
                           ),
                         ),
                         btnColor: isDark
