@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -52,44 +55,11 @@ class _NewBookUIState extends State<NewBookUI> {
         FocusScope.of(context).unfocus();
         pageControllerGlobal.value.animateToPage(0,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
-        // Navigator.pop(context);
       }
     } catch (e) {
       ShowSnackBar(context, content: "$e", isDanger: true);
     }
   }
-
-  ///     Code for updating attributes in one click ------------>
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   log('init');
-
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(UserDetails.uid)
-  //       .collection('transact_books')
-  //       .get()
-  //       .then((value) {
-  //     List<String> bookIds = [];
-  //     value.docs.forEach((element) {
-  //       bookIds.add(element.get('bookId'));
-  //       String currBookId = element.get('bookId');
-
-  //       FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(UserDetails.uid)
-  //           .collection('transact_books')
-  //           .doc(currBookId)
-  //           .update({'type': 'regular'}).then((value) {
-  //         print("updated");
-  //       });
-  //     });
-
-  //     // log(bookIds.toString());
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +137,6 @@ class _NewBookUIState extends State<NewBookUI> {
                                     ? DarkColors.primaryButton
                                     : LightColors.primaryButton,
                                 style: TextStyle(
-                                  // color: isDark ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 decoration: InputDecoration(
@@ -214,9 +183,7 @@ class _NewBookUIState extends State<NewBookUI> {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
+                            height10,
                             Row(
                               children: [
                                 Expanded(

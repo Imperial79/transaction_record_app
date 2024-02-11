@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
@@ -46,16 +47,16 @@ class _EditTransactUIState extends State<EditTransactUI> {
   void initState() {
     super.initState();
     // title.text = widget.snap['title'];
-    amountField.text = widget.trData.amount!;
+    amountField.text = widget.trData.amount;
     descriptionField.text = widget.trData.description!;
-    sourceField.text = widget.trData.source!;
-    _selectedDateMap['displayDate'] = widget.trData.date!;
-    _selectedDateMap['tsDate'] = widget.trData.ts!;
-    _selectedTimeMap['displayTime'] = widget.trData.time!;
-    _selectedTimeStamp = widget.trData.ts!;
-    transactId = widget.trData.transactId!;
-    transactType = widget.trData.type!;
-    transactMode = widget.trData.transactMode!;
+    sourceField.text = widget.trData.source;
+    _selectedDateMap['displayDate'] = widget.trData.date;
+    _selectedDateMap['tsDate'] = widget.trData.ts;
+    _selectedTimeMap['displayTime'] = widget.trData.time;
+    _selectedTimeStamp = widget.trData.ts;
+    transactId = widget.trData.transactId;
+    transactType = widget.trData.type;
+    transactMode = widget.trData.transactMode;
     setState(() {});
   }
 
@@ -65,34 +66,34 @@ class _EditTransactUIState extends State<EditTransactUI> {
       //  If newType is INCOME
       //--------------------------------------------
 
-      double _oldAmount = double.parse(widget.trData.amount!);
+      double _oldAmount = double.parse(widget.trData.amount);
       double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.trData.type!;
+      String _oldType = widget.trData.type;
 
       //--------------------------------------------
 
       if (_oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.trData.bookId!,
+        databaseMethods.updateBookTransactions(widget.trData.bookId,
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.trData.bookId!,
+        databaseMethods.updateBookTransactions(widget.trData.bookId,
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     } else {
       //  If newType is Expense ---------------->
 
-      double _oldAmount = double.parse(widget.trData.amount!);
+      double _oldAmount = double.parse(widget.trData.amount);
       double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.trData.type!;
+      String _oldType = widget.trData.type;
 
       //--------------------------------------------
       if (_oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.trData.bookId!,
+        databaseMethods.updateBookTransactions(widget.trData.bookId,
             {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.trData.bookId!,
+        databaseMethods.updateBookTransactions(widget.trData.bookId,
             {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
       }
     }
@@ -100,14 +101,15 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   updateTransacts() async {
     if (amountField.text != '') {
-      if (widget.trData.date! != _selectedDateMap['displayDate'] ||
-          widget.trData.time! != _selectedTimeMap['displayTime']) {
+      if (widget.trData.date != _selectedDateMap['displayDate'] ||
+          widget.trData.time != _selectedTimeMap['displayTime']) {
         _selectedTimeStamp = await convertTimeToTS(
             _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
       }
 
       Transact updatedTransact = Transact(
-        transactId: widget.trData.transactId!,
+        uid: FirebaseRefs.myUID,
+        transactId: widget.trData.transactId,
         amount: amountField.text,
         source: sourceField.text,
         transactMode: transactMode,
@@ -115,13 +117,13 @@ class _EditTransactUIState extends State<EditTransactUI> {
         type: transactType,
         date: _selectedDateMap['displayDate'],
         time: _selectedTimeMap['displayTime'],
-        bookId: widget.trData.bookId!,
+        bookId: widget.trData.bookId,
         ts: _selectedTimeStamp,
       );
 
       databaseMethods.updateTransacts(
-        widget.trData.bookId!,
-        widget.trData.transactId!,
+        widget.trData.bookId,
+        widget.trData.transactId,
         updatedTransact.toMap(),
       );
 
@@ -199,23 +201,23 @@ class _EditTransactUIState extends State<EditTransactUI> {
       _isLoading = true;
     });
     await DatabaseMethods()
-        .deleteTransact(widget.trData.bookId!, widget.trData.transactId!);
+        .deleteTransact(widget.trData.bookId, widget.trData.transactId);
     if (transactType == 'Income') {
       Map<String, dynamic> _updatedMap = {
         'income':
-            FieldValue.increment(0.0 - double.parse(widget.trData.amount!)),
+            FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
       };
       await DatabaseMethods().updateBookTransactions(
-        widget.trData.bookId!,
+        widget.trData.bookId,
         _updatedMap,
       );
     } else {
       Map<String, dynamic> _updatedMap = {
         'expense':
-            FieldValue.increment(0.0 - double.parse(widget.trData.amount!)),
+            FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
       };
       await DatabaseMethods().updateBookTransactions(
-        widget.trData.bookId!,
+        widget.trData.bookId,
         _updatedMap,
       );
     }
@@ -278,7 +280,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: widget.trData.type! == 'Income'
+                              color: widget.trData.type == 'Income'
                                   ? lightProfitColorAccent.withOpacity(0.3)
                                   : isDark
                                       ? Colors.grey.shade600
@@ -289,10 +291,10 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           ],
                         ),
                         child: TransactTypeCard(
-                          icon: widget.trData.type! == 'Income'
+                          icon: widget.trData.type == 'Income'
                               ? Icons.file_download_outlined
                               : Icons.file_upload_outlined,
-                          label: widget.trData.type!,
+                          label: widget.trData.type,
                         ),
                       ),
                     ],
@@ -384,7 +386,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                         _selectedDateMap = await selectDate(
                                             context,
                                             setState,
-                                            DateTime.parse(widget.trData.ts!));
+                                            DateTime.parse(widget.trData.ts));
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(10),

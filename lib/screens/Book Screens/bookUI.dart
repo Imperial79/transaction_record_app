@@ -538,7 +538,7 @@ class _BookUIState extends State<BookUI> {
     int dataCounter = 0;
     int loopCounter = 0;
     dateTitle = '';
-    return StreamBuilder<dynamic>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: firestore
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -556,49 +556,49 @@ class _BookUIState extends State<BookUI> {
           switchInCurve: Curves.easeIn,
           switchOutCurve: Curves.easeOut,
           child: snapshot.hasData
-              ? snapshot.data.docs.length > 0
+              ? snapshot.data!.docs.length > 0
                   ? ListView.builder(
                       physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         loopCounter += 1;
-                        Transact currTransact = Transact.fromDocumentSnap(
-                            snapshot.data.docs[index]);
+                        Transact transactData =
+                            Transact.fromMap(snapshot.data!.docs[index].data());
                         final searchKey =
                             _searchController.text.toLowerCase().trim();
                         if (_selectedSortType == 'All') {
                           if (_searchController.text.isEmpty) {
                             dataCounter++;
-                            return TransactTile(currTransact);
-                          } else if (currTransact.amount!.contains(searchKey) ||
-                              currTransact.description!
+                            return TransactTile(transactData);
+                          } else if (transactData.amount.contains(searchKey) ||
+                              transactData.description!
                                   .toLowerCase()
                                   .contains(searchKey) ||
-                              currTransact.source!
+                              transactData.source
                                   .toLowerCase()
                                   .contains(searchKey)) {
                             dataCounter++;
-                            return TransactTile(currTransact);
+                            return TransactTile(transactData);
                           }
-                        } else if (currTransact.type!.toLowerCase() ==
+                        } else if (transactData.type.toLowerCase() ==
                             _selectedSortType.toLowerCase()) {
                           dataCounter++;
-                          if (_searchController.text.isEmpty) {
-                            return TransactTile(currTransact);
-                          } else if (currTransact.amount!.contains(searchKey) ||
-                              currTransact.description!
+                          if (searchKey.isEmpty) {
+                            return TransactTile(transactData);
+                          } else if (transactData.amount.contains(searchKey) ||
+                              transactData.description!
                                   .toLowerCase()
                                   .contains(searchKey) ||
-                              currTransact.source!
+                              transactData.source
                                   .toLowerCase()
                                   .contains(searchKey)) {
                             dataCounter++;
-                            return TransactTile(currTransact);
+                            return TransactTile(transactData);
                           }
                         }
                         if (dataCounter == 0 &&
-                            loopCounter == snapshot.data.docs.length) {
+                            loopCounter == snapshot.data!.docs.length) {
                           return Text(
                             'No Item Found',
                             style: TextStyle(
@@ -750,17 +750,17 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Widget TransactTile(Transact data) {
-    bool isIncome = data.type == 'Income';
+  Widget TransactTile(Transact transactData) {
+    bool isIncome = transactData.type == 'Income';
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == data.date) {
+    if (dateTitle == transactData.date) {
       showDateWidget = false;
     } else {
-      dateTitle = data.date!;
+      dateTitle = transactData.date;
       showDateWidget = true;
     }
-    String ts = DateFormat("yMMMMd").parse(data.date!).toString();
+    String ts = DateFormat("yMMMMd").parse(transactData.date).toString();
 
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
@@ -787,166 +787,183 @@ class _BookUIState extends State<BookUI> {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            NavPush(context, EditTransactUI(trData: data));
-          },
-          child: Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Container(
-              padding: EdgeInsets.all(10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark ? Color(0xFF333333) : cardColorlight,
-                borderRadius: BorderRadius.circular(20),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Visibility(
+              visible: transactData.uid == FirebaseRefs.myUID,
+              child: Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                child: CircleAvatar(
+                  radius: sdp(context, 10),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
+            ),
+            Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  NavPush(context, EditTransactUI(trData: transactData));
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isDark ? Color(0xFF333333) : cardColorlight,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  height: sdp(context, 30),
-                                  width: sdp(context, 30),
-                                  decoration: BoxDecoration(
-                                    color: isIncome
-                                        ? darkProfitColorAccent
-                                        : kLossColorAccent,
-                                    border: !isDark
-                                        ? Border.all(
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        height: sdp(context, 30),
+                                        width: sdp(context, 30),
+                                        decoration: BoxDecoration(
+                                          color: isIncome
+                                              ? darkProfitColorAccent
+                                              : kLossColorAccent,
+                                          border: !isDark
+                                              ? Border.all(
+                                                  color: isIncome
+                                                      ? kProfitColor
+                                                      : lossColor,
+                                                )
+                                              : null,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            isDark
+                                                ? BoxShadow(
+                                                    color: isIncome
+                                                        ? darkProfitColorAccent
+                                                            .withOpacity(0.5)
+                                                        : lossColor
+                                                            .withOpacity(0.5),
+                                                    blurRadius: 30,
+                                                    spreadRadius: 1,
+                                                  )
+                                                : BoxShadow(),
+                                          ],
+                                        ),
+                                        child: FittedBox(
+                                          child: Icon(
+                                            isIncome
+                                                ? Icons.file_download_outlined
+                                                : Icons.file_upload_outlined,
                                             color: isIncome
-                                                ? kProfitColor
-                                                : lossColor,
-                                          )
-                                        : null,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      isDark
-                                          ? BoxShadow(
-                                              color: isIncome
-                                                  ? darkProfitColorAccent
-                                                      .withOpacity(0.5)
-                                                  : lossColor.withOpacity(0.5),
-                                              blurRadius: 30,
-                                              spreadRadius: 1,
-                                            )
-                                          : BoxShadow(),
-                                    ],
-                                  ),
-                                  child: FittedBox(
-                                    child: Icon(
-                                      isIncome
-                                          ? Icons.file_download_outlined
-                                          : Icons.file_upload_outlined,
-                                      color: isIncome
-                                          ? Colors.black
-                                          : Colors.white,
-                                      size: 17,
-                                    ),
-                                  ),
-                                ),
-                                width10,
-                                Expanded(
-                                  child: Text.rich(
-                                    TextSpan(
-                                      text: oCcy
-                                          .format(double.parse(data.amount!)),
-                                      style: TextStyle(
-                                        fontFamily: "Product",
-                                        fontSize: sdp(context, 16),
-                                        fontWeight: FontWeight.w800,
-                                        color: isIncome
-                                            ? isDark
-                                                ? kProfitColorAccent
-                                                : kProfitColor
-                                            : isDark
-                                                ? Color(0xFFFFC1C1)
-                                                : lossColor,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: " INR",
-                                          style: TextStyle(
-                                            fontSize: sdp(context, 10),
-                                            fontWeight: FontWeight.w400,
+                                                ? Colors.black
+                                                : Colors.white,
+                                            size: 17,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      width10,
+                                      Expanded(
+                                        child: Text.rich(
+                                          TextSpan(
+                                            text: oCcy.format(double.parse(
+                                                transactData.amount)),
+                                            style: TextStyle(
+                                              fontFamily: "Product",
+                                              fontSize: sdp(context, 16),
+                                              fontWeight: FontWeight.w800,
+                                              color: isIncome
+                                                  ? isDark
+                                                      ? kProfitColorAccent
+                                                      : kProfitColor
+                                                  : isDark
+                                                      ? Color(0xFFFFC1C1)
+                                                      : lossColor,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: " INR",
+                                                style: TextStyle(
+                                                  fontSize: sdp(context, 10),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  height10,
+                                  StatsRow(
+                                    color: Colors.amber.shade900,
+                                    content: transactData.source,
+                                    icon: Icons.person,
+                                  ),
+                                  StatsRow(
+                                    color: Colors.blue,
+                                    content: transactData.description!,
+                                    icon: Icons.short_text_rounded,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            RotatedBox(
+                              quarterTurns: 45,
+                              child: Text(
+                                transactData.transactMode,
+                                style: TextStyle(
+                                  letterSpacing: 10,
+                                  fontWeight: FontWeight.w900,
+                                  color: transactData.transactMode == 'CASH'
+                                      ? isDark
+                                          ? Colors.grey
+                                          : Colors.lightGreen.shade600
+                                      : isDark
+                                          ? Color(0xFF9DC4FF)
+                                          : Colors.blue.shade700,
                                 ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            StatsRow(
-                              color: Colors.amber.shade900,
-                              content: data.source!,
-                              icon: Icons.person,
-                            ),
-                            StatsRow(
-                              color: Colors.blue,
-                              content: data.description!,
-                              icon: Icons.short_text_rounded,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      RotatedBox(
-                        quarterTurns: 45,
-                        child: Text(
-                          data.transactMode!,
-                          style: TextStyle(
-                            letterSpacing: 10,
-                            fontWeight: FontWeight.w900,
-                            color: data.transactMode! == 'CASH'
-                                ? isDark
-                                    ? Colors.grey
-                                    : Colors.lightGreen.shade600
-                                : isDark
-                                    ? Color(0xFF9DC4FF)
-                                    : Colors.blue.shade700,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.schedule,
+                              color: isDark ? whiteColor : darkGreyColor,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              transactData.time.toString(),
+                              style: TextStyle(
+                                color: isDark ? whiteColor : darkGreyColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        color: isDark ? whiteColor : darkGreyColor,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        data.time.toString(),
-                        style: TextStyle(
-                          color: isDark ? whiteColor : darkGreyColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ],
     );

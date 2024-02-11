@@ -12,6 +12,7 @@ import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
+import 'package:transaction_record_app/screens/migrateUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 ValueNotifier<PageController> pageControllerGlobal =
@@ -95,6 +96,11 @@ class _RootUIState extends State<RootUI> {
                     ),
                   ),
                 ),
+                IconButton(
+                    onPressed: () {
+                      NavPush(context, MigrateUI());
+                    },
+                    icon: Icon(Icons.refresh)),
                 IconButton(
                   onPressed: () {
                     setState(() {

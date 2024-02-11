@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -80,6 +81,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
           amountField.text.replaceAll(' ', '').replaceAll(',', '');
 
       Transact newTransact = Transact(
+        uid: FirebaseRefs.myUID,
         transactId: transactId,
         amount: _uploadableAmount,
         source: sourceField.text,
