@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
+import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import '../../Functions/navigatorFns.dart';
@@ -144,81 +143,92 @@ class _BookUIState extends State<BookUI> {
                   alignment: Alignment.topCenter,
                   curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
-                      valueListenable: _showAdd,
-                      builder: (BuildContext context, bool showFullAppBar,
-                          Widget? child) {
-                        return Container(
-                          child: showFullAppBar
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _showBookMenu.value =
-                                                !_showBookMenu.value;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                widget.snap['bookName'],
-                                                style: TextStyle(
-                                                  fontSize: sdp(context, 15),
-                                                  color: isDark
-                                                      ? whiteColor
-                                                      : blackColor,
-                                                ),
-                                              ),
-                                            ),
-                                            Icon(
-                                              !_showBookMenu.value
-                                                  ? Icons
-                                                      .keyboard_arrow_down_rounded
-                                                  : Icons
-                                                      .keyboard_arrow_up_rounded,
+                    valueListenable: _showAdd,
+                    builder: (BuildContext context, bool showFullAppBar,
+                        Widget? child) {
+                      return Container(
+                        child: showFullAppBar
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            widget.snap['bookName'],
+                                            style: TextStyle(
+                                              fontSize: sdp(context, 15),
                                               color: isDark
-                                                  ? Colors.grey
+                                                  ? whiteColor
                                                   : blackColor,
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                        width10,
+                                        CircleAvatar(
+                                          radius: sdp(context, 10),
+                                          backgroundColor: isDark
+                                              ? cardColordark
+                                              : Colors.grey.shade200,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _showBookMenu.value =
+                                                    !_showBookMenu.value;
+                                              });
+                                            },
+                                            icon: FittedBox(
+                                              child: Icon(
+                                                _showBookMenu.value
+                                                    ? Icons
+                                                        .keyboard_arrow_up_rounded
+                                                    : Icons
+                                                        .keyboard_arrow_down_rounded,
+                                                size: sdp(context, 10),
+                                                color: isDark
+                                                    ? whiteColor
+                                                    : blackColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
 
-                                    //  Book Menu -------------------------->
-
-                                    AnimatedSize(
-                                      reverseDuration:
-                                          Duration(milliseconds: 300),
-                                      duration: Duration(milliseconds: 300),
-                                      alignment: Alignment.topCenter,
-                                      curve: Curves.ease,
-                                      child: ValueListenableBuilder<bool>(
-                                        valueListenable: _showBookMenu,
-                                        builder: (BuildContext context,
-                                            bool showBookMenu, Widget? child) {
-                                          return showBookMenu
-                                              ? BookMenu(
-                                                  widget.snap['bookId'],
-                                                  context,
-                                                )
-                                              : Container();
-                                        },
-                                      ),
+                                  //  Book Menu -------------------------->
+                                  height10,
+                                  AnimatedSize(
+                                    reverseDuration:
+                                        Duration(milliseconds: 300),
+                                    duration: Duration(milliseconds: 300),
+                                    alignment: Alignment.topCenter,
+                                    curve: Curves.ease,
+                                    child: ValueListenableBuilder<bool>(
+                                      valueListenable: _showBookMenu,
+                                      builder: (BuildContext context,
+                                          bool showBookMenu, Widget? child) {
+                                        return showBookMenu
+                                            ? BookMenu(
+                                                widget.snap['bookId'],
+                                                context,
+                                              )
+                                            : Container();
+                                      },
                                     ),
-                                  ],
-                                )
-                              : Container(),
-                        );
-                      }),
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                      );
+                    },
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
@@ -1132,9 +1142,7 @@ class _BookUIState extends State<BookUI> {
                 label: 'Add User(s)',
                 iconSize: sdp(context, 12),
                 icon: Icons.person_add_alt_1,
-                btnColor: isDark
-                    ? Color.fromARGB(255, 20, 215, 192)
-                    : const Color.fromARGB(255, 39, 87, 109),
+                btnColor: isDark ? DarkColors.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
             ],
@@ -1155,12 +1163,12 @@ class _BookUIState extends State<BookUI> {
     selectedUsers = [];
     bool isSelecting = false;
 
-    void onSelect(setState, ds) {
+    void onSelect(setState, String uid) {
       setState(() {
-        if (!selectedUsers.contains(ds['uid'])) {
-          selectedUsers.add(ds['uid']);
+        if (!selectedUsers.contains(uid)) {
+          selectedUsers.add(uid);
         } else {
-          selectedUsers.remove(ds['uid']);
+          selectedUsers.remove(uid);
         }
       });
 
@@ -1202,33 +1210,36 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
               height20,
-              FutureBuilder<dynamic>(
+              FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 future: FirebaseRefs.userRef
                     .where('uid', isNotEqualTo: FirebaseRefs.myUID)
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data.docs.length == 0) {
+                    if (snapshot.data!.docs.length == 0) {
                       return Text('No Users');
                     }
                     return Flexible(
                       child: ListView.builder(
-                        itemCount: snapshot.data.docs.length,
+                        itemCount: snapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          final ds = snapshot.data.docs[index];
-                          if (ds['name']
+                          // Map<String, dynamic> ds =
+                          //     snapshot.data!.docs[index].data();
+                          KUser userData =
+                              KUser.fromMap(snapshot.data!.docs[index].data());
+                          if (userData.name
                                   .toString()
                                   .contains(_searchUser.text) ||
-                              ds['username']
+                              userData.username
                                   .toString()
                                   .contains(_searchUser.text)) {
                             return _userTile(
-                              ds,
+                              userData,
                               isSelecting,
                               isDark,
                               onTap: () {
-                                onSelect(setState, ds);
+                                onSelect(setState, userData.uid);
                               },
                             );
                           }
@@ -1281,44 +1292,51 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Padding _userTile(ds, bool isSelecting, bool isDark,
-      {void Function()? onTap}) {
+  Padding _userTile(
+    // Map<String, dynamic> userData,
+    KUser userData,
+    bool isSelecting,
+    bool isDark, {
+    void Function()? onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: selectedUsers.contains(ds['uid'])
-                  ? isDark
-                      ? DarkColors.profitCard.withOpacity(.2)
-                      : LightColors.profitCard
-                  : Colors.transparent,
-            ),
-            padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                selectedUsers.contains(ds['uid'])
-                    ? CircleAvatar(
-                        child: Icon(Icons.done),
-                      )
-                    : CircleAvatar(
-                        backgroundImage: NetworkImage(ds['imgUrl']),
-                      ),
-                width20,
-                Expanded(
-                    child: Column(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: selectedUsers.contains(userData.uid)
+                ? isDark
+                    ? DarkColors.profitCard.withOpacity(.6)
+                    : LightColors.profitCard
+                : Colors.transparent,
+          ),
+          padding: EdgeInsets.all(10),
+          child: Row(
+            children: [
+              selectedUsers.contains(userData.uid)
+                  ? CircleAvatar(
+                      child: Icon(Icons.done),
+                    )
+                  : CircleAvatar(
+                      backgroundImage: NetworkImage(userData.imgUrl),
+                    ),
+              width20,
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("${ds['name']}"),
-                    Text("${ds['username']}"),
+                    Text(userData.name),
+                    Text(userData.username),
                   ],
-                ))
-              ],
-            ),
-          )),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

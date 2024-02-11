@@ -1,7 +1,4 @@
 import 'dart:developer';
-
-import 'package:animations/animations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -13,7 +10,7 @@ import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/main.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUi.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';

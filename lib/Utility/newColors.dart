@@ -18,7 +18,7 @@ class DarkColors {
   static final Color text = Colors.white;
   static final Color profitText = Colors.lightGreen.shade200;
   static final Color lossText = Colors.red.shade100;
-  static final Color profitCard = Colors.teal.shade700;
+  static final Color profitCard = Colors.teal.shade900;
   static final Color lossCard = Color(0xFF98402E);
   static final Color primaryButton = Color(0xff98d3cb);
   static final Color fadeText = Colors.grey;

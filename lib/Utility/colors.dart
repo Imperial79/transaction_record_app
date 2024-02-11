@@ -60,6 +60,7 @@ class KThemeData {
         cardTheme: CardTheme(
           elevation: 0,
           color: LightColors.card,
+          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -87,6 +88,7 @@ class KThemeData {
         cardTheme: CardTheme(
           elevation: 0,
           color: DarkColors.card,
+          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

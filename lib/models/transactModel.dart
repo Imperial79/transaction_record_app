@@ -12,17 +12,18 @@ class Transact {
   String? bookId;
   String? ts;
 
-  Transact(
-      {this.amount,
-      this.bookId,
-      this.date,
-      this.description,
-      this.source,
-      this.time,
-      this.transactId,
-      this.transactMode,
-      this.ts,
-      this.type});
+  Transact({
+    this.amount,
+    this.bookId,
+    this.date,
+    this.description,
+    this.source,
+    this.time,
+    this.transactId,
+    this.transactMode,
+    this.ts,
+    this.type,
+  });
 
   factory Transact.fromMap(Map<String, dynamic> map) {
     return Transact(
