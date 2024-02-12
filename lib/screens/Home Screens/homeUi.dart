@@ -278,25 +278,26 @@ class _HomeUiState extends State<HomeUi>
                                           ],
                                         ),
                                       ),
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: isDark
-                                            ? cardColordark
-                                            : Colors.grey.shade200,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _showHomeMenu.value =
-                                                  !_showHomeMenu.value;
-                                            });
-                                          },
-                                          icon: Icon(
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _showHomeMenu.value =
+                                                !_showHomeMenu.value;
+                                          });
+                                        },
+                                        borderRadius: kRadius(100),
+                                        child: CircleAvatar(
+                                          radius: sdp(context, 14),
+                                          backgroundColor: isDark
+                                              ? cardColordark
+                                              : Colors.grey.shade200,
+                                          child: Icon(
                                             _showHomeMenu.value
                                                 ? Icons
                                                     .keyboard_arrow_up_rounded
                                                 : Icons
                                                     .keyboard_arrow_down_rounded,
-                                            size: 17,
+                                            size: sdp(context, 15),
                                             color: isDark
                                                 ? whiteColor
                                                 : blackColor,

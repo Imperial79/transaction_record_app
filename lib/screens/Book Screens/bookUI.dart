@@ -173,26 +173,27 @@ class _BookUIState extends State<BookUI> {
                                           ),
                                         ),
                                         width10,
-                                        CircleAvatar(
-                                          radius: sdp(context, 10),
-                                          backgroundColor: isDark
-                                              ? cardColordark
-                                              : Colors.grey.shade200,
-                                          child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _showBookMenu.value =
-                                                    !_showBookMenu.value;
-                                              });
-                                            },
-                                            icon: FittedBox(
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _showBookMenu.value =
+                                                  !_showBookMenu.value;
+                                            });
+                                          },
+                                          borderRadius: kRadius(100),
+                                          child: CircleAvatar(
+                                            radius: sdp(context, 10),
+                                            backgroundColor: isDark
+                                                ? cardColordark
+                                                : Colors.grey.shade200,
+                                            child: FittedBox(
                                               child: Icon(
                                                 _showBookMenu.value
                                                     ? Icons
                                                         .keyboard_arrow_up_rounded
                                                     : Icons
                                                         .keyboard_arrow_down_rounded,
-                                                size: sdp(context, 10),
+                                                size: sdp(context, 15),
                                                 color: isDark
                                                     ? whiteColor
                                                     : blackColor,

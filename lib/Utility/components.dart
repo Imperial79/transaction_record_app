@@ -24,6 +24,8 @@ Widget get width10 => SizedBox(width: 10);
 Widget get width15 => SizedBox(width: 15);
 Widget get width20 => SizedBox(width: 20);
 
+BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
+
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
     margin: EdgeInsets.only(top: 0),
