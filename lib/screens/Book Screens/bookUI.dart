@@ -75,7 +75,6 @@ class _BookUIState extends State<BookUI> {
 
       groupMembers.addAll(value.data()!['users']);
       groupMembers.add(value.data()!['uid']);
-      log("mems-> $groupMembers");
 
       Map<String, double> expenseMap = Map.fromIterable(
         groupMembers,
@@ -83,10 +82,10 @@ class _BookUIState extends State<BookUI> {
         value: (_) => 0.0,
       );
       double totalExpense = value.data()!['expense'];
-      log(expenseMap.toString());
+
       await FirebaseRefs.transactsRef(widget.snap['bookId'])
           .get()
-          .then((snapshot) {
+          .then((snapshot) async {
         snapshot.docs.forEach((element) {
           final transact = element.data();
 
@@ -102,14 +101,88 @@ class _BookUIState extends State<BookUI> {
             }
           }
         });
+        double perHead = totalExpense / groupMembers.length;
 
-        log("Total Expense->>> $totalExpense");
-        log("Expense->>> $expenseMap");
-        log("Every Member will give->>> ${totalExpense / groupMembers.length}");
+        List<Map<String, dynamic>> payer = [];
+        List<Map<String, dynamic>> reciever = [];
+        List<String> payGetUsers = [];
+        Map<String, dynamic> balanceSheetUsers = {};
 
         expenseMap.forEach((key, value) {
-          if (value < 0) {}
+          double spent = perHead - value.abs();
+
+          if (spent > 0) {
+            payer.add({'uid': key, 'amount': spent.abs()});
+            payGetUsers.add(key);
+          } else if (spent < 0) {
+            reciever.add({'uid': key, 'amount': spent.abs()});
+            payGetUsers.add(key);
+          }
         });
+
+        await FirebaseRefs.userRef
+            .where('uid', whereIn: payGetUsers)
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            print(element.data());
+            balanceSheetUsers[element.data()['uid']] = {
+              'name': element.data()['name'],
+              'imgUrl': element.data()['imgUrl'],
+            };
+          });
+        });
+
+        List<Map<String, dynamic>> balanceSheet = [];
+        for (var i = 0; i < reciever.length; i++) {
+          String recieverUid = reciever[i]['uid'];
+          double recieverSpent = reciever[i]['amount'];
+
+          for (var j = 0; j < payer.length; j++) {
+            String payerUid = payer[j]['uid'];
+            double payerPay = payer[j]['amount'];
+            if (recieverSpent - payerPay < 0) {
+              // reciever (multiple recievers) got money and payer is left with some money
+              payerPay -= recieverSpent;
+              balanceSheet.add({
+                'payerUid': payerUid,
+                'amount': payerPay,
+                'recieverUid': recieverUid
+              });
+              recieverSpent = 0;
+            } else if (recieverSpent - payerPay > 0) {
+              recieverSpent -= payerPay;
+              balanceSheet.add({
+                'payerUid': payerUid,
+                'amount': payerPay,
+                'recieverUid': recieverUid
+              });
+              payerPay = 0;
+              // payer gave all money reciever is yet to get money
+            } else {
+              balanceSheet.add({
+                'payerUid': payerUid,
+                'amount': payerPay,
+                'recieverUid': recieverUid
+              });
+              recieverSpent = 0;
+              payerPay = 0;
+              // no due
+            }
+          }
+        }
+
+        // balanceSheet.forEach((element) {
+        //   print(object)
+        // });
+        showModalBottomSheet(
+          context: context,
+          elevation: 0,
+          backgroundColor: isDark ? DarkColors.card : LightColors.card,
+          builder: (context) {
+            return DistributeModal(balanceSheet, balanceSheetUsers);
+          },
+        );
       });
     });
     setState(() {
@@ -440,6 +513,151 @@ class _BookUIState extends State<BookUI> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget DistributeModal(
+      List<dynamic> balanceSheet, Map<String, dynamic> balanceSheetUsers) {
+    return StatefulBuilder(
+      builder: (context, setState) => SingleChildScrollView(
+        padding: EdgeInsets.all(15),
+        child: Container(
+          width: double.infinity,
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Settlement',
+                  style: TextStyle(
+                    fontSize: sdp(context, 20),
+                  ),
+                ),
+                height20,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: Text('Will Pay')),
+                    Expanded(
+                        child: CircleAvatar(
+                      backgroundColor: isDark
+                          ? DarkColors.primaryButton
+                          : LightColors.primaryButton,
+                      child: FittedBox(
+                        child: Text(
+                          '₹',
+                          style: TextStyle(
+                            color: isDark ? Colors.black : Colors.white,
+                            s
+                          ),
+                        ),
+                      ),
+                    )),
+                    Expanded(
+                      child: Text(
+                        'To',
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                  ],
+                ),
+                height20,
+                ListView.separated(
+                  itemCount: balanceSheet.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    String payerName =
+                        balanceSheetUsers[balanceSheet[index]['payerUid']]
+                                ['name']
+                            .split(" ")
+                            .first;
+                    String payerImg =
+                        balanceSheetUsers[balanceSheet[index]['payerUid']]
+                            ['imgUrl'];
+                    String recieverName =
+                        balanceSheetUsers[balanceSheet[index]['recieverUid']]
+                                ['name']
+                            .split(" ")
+                            .first;
+                    String recieverImg =
+                        balanceSheetUsers[balanceSheet[index]['recieverUid']]
+                            ['imgUrl'];
+                    return Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: kRadius(10),
+                        color:
+                            isDark ? DarkColors.scaffold : LightColors.scaffold,
+                      ),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: sdp(context, 10),
+                                  backgroundImage: NetworkImage(payerImg),
+                                ),
+                                width10,
+                                Expanded(
+                                    child: Text(
+                                  payerName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )),
+                              ],
+                            ),
+                          ),
+                          width10,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: kRadius(100),
+                              color:
+                                  isDark ? LightColors.card : DarkColors.card,
+                            ),
+                            child: Text(
+                              "₹ ${balanceSheet[index]['amount'].round()}",
+                              style: TextStyle(
+                                  color: isDark ? Colors.black : Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          width10,
+                          Flexible(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      recieverName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                width10,
+                                CircleAvatar(
+                                  radius: sdp(context, 10),
+                                  backgroundImage: NetworkImage(recieverImg),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => height10,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
