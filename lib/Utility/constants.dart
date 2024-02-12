@@ -12,13 +12,16 @@ class FirebaseRefs {
       _firestore.collection('users');
 
   static DocumentReference<Map<String, dynamic>> transactBookRef(
-    String bookId,
-  ) {
+      String bookId) {
     return _firestore.collection('transactBooks').doc(bookId);
   }
 
   static CollectionReference<Map<String, dynamic>> requestRef =
       _firestore.collection('requests');
+
+  static CollectionReference<Map<String, dynamic>> transactsRef(
+          String bookId) =>
+      transactBookRef(bookId).collection('transacts');
 }
 
 class Constants {

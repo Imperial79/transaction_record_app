@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -60,11 +62,58 @@ class _BookUIState extends State<BookUI> {
         });
       }
     });
+  }
 
-    FirebaseRefs.transactBookRef(widget.snap['bookId'])
-        .snapshots()
-        .map((snapshot) {
-      print(snapshot.data()!['bookName']);
+  Future<void> distribute() async {
+    setState(() {
+      isLoading = true;
+    });
+    await FirebaseRefs.transactBookRef(widget.snap['bookId'])
+        .get()
+        .then((value) async {
+      List<dynamic> groupMembers = [];
+
+      groupMembers.addAll(value.data()!['users']);
+      groupMembers.add(value.data()!['uid']);
+      log("mems-> $groupMembers");
+
+      Map<String, double> expenseMap = Map.fromIterable(
+        groupMembers,
+        key: (item) => item,
+        value: (_) => 0.0,
+      );
+      double totalExpense = value.data()!['expense'];
+      log(expenseMap.toString());
+      await FirebaseRefs.transactsRef(widget.snap['bookId'])
+          .get()
+          .then((snapshot) {
+        snapshot.docs.forEach((element) {
+          final transact = element.data();
+
+          if (expenseMap.containsKey(transact['uid'])) {
+            if (transact['type'] == "income") {
+              expenseMap["${transact['uid']}"] =
+                  expenseMap["${transact['uid']}"]! +
+                      double.parse(transact['amount']);
+            } else {
+              expenseMap["${transact['uid']}"] =
+                  expenseMap["${transact['uid']}"]! -
+                      double.parse(transact['amount']);
+            }
+          }
+        });
+
+        log("Total Expense->>> $totalExpense");
+        log("Expense->>> $expenseMap");
+        log("Every Member will give->>> ${totalExpense / groupMembers.length}");
+
+        expenseMap.forEach((key, value) {
+          if (value < 0) {}
+        });
+      });
+    });
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -79,6 +128,8 @@ class _BookUIState extends State<BookUI> {
 
   //------------------------------------>
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
@@ -86,58 +137,13 @@ class _BookUIState extends State<BookUI> {
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     isSearching = _searchController.text.isNotEmpty;
     return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    AnimatedSize(
-                      duration: Duration(milliseconds: 300),
-                      reverseDuration: Duration(milliseconds: 300),
-                      alignment: Alignment.centerLeft,
-                      curve: Curves.ease,
-                      child: Container(
-                        child: IconButton(
-                          color: textLinkColor,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.arrow_back,
-                                color: isDark
-                                    ? darkProfitColorAccent
-                                    : Colors.black,
-                              ),
-                              _searchController.text.isEmpty
-                                  ? SizedBox(
-                                      width: 10,
-                                    )
-                                  : SizedBox(),
-                              _searchController.text.isEmpty
-                                  ? Text(
-                                      'Return',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: isDark ? whiteColor : blackColor,
-                                      ),
-                                    )
-                                  : SizedBox(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: SearchBar(),
-                    ),
-                  ],
-                ),
                 AnimatedSize(
                   reverseDuration: Duration(milliseconds: 300),
                   duration: Duration(milliseconds: 300),
@@ -152,6 +158,57 @@ class _BookUIState extends State<BookUI> {
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                    children: [
+                                      AnimatedSize(
+                                        duration: Duration(milliseconds: 300),
+                                        reverseDuration:
+                                            Duration(milliseconds: 300),
+                                        alignment: Alignment.centerLeft,
+                                        curve: Curves.ease,
+                                        child: Container(
+                                          child: IconButton(
+                                            color: textLinkColor,
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            icon: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.arrow_back,
+                                                  color: isDark
+                                                      ? darkProfitColorAccent
+                                                      : Colors.black,
+                                                ),
+                                                _searchController.text.isEmpty
+                                                    ? SizedBox(
+                                                        width: 10,
+                                                      )
+                                                    : SizedBox(),
+                                                _searchController.text.isEmpty
+                                                    ? Text(
+                                                        'Return',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: isDark
+                                                              ? whiteColor
+                                                              : blackColor,
+                                                        ),
+                                                      )
+                                                    : SizedBox(),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: SearchBar(),
+                                      ),
+                                    ],
+                                  ),
+
                                   Padding(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 10),
@@ -257,24 +314,21 @@ class _BookUIState extends State<BookUI> {
                   ),
                 ),
                 Expanded(
-                  child: Scrollbar(
-                    interactive: true,
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      physics: BouncingScrollPhysics(),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TransactList(
-                              widget.snap['bookId'],
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.07,
-                            ),
-                          ],
-                        ),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TransactList(
+                            widget.snap['bookId'],
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.07,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -424,9 +478,7 @@ class _BookUIState extends State<BookUI> {
             _filterButton(context),
           ],
         ),
-        SizedBox(
-          height: 15,
-        ),
+        height15,
         Row(
           children: [
             Expanded(
@@ -463,6 +515,7 @@ class _BookUIState extends State<BookUI> {
             child: SizedBox(height: 100),
           ),
         ),
+        width10,
         Expanded(
           child: Card(
             color: isDark ? DarkColors.card : LightColors.card,
@@ -976,7 +1029,8 @@ class _BookUIState extends State<BookUI> {
                                         .trim()
                                         .isNotEmpty,
                                     child: Container(
-                                      padding: EdgeInsets.all(5),
+                                      margin: EdgeInsets.only(top: 10),
+                                      padding: EdgeInsets.all(8),
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: isDark
@@ -1100,16 +1154,12 @@ class _BookUIState extends State<BookUI> {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.settings,
-                size: 17,
-              ),
-              width10,
               Expanded(
                 child: Text(
-                  'Actions',
+                  'ACTIONS',
                   style: TextStyle(
-                    fontSize: 17,
+                    fontSize: sdp(context, 8),
+                    letterSpacing: 5,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1237,6 +1287,17 @@ class _BookUIState extends State<BookUI> {
                 label: 'Add User(s)',
                 iconSize: sdp(context, 12),
                 icon: Icons.person_add_alt_1,
+                btnColor: isDark ? DarkColors.profitText : Color(0xFF27576D),
+                textColor: isDark ? Colors.black : Colors.white,
+              ),
+              BookMenuBtn(
+                onPressed: () {
+                  distribute();
+                },
+                labelSize: sdp(context, 10),
+                label: 'Distribute',
+                iconSize: sdp(context, 12),
+                icon: Icons.alt_route_rounded,
                 btnColor: isDark ? DarkColors.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
@@ -1445,7 +1506,7 @@ class _BookUIState extends State<BookUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: EdgeInsets.all(20),
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: kRadius(20),

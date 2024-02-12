@@ -238,7 +238,7 @@ Widget DummyTransactList(BuildContext context) {
 Widget StatsCard({final label, content, isBook, bookId}) {
   bool isExpense = label == 'Expenses';
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     decoration: BoxDecoration(
       borderRadius: kRadius(15),
       color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
@@ -253,7 +253,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
       ),
     ),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
           children: [
@@ -263,29 +263,35 @@ Widget StatsCard({final label, content, isBook, bookId}) {
                   : Icons.file_download_outlined,
               color: isExpense ? Colors.white : Colors.black,
             ),
-            SizedBox(
-              width: 6,
-            ),
+            width5,
+            // Text(
+            //   label,
+            //   style: TextStyle(
+            //     color: isExpense ? Colors.white : Colors.black,
+            //     fontWeight: FontWeight.w600,
+            //   ),
+            // ),
             Text(
-              label,
+              oCcy.format(double.parse(content)) + ' INR',
               style: TextStyle(
                 color: isExpense ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w600,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
         ),
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          oCcy.format(double.parse(content)) + ' INR',
-          style: TextStyle(
-            color: isExpense ? Colors.white : Colors.black,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        // SizedBox(
+        //   height: 10,
+        // ),
+        // Text(
+        //   oCcy.format(double.parse(content)) + ' INR',
+        //   style: TextStyle(
+        //     color: isExpense ? Colors.white : Colors.black,
+        //     fontSize: 17,
+        //     fontWeight: FontWeight.w700,
+        //   ),
+        // ),
       ],
     ),
   );
