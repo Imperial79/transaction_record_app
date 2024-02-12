@@ -540,15 +540,18 @@ class _BookUIState extends State<BookUI> {
                     Expanded(child: Text('Will Pay')),
                     Expanded(
                         child: CircleAvatar(
+                      radius: sdp(context, 10),
                       backgroundColor: isDark
                           ? DarkColors.primaryButton
                           : LightColors.primaryButton,
                       child: FittedBox(
-                        child: Text(
-                          '₹',
-                          style: TextStyle(
-                            color: isDark ? Colors.black : Colors.white,
-                            s
+                        child: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            '₹',
+                            style: TextStyle(
+                              color: isDark ? Colors.black : Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -618,7 +621,7 @@ class _BookUIState extends State<BookUI> {
                                   isDark ? LightColors.card : DarkColors.card,
                             ),
                             child: Text(
-                              "₹ ${balanceSheet[index]['amount'].round()}",
+                              "₹ ${balanceSheet[index]['amount'].toStringAsFixed(2)}",
                               style: TextStyle(
                                   color: isDark ? Colors.black : Colors.white,
                                   fontWeight: FontWeight.w600),
