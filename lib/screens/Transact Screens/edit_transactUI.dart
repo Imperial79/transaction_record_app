@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
@@ -120,7 +123,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         bookId: widget.trData.bookId,
         ts: _selectedTimeStamp,
       );
-
+      log('$updatedTransact');
       databaseMethods.updateTransacts(
         widget.trData.bookId,
         widget.trData.transactId,
@@ -145,7 +148,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       builder: (context, StateSetter setState) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: kRadius(12),
           ),
           icon: Icon(
             Icons.delete,
@@ -182,7 +185,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
               },
               color: Colors.red,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: kRadius(5),
               ),
               elevation: 0,
               child: Text(
@@ -260,9 +263,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         width: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade300,
+                          color: isDark ? DarkColors.card : LightColors.card,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -276,27 +277,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         ),
                       ),
                       Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.trData.type == 'Income'
-                                  ? lightProfitColorAccent.withOpacity(0.3)
-                                  : isDark
-                                      ? Colors.grey.shade600
-                                      : Colors.grey.shade200,
-                              blurRadius: 50,
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                        child: TransactTypeCard(
-                          icon: widget.trData.type == 'Income'
-                              ? Icons.file_download_outlined
-                              : Icons.file_upload_outlined,
-                          label: widget.trData.type,
-                        ),
-                      ),
+                      _modeIndicatorPill(widget.trData.type),
                     ],
                   ),
                 ),
@@ -391,8 +372,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                       child: Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: kRadius(10),
                                           color: isDark
                                               ? darkGreyColor
                                               : Colors.white,
@@ -427,7 +407,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: kRadius(10),
                                         color: isDark
                                             ? darkGreyColor
                                             : Colors.white,
@@ -561,7 +541,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             );
                           },
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: kRadius(10),
                           ),
                           elevation: 0,
                           padding: EdgeInsets.zero,
@@ -571,7 +551,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               horizontal: 25,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: kRadius(10),
                               gradient: LinearGradient(
                                 colors: [
                                   Colors.red,
@@ -646,13 +626,37 @@ class _EditTransactUIState extends State<EditTransactUI> {
     );
   }
 
+  Container _modeIndicatorPill(String mode) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: mode == 'Income'
+                ? lightProfitColorAccent.withOpacity(0.3)
+                : isDark
+                    ? Colors.grey.shade600
+                    : Colors.grey.shade200,
+            blurRadius: 50,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: TransactTypeCard(
+        icon: mode == 'Income'
+            ? Icons.file_download_outlined
+            : Icons.file_upload_outlined,
+        label: widget.trData.type,
+      ),
+    );
+  }
+
   Container BottomCard(BuildContext context, {String? date}) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(top: 15),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : whiteColor,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: kRadius(30),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -771,7 +775,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       updateTransacts();
                     },
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: kRadius(20),
                     ),
                     elevation: 0,
                     padding: EdgeInsets.zero,
@@ -781,7 +785,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         horizontal: 25,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: kRadius(20),
                         gradient: LinearGradient(
                           colors: [
                             transactType == 'Income'
@@ -834,10 +838,17 @@ class _EditTransactUIState extends State<EditTransactUI> {
     return MaterialButton(
       onPressed: () {},
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: kRadius(50),
       ),
-      color: label == 'Expense' ? Colors.black : darkLossColorAccent,
+      color: label == 'Expense'
+          ? isDark
+              ? DarkColors.lossCard
+              : LightColors.lossCard
+          : isDark
+              ? DarkColors.profitCard
+              : LightColors.profitCard,
       elevation: 0,
+      highlightElevation: 0,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -880,7 +891,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
               .withOpacity(0.2),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: kRadius(50),
         ),
         child: AnimatedAlign(
           curve: Curves.ease,

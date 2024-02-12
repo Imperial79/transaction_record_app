@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 
+import 'components.dart';
+
 ColorFilter svgColor(Color color) => ColorFilter.mode(
       color,
       BlendMode.srcIn,
@@ -62,7 +64,7 @@ class KThemeData {
           color: LightColors.card,
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
         ),
         primaryColorLight: LightColors.profitCard,
@@ -90,7 +92,7 @@ class KThemeData {
           color: DarkColors.card,
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
         ),
         textTheme: TextTheme(

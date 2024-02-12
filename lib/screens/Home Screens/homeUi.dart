@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -191,127 +190,123 @@ class _HomeUiState extends State<HomeUi>
               alignment: Alignment.topCenter,
               curve: Curves.ease,
               child: ValueListenableBuilder<bool>(
-                  valueListenable: _showAdd,
-                  builder: (BuildContext context, bool showFullAppBar,
-                      Widget? child) {
-                    return Container(
-                      child: showFullAppBar
-                          ? Column(
-                              children: [
-                                height10,
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          NavPush(
-                                              context,
-                                              AccountUI(
-                                                name: globalUser.name,
-                                                email: globalUser.email,
-                                              ));
-                                        },
-                                        child: Hero(
-                                          tag: 'profImg',
-                                          child: CircleAvatar(
-                                            backgroundColor:
-                                                darkProfitColorAccent,
-                                            radius: 15,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                              child: globalUser.imgUrl == ''
-                                                  ? Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        color:
-                                                            darkProfitColorAccent,
-                                                        strokeWidth: 1.5,
-                                                      ),
-                                                    )
-                                                  : CachedNetworkImage(
-                                                      imageUrl:
-                                                          globalUser.imgUrl,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Hi',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w400,
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
-                                              ),
-                                            ),
-                                            width10,
-                                            ValueListenableBuilder(
-                                              valueListenable:
-                                                  displayNameGlobal,
-                                              builder: (context, String name,
-                                                  child) {
-                                                return Text(
-                                                  globalUser.name,
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: isDark
-                                                        ? whiteColor
-                                                        : blackColor,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _showHomeMenu.value =
-                                                !_showHomeMenu.value;
-                                          });
-                                        },
-                                        borderRadius: kRadius(100),
+                valueListenable: _showAdd,
+                builder:
+                    (BuildContext context, bool showFullAppBar, Widget? child) {
+                  return Container(
+                    child: showFullAppBar
+                        ? Column(
+                            children: [
+                              height10,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        NavPush(
+                                            context,
+                                            AccountUI(
+                                              name: globalUser.name,
+                                              email: globalUser.email,
+                                            ));
+                                      },
+                                      child: Hero(
+                                        tag: 'profImg',
                                         child: CircleAvatar(
-                                          radius: sdp(context, 14),
-                                          backgroundColor: isDark
-                                              ? cardColordark
-                                              : Colors.grey.shade200,
-                                          child: Icon(
-                                            _showHomeMenu.value
-                                                ? Icons
-                                                    .keyboard_arrow_up_rounded
-                                                : Icons
-                                                    .keyboard_arrow_down_rounded,
-                                            size: sdp(context, 15),
-                                            color: isDark
-                                                ? whiteColor
-                                                : blackColor,
+                                          backgroundColor:
+                                              darkProfitColorAccent,
+                                          radius: 15,
+                                          child: ClipRRect(
+                                            borderRadius: kRadius(50),
+                                            child: globalUser.imgUrl == ''
+                                                ? Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color:
+                                                          darkProfitColorAccent,
+                                                      strokeWidth: 1.5,
+                                                    ),
+                                                  )
+                                                : CachedNetworkImage(
+                                                    imageUrl: globalUser.imgUrl,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Hi',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w400,
+                                              color: isDark
+                                                  ? whiteColor
+                                                  : blackColor,
+                                            ),
+                                          ),
+                                          width10,
+                                          ValueListenableBuilder(
+                                            valueListenable: displayNameGlobal,
+                                            builder:
+                                                (context, String name, child) {
+                                              return Text(
+                                                globalUser.name,
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: isDark
+                                                      ? whiteColor
+                                                      : blackColor,
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          _showHomeMenu.value =
+                                              !_showHomeMenu.value;
+                                        });
+                                      },
+                                      borderRadius: kRadius(100),
+                                      child: CircleAvatar(
+                                        radius: sdp(context, 14),
+                                        backgroundColor: isDark
+                                            ? cardColordark
+                                            : Colors.grey.shade200,
+                                        child: Icon(
+                                          _showHomeMenu.value
+                                              ? Icons.keyboard_arrow_up_rounded
+                                              : Icons
+                                                  .keyboard_arrow_down_rounded,
+                                          size: sdp(context, 15),
+                                          color:
+                                              isDark ? whiteColor : blackColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            )
-                          : Container(),
-                    );
-                  }),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                  );
+                },
+              ),
             ),
             Expanded(
               child: ListView(
@@ -392,7 +387,7 @@ class _HomeUiState extends State<HomeUi>
           },
           closedElevation: 0,
           closedShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
           openElevation: 0,
           transitionType: ContainerTransitionType.fadeThrough,
@@ -602,7 +597,7 @@ class _HomeUiState extends State<HomeUi>
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
               decoration: BoxDecoration(
                 color: cardColor,
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: kRadius(50),
               ),
               child: Text(
                 label,

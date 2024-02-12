@@ -121,7 +121,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: kRadius(15),
         color: isDark ? DarkColors.card : LightColors.card,
       ),
       child: Column(

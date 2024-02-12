@@ -5,7 +5,6 @@ import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
-import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 
@@ -255,7 +254,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: kRadius(10),
                                         color: isDark
                                             ? darkGreyColor
                                             : Colors.white,
@@ -282,7 +281,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: kRadius(10),
                                       color:
                                           isDark ? darkGreyColor : Colors.white,
                                     ),
@@ -415,7 +414,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       margin: EdgeInsets.only(top: 15),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : whiteColor,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: kRadius(30),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,7 +533,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       saveTransacts();
                     },
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: kRadius(20),
                     ),
                     elevation: 0,
                     padding: EdgeInsets.zero,
@@ -544,7 +543,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                         horizontal: 25,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: kRadius(20),
                         gradient: LinearGradient(
                           colors: [
                             transactType == 'Income'
@@ -612,7 +611,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
               .withOpacity(0.2),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: kRadius(50),
         ),
         child: AnimatedAlign(
           curve: Curves.ease,

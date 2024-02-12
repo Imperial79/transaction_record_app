@@ -1,11 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/models/userModel.dart';
@@ -86,7 +85,7 @@ class _BookUIState extends State<BookUI> {
     _searchController.text.isEmpty ? _showAdd.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     isSearching = _searchController.text.isNotEmpty;
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Stack(
           children: [
@@ -339,7 +338,7 @@ class _BookUIState extends State<BookUI> {
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: kRadius(20),
                   color: isDark ? darkProfitColorAccent : blackColor,
                 ),
                 child: AnimatedSize(
@@ -675,7 +674,7 @@ class _BookUIState extends State<BookUI> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: isDark ? Color(0xFF333333) : cardColorlight,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: kRadius(20),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -736,7 +735,7 @@ class _BookUIState extends State<BookUI> {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: kRadius(100),
                     ),
                     child: Container(
                       width: 200,
@@ -821,7 +820,14 @@ class _BookUIState extends State<BookUI> {
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  NavPush(context, EditTransactUI(trData: transactData));
+                  if (transactData.uid == FirebaseRefs.myUID)
+                    NavPush(context, EditTransactUI(trData: transactData));
+                  else
+                    ShowSnackBar(
+                      context,
+                      content: "You cannot edit other's transactions",
+                      isDanger: true,
+                    );
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 20),
@@ -830,13 +836,13 @@ class _BookUIState extends State<BookUI> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: isDark ? Color(0xFF333333) : cardColorlight,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: kRadius(20),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               child: Column(
@@ -849,20 +855,17 @@ class _BookUIState extends State<BookUI> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        height: sdp(context, 30),
-                                        width: sdp(context, 30),
+                                        padding: EdgeInsets.all(6),
+                                        height: sdp(context, 25),
+                                        width: sdp(context, 25),
                                         decoration: BoxDecoration(
                                           color: isIncome
-                                              ? darkProfitColorAccent
-                                              : kLossColorAccent,
-                                          border: !isDark
-                                              ? Border.all(
-                                                  color: isIncome
-                                                      ? kProfitColor
-                                                      : lossColor,
-                                                )
-                                              : null,
+                                              ? isDark
+                                                  ? DarkColors.profitText
+                                                  : LightColors.profitText
+                                              : isDark
+                                                  ? DarkColors.lossText
+                                                  : LightColors.lossText,
                                           shape: BoxShape.circle,
                                           boxShadow: [
                                             isDark
@@ -884,88 +887,121 @@ class _BookUIState extends State<BookUI> {
                                                 ? Icons.file_download_outlined
                                                 : Icons.file_upload_outlined,
                                             color: isIncome
-                                                ? Colors.black
-                                                : Colors.white,
-                                            size: 17,
+                                                ? isDark
+                                                    ? Colors.black
+                                                    : Colors.white
+                                                : isDark
+                                                    ? Colors.red.shade900
+                                                    : Colors.white,
                                           ),
                                         ),
                                       ),
                                       width10,
                                       Expanded(
-                                        child: Text.rich(
-                                          TextSpan(
-                                            text: oCcy.format(double.parse(
-                                                transactData.amount)),
-                                            style: TextStyle(
-                                              fontFamily: "Product",
-                                              fontSize: sdp(context, 16),
-                                              fontWeight: FontWeight.w800,
-                                              color: isIncome
-                                                  ? isDark
-                                                      ? kProfitColorAccent
-                                                      : kProfitColor
-                                                  : isDark
-                                                      ? Color(0xFFFFC1C1)
-                                                      : lossColor,
-                                            ),
-                                            children: [
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text.rich(
                                               TextSpan(
-                                                text: " INR",
+                                                text: oCcy.format(double.parse(
+                                                    transactData.amount)),
                                                 style: TextStyle(
-                                                  fontSize: sdp(context, 10),
-                                                  fontWeight: FontWeight.w400,
+                                                  fontFamily: "Product",
+                                                  fontSize: sdp(context, 16),
+                                                  fontWeight: FontWeight.w800,
+                                                  color: isIncome
+                                                      ? isDark
+                                                          ? DarkColors
+                                                              .profitText
+                                                          : LightColors
+                                                              .profitText
+                                                      : isDark
+                                                          ? DarkColors.lossText
+                                                          : LightColors
+                                                              .lossText,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text: " INR",
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          sdp(context, 10),
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 5, vertical: 1),
+                                              decoration: BoxDecoration(
+                                                color: transactData
+                                                            .transactMode ==
+                                                        'CASH'
+                                                    ? isDark
+                                                        ? DarkColors.profitText
+                                                        : Colors.black
+                                                    : isDark
+                                                        ? Color(0xFF9DC4FF)
+                                                        : Colors.blue.shade900,
+                                                borderRadius: kRadius(100),
+                                              ),
+                                              child: Text(
+                                                transactData.transactMode,
+                                                style: TextStyle(
+                                                  letterSpacing: 1,
+                                                  fontSize: sdp(context, 6),
+                                                  fontWeight: FontWeight.w900,
+                                                  color: isDark
+                                                      ? Colors.black
+                                                      : Colors.white,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                  height10,
                                   StatsRow(
                                     color: Colors.amber.shade900,
                                     content: transactData.source,
                                     icon: Icons.person,
                                   ),
-                                  StatsRow(
-                                    color: Colors.blue,
-                                    content: transactData.description!,
-                                    icon: Icons.short_text_rounded,
-                                  ),
+                                  Visibility(
+                                    visible: transactData.description!
+                                        .trim()
+                                        .isNotEmpty,
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? DarkColors.scaffold
+                                            : LightColors.scaffold,
+                                        borderRadius: kRadius(10),
+                                      ),
+                                      child: Text(transactData.description!),
+                                    ),
+                                  )
                                 ],
-                              ),
-                            ),
-                            RotatedBox(
-                              quarterTurns: 45,
-                              child: Text(
-                                transactData.transactMode,
-                                style: TextStyle(
-                                  letterSpacing: 10,
-                                  fontWeight: FontWeight.w900,
-                                  color: transactData.transactMode == 'CASH'
-                                      ? isDark
-                                          ? Colors.grey
-                                          : Colors.lightGreen.shade600
-                                      : isDark
-                                          ? Color(0xFF9DC4FF)
-                                          : Colors.blue.shade700,
-                                ),
                               ),
                             ),
                           ],
                         ),
+                        height10,
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.schedule,
+                              Icons.schedule_rounded,
                               color: isDark ? whiteColor : darkGreyColor,
                               size: 15,
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
+                            width5,
                             Text(
                               transactData.time.toString(),
                               style: TextStyle(
@@ -1000,44 +1036,52 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Padding StatsRow(
-      {required String content, required IconData icon, required Color color}) {
+  Widget StatsRow({
+    required String content,
+    required IconData icon,
+    required Color color,
+  }) {
     bool isEmpty = content.trim() == '';
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundColor: color,
-            radius: 11,
-            child: Icon(
-              icon,
-              size: 15,
-              color: whiteColor,
-            ),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Flexible(
-            child: Text(
-              isEmpty ? 'No Information Provided' : content,
-              style: TextStyle(
-                fontSize: sdp(context, 11),
-                fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
-                color: isDark
-                    ? isEmpty
-                        ? Colors.grey
-                        : whiteColor
-                    : darkGreyColor,
-                fontStyle: isEmpty ? FontStyle.italic : null,
+    return Visibility(
+      visible: !isEmpty,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              backgroundColor: color,
+              radius: 10,
+              child: FittedBox(
+                child: Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Icon(
+                    icon,
+                    color: whiteColor,
+                  ),
+                ),
               ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            width5,
+            Flexible(
+              child: Text(
+                isEmpty ? 'No Information Provided' : content,
+                style: TextStyle(
+                  fontSize: sdp(context, 10),
+                  fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
+                  color: isDark
+                      ? isEmpty
+                          ? Colors.grey
+                          : whiteColor
+                      : darkGreyColor,
+                  fontStyle: isEmpty ? FontStyle.italic : null,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1049,7 +1093,7 @@ class _BookUIState extends State<BookUI> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: isDark ? cardColordark : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: kRadius(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1075,7 +1119,7 @@ class _BookUIState extends State<BookUI> {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(50),
+                  borderRadius: kRadius(50),
                 ),
                 child: Text(
                   '${widget.snap['date']}',
@@ -1354,10 +1398,10 @@ class _BookUIState extends State<BookUI> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: kRadius(15),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: kRadius(15),
             color: selectedUsers.contains(userData.uid)
                 ? isDark
                     ? DarkColors.profitCard.withOpacity(.6)
@@ -1404,7 +1448,7 @@ class _BookUIState extends State<BookUI> {
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: kRadius(20),
                     color: isDark ? cardColordark : Colors.white,
                   ),
                   child: Column(
@@ -1420,7 +1464,7 @@ class _BookUIState extends State<BookUI> {
                               color: isDark
                                   ? Colors.grey.shade700
                                   : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(50),
+                              borderRadius: kRadius(50),
                             ),
                             child: Text(
                               'Filter',

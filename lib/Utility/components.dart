@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,7 +32,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
     padding: EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: isDark ? Colors.amber : Colors.amber.shade100,
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: kRadius(30),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +159,7 @@ Widget DummyTransactList(BuildContext context) {
             width: double.infinity,
             decoration: BoxDecoration(
               color: isDark ? Color(0xFF333333) : cardColorlight,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: kRadius(20),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +220,7 @@ Widget DummyTransactList(BuildContext context) {
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: kRadius(100),
                   ),
                   child: Container(
                     width: 200,
@@ -241,7 +240,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: kRadius(15),
       color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
       border: Border.all(
         color: isExpense
@@ -309,7 +308,7 @@ Widget kRenameModal({
           ),
           decoration: BoxDecoration(
             color: isDark ? cardColordark : cardColorlight,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
             padding: EdgeInsets.all(20),
@@ -418,7 +417,7 @@ Widget ConfirmDeleteModal({
           margin: EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: isDark ? cardColordark : cardColorlight,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -526,7 +525,7 @@ Widget CustomCard(BuildContext context, {required Widget child}) {
     padding: EdgeInsets.all(13),
     decoration: BoxDecoration(
       color: isDark ? cardColordark : cardColorlight,
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: kRadius(15),
     ),
     child: child,
   );
@@ -557,7 +556,7 @@ Widget ALertBox(BuildContext context, {final label, content, onPress}) {
     builder: (context, StateSetter setState) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: kRadius(12),
         ),
         icon: Icon(
           Icons.delete,
@@ -591,7 +590,7 @@ Widget ALertBox(BuildContext context, {final label, content, onPress}) {
             onPressed: onPress,
             color: Colors.red,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: kRadius(5),
             ),
             elevation: 0,
             child: Text(
@@ -610,7 +609,7 @@ Widget NewBookCard(BuildContext context) => Container(
       width: double.infinity,
       padding: EdgeInsets.all(13),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: kRadius(20),
         gradient: LinearGradient(
           colors: [
             kProfitColor,
@@ -672,7 +671,7 @@ Widget BookDeleteModal({
           margin: EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
             color: isDark ? cardColordark : cardColorlight,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -777,7 +776,7 @@ Widget AnimatedFloatingButton(
     onTap: onTap,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: kRadius(20),
         color: isDark ? Colors.greenAccent : blackColor,
       ),
       child: AnimatedSize(
@@ -840,7 +839,7 @@ Widget KSearchBar(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: isDark ? cardColordark : cardColorlight,
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: kRadius(100),
           ),
           child: Row(
             children: [
@@ -894,5 +893,32 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
         color: isDark ? DarkColors.fadeText : LightColors.fadeText,
       ),
     ),
+  );
+}
+
+AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
+  return AnimatedSwitcher(
+    duration: Duration(milliseconds: 200),
+    reverseDuration: Duration(milliseconds: 200),
+    child: isLoading ?? false
+        ? Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: isDark
+                ? DarkColors.card.withOpacity(.8)
+                : LightColors.card.withOpacity(.8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  color: isDark
+                      ? DarkColors.primaryButton
+                      : LightColors.primaryButton,
+                ),
+              ],
+            ),
+          )
+        : SizedBox(),
   );
 }

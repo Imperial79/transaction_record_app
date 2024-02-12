@@ -139,7 +139,7 @@ class _LoginUIState extends State<LoginUI> {
                             height: 30,
                           ),
                           InkWell(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: kRadius(15),
                             splashColor: Colors.red,
                             onTap: () async {
                               setState(() => _isLoading = true);
@@ -152,7 +152,7 @@ class _LoginUIState extends State<LoginUI> {
                             child: Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: kRadius(15),
                                 color: Color(0xffda8363),
                                 border: Border.all(color: Colors.red.shade100),
                                 // gradient: LinearGradient(

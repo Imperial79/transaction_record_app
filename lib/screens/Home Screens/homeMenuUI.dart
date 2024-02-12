@@ -49,7 +49,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             Container(
               decoration: BoxDecoration(
                 color: isDark ? DarkColors.scaffold : LightColors.scaffold,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: kRadius(20),
               ),
               width: double.infinity,
               padding: EdgeInsets.all(20),
@@ -74,7 +74,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                                 ));
                           },
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: kRadius(20),
                             child: CachedNetworkImage(
                               imageUrl: globalUser.imgUrl,
                               fit: BoxFit.cover,
@@ -83,26 +83,26 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                         ),
                         btnColor: Color.fromARGB(255, 210, 235, 255),
                       ),
-                      HomeMenuBtn(
-                        label: 'Switch',
-                        borderColor:
-                            isDark ? Colors.black : Colors.amber.shade900,
-                        child: IconButton(
-                          onPressed: () async {
-                            // await AuthMethods.signOut(context);
+                      // HomeMenuBtn(
+                      //   label: 'Switch',
+                      //   borderColor:
+                      //       isDark ? Colors.black : Colors.amber.shade900,
+                      //   child: IconButton(
+                      //     onPressed: () async {
+                      //       await AuthMethods.signOut(context);
 
-                            await AuthMethods.signInWithgoogle(context);
-                          },
-                          icon: Icon(
-                            Icons.switch_account_rounded,
-                            color:
-                                isDark ? Colors.black : Colors.amber.shade900,
-                          ),
-                        ),
-                        btnColor: isDark
-                            ? Colors.yellow.shade900
-                            : Colors.amber.shade200,
-                      ),
+                      //       await AuthMethods.signInWithgoogle(context);
+                      //     },
+                      //     icon: Icon(
+                      //       Icons.switch_account_rounded,
+                      //       color:
+                      //           isDark ? Colors.black : Colors.amber.shade900,
+                      //     ),
+                      //   ),
+                      //   btnColor: isDark
+                      //       ? Colors.yellow.shade900
+                      //       : Colors.amber.shade200,
+                      // ),
                       HomeMenuBtn(
                         label: 'Logout',
                         borderColor:
@@ -145,7 +145,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             width: sdp(context, 40),
             decoration: BoxDecoration(
               color: btnColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: kRadius(20),
               border: Border.all(color: borderColor ?? Colors.black),
             ),
             child: child,

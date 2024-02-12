@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -124,7 +122,7 @@ class _NewBookUIState extends State<NewBookUI> {
                         padding: EdgeInsets.symmetric(horizontal: 13),
                         decoration: BoxDecoration(
                           color: isDark ? DarkColors.card : LightColors.card,
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: kRadius(15),
                         ),
                         child: Row(
                           children: [
@@ -165,7 +163,7 @@ class _NewBookUIState extends State<NewBookUI> {
                             EdgeInsets.symmetric(horizontal: 13, vertical: 20),
                         decoration: BoxDecoration(
                           color: isDark ? cardColordark : cardColorlight,
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: kRadius(15),
                         ),
                         child: Column(
                           children: [
@@ -195,7 +193,7 @@ class _NewBookUIState extends State<NewBookUI> {
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: kRadius(10),
                                       color: isDark
                                           ? DarkColors.scaffold
                                           : LightColors.scaffold,
@@ -214,7 +212,7 @@ class _NewBookUIState extends State<NewBookUI> {
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: kRadius(10),
                                     color: isDark
                                         ? DarkColors.scaffold
                                         : LightColors.scaffold,
@@ -256,7 +254,7 @@ class _NewBookUIState extends State<NewBookUI> {
             backgroundColor: isDark ? darkProfitColorAccent : Colors.black,
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: kRadius(20),
             ),
           ),
           icon: Icon(
@@ -279,7 +277,7 @@ class _NewBookUIState extends State<NewBookUI> {
         //     createBook();
         //   },
         //   shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(10),
+        //     borderRadius: kRadius(10),
         //   ),
         //   elevation: 0,
         //   padding: EdgeInsets.zero,
@@ -289,7 +287,7 @@ class _NewBookUIState extends State<NewBookUI> {
         //       horizontal: 25,
         //     ),
         //     decoration: BoxDecoration(
-        //       borderRadius: BorderRadius.circular(10),
+        //       borderRadius: kRadius(10),
         //       gradient: buttonGradient,
         //     ),
         //     child: Row(
@@ -330,7 +328,7 @@ class _NewBookUIState extends State<NewBookUI> {
         elevation: 0,
         color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: kRadius(15),
           side: BorderSide(
             color: isSelected
                 ? isDark

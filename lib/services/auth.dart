@@ -26,18 +26,6 @@ class AuthMethods {
     return auth.authStateChanges();
   }
 
-  static Future<void> switchAccount(BuildContext context) async {
-    // await Hive
-    final userBox = await Hive.openBox('USERBOX');
-    userBox.delete('userData');
-
-    await Hive.deleteBoxFromDisk('USERBOX').then((value) {
-      log("Box USER deleted from disk");
-    });
-    await Hive.close();
-    await signInWithgoogle(context);
-  }
-
   static Future<String> signInWithgoogle(BuildContext context) async {
     try {
       await Hive.openBox('USERBOX');
@@ -45,7 +33,9 @@ class AuthMethods {
 
       final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
+
       await _googleSignIn.signOut();
+
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
 

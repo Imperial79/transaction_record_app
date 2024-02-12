@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 
 import 'package:transaction_record_app/services/database.dart';
@@ -39,6 +41,7 @@ class _AccountUIState extends State<AccountUI> {
   }
 
   updateAccountDetails() async {
+    setState(() => isLoading = true);
     if (nameController.text.isNotEmpty) {
       Map<String, dynamic> accountMap = {
         'name': nameController.text,
@@ -60,19 +63,22 @@ class _AccountUIState extends State<AccountUI> {
       });
 
       ShowSnackBar(context, content: "Name Updated");
+      setState(() => isLoading = false);
     } else {
+      setState(() => isLoading = false);
       ShowSnackBar(context,
           content: 'Please fill all the Fields', isDanger: true);
     }
   }
 
   //------------------------->
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     isDark = checkForTheme(context);
-    return Scaffold(
+    return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(20.0),
@@ -89,24 +95,35 @@ class _AccountUIState extends State<AccountUI> {
                           fontSize: 25,
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      height20,
                       Hero(
                         tag: 'profImg',
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(globalUser.imgUrl),
                         ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'UID: ${globalUser.uid}',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: Colors.grey.shade600,
-                        ),
+                      height10,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.tag,
+                            color: isDark
+                                ? DarkColors.fadeText
+                                : LightColors.fadeText,
+                          ),
+                          width5,
+                          Flexible(
+                            child: Text(
+                              globalUser.username,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: isDark
+                                    ? DarkColors.fadeText
+                                    : LightColors.fadeText,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       TextField(
                         controller: nameController,
@@ -182,45 +199,49 @@ class _AccountUIState extends State<AccountUI> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: MaterialButton(
-          onPressed: () {
-            updateAccountDetails();
-          },
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-          child: Ink(
-            padding: EdgeInsets.symmetric(
-              vertical: 15,
-              horizontal: 25,
+      floatingActionButton: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: MaterialButton(
+            onPressed: () {
+              updateAccountDetails();
+            },
+            shape: RoundedRectangleBorder(
+              borderRadius: kRadius(12),
             ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: isDark ? darkProfitColorAccent : blackColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.file_upload_outlined,
-                  color: isDark ? Colors.black : Colors.white,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  'UPDATE',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
+            elevation: 0,
+            padding: EdgeInsets.zero,
+            child: Ink(
+              padding: EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 25,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: kRadius(12),
+                color: isDark
+                    ? DarkColors.primaryButton
+                    : LightColors.primaryButton,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.file_upload_outlined,
                     color: isDark ? Colors.black : Colors.white,
-                    fontSize: 18,
                   ),
-                ),
-              ],
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Update',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.black : Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

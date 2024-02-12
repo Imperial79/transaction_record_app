@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,8 +29,9 @@ ShowSnackBar(
     SnackBar(
       behavior: SnackBarBehavior.floating,
       elevation: 0,
+      dismissDirection: DismissDirection.horizontal,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: kRadius(10),
         side: BorderSide(
           color: isDanger ? Colors.red.shade900 : Colors.teal.shade800,
         ),
