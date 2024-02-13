@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -66,9 +67,7 @@ class _NewBookUIState extends State<NewBookUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

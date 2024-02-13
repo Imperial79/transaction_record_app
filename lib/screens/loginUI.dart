@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/services/auth.dart';
 
@@ -49,8 +50,7 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(20),

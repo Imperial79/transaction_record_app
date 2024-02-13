@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
@@ -122,9 +123,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(15.0),

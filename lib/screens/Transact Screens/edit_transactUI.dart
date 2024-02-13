@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../Utility/colors.dart';
@@ -245,9 +246,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Stack(
           children: [

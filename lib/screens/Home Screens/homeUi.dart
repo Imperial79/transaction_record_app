@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
@@ -179,9 +180,8 @@ class _HomeUiState extends State<HomeUi>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    setSystemUIColors(context);
     _searchController.text.isEmpty ? _showAdd.value = true : false;
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -462,7 +462,8 @@ class _HomeUiState extends State<HomeUi>
                                         ),
                                       ),
                                       width10,
-                                      bookData.users!.length > 0
+                                      bookData.users != null &&
+                                              bookData.users!.length > 0
                                           ? Positioned(
                                               top: 10,
                                               right: 10,

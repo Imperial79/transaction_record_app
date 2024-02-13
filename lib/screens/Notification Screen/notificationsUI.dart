@@ -4,6 +4,7 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 
@@ -61,8 +62,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    return Scaffold(
+    return KScaffold(
       appBar: AppBar(
         backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
         title: Text('Notifications'),

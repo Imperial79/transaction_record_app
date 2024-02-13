@@ -5,6 +5,7 @@ import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/main.dart';
@@ -12,7 +13,6 @@ import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
-import 'package:transaction_record_app/screens/migrateUI.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 ValueNotifier<PageController> pageControllerGlobal =
@@ -29,16 +29,6 @@ class RootUI extends StatefulWidget {
 
 class _RootUIState extends State<RootUI> {
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  _init() async {
-    // await getUserDetailsFromPreference();
-  }
 
   Future<void> getUserDetailsFromPreference() async {
     try {
@@ -69,8 +59,7 @@ class _RootUIState extends State<RootUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
-    return Scaffold(
+    return KScaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,6 +90,7 @@ class _RootUIState extends State<RootUI> {
                 //       NavPush(context, MigrateUI());
                 //     },
                 //     icon: Icon(Icons.refresh)),
+
                 IconButton(
                   onPressed: () {
                     setState(() {

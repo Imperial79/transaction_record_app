@@ -2,13 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 
+// ignore: must_be_immutable
 class KScaffold extends StatefulWidget {
   PreferredSizeWidget? appBar;
   final Widget body;
   FloatingActionButtonLocation? floatingActionButtonLocation;
   FloatingActionButtonAnimator? floatingActionButtonAnimator;
   Widget? floatingActionButton;
-  bool? isLoading;
+  bool? isLoading = false;
   KScaffold(
       {Key? key,
       this.appBar,
@@ -26,6 +27,7 @@ class KScaffold extends StatefulWidget {
 class _KScaffoldState extends State<KScaffold> {
   @override
   Widget build(BuildContext context) {
+    setSystemUIColors(context);
     return Stack(
       alignment: Alignment.center,
       children: [

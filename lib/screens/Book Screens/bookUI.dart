@@ -206,9 +206,7 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIColors(context);
     _searchController.text.isEmpty ? _showThings.value = true : false;
-    isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     isSearching = _searchController.text.isNotEmpty;
     return KScaffold(
       isLoading: isLoading,
@@ -297,7 +295,7 @@ class _BookUIState extends State<BookUI> {
                                           child: Text(
                                             widget.snap.bookName,
                                             style: TextStyle(
-                                              fontSize: sdp(context, 15),
+                                              fontSize: sdp(context, 12),
                                             ),
                                           ),
                                         ),
@@ -810,102 +808,81 @@ class _BookUIState extends State<BookUI> {
   }
 
   Widget TransactList(String bookId) {
-    int dataCounter = 0;
-    int loopCounter = 0;
     dateTitle = '';
     return ValueListenableBuilder(
-        valueListenable: bookListCounter,
-        builder: (context, int bookCount, child) {
-          return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: firestore
-                .collection('transactBooks')
-                .doc(bookId)
-                .collection('transacts')
-                .orderBy('ts', descending: true)
-                .limit(bookCount)
-                .snapshots(),
-            builder: (context, snapshot) {
-              dateTitle = '';
+      valueListenable: bookListCounter,
+      builder: (context, int bookCount, child) {
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: firestore
+              .collection('transactBooks')
+              .doc(bookId)
+              .collection('transacts')
+              .orderBy('ts', descending: true)
+              .limit(bookCount)
+              .snapshots(),
+          builder: (context, snapshot) {
+            dateTitle = '';
 
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 600),
-                switchInCurve: Curves.easeIn,
-                switchOutCurve: Curves.easeOut,
-                child: snapshot.hasData
-                    ? snapshot.data!.docs.length > 0
-                        ? ListView.builder(
-                            physics: BouncingScrollPhysics(),
-                            itemCount: snapshot.data!.docs.length,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              loopCounter += 1;
-                              Transact transactData = Transact.fromMap(
-                                  snapshot.data!.docs[index].data());
-                              final searchKey = Constants.getSearchString(
-                                  _searchController.text);
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 600),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              child: snapshot.hasData
+                  ? snapshot.data!.docs.length > 0
+                      ? ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: snapshot.data!.docs.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            Transact transact = Transact.fromMap(
+                                snapshot.data!.docs[index].data());
+                            final searchKey = Constants.getSearchString(
+                                _searchController.text);
 
-                              if (_selectedSortType == 'All') {
-                                if (_searchController.text.isEmpty) {
-                                  dataCounter++;
-                                  return TransactTile(transactData);
-                                } else if (transactData.amount
-                                        .contains(searchKey) ||
-                                    transactData.description!
-                                        .toLowerCase()
-                                        .contains(searchKey) ||
-                                    transactData.source
-                                        .toLowerCase()
-                                        .contains(searchKey)) {
-                                  dataCounter++;
-                                  return TransactTile(transactData);
-                                }
-                              } else if (transactData.type.toLowerCase() ==
-                                  _selectedSortType.toLowerCase()) {
-                                dataCounter++;
-                                if (searchKey.isEmpty) {
-                                  return TransactTile(transactData);
-                                } else if (transactData.amount
-                                        .contains(searchKey) ||
-                                    transactData.description!
-                                        .toLowerCase()
-                                        .contains(searchKey) ||
-                                    transactData.source
-                                        .toLowerCase()
-                                        .contains(searchKey)) {
-                                  dataCounter++;
-                                  return TransactTile(transactData);
-                                }
+                            if (_selectedSortType == 'All') {
+                              if (_searchController.text.isEmpty) {
+                                return TransactTile(transact);
+                              } else if (transact.amount.contains(searchKey) ||
+                                  transact.description!
+                                      .toLowerCase()
+                                      .contains(searchKey) ||
+                                  transact.source
+                                      .toLowerCase()
+                                      .contains(searchKey)) {
+                                return TransactTile(transact);
                               }
-                              if (dataCounter == 0 &&
-                                  loopCounter == snapshot.data!.docs.length) {
-                                return Text(
-                                  'No Item Found',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey.shade700
-                                        : Colors.grey,
-                                    fontSize: sdp(context, 16),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                );
+                            } else if (transact.type.toLowerCase() ==
+                                _selectedSortType.toLowerCase()) {
+                              if (searchKey.isEmpty) {
+                                return TransactTile(transact);
+                              } else if (transact.amount.contains(searchKey) ||
+                                  transact.description!
+                                      .toLowerCase()
+                                      .contains(searchKey) ||
+                                  transact.source
+                                      .toLowerCase()
+                                      .contains(searchKey)) {
+                                return TransactTile(transact);
                               }
-                              return SizedBox();
-                            },
-                          )
-                        : Text(
-                            'No Transacts',
-                            style: TextStyle(
-                              fontSize: sdp(context, 20),
-                              color: isDark
-                                  ? DarkColors.fadeText
-                                  : LightColors.fadeText,
-                            ),
-                          )
-                    : DummyTransactList(),
-              );
-            },
-          );
-        });
+                            }
+                            return SizedBox.shrink();
+                          },
+                        )
+                      : Text(
+                          'No Transacts',
+                          style: TextStyle(
+                            fontSize: sdp(context, 20),
+                            color: isDark
+                                ? DarkColors.fadeText
+                                : LightColors.fadeText,
+                          ),
+                        )
+                  : DummyTransactList(),
+            );
+          },
+        );
+      },
+    );
   }
 
   Container _SearchBar() {
@@ -923,6 +900,9 @@ class _BookUIState extends State<BookUI> {
           SvgPicture.asset(
             'lib/assets/icons/search.svg',
             height: sdp(context, 15),
+            colorFilter: svgColor(
+              isDark ? DarkColors.text : LightColors.text,
+            ),
           ),
           width10,
           Flexible(
@@ -1078,6 +1058,7 @@ class _BookUIState extends State<BookUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             transactData.uid != FirebaseRefs.myUID &&
+                    widget.snap.users != null &&
                     widget.snap.users!.length > 0
                 ? Padding(
                     padding: EdgeInsets.only(right: 10.0),
@@ -1086,7 +1067,7 @@ class _BookUIState extends State<BookUI> {
                       future: FirebaseFirestore.instance
                           .collection('users')
                           .doc(transactData.uid)
-                          .get(GetOptions(source: Source.serverAndCache)),
+                          .get(GetOptions(source: Source.cache)),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CircleAvatar(
@@ -1307,7 +1288,7 @@ class _BookUIState extends State<BookUI> {
             ),
             Visibility(
               visible: transactData.uid == FirebaseRefs.myUID &&
-                  // widget.snap.containsKey('users') &&
+                  widget.snap.users != null &&
                   widget.snap.users!.length > 0,
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),
