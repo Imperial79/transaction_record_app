@@ -37,7 +37,7 @@ class _RootUIState extends State<RootUI> {
   }
 
   _init() async {
-    await getUserDetailsFromPreference();
+    // await getUserDetailsFromPreference();
   }
 
   Future<void> getUserDetailsFromPreference() async {
@@ -96,11 +96,11 @@ class _RootUIState extends State<RootUI> {
                     ),
                   ),
                 ),
-                IconButton(
-                    onPressed: () {
-                      NavPush(context, MigrateUI());
-                    },
-                    icon: Icon(Icons.refresh)),
+                // IconButton(
+                //     onPressed: () {
+                //       NavPush(context, MigrateUI());
+                //     },
+                //     icon: Icon(Icons.refresh)),
                 IconButton(
                   onPressed: () {
                     setState(() {

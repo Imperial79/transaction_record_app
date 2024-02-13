@@ -1,17 +1,22 @@
+import 'dart:developer';
+
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Utility/sdp.dart';
+import '../../models/userModel.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
@@ -48,6 +53,7 @@ class _HomeUiState extends State<HomeUi>
     dateTitle = '';
 
     _scrollFunction();
+    getUserDetailsFromPreference();
   }
 
   _scrollFunction() {
@@ -61,6 +67,22 @@ class _HomeUiState extends State<HomeUi>
         showAdd.value = true;
       }
     });
+  }
+
+  Future<void> getUserDetailsFromPreference() async {
+    try {
+      if (globalUser.uid == '') {
+        final _userBox = await Hive.openBox('USERBOX');
+        Map<dynamic, dynamic> userMap = await _userBox.get('userData');
+        setState(() {
+          displayNameGlobal.value = userMap['name'];
+          globalUser = KUser.fromMap(userMap);
+        });
+        await Hive.close();
+      }
+    } catch (e) {
+      log("Error while fetching data from Hive $e");
+    }
   }
 
   @override
@@ -77,9 +99,9 @@ class _HomeUiState extends State<HomeUi>
             Filter.or(
               Filter(
                 'users',
-                arrayContains: FirebaseRefs.myUID,
+                arrayContains: globalUser.uid,
               ),
-              Filter('uid', isEqualTo: FirebaseRefs.myUID),
+              Filter('uid', isEqualTo: globalUser.uid),
             ),
           )
           .orderBy('bookId', descending: true)
@@ -121,20 +143,18 @@ class _HomeUiState extends State<HomeUi>
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            Map<String, dynamic> ds =
-                                snapshot.data!.docs[index].data();
+                            Book newBook =
+                                Book.fromMap(snapshot.data!.docs[index].data());
+
                             if (_searchController.text.isEmpty) {
-                              return TransactBookCard(ds);
+                              return TransactBookCard(newBook);
                             } else {
-                              if (ds['bookName'].toLowerCase().contains(
-                                      _searchController.text
-                                          .toLowerCase()
-                                          .trim()) ||
-                                  ds['bookDescription'].toLowerCase().contains(
-                                      _searchController.text
-                                          .toLowerCase()
-                                          .trim())) {
-                                return TransactBookCard(ds);
+                              if (Constants.getSearchString(newBook.bookName)
+                                      .contains(_searchController.text) ||
+                                  Constants.getSearchString(
+                                          newBook.bookDescription)
+                                      .contains(_searchController.text)) {
+                                return TransactBookCard(newBook);
                               }
                               return Container();
                             }
@@ -148,7 +168,6 @@ class _HomeUiState extends State<HomeUi>
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),
                   child: CircularProgressIndicator(
-                    color: primaryColor,
                     strokeWidth: 1.5,
                   ),
                 ),
@@ -206,19 +225,14 @@ class _HomeUiState extends State<HomeUi>
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        NavPush(
-                                            context,
-                                            AccountUI(
-                                              name: globalUser.name,
-                                              email: globalUser.email,
-                                            ));
+                                        NavPush(context, AccountUI());
                                       },
                                       child: Hero(
                                         tag: 'profImg',
                                         child: CircleAvatar(
                                           backgroundColor:
                                               darkProfitColorAccent,
-                                          radius: 15,
+                                          radius: sdp(context, 10),
                                           child: ClipRRect(
                                             borderRadius: kRadius(50),
                                             child: globalUser.imgUrl == ''
@@ -238,9 +252,7 @@ class _HomeUiState extends State<HomeUi>
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                    width10,
                                     Expanded(
                                       child: Row(
                                         children: [
@@ -283,7 +295,7 @@ class _HomeUiState extends State<HomeUi>
                                       },
                                       borderRadius: kRadius(100),
                                       child: CircleAvatar(
-                                        radius: sdp(context, 14),
+                                        radius: sdp(context, 10),
                                         backgroundColor: isDark
                                             ? cardColordark
                                             : Colors.grey.shade200,
@@ -301,6 +313,7 @@ class _HomeUiState extends State<HomeUi>
                                   ],
                                 ),
                               ),
+                              height10,
                             ],
                           )
                         : Container(),
@@ -343,26 +356,30 @@ class _HomeUiState extends State<HomeUi>
     );
   }
 
-  Widget TransactBookCard(Map<String, dynamic> bookData) {
+  Widget TransactBookCard(Book bookData) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
-    if (dateTitle == bookData['date']) {
+    if (dateTitle == bookData.date) {
       showDateWidget = false;
     } else {
-      dateTitle = bookData['date'];
+      dateTitle = bookData.date;
       showDateWidget = true;
     }
 
     // Change Card color -------------------->
 
     bool isCompleted =
-        bookData['expense'] != 0 && (bookData['income'] == bookData['expense']);
+        bookData.expense != 0 && (bookData.income == bookData.expense);
 
     Color _kCardColor = cardColordark;
+    Color _textColor = Colors.black;
+
     if (isCompleted) {
       _kCardColor = isDark ? DarkColors.profitCard : LightColors.profitCard;
+      _textColor = Colors.black;
     } else {
       _kCardColor = isDark ? DarkColors.card : LightColors.card;
+      _textColor = isDark ? Colors.white : Colors.black;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,171 +423,162 @@ class _HomeUiState extends State<HomeUi>
                   elevation: 0,
                   builder: (context) {
                     return BookDeleteModal(
-                      bookId: bookData['bookId'],
-                      bookName: bookData['bookName'],
+                      bookId: bookData.bookId,
+                      bookName: bookData.bookName,
                     );
                   },
                 );
               },
-              child: Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  Card(
-                    color: _kCardColor,
-                    child: Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
+              child: Card(
+                color: _kCardColor,
+                child: Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        bookData['bookName'],
-                                        style: TextStyle(
-                                          fontSize: sdp(context, 15.5),
-                                          fontWeight: FontWeight.w700,
-                                          color:
-                                              isDark ? whiteColor : blackColor,
+                                      Expanded(
+                                        child: Text(
+                                          bookData.bookName,
+                                          style: TextStyle(
+                                            fontSize: sdp(context, 15.5),
+                                            fontWeight: FontWeight.w700,
+                                            color: _textColor,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                      Visibility(
-                                        visible: bookData['bookDescription']
-                                            .toString()
-                                            .isNotEmpty,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(top: 10),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.note,
-                                                color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
-                                                size: sdp(context, 11),
-                                              ),
-                                              width5,
-                                              Text(
-                                                bookData['bookDescription'],
-                                                style: TextStyle(
-                                                  color: isDark
-                                                      ? whiteColor
-                                                      : blackColor,
+                                      width10,
+                                      bookData.users!.length > 0
+                                          ? Positioned(
+                                              top: 10,
+                                              right: 10,
+                                              child: CircleAvatar(
+                                                radius: sdp(context, 10),
+                                                backgroundColor: isDark
+                                                    ? Colors.black
+                                                    : LightColors.profitCard,
+                                                child: Icon(
+                                                  Icons.groups_2,
+                                                  size: sdp(context, 10),
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      height5,
-                                      Row(
+                                            )
+                                          : SizedBox(),
+                                    ],
+                                  ),
+                                  Visibility(
+                                    visible: bookData.bookDescription
+                                        .toString()
+                                        .isNotEmpty,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 10),
+                                      child: Row(
                                         children: [
                                           Icon(
-                                            Icons.schedule,
-                                            color: isDark
-                                                ? whiteColor
-                                                : blackColor,
+                                            Icons.note,
+                                            color: _textColor,
                                             size: sdp(context, 11),
                                           ),
                                           width5,
                                           Text(
-                                            bookData['date'] +
-                                                ' at ' +
-                                                bookData['time'],
+                                            bookData.bookDescription,
                                             style: TextStyle(
-                                              fontSize: 12,
-                                              color: isDark
-                                                  ? greyColorAccent
-                                                  : blackColor,
+                                              color: _textColor,
                                             ),
                                           ),
                                         ],
                                       ),
+                                    ),
+                                  ),
+                                  height5,
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.schedule,
+                                        color: _textColor,
+                                        size: sdp(context, 11),
+                                      ),
+                                      width5,
+                                      Text(
+                                        bookData.date + ' | ' + bookData.time,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: _textColor,
+                                        ),
+                                      ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: isDark
-                                ? DarkColors.scaffold
-                                : LightColors.scaffold,
-                            child: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Row(
-                                children: [
-                                  TransactStatsCard(
-                                    crossAlign: CrossAxisAlignment.start,
-                                    textColor: Colors.black,
-                                    amount:
-                                        "₹ " + oCcy.format(bookData['income']),
-                                    label: 'Income',
-                                    cardColor: isDark
-                                        ? Colors.lightGreen
-                                        : Color(0xFFB5FFB7),
-                                    amountColor: isDark
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen.shade900,
-                                  ),
-                                  TransactStatsCard(
-                                    crossAlign: CrossAxisAlignment.center,
-                                    amount:
-                                        "₹ " + oCcy.format(bookData['expense']),
-                                    label: 'Expense',
-                                    cardColor: isDark
-                                        ? Colors.black
-                                        : Colors.grey.shade300,
-                                    textColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amountColor:
-                                        isDark ? Colors.white : Colors.black,
-                                  ),
-                                  TransactStatsCard(
-                                    crossAlign: CrossAxisAlignment.end,
-                                    label: 'Current',
-                                    amount: "₹ " +
-                                        oCcy.format(bookData['income'] -
-                                            bookData['expense']),
-                                    cardColor: isDark
-                                        ? Colors.blue.shade200
-                                        : Color.fromARGB(255, 197, 226, 250),
-                                    textColor: Colors.blue.shade900,
-                                    amountColor: isDark
-                                        ? Colors.blue.shade100
-                                        : Colors.blue.shade900,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  bookData.containsKey('users') && bookData['users'].length > 0
-                      ? Positioned(
-                          top: 10,
-                          right: 10,
-                          child: CircleAvatar(
-                            radius: sdp(context, 10),
-                            backgroundColor:
-                                isDark ? Colors.black : LightColors.profitCard,
-                            child: Icon(
-                              Icons.groups_2,
-                              size: sdp(context, 10),
-                            ),
+                      Card(
+                        color:
+                            isDark ? DarkColors.scaffold : LightColors.scaffold,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              TransactStatsCard(
+                                crossAlign: CrossAxisAlignment.start,
+                                textColor: Colors.black,
+                                amount: "₹ " + oCcy.format(bookData.income),
+                                label: 'Income',
+                                cardColor: isDark
+                                    ? Colors.lightGreen
+                                    : Color(0xFFB5FFB7),
+                                amountColor: isDark
+                                    ? Colors.lightGreenAccent
+                                    : Colors.lightGreen.shade900,
+                              ),
+                              TransactStatsCard(
+                                crossAlign: CrossAxisAlignment.center,
+                                amount: "₹ " + oCcy.format(bookData.expense),
+                                label: 'Expense',
+                                cardColor: isDark
+                                    ? Colors.black
+                                    : Colors.grey.shade300,
+                                textColor: isDark ? Colors.white : Colors.black,
+                                amountColor:
+                                    isDark ? Colors.white : Colors.black,
+                              ),
+                              TransactStatsCard(
+                                crossAlign: CrossAxisAlignment.end,
+                                label: 'Current',
+                                amount: "₹ " +
+                                    oCcy.format(
+                                        bookData.income - bookData.expense),
+                                cardColor: isDark
+                                    ? Colors.blue.shade200
+                                    : Color.fromARGB(255, 197, 226, 250),
+                                textColor: Colors.blue.shade900,
+                                amountColor: isDark
+                                    ? Colors.blue.shade100
+                                    : Colors.blue.shade900,
+                              ),
+                            ],
                           ),
-                        )
-                      : SizedBox(),
-                ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

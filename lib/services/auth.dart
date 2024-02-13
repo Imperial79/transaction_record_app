@@ -102,7 +102,6 @@ class AuthMethods {
   }
 
   static Future<void> signOut(BuildContext context) async {
-    log("<-------------------------SIGNOUT FUNCTION---------------------------------->");
     final userBox = await Hive.openBox('USERBOX');
     userBox.delete('userData');
 

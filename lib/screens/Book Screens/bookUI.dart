@@ -1,13 +1,13 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
@@ -20,8 +20,8 @@ import '../../services/database.dart';
 import '../../Utility/components.dart';
 
 class BookUI extends StatefulWidget {
-  final snap;
-  const BookUI({Key? key, this.snap}) : super(key: key);
+  final Book snap;
+  const BookUI({Key? key, required this.snap}) : super(key: key);
 
   @override
   State<BookUI> createState() => _BookUIState();
@@ -31,15 +31,18 @@ class _BookUIState extends State<BookUI> {
   String dateTitle = '';
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
-  final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
+
+  final ValueNotifier<bool> _showThings = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
+  final ValueNotifier<int> bookListCounter = ValueNotifier<int>(5);
+
   final oCcy = new NumberFormat("#,##0.00", "en_US");
   bool _isLoading = false;
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
 
-  int bookListCounter = 5;
+  // int bookListCounter = 5;
   int searchingBookListCounter = 50;
   bool isSearching = false;
 
@@ -51,15 +54,13 @@ class _BookUIState extends State<BookUI> {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        _showAdd.value = false;
+        _showThings.value = false;
       } else {
-        _showAdd.value = true;
+        _showThings.value = true;
       }
 
       if (_scrollController.position.atEdge) {
-        setState(() {
-          bookListCounter += 5;
-        });
+        bookListCounter.value += 5;
       }
     });
   }
@@ -68,7 +69,7 @@ class _BookUIState extends State<BookUI> {
     setState(() {
       isLoading = true;
     });
-    await FirebaseRefs.transactBookRef(widget.snap['bookId'])
+    await FirebaseRefs.transactBookRef(widget.snap.bookId)
         .get()
         .then((value) async {
       List<dynamic> groupMembers = [];
@@ -83,7 +84,7 @@ class _BookUIState extends State<BookUI> {
       );
       double totalExpense = value.data()!['expense'];
 
-      await FirebaseRefs.transactsRef(widget.snap['bookId'])
+      await FirebaseRefs.transactsRef(widget.snap.bookId)
           .get()
           .then((snapshot) async {
         snapshot.docs.forEach((element) {
@@ -206,7 +207,7 @@ class _BookUIState extends State<BookUI> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
-    _searchController.text.isEmpty ? _showAdd.value = true : false;
+    _searchController.text.isEmpty ? _showThings.value = true : false;
     isDark = Theme.of(context).brightness == Brightness.dark ? true : false;
     isSearching = _searchController.text.isNotEmpty;
     return KScaffold(
@@ -223,7 +224,7 @@ class _BookUIState extends State<BookUI> {
                   alignment: Alignment.topCenter,
                   curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
-                    valueListenable: _showAdd,
+                    valueListenable: _showThings,
                     builder: (BuildContext context, bool showFullAppBar,
                         Widget? child) {
                       return Container(
@@ -277,7 +278,7 @@ class _BookUIState extends State<BookUI> {
                                         ),
                                       ),
                                       Flexible(
-                                        child: SearchBar(),
+                                        child: _SearchBar(),
                                       ),
                                     ],
                                   ),
@@ -286,18 +287,17 @@ class _BookUIState extends State<BookUI> {
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 10),
                                     child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Flexible(
                                           child: Text(
-                                            widget.snap['bookName'],
+                                            widget.snap.bookName,
                                             style: TextStyle(
                                               fontSize: sdp(context, 15),
-                                              color: isDark
-                                                  ? whiteColor
-                                                  : blackColor,
                                             ),
                                           ),
                                         ),
@@ -348,7 +348,7 @@ class _BookUIState extends State<BookUI> {
                                           bool showBookMenu, Widget? child) {
                                         return showBookMenu
                                             ? BookMenu(
-                                                widget.snap['bookId'],
+                                                widget.snap.bookId,
                                                 context,
                                               )
                                             : Container();
@@ -367,9 +367,8 @@ class _BookUIState extends State<BookUI> {
                   child: Column(
                     children: [
                       StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream:
-                            FirebaseRefs.transactBookRef(widget.snap['bookId'])
-                                .snapshots(),
+                        stream: FirebaseRefs.transactBookRef(widget.snap.bookId)
+                            .snapshots(),
                         builder: (context, snapshot) {
                           return AnimatedSwitcher(
                             duration: Duration(milliseconds: 600),
@@ -396,7 +395,7 @@ class _BookUIState extends State<BookUI> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TransactList(
-                            widget.snap['bookId'],
+                            widget.snap.bookId,
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
@@ -455,7 +454,7 @@ class _BookUIState extends State<BookUI> {
                 NavPush(
                   context,
                   NewTransactUi(
-                    bookId: widget.snap['bookId'],
+                    bookId: widget.snap.bookId,
                   ),
                 ).then((value) {
                   setState(() {
@@ -474,7 +473,7 @@ class _BookUIState extends State<BookUI> {
                   alignment: Alignment.centerLeft,
                   curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
-                    valueListenable: _showAdd,
+                    valueListenable: _showThings,
                     builder: (
                       BuildContext context,
                       bool showFullAddBtn,
@@ -814,125 +813,139 @@ class _BookUIState extends State<BookUI> {
     int dataCounter = 0;
     int loopCounter = 0;
     dateTitle = '';
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: firestore
-          .collection('transactBooks')
-          .doc(bookId)
-          .collection('transacts')
-          .orderBy('ts', descending: true)
-          .limit(bookListCounter)
-          .snapshots(),
-      builder: (context, snapshot) {
-        dateTitle = '';
+    return ValueListenableBuilder(
+        valueListenable: bookListCounter,
+        builder: (context, int bookCount, child) {
+          return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: firestore
+                .collection('transactBooks')
+                .doc(bookId)
+                .collection('transacts')
+                .orderBy('ts', descending: true)
+                .limit(bookCount)
+                .snapshots(),
+            builder: (context, snapshot) {
+              dateTitle = '';
 
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 600),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          child: snapshot.hasData
-              ? snapshot.data!.docs.length > 0
-                  ? ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      itemCount: snapshot.data!.docs.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        loopCounter += 1;
-                        Transact transactData =
-                            Transact.fromMap(snapshot.data!.docs[index].data());
-                        final searchKey =
-                            _searchController.text.toLowerCase().trim();
-                        if (_selectedSortType == 'All') {
-                          if (_searchController.text.isEmpty) {
-                            dataCounter++;
-                            return TransactTile(transactData);
-                          } else if (transactData.amount.contains(searchKey) ||
-                              transactData.description!
-                                  .toLowerCase()
-                                  .contains(searchKey) ||
-                              transactData.source
-                                  .toLowerCase()
-                                  .contains(searchKey)) {
-                            dataCounter++;
-                            return TransactTile(transactData);
-                          }
-                        } else if (transactData.type.toLowerCase() ==
-                            _selectedSortType.toLowerCase()) {
-                          dataCounter++;
-                          if (searchKey.isEmpty) {
-                            return TransactTile(transactData);
-                          } else if (transactData.amount.contains(searchKey) ||
-                              transactData.description!
-                                  .toLowerCase()
-                                  .contains(searchKey) ||
-                              transactData.source
-                                  .toLowerCase()
-                                  .contains(searchKey)) {
-                            dataCounter++;
-                            return TransactTile(transactData);
-                          }
-                        }
-                        if (dataCounter == 0 &&
-                            loopCounter == snapshot.data!.docs.length) {
-                          return Text(
-                            'No Item Found',
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 600),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                child: snapshot.hasData
+                    ? snapshot.data!.docs.length > 0
+                        ? ListView.builder(
+                            physics: BouncingScrollPhysics(),
+                            itemCount: snapshot.data!.docs.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              loopCounter += 1;
+                              Transact transactData = Transact.fromMap(
+                                  snapshot.data!.docs[index].data());
+                              final searchKey = Constants.getSearchString(
+                                  _searchController.text);
+
+                              if (_selectedSortType == 'All') {
+                                if (_searchController.text.isEmpty) {
+                                  dataCounter++;
+                                  return TransactTile(transactData);
+                                } else if (transactData.amount
+                                        .contains(searchKey) ||
+                                    transactData.description!
+                                        .toLowerCase()
+                                        .contains(searchKey) ||
+                                    transactData.source
+                                        .toLowerCase()
+                                        .contains(searchKey)) {
+                                  dataCounter++;
+                                  return TransactTile(transactData);
+                                }
+                              } else if (transactData.type.toLowerCase() ==
+                                  _selectedSortType.toLowerCase()) {
+                                dataCounter++;
+                                if (searchKey.isEmpty) {
+                                  return TransactTile(transactData);
+                                } else if (transactData.amount
+                                        .contains(searchKey) ||
+                                    transactData.description!
+                                        .toLowerCase()
+                                        .contains(searchKey) ||
+                                    transactData.source
+                                        .toLowerCase()
+                                        .contains(searchKey)) {
+                                  dataCounter++;
+                                  return TransactTile(transactData);
+                                }
+                              }
+                              if (dataCounter == 0 &&
+                                  loopCounter == snapshot.data!.docs.length) {
+                                return Text(
+                                  'No Item Found',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey.shade700
+                                        : Colors.grey,
+                                    fontSize: sdp(context, 16),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                              return SizedBox();
+                            },
+                          )
+                        : Text(
+                            'No Transacts',
                             style: TextStyle(
-                              color:
-                                  isDark ? Colors.grey.shade700 : Colors.grey,
-                              fontSize: sdp(context, 16),
-                              fontWeight: FontWeight.w600,
+                              fontSize: sdp(context, 20),
+                              color: isDark
+                                  ? DarkColors.fadeText
+                                  : LightColors.fadeText,
                             ),
-                          );
-                        }
-                        return SizedBox();
-                      },
-                    )
-                  : Text(
-                      'No Transacts',
-                      style: TextStyle(
-                        fontSize: sdp(context, 20),
-                        color:
-                            isDark ? DarkColors.fadeText : LightColors.fadeText,
-                      ),
-                    )
-              : DummyTransactList(),
-        );
-      },
-    );
+                          )
+                    : DummyTransactList(),
+              );
+            },
+          );
+        });
   }
 
-  Container SearchBar() {
+  Container _SearchBar() {
     return Container(
-      padding: EdgeInsets.only(right: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
       decoration: BoxDecoration(
         color: isDark ? cardColordark : cardColorlight,
         borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(8),
+          left: Radius.circular(100),
         ),
       ),
-      child: TextField(
-        controller: _searchController,
-        cursorColor: isDark ? Colors.greenAccent : primaryColor,
-        style: TextStyle(
-          color: isDark ? whiteColor : blackColor,
-        ),
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintStyle: TextStyle(
-            fontWeight: FontWeight.w400,
-            color: isDark ? greyColorAccent : Colors.grey,
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            'lib/assets/icons/search.svg',
+            height: sdp(context, 15),
           ),
-          hintText: 'Search amount, description, etc',
-          prefixIcon: Icon(
-            Icons.search,
-            color: isDark ? whiteColor : blackColor,
+          width10,
+          Flexible(
+            child: TextField(
+              controller: _searchController,
+              cursorColor: isDark ? Colors.greenAccent : primaryColor,
+              style: TextStyle(
+                color: isDark ? whiteColor : blackColor,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: isDark ? greyColorAccent : Colors.grey,
+                ),
+                hintText: 'Search amount, description, etc',
+              ),
+              onChanged: (val) {
+                setState(() {});
+              },
+            ),
           ),
-        ),
-        onChanged: (val) {
-          setState(() {
-            _showAdd.value = false;
-          });
-        },
+        ],
       ),
     );
   }
@@ -1065,8 +1078,7 @@ class _BookUIState extends State<BookUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             transactData.uid != FirebaseRefs.myUID &&
-                    widget.snap.containsKey('users') &&
-                    widget.snap['users'].length > 0
+                    widget.snap.users!.length > 0
                 ? Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child:
@@ -1295,8 +1307,8 @@ class _BookUIState extends State<BookUI> {
             ),
             Visibility(
               visible: transactData.uid == FirebaseRefs.myUID &&
-                  widget.snap.containsKey('users') &&
-                  widget.snap['users'].length > 0,
+                  // widget.snap.containsKey('users') &&
+                  widget.snap.users!.length > 0,
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),
                 child: CircleAvatar(
@@ -1393,7 +1405,7 @@ class _BookUIState extends State<BookUI> {
                   borderRadius: kRadius(50),
                 ),
                 child: Text(
-                  '${widget.snap['date']}',
+                  '${widget.snap.date}',
                   style: TextStyle(
                     color: isDark ? greyColorAccent : Colors.black,
                     fontWeight: FontWeight.w600,
@@ -1420,8 +1432,8 @@ class _BookUIState extends State<BookUI> {
                     isScrollControlled: true,
                     builder: (context) {
                       return kRenameModal(
-                        bookId: widget.snap['bookId'],
-                        oldBookName: widget.snap['bookName'],
+                        bookId: widget.snap.bookId,
+                        oldBookName: widget.snap.bookName,
                       );
                     },
                   );
@@ -1446,8 +1458,8 @@ class _BookUIState extends State<BookUI> {
                           });
                           await BookMethods.deleteBook(
                             context,
-                            bookName: widget.snap['bookName'],
-                            bookId: widget.snap['bookId'],
+                            bookName: widget.snap.bookName,
+                            bookId: widget.snap.bookId,
                           );
                           setState(() {
                             _isLoading = false;
@@ -1499,8 +1511,8 @@ class _BookUIState extends State<BookUI> {
                     context: context,
                     builder: (context) => _addUserDialog(
                       isDark,
-                      bookId: widget.snap['bookId'],
-                      bookName: widget.snap['bookName'],
+                      bookId: widget.snap.bookId,
+                      bookName: widget.snap.bookName,
                     ),
                   );
                 },
@@ -1601,15 +1613,11 @@ class _BookUIState extends State<BookUI> {
                         itemCount: snapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          // Map<String, dynamic> ds =
-                          //     snapshot.data!.docs[index].data();
                           KUser userData =
                               KUser.fromMap(snapshot.data!.docs[index].data());
-                          if (userData.name
-                                  .toString()
+                          if (Constants.getSearchString(userData.name)
                                   .contains(_searchUser.text) ||
-                              userData.username
-                                  .toString()
+                              Constants.getSearchString(userData.username)
                                   .contains(_searchUser.text)) {
                             return _userTile(
                               userData,
@@ -1831,9 +1839,9 @@ class _BookUIState extends State<BookUI> {
 
   _clearAllTransacts() async {
     setState(() => _isLoading = true);
-    await DatabaseMethods().deleteAllTransacts(widget.snap['bookId']);
+    await DatabaseMethods().deleteAllTransacts(widget.snap.bookId);
     await DatabaseMethods().updateBookTransactions(
-        widget.snap['bookId'], {"income": 0, "expense": 0});
+        widget.snap.bookId, {"income": 0, "expense": 0});
     setState(() => _isLoading = false);
   }
 

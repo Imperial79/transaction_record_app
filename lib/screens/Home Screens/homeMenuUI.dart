@@ -66,12 +66,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                             isDark ? DarkColors.fadeText : LightColors.fadeText,
                         child: GestureDetector(
                           onTap: () {
-                            NavPush(
-                                context,
-                                AccountUI(
-                                  name: globalUser.name,
-                                  email: globalUser.email,
-                                ));
+                            NavPush(context, AccountUI());
                           },
                           child: ClipRRect(
                             borderRadius: kRadius(20),

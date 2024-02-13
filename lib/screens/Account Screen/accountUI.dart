@@ -14,9 +14,7 @@ import '../../Utility/colors.dart';
 import '../../Utility/components.dart';
 
 class AccountUI extends StatefulWidget {
-  final name, email;
-
-  const AccountUI({Key? key, this.name, this.email}) : super(key: key);
+  const AccountUI({Key? key}) : super(key: key);
 
   @override
   State<AccountUI> createState() => _AccountUIState();
@@ -24,21 +22,10 @@ class AccountUI extends StatefulWidget {
 
 class _AccountUIState extends State<AccountUI> {
   //-------------------->
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
+  final nameController = TextEditingController(text: globalUser.name);
+  final emailController = TextEditingController(text: globalUser.email);
 
   //------------------->
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      // nameController.text = widget.name;
-
-      nameController.text = globalUser.name;
-      emailController.text = globalUser.email;
-      // emailController.text = widget.email;
-    });
-  }
 
   updateAccountDetails() async {
     setState(() => isLoading = true);

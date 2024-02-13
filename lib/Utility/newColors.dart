@@ -18,7 +18,7 @@ class DarkColors {
   static final Color text = Colors.white;
   static final Color profitText = Colors.lightGreen.shade200;
   static final Color lossText = Colors.red.shade100;
-  static final Color profitCard = Color(0xff98d3cb);
+  static final Color profitCard = Color.fromARGB(255, 128, 203, 193);
   static final Color lossCard = Colors.redAccent.shade200;
   static final Color primaryButton = Color(0xff98d3cb);
   static final Color fadeText = Colors.grey;

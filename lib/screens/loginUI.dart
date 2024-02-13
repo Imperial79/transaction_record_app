@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/services/auth.dart';
 
 import '../Utility/sdp.dart';
@@ -23,6 +27,25 @@ class _LoginUIState extends State<LoginUI> {
 
   bool _isLoading = false;
   String logoPath = 'lib/assets/logo/logo.png';
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  _init() async {
+    bool _boxExist = await Hive.boxExists('USERBOX');
+    if (_boxExist) {
+      if (!Hive.isBoxOpen("USERBOX")) {
+        await Hive.openBox('USERBOX');
+      } else {
+        log("Box is Open");
+      }
+    } else {
+      log("Box does not exists");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,23 +176,11 @@ class _LoginUIState extends State<LoginUI> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: kRadius(15),
-                                color: Color(0xffda8363),
+                                color: isDark
+                                    ? DarkColors.lossCard
+                                    : LightColors.lossCard,
+                                // color: Color(0xffda8363),
                                 border: Border.all(color: Colors.red.shade100),
-                                // gradient: LinearGradient(
-                                //   colors: [
-                                //     Colors.pink,
-                                //     Colors.pink.shade200,
-                                //   ],
-                                // ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: isDark
-                                        ? Colors.pink.withOpacity(0.5)
-                                        : Colors.pinkAccent.withOpacity(0.4),
-                                    blurRadius: 90,
-                                    spreadRadius: 10,
-                                  ),
-                                ],
                               ),
                               padding: EdgeInsets.symmetric(
                                   vertical: 7, horizontal: 20),

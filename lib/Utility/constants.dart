@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
-  static final myUID = FirebaseAuth.instance.currentUser!.uid;
+  static final myUID = globalUser.uid;
 
   static DocumentReference<Map<String, dynamic>> myRef =
       _firestore.collection('users').doc(myUID);
@@ -38,5 +38,9 @@ class Constants {
     return DateFormat()
         .add_jm()
         .format(DateTime.fromMillisecondsSinceEpoch(milliseconds));
+  }
+
+  static String getSearchString(String text) {
+    return text.trim().toLowerCase();
   }
 }
