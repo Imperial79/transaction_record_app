@@ -465,18 +465,14 @@ class _HomeUiState extends State<HomeUi>
                                       width10,
                                       bookData.users != null &&
                                               bookData.users!.length > 0
-                                          ? Positioned(
-                                              top: 10,
-                                              right: 10,
-                                              child: CircleAvatar(
-                                                radius: sdp(context, 10),
-                                                backgroundColor: isDark
-                                                    ? Colors.black
-                                                    : LightColors.profitCard,
-                                                child: Icon(
-                                                  Icons.groups_2,
-                                                  size: sdp(context, 10),
-                                                ),
+                                          ? CircleAvatar(
+                                              radius: sdp(context, 10),
+                                              backgroundColor: isDark
+                                                  ? Colors.black
+                                                  : LightColors.profitCard,
+                                              child: Icon(
+                                                Icons.groups_2,
+                                                size: sdp(context, 10),
                                               ),
                                             )
                                           : SizedBox(),

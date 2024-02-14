@@ -18,12 +18,17 @@ class NotificationsUI extends StatefulWidget {
 }
 
 class _NotificationsUIState extends State<NotificationsUI> {
+  bool isLoading = false;
+
   Future<void> _addToBook({
     required String bookId,
     required String bookName,
     required String requestId,
   }) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await FirebaseRefs.transactBookRef(bookId).get().then((book) async {
         if (book.exists) {
           await FirebaseRefs.transactBookRef(bookId).update({
@@ -39,26 +44,55 @@ class _NotificationsUIState extends State<NotificationsUI> {
         } else {
           ShowSnackBar(
             context,
-            content: "Book does not exists!",
+            content: "Book does not exists anymore!",
             isDanger: true,
           );
+          await _removeFromRequest(requestId: requestId);
         }
       });
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       ShowSnackBar(context, content: "Something went wrong!", isDanger: true);
     }
   }
 
   Future<void> _removeFromRequest({required requestId}) async {
     try {
-      await FirebaseRefs.requestRef.doc(requestId).update({
-        'users': FieldValue.arrayRemove([globalUser.uid]),
-      }).then((value) => ShowSnackBar(
-            context,
-            content: 'Request Rejected!',
-          ));
+      setState(() {
+        isLoading = true;
+      });
+      await FirebaseRefs.requestRef.doc(requestId).get().then((value) async {
+        if (value.data()!['users'].length == 1 &&
+            value.data()!['users'].contains(globalUser.uid)) {
+          await FirebaseRefs.requestRef.doc(requestId).delete();
+        } else {
+          await FirebaseRefs.requestRef.doc(requestId).update({
+            'users': FieldValue.arrayRemove([globalUser.uid]),
+          }).then(
+            (value) => ShowSnackBar(
+              context,
+              content: 'Request Rejected!',
+            ),
+          );
+        }
+      });
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
-      ShowSnackBar(context, content: "Something went wrong!", isDanger: true);
+      setState(() {
+        isLoading = false;
+      });
+      ShowSnackBar(
+        context,
+        content: "Something went wrong!",
+        isDanger: true,
+      );
     }
   }
 
@@ -66,6 +100,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       appBar: AppBar(
         backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
         title: Text('Notifications'),

@@ -1,34 +1,30 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 class Transact {
   String uid = "";
   String transactId = "";
   String amount = "";
   String source = "";
   String transactMode = "";
-  String? description = "";
+  String description = "";
   String type = "";
   String date = "";
   String time = "";
   String bookId = "";
   String ts = "";
-  List<String>? users = [];
   Transact({
     required this.uid,
     required this.transactId,
     required this.amount,
     required this.source,
     required this.transactMode,
-    this.description,
+    required this.description,
     required this.type,
     required this.date,
     required this.time,
     required this.bookId,
     required this.ts,
-    this.users,
   });
 
   Transact copyWith({
@@ -43,7 +39,6 @@ class Transact {
     String? time,
     String? bookId,
     String? ts,
-    List<String>? users,
   }) {
     return Transact(
       uid: uid ?? this.uid,
@@ -57,7 +52,6 @@ class Transact {
       time: time ?? this.time,
       bookId: bookId ?? this.bookId,
       ts: ts ?? this.ts,
-      users: users ?? this.users,
     );
   }
 
@@ -74,7 +68,6 @@ class Transact {
       'time': time,
       'bookId': bookId,
       'ts': ts,
-      'users': users,
     };
   }
 
@@ -85,16 +78,12 @@ class Transact {
       amount: map['amount'] as String,
       source: map['source'] as String,
       transactMode: map['transactMode'] as String,
-      description:
-          map['description'] != null ? map['description'] as String : null,
+      description: map['description'] as String,
       type: map['type'] as String,
       date: map['date'] as String,
       time: map['time'] as String,
       bookId: map['bookId'] as String,
       ts: map['ts'] as String,
-      users: map['users'] != null
-          ? List<String>.from((map['users'] as List<String>))
-          : null,
     );
   }
 
@@ -105,7 +94,7 @@ class Transact {
 
   @override
   String toString() {
-    return 'Transact(uid: $uid, transactId: $transactId, amount: $amount, source: $source, transactMode: $transactMode, description: $description, type: $type, date: $date, time: $time, bookId: $bookId, ts: $ts, users: $users)';
+    return 'Transact(uid: $uid, transactId: $transactId, amount: $amount, source: $source, transactMode: $transactMode, description: $description, type: $type, date: $date, time: $time, bookId: $bookId, ts: $ts)';
   }
 
   @override
@@ -122,8 +111,7 @@ class Transact {
         other.date == date &&
         other.time == time &&
         other.bookId == bookId &&
-        other.ts == ts &&
-        listEquals(other.users, users);
+        other.ts == ts;
   }
 
   @override
@@ -138,7 +126,6 @@ class Transact {
         date.hashCode ^
         time.hashCode ^
         bookId.hashCode ^
-        ts.hashCode ^
-        users.hashCode;
+        ts.hashCode;
   }
 }

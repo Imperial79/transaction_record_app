@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 
 import '../Utility/colors.dart';

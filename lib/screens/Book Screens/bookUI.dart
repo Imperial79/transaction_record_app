@@ -10,6 +10,7 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/models/userModel.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/usersUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/user.dart';
@@ -296,7 +297,7 @@ class _BookUIState extends State<BookUI> {
                                           child: Text(
                                             widget.snap.bookName,
                                             style: TextStyle(
-                                              fontSize: sdp(context, 12),
+                                              fontSize: sdp(context, 14),
                                             ),
                                           ),
                                         ),
@@ -325,6 +326,28 @@ class _BookUIState extends State<BookUI> {
                                                 color: isDark
                                                     ? whiteColor
                                                     : blackColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        width10,
+                                        InkWell(
+                                          borderRadius: kRadius(100),
+                                          onTap: () {
+                                            NavPush(
+                                                context,
+                                                UsersUI(
+                                                  users: widget.snap.users!,
+                                                  ownerUid: widget.snap.uid,
+                                                  bookId: widget.snap.bookId,
+                                                ));
+                                          },
+                                          child: FittedBox(
+                                            child: CircleAvatar(
+                                              radius: sdp(context, 10),
+                                              child: Icon(
+                                                Icons.groups_2,
+                                                size: sdp(context, 10),
                                               ),
                                             ),
                                           ),
