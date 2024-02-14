@@ -538,7 +538,6 @@ Widget CustomCard(BuildContext context, {required Widget child}) {
 }
 
 setSystemUIColors(BuildContext context) {
-  isDark = Theme.of(context).brightness == Brightness.dark;
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
       overlays: [SystemUiOverlay.top]);
   SystemChrome.setSystemUIOverlayStyle(

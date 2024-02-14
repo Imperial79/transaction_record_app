@@ -4,10 +4,10 @@ import 'package:transaction_record_app/services/user.dart';
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
-  static final myUID = globalUser.uid;
+  // static final myUID = globalUser.uid;
 
   static DocumentReference<Map<String, dynamic>> myRef =
-      _firestore.collection('users').doc(myUID);
+      _firestore.collection('users').doc(globalUser.uid);
   static CollectionReference<Map<String, dynamic>> userRef =
       _firestore.collection('users');
 

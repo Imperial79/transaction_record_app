@@ -8,6 +8,8 @@ import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 
+import '../../services/user.dart';
+
 class NotificationsUI extends StatefulWidget {
   const NotificationsUI({Key? key}) : super(key: key);
 
@@ -25,7 +27,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       await FirebaseRefs.transactBookRef(bookId).get().then((book) async {
         if (book.exists) {
           await FirebaseRefs.transactBookRef(bookId).update({
-            'users': FieldValue.arrayUnion([FirebaseRefs.myUID])
+            'users': FieldValue.arrayUnion([globalUser.uid])
           }).then((value) async {
             await _removeFromRequest(requestId: requestId).then(
               (value) => ShowSnackBar(
@@ -50,7 +52,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
   Future<void> _removeFromRequest({required requestId}) async {
     try {
       await FirebaseRefs.requestRef.doc(requestId).update({
-        'users': FieldValue.arrayRemove([FirebaseRefs.myUID]),
+        'users': FieldValue.arrayRemove([globalUser.uid]),
       }).then((value) => ShowSnackBar(
             context,
             content: 'Request Rejected!',
@@ -62,6 +64,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       appBar: AppBar(
         backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
@@ -72,7 +75,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
           padding: EdgeInsets.all(15.0),
           child: StreamBuilder<dynamic>(
             stream: FirebaseRefs.requestRef
-                .where('users', arrayContains: FirebaseRefs.myUID)
+                .where('users', arrayContains: globalUser.uid)
                 .snapshots(),
             builder: (context, snapshot) {
               return AnimatedSwitcher(

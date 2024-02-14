@@ -62,6 +62,7 @@ class _AccountUIState extends State<AccountUI> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(

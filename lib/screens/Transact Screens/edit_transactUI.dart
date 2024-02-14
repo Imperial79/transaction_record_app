@@ -12,6 +12,7 @@ import '../../Utility/sdp.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
+import '../../services/user.dart';
 
 class EditTransactUI extends StatefulWidget {
   final Transact trData;
@@ -112,7 +113,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       }
 
       Transact updatedTransact = Transact(
-        uid: FirebaseRefs.myUID,
+        uid: globalUser.uid,
         transactId: widget.trData.transactId,
         amount: amountField.text,
         source: sourceField.text,
@@ -246,6 +247,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
         child: Stack(

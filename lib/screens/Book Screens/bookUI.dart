@@ -208,6 +208,7 @@ class _BookUIState extends State<BookUI> {
   Widget build(BuildContext context) {
     _searchController.text.isEmpty ? _showThings.value = true : false;
     isSearching = _searchController.text.isNotEmpty;
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -1057,7 +1058,7 @@ class _BookUIState extends State<BookUI> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            transactData.uid != FirebaseRefs.myUID &&
+            transactData.uid != globalUser.uid &&
                     widget.snap.users != null &&
                     widget.snap.users!.length > 0
                 ? Padding(
@@ -1087,7 +1088,7 @@ class _BookUIState extends State<BookUI> {
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  if (transactData.uid == FirebaseRefs.myUID)
+                  if (transactData.uid == globalUser.uid)
                     NavPush(context, EditTransactUI(trData: transactData));
                   else
                     ShowSnackBar(
@@ -1287,7 +1288,7 @@ class _BookUIState extends State<BookUI> {
               ),
             ),
             Visibility(
-              visible: transactData.uid == FirebaseRefs.myUID &&
+              visible: transactData.uid == globalUser.uid &&
                   widget.snap.users != null &&
                   widget.snap.users!.length > 0,
               child: Padding(
@@ -1582,7 +1583,7 @@ class _BookUIState extends State<BookUI> {
               height20,
               FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 future: FirebaseRefs.userRef
-                    .where('uid', isNotEqualTo: FirebaseRefs.myUID)
+                    .where('uid', isNotEqualTo: globalUser.uid)
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -1629,7 +1630,7 @@ class _BookUIState extends State<BookUI> {
                             'id': "$currentTime",
                             'date': Constants.getDisplayDate(currentTime),
                             'time': Constants.getDisplayTime(currentTime),
-                            'senderId': FirebaseRefs.myUID,
+                            'senderId': globalUser.uid,
                             'users': selectedUsers,
                             'bookName': bookName,
                             'bookId': bookId,

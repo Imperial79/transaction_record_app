@@ -181,6 +181,7 @@ class _HomeUiState extends State<HomeUi>
   Widget build(BuildContext context) {
     super.build(context);
     _searchController.text.isEmpty ? _showAdd.value = true : false;
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
         bottom: false,

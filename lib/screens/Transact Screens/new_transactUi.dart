@@ -10,6 +10,7 @@ import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 
 import '../../Utility/sdp.dart';
+import '../../services/user.dart';
 
 class NewTransactUi extends StatefulWidget {
   final bookId;
@@ -81,7 +82,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
           amountField.text.replaceAll(' ', '').replaceAll(',', '');
 
       Transact newTransact = Transact(
-        uid: FirebaseRefs.myUID,
+        uid: globalUser.uid,
         transactId: transactId,
         amount: _uploadableAmount,
         source: sourceField.text,
@@ -123,6 +124,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
         child: Padding(

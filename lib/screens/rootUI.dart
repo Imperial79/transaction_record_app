@@ -30,6 +30,12 @@ class RootUI extends StatefulWidget {
 class _RootUIState extends State<RootUI> {
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
+  @override
+  void initState() {
+    super.initState();
+    getUserDetailsFromPreference();
+  }
+
   Future<void> getUserDetailsFromPreference() async {
     try {
       if (globalUser.uid == '') {
@@ -59,6 +65,7 @@ class _RootUIState extends State<RootUI> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
         child: Column(
@@ -115,7 +122,7 @@ class _RootUIState extends State<RootUI> {
                   },
                   icon: StreamBuilder<dynamic>(
                     stream: FirebaseRefs.requestRef
-                        .where('users', arrayContains: FirebaseRefs.myUID)
+                        .where('users', arrayContains: globalUser.uid)
                         .snapshots(),
                     builder: (context, snapshot) {
                       return AnimatedSwitcher(

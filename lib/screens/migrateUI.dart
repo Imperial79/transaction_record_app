@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 
+import '../Utility/colors.dart';
 import '../Utility/constants.dart';
+import '../services/user.dart';
 
 class MigrateUI extends StatefulWidget {
   const MigrateUI({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _MigrateUIState extends State<MigrateUI> {
   void step1() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseRefs.myUID)
+        .doc(globalUser.uid)
         .collection('transact_books')
         .orderBy('bookId', descending: true)
         .get()
@@ -29,7 +31,7 @@ class _MigrateUIState extends State<MigrateUI> {
         String bookId = book.data()['bookId'];
         Map<String, dynamic> newMap = {};
         newMap = book.data();
-        newMap['uid'] = FirebaseRefs.myUID;
+        newMap['uid'] = globalUser.uid;
 
         print(newMap);
         await FirebaseFirestore.instance
@@ -40,7 +42,7 @@ class _MigrateUIState extends State<MigrateUI> {
 
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(FirebaseRefs.myUID)
+            .doc(globalUser.uid)
             .collection('transact_books')
             .doc(bookId)
             .collection('transacts')
@@ -49,7 +51,7 @@ class _MigrateUIState extends State<MigrateUI> {
           data.docs.forEach((transact) async {
             log("$bookId-> ${transact.data()['transactMode']}");
             Map<String, dynamic> newTr = transact.data();
-            newTr['uid'] = FirebaseRefs.myUID;
+            newTr['uid'] = globalUser.uid;
             log('$newTr');
             await FirebaseFirestore.instance
                 .collection('transactBooks')
@@ -66,6 +68,7 @@ class _MigrateUIState extends State<MigrateUI> {
   void step2(String bookId) async {}
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
           child: Column(

@@ -9,6 +9,7 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
+import 'package:transaction_record_app/services/user.dart';
 import '../../Utility/sdp.dart';
 
 class NewBookUI extends StatefulWidget {
@@ -19,6 +20,7 @@ class NewBookUI extends StatefulWidget {
 }
 
 class _NewBookUIState extends State<NewBookUI> {
+  bool isLoading = false;
   DateTime _selectedDate = DateTime.now();
   DateTime _selectedTimeStamp = DateTime.now();
   String _selectedTime =
@@ -31,8 +33,11 @@ class _NewBookUIState extends State<NewBookUI> {
 
   String selectedBookType = 'regular';
 
-  createBook() async {
+  void createBook() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       if (bookTitleController.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime =
@@ -48,7 +53,7 @@ class _NewBookUIState extends State<NewBookUI> {
           'expense': 0,
           'type': selectedBookType,
           'users': [],
-          'uid': FirebaseRefs.myUID,
+          'uid': globalUser.uid,
         };
         await FirebaseFirestore.instance
             .collection('transactBooks')
@@ -60,14 +65,23 @@ class _NewBookUIState extends State<NewBookUI> {
         pageControllerGlobal.value.animateToPage(0,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
       }
+
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       ShowSnackBar(context, content: "$e", isDanger: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

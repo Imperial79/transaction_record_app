@@ -50,6 +50,8 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = Theme.of(context).brightness == Brightness.dark;
+
     return KScaffold(
       body: SafeArea(
         child: Padding(
