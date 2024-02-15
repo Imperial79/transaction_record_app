@@ -59,13 +59,14 @@ class AuthMethods {
             .doc(gUserData.uid)
             .get()
             .then(
-          (dbUser) async {
-            if (dbUser.exists) {
+          (user) async {
+            final dbUser = user.data();
+            if (dbUser != null) {
               KUser oldUser = new KUser(
-                username: dbUser.data()!['username'],
-                email: dbUser.data()!['email']!,
-                name: dbUser.data()!['name']!,
-                uid: dbUser.data()!['uid'],
+                username: dbUser['username'],
+                email: dbUser['email'],
+                name: dbUser['name'],
+                uid: dbUser['uid'],
                 imgUrl: gUserData.photoURL!,
               );
 

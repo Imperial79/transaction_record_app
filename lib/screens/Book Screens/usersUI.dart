@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
@@ -27,27 +28,51 @@ class UsersUI extends StatefulWidget {
 
 class _UsersUIState extends State<UsersUI> {
   bool isLoading = false;
+  List<dynamic> _allUsers = [];
+  List<dynamic> _usersList = [];
+
   @override
   void initState() {
     super.initState();
-    widget.users.add(widget.ownerUid);
+    _init();
+  }
+
+  void _init() async {
+    _allUsers.addAll(widget.users);
+    _allUsers.add(widget.ownerUid);
+    await _fetchBookUsers();
+  }
+
+  Future<void> _fetchBookUsers() async {
+    setState(() => isLoading = true);
+    _usersList = [];
+    await FirebaseRefs.userRef
+        .where('uid', whereIn: _allUsers)
+        .get()
+        .then((value) {
+      setState(() {
+        value.docs.forEach((element) {
+          _usersList.add(element.data());
+        });
+      });
+    });
+    setState(() => isLoading = false);
   }
 
   void _removeUserFromBook(String userUid) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
       await FirebaseRefs.transactBookRef(widget.bookId).update({
         'uid': FieldValue.arrayRemove([userUid]),
+      }).whenComplete(() async {
+        _allUsers.remove(userUid);
+        ShowSnackBar(context, content: "User Removed!");
+        await _fetchBookUsers();
       });
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
+      ShowSnackBar(context, content: "Unable to remove user: $e");
     }
   }
 
@@ -55,38 +80,56 @@ class _UsersUIState extends State<UsersUI> {
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       appBar: AppBar(
         title: Text('Joined Users'),
       ),
+      // body: SafeArea(
+      //   child: Padding(
+      //     padding: EdgeInsets.all(15.0),
+      //     child: FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      //       future: FirebaseRefs.userRef.where('uid', whereIn: _allUsers).get(),
+      //       builder: (context, snapshot) {
+      //         return AnimatedSwitcher(
+      //           duration: Duration(milliseconds: 600),
+      //           child: snapshot.hasData
+      //               ? snapshot.data!.docs.length == 0
+      //                   ? NoData(context, customText: 'No Users')
+      //                   : ListView.separated(
+      //                       shrinkWrap: true,
+      //                       itemCount: snapshot.data!.docs.length,
+      //                       itemBuilder: (context, index) {
+      //                         KUser user = KUser.fromMap(
+      //                             snapshot.data!.docs[index].data());
+      //                         return _usersTile(user);
+      //                       },
+      //                       separatorBuilder: (context, index) => height20,
+      //                     )
+      //               : snapshot.hasError
+      //                   ? Text('Has Error')
+      //                   : _dummyUserTile(),
+      //         );
+      //       },
+      //     ),
+      //   ),
+      // ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(15.0),
-          child: FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            future:
-                FirebaseRefs.userRef.where('uid', whereIn: widget.users).get(),
-            builder: (context, snapshot) {
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 600),
-                child: snapshot.hasData
-                    ? snapshot.data!.docs.length == 0
-                        ? NoData(context, customText: 'No Users')
-                        : ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              KUser user = KUser.fromMap(
-                                  snapshot.data!.docs[index].data());
-                              return _usersTile(user);
-                            },
-                            separatorBuilder: (context, index) => height20,
-                          )
-                    : snapshot.hasError
-                        ? Text('Has Error')
-                        : _dummyUserTile(),
-              );
-            },
-          ),
-        ),
+            padding: EdgeInsets.all(15.0),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 600),
+              child: _usersList.length == 0
+                  ? NoData(context, customText: 'No Users')
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: _usersList.length,
+                      itemBuilder: (context, index) {
+                        KUser user = KUser.fromMap(_usersList[index]);
+                        return _usersTile(user);
+                      },
+                      separatorBuilder: (context, index) => height20,
+                    ),
+            )),
       ),
     );
   }
@@ -138,15 +181,13 @@ class _UsersUIState extends State<UsersUI> {
               borderRadius: kRadius(6),
               color:
                   isDark ? DarkColors.primaryButton : LightColors.primaryButton,
-              // border: Border.all(
-              //   color: isDark ? DarkColors.profitCard : LightColors.profitCard,
-              // ),
             ),
             child: Text(
               'Admin',
               style: TextStyle(
-                  color: isDark ? Colors.black : Colors.white,
-                  fontWeight: FontWeight.w500),
+                color: isDark ? Colors.black : Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),

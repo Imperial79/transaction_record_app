@@ -467,9 +467,6 @@ class _HomeUiState extends State<HomeUi>
                                               bookData.users!.length > 0
                                           ? CircleAvatar(
                                               radius: sdp(context, 10),
-                                              backgroundColor: isDark
-                                                  ? Colors.black
-                                                  : LightColors.profitCard,
                                               child: Icon(
                                                 Icons.groups_2,
                                                 size: sdp(context, 10),

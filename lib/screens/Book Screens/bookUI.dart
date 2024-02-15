@@ -1091,7 +1091,7 @@ class _BookUIState extends State<BookUI> {
                       future: FirebaseFirestore.instance
                           .collection('users')
                           .doc(transactData.uid)
-                          .get(GetOptions(source: Source.cache)),
+                          .get(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CircleAvatar(
