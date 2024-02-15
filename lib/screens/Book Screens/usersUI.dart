@@ -66,6 +66,7 @@ class _UsersUIState extends State<UsersUI> {
         'uid': FieldValue.arrayRemove([userUid]),
       }).whenComplete(() async {
         _allUsers.remove(userUid);
+        widget.users.remove(userUid);
         ShowSnackBar(context, content: "User Removed!");
         await _fetchBookUsers();
       });
@@ -84,52 +85,24 @@ class _UsersUIState extends State<UsersUI> {
       appBar: AppBar(
         title: Text('Joined Users'),
       ),
-      // body: SafeArea(
-      //   child: Padding(
-      //     padding: EdgeInsets.all(15.0),
-      //     child: FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      //       future: FirebaseRefs.userRef.where('uid', whereIn: _allUsers).get(),
-      //       builder: (context, snapshot) {
-      //         return AnimatedSwitcher(
-      //           duration: Duration(milliseconds: 600),
-      //           child: snapshot.hasData
-      //               ? snapshot.data!.docs.length == 0
-      //                   ? NoData(context, customText: 'No Users')
-      //                   : ListView.separated(
-      //                       shrinkWrap: true,
-      //                       itemCount: snapshot.data!.docs.length,
-      //                       itemBuilder: (context, index) {
-      //                         KUser user = KUser.fromMap(
-      //                             snapshot.data!.docs[index].data());
-      //                         return _usersTile(user);
-      //                       },
-      //                       separatorBuilder: (context, index) => height20,
-      //                     )
-      //               : snapshot.hasError
-      //                   ? Text('Has Error')
-      //                   : _dummyUserTile(),
-      //         );
-      //       },
-      //     ),
-      //   ),
-      // ),
       body: SafeArea(
         child: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 600),
-              child: _usersList.length == 0
-                  ? NoData(context, customText: 'No Users')
-                  : ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: _usersList.length,
-                      itemBuilder: (context, index) {
-                        KUser user = KUser.fromMap(_usersList[index]);
-                        return _usersTile(user);
-                      },
-                      separatorBuilder: (context, index) => height20,
-                    ),
-            )),
+          padding: EdgeInsets.all(15.0),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 600),
+            child: _usersList.length == 0
+                ? NoData(context, customText: 'No Users')
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _usersList.length,
+                    itemBuilder: (context, index) {
+                      KUser user = KUser.fromMap(_usersList[index]);
+                      return _usersTile(user);
+                    },
+                    separatorBuilder: (context, index) => height20,
+                  ),
+          ),
+        ),
       ),
     );
   }
@@ -192,15 +165,6 @@ class _UsersUIState extends State<UsersUI> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _dummyUserTile() {
-    return Card(
-      child: SizedBox(
-        height: 100,
-        width: double.infinity,
-      ),
     );
   }
 }

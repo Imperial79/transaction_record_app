@@ -264,34 +264,18 @@ Widget StatsCard({final label, content, isBook, bookId}) {
               color: isExpense ? Colors.white : Colors.black,
             ),
             width5,
-            // Text(
-            //   label,
-            //   style: TextStyle(
-            //     color: isExpense ? Colors.white : Colors.black,
-            //     fontWeight: FontWeight.w600,
-            //   ),
-            // ),
-            Text(
-              oCcy.format(double.parse(content)) + ' INR',
-              style: TextStyle(
-                color: isExpense ? Colors.white : Colors.black,
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
+            Expanded(
+              child: Text(
+                oCcy.format(double.parse(content)) + ' INR',
+                style: TextStyle(
+                  color: isExpense ? Colors.white : Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
         ),
-        // SizedBox(
-        //   height: 10,
-        // ),
-        // Text(
-        //   oCcy.format(double.parse(content)) + ' INR',
-        //   style: TextStyle(
-        //     color: isExpense ? Colors.white : Colors.black,
-        //     fontSize: 17,
-        //     fontWeight: FontWeight.w700,
-        //   ),
-        // ),
       ],
     ),
   );
