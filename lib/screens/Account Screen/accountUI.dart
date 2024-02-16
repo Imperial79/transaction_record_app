@@ -10,7 +10,6 @@ import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
-import '../../Utility/colors.dart';
 import '../../Utility/components.dart';
 
 class AccountUI extends StatefulWidget {
@@ -93,9 +92,7 @@ class _AccountUIState extends State<AccountUI> {
                         children: [
                           Icon(
                             Icons.tag,
-                            color: isDark
-                                ? DarkColors.fadeText
-                                : LightColors.fadeText,
+                            color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                           width5,
                           Flexible(
@@ -103,9 +100,7 @@ class _AccountUIState extends State<AccountUI> {
                               globalUser.username,
                               style: TextStyle(
                                 fontSize: 20,
-                                color: isDark
-                                    ? DarkColors.fadeText
-                                    : LightColors.fadeText,
+                                color: isDark ? Dark.fadeText : Light.fadeText,
                               ),
                             ),
                           ),
@@ -204,9 +199,7 @@ class _AccountUIState extends State<AccountUI> {
               ),
               decoration: BoxDecoration(
                 borderRadius: kRadius(12),
-                color: isDark
-                    ? DarkColors.primaryButton
-                    : LightColors.primaryButton,
+                color: isDark ? Dark.primary : Light.primary,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

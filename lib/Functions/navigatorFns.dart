@@ -44,7 +44,7 @@ ShowSnackBar(
           color: isDanger ? Colors.red.shade900 : Colors.teal.shade900,
         ),
       ),
-      backgroundColor: isDanger ? Colors.red.shade100 : LightColors.profitCard,
+      backgroundColor: isDanger ? Colors.red.shade100 : Light.profitCard,
     ),
   );
 }

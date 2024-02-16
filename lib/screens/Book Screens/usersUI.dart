@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -140,8 +139,7 @@ class _UsersUIState extends State<UsersUI> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: isDark ? Colors.black : Colors.white,
-              foregroundColor:
-                  isDark ? DarkColors.lossText : LightColors.lossText,
+              foregroundColor: isDark ? Dark.lossText : Light.lossText,
             ),
             child: Text('Remove'),
           ),
@@ -152,8 +150,7 @@ class _UsersUIState extends State<UsersUI> {
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
               borderRadius: kRadius(6),
-              color:
-                  isDark ? DarkColors.primaryButton : LightColors.primaryButton,
+              color: isDark ? Dark.primary : Light.primary,
             ),
             child: Text(
               'Admin',

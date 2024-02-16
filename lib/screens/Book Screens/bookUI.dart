@@ -15,7 +15,6 @@ import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactU
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/user.dart';
 import '../../Functions/navigatorFns.dart';
-import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
@@ -180,7 +179,7 @@ class _BookUIState extends State<BookUI> {
         showModalBottomSheet(
           context: context,
           elevation: 0,
-          backgroundColor: isDark ? DarkColors.card : LightColors.card,
+          backgroundColor: isDark ? Dark.card : Light.card,
           builder: (context) {
             return DistributeModal(balanceSheet, balanceSheetUsers);
           },
@@ -242,7 +241,9 @@ class _BookUIState extends State<BookUI> {
                                         curve: Curves.ease,
                                         child: Container(
                                           child: IconButton(
-                                            color: textLinkColor,
+                                            color: isDark
+                                                ? Dark.profitText
+                                                : Light.profitText,
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
@@ -252,7 +253,7 @@ class _BookUIState extends State<BookUI> {
                                                 Icon(
                                                   Icons.arrow_back,
                                                   color: isDark
-                                                      ? darkProfitColorAccent
+                                                      ? Dark.profitCard
                                                       : Colors.black,
                                                 ),
                                                 _searchController.text.isEmpty
@@ -267,8 +268,8 @@ class _BookUIState extends State<BookUI> {
                                                           fontWeight:
                                                               FontWeight.w600,
                                                           color: isDark
-                                                              ? whiteColor
-                                                              : blackColor,
+                                                              ? Colors.white
+                                                              : Colors.black,
                                                         ),
                                                       )
                                                     : SizedBox(),
@@ -313,7 +314,7 @@ class _BookUIState extends State<BookUI> {
                                           child: CircleAvatar(
                                             radius: sdp(context, 10),
                                             backgroundColor: isDark
-                                                ? cardColordark
+                                                ? Dark.card
                                                 : Colors.grey.shade200,
                                             child: FittedBox(
                                               child: Icon(
@@ -324,8 +325,8 @@ class _BookUIState extends State<BookUI> {
                                                         .keyboard_arrow_down_rounded,
                                                 size: sdp(context, 15),
                                                 color: isDark
-                                                    ? whiteColor
-                                                    : blackColor,
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
                                           ),
@@ -487,7 +488,7 @@ class _BookUIState extends State<BookUI> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: kRadius(20),
-                  color: isDark ? darkProfitColorAccent : blackColor,
+                  color: isDark ? Dark.profitCard : Colors.black,
                 ),
                 child: AnimatedSize(
                   reverseDuration: Duration(milliseconds: 300),
@@ -512,7 +513,7 @@ class _BookUIState extends State<BookUI> {
                           children: [
                             Icon(
                               Icons.add_circle_outline,
-                              color: isDark ? blackColor : Colors.white,
+                              color: isDark ? Colors.black : Colors.white,
                               size: 30,
                             ),
                             if (showFullAddBtn) const SizedBox(width: 10),
@@ -522,7 +523,7 @@ class _BookUIState extends State<BookUI> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15,
-                                  color: isDark ? blackColor : Colors.white,
+                                  color: isDark ? Colors.black : Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -562,9 +563,7 @@ class _BookUIState extends State<BookUI> {
                     Expanded(
                         child: CircleAvatar(
                       radius: sdp(context, 10),
-                      backgroundColor: isDark
-                          ? DarkColors.primaryButton
-                          : LightColors.primaryButton,
+                      backgroundColor: isDark ? Dark.primary : Light.primary,
                       child: FittedBox(
                         child: Padding(
                           padding: EdgeInsets.all(5.0),
@@ -610,8 +609,7 @@ class _BookUIState extends State<BookUI> {
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: kRadius(10),
-                        color:
-                            isDark ? DarkColors.scaffold : LightColors.scaffold,
+                        color: isDark ? Dark.scaffold : Light.scaffold,
                       ),
                       child: Row(
                         children: [
@@ -638,8 +636,7 @@ class _BookUIState extends State<BookUI> {
                                 vertical: 10, horizontal: 20),
                             decoration: BoxDecoration(
                               borderRadius: kRadius(100),
-                              color:
-                                  isDark ? LightColors.card : DarkColors.card,
+                              color: isDark ? Light.card : Dark.card,
                             ),
                             child: Text(
                               "₹ ${balanceSheet[index]['amount'].toStringAsFixed(2)}",
@@ -699,7 +696,7 @@ class _BookUIState extends State<BookUI> {
                       text: 'INR ',
                       style: TextStyle(
                         fontSize: sdp(context, 22),
-                        color: isDark ? whiteColor : blackColor,
+                        color: isDark ? Colors.white : Colors.black,
                         fontFamily: 'Product',
                         fontWeight: FontWeight.w200,
                       ),
@@ -708,7 +705,7 @@ class _BookUIState extends State<BookUI> {
                       text: oCcy.format(ds['income'] - ds['expense']),
                       style: TextStyle(
                         fontSize: sdp(context, 22),
-                        color: isDark ? whiteColor : blackColor,
+                        color: isDark ? Colors.white : Colors.black,
                         fontFamily: 'Product',
                         fontWeight: FontWeight.w900,
                       ),
@@ -753,14 +750,14 @@ class _BookUIState extends State<BookUI> {
       children: [
         Expanded(
           child: Card(
-            color: isDark ? DarkColors.card : LightColors.card,
+            color: isDark ? Dark.card : Light.card,
             child: SizedBox(height: 100),
           ),
         ),
         width10,
         Expanded(
           child: Card(
-            color: isDark ? DarkColors.card : LightColors.card,
+            color: isDark ? Dark.card : Light.card,
             child: SizedBox(height: 100),
           ),
         ),
@@ -776,21 +773,21 @@ class _BookUIState extends State<BookUI> {
         shape: BoxShape.circle,
         color: isDark
             ? _selectedSortType == 'All'
-                ? greyColorAccent
+                ? Dark.fadeText
                 : _selectedSortType == 'Income'
-                    ? darkProfitColorAccent
+                    ? Dark.profitCard
                     : Colors.red
             : _selectedSortType == 'All'
                 ? Colors.black
                 : _selectedSortType == 'Income'
-                    ? darkProfitColorAccent
+                    ? Dark.profitCard
                     : Colors.red,
         boxShadow: [
           BoxShadow(
             color: _selectedSortType == 'All'
                 ? Colors.grey.shade500
                 : _selectedSortType == 'Income'
-                    ? darkProfitColorAccent
+                    ? Dark.profitCard
                     : Colors.red,
             blurRadius: 100,
             spreadRadius: 10,
@@ -820,11 +817,11 @@ class _BookUIState extends State<BookUI> {
                     : Icons.file_upload_outlined,
             color: isDark
                 ? _selectedSortType == 'Income' || _selectedSortType == 'All'
-                    ? blackColor
-                    : whiteColor
+                    ? Colors.black
+                    : Colors.white
                 : _selectedSortType == 'All' || _selectedSortType == 'Expense'
-                    ? whiteColor
-                    : blackColor,
+                    ? Colors.white
+                    : Colors.black,
           ),
         ),
       ),
@@ -896,9 +893,7 @@ class _BookUIState extends State<BookUI> {
                           'No Transacts',
                           style: TextStyle(
                             fontSize: sdp(context, 20),
-                            color: isDark
-                                ? DarkColors.fadeText
-                                : LightColors.fadeText,
+                            color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
                   : DummyTransactList(),
@@ -914,7 +909,7 @@ class _BookUIState extends State<BookUI> {
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
       decoration: BoxDecoration(
-        color: isDark ? cardColordark : cardColorlight,
+        color: isDark ? Dark.card : Light.card,
         borderRadius: BorderRadius.horizontal(
           left: Radius.circular(100),
         ),
@@ -925,22 +920,22 @@ class _BookUIState extends State<BookUI> {
             'lib/assets/icons/search.svg',
             height: sdp(context, 15),
             colorFilter: svgColor(
-              isDark ? DarkColors.text : LightColors.text,
+              isDark ? Dark.text : Light.text,
             ),
           ),
           width10,
           Flexible(
             child: TextField(
               controller: _searchController,
-              cursorColor: isDark ? Colors.greenAccent : primaryColor,
+              cursorColor: isDark ? Dark.primary : Light.primary,
               style: TextStyle(
-                color: isDark ? whiteColor : blackColor,
+                color: isDark ? Colors.white : Colors.black,
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color: isDark ? greyColorAccent : Colors.grey,
+                  color: isDark ? Dark.fadeText : Light.fadeText,
                 ),
                 hintText: 'Search amount, description, etc',
               ),
@@ -964,7 +959,7 @@ class _BookUIState extends State<BookUI> {
               padding: EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? Color(0xFF333333) : cardColorlight,
+                color: isDark ? Dark.card : Light.card,
                 borderRadius: kRadius(20),
               ),
               child: Column(
@@ -1072,7 +1067,7 @@ class _BookUIState extends State<BookUI> {
               dateLabel,
               style: TextStyle(
                 fontSize: 14,
-                color: isDark ? whiteColor : blackColor,
+                color: isDark ? Colors.white : Colors.black,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -1126,7 +1121,7 @@ class _BookUIState extends State<BookUI> {
                     padding: EdgeInsets.all(10),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: isDark ? Color(0xFF333333) : cardColorlight,
+                      color: isDark ? Dark.card : Light.card,
                       borderRadius: kRadius(20),
                     ),
                     child: Column(
@@ -1152,20 +1147,24 @@ class _BookUIState extends State<BookUI> {
                                         decoration: BoxDecoration(
                                           color: isIncome
                                               ? isDark
-                                                  ? DarkColors.profitText
-                                                  : LightColors.profitText
+                                                  ? Dark.profitText
+                                                  : Light.profitText
                                               : isDark
-                                                  ? DarkColors.lossText
-                                                  : LightColors.lossText,
+                                                  ? Dark.lossText
+                                                  : Light.lossText,
                                           shape: BoxShape.circle,
                                           boxShadow: [
                                             isDark
                                                 ? BoxShadow(
                                                     color: isIncome
-                                                        ? darkProfitColorAccent
-                                                            .withOpacity(0.5)
-                                                        : lossColor
-                                                            .withOpacity(0.5),
+                                                        ? isDark
+                                                            ? Dark.profitCard
+                                                                .withOpacity(.5)
+                                                            : Light.profitCard
+                                                                .withOpacity(.5)
+                                                        : isDark
+                                                            ? Dark.lossCard
+                                                            : Light.lossCard,
                                                     blurRadius: 30,
                                                     spreadRadius: 1,
                                                   )
@@ -1203,14 +1202,11 @@ class _BookUIState extends State<BookUI> {
                                                   fontWeight: FontWeight.w800,
                                                   color: isIncome
                                                       ? isDark
-                                                          ? DarkColors
-                                                              .profitText
-                                                          : LightColors
-                                                              .profitText
+                                                          ? Dark.profitText
+                                                          : Light.profitText
                                                       : isDark
-                                                          ? DarkColors.lossText
-                                                          : LightColors
-                                                              .lossText,
+                                                          ? Dark.lossText
+                                                          : Light.lossText,
                                                 ),
                                                 children: [
                                                   TextSpan(
@@ -1233,7 +1229,7 @@ class _BookUIState extends State<BookUI> {
                                                             .transactMode ==
                                                         'CASH'
                                                     ? isDark
-                                                        ? DarkColors.profitText
+                                                        ? Dark.profitText
                                                         : Colors.black
                                                     : isDark
                                                         ? Color(0xFF9DC4FF)
@@ -1272,8 +1268,8 @@ class _BookUIState extends State<BookUI> {
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: isDark
-                                            ? DarkColors.scaffold
-                                            : LightColors.scaffold,
+                                            ? Dark.scaffold
+                                            : Light.scaffold,
                                         borderRadius: kRadius(10),
                                       ),
                                       child: Text(transactData.description),
@@ -1290,14 +1286,12 @@ class _BookUIState extends State<BookUI> {
                           children: [
                             Icon(
                               Icons.schedule_rounded,
-                              color: isDark ? whiteColor : darkGreyColor,
                               size: 15,
                             ),
                             width5,
                             Text(
                               transactData.time.toString(),
                               style: TextStyle(
-                                color: isDark ? whiteColor : darkGreyColor,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1349,7 +1343,7 @@ class _BookUIState extends State<BookUI> {
                   padding: EdgeInsets.all(5),
                   child: Icon(
                     icon,
-                    color: whiteColor,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -1361,11 +1355,6 @@ class _BookUIState extends State<BookUI> {
                 style: TextStyle(
                   fontSize: sdp(context, 10),
                   fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
-                  color: isDark
-                      ? isEmpty
-                          ? Colors.grey
-                          : whiteColor
-                      : darkGreyColor,
                   fontStyle: isEmpty ? FontStyle.italic : null,
                 ),
                 maxLines: 3,
@@ -1384,7 +1373,7 @@ class _BookUIState extends State<BookUI> {
       margin: EdgeInsets.all(10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? cardColordark : Colors.grey.shade300,
+        color: isDark ? Dark.card : Light.card,
         borderRadius: kRadius(12),
       ),
       child: Column(
@@ -1412,7 +1401,7 @@ class _BookUIState extends State<BookUI> {
                 child: Text(
                   '${widget.snap.date}',
                   style: TextStyle(
-                    color: isDark ? greyColorAccent : Colors.black,
+                    color: isDark ? Dark.fadeText : Light.fadeText,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -1525,7 +1514,7 @@ class _BookUIState extends State<BookUI> {
                 label: 'Add User(s)',
                 iconSize: sdp(context, 12),
                 icon: Icons.person_add_alt_1,
-                btnColor: isDark ? DarkColors.profitText : Color(0xFF27576D),
+                btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
               BookMenuBtn(
@@ -1536,7 +1525,7 @@ class _BookUIState extends State<BookUI> {
                 label: 'Distribute',
                 iconSize: sdp(context, 12),
                 icon: Icons.alt_route_rounded,
-                btnColor: isDark ? DarkColors.profitText : Color(0xFF27576D),
+                btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
             ],
@@ -1581,7 +1570,7 @@ class _BookUIState extends State<BookUI> {
       builder: (context, setState) => Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.all(15),
-        backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
+        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
@@ -1699,8 +1688,8 @@ class _BookUIState extends State<BookUI> {
             borderRadius: kRadius(15),
             color: selectedUsers.contains(userData.uid)
                 ? isDark
-                    ? DarkColors.profitCard.withOpacity(.6)
-                    : LightColors.profitCard
+                    ? Dark.profitCard.withOpacity(.6)
+                    : Light.profitCard
                 : Colors.transparent,
           ),
           padding: EdgeInsets.all(10),
@@ -1744,7 +1733,7 @@ class _BookUIState extends State<BookUI> {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: kRadius(20),
-                    color: isDark ? cardColordark : Colors.white,
+                    color: isDark ? Dark.card : Colors.white,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1764,7 +1753,7 @@ class _BookUIState extends State<BookUI> {
                             child: Text(
                               'Filter',
                               style: TextStyle(
-                                color: isDark ? whiteColor : blackColor,
+                                color: isDark ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
                                 fontSize: sdp(context, 16),
                               ),
@@ -1781,12 +1770,12 @@ class _BookUIState extends State<BookUI> {
                             ),
                             icon: Icon(
                               Icons.done,
-                              color: isDark ? blackColor : whiteColor,
+                              color: isDark ? Colors.black : Colors.white,
                             ),
                             label: Text(
                               'Apply',
                               style: TextStyle(
-                                color: isDark ? blackColor : whiteColor,
+                                color: isDark ? Colors.black : Colors.white,
                               ),
                             ),
                           ),
@@ -1802,26 +1791,25 @@ class _BookUIState extends State<BookUI> {
                             setState: setState,
                             icon: Icon(
                               Icons.all_inbox,
-                              color: isDark ? blackColor : whiteColor,
+                              color: isDark ? Colors.black : Colors.white,
                             ),
                             label: 'All',
-                            color: isDark ? whiteColor : blackColor,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                           FilterBtns(
                             setState: setState,
                             icon: Icon(
                               Icons.file_download_outlined,
-                              color: isDark ? blackColor : whiteColor,
+                              color: isDark ? Colors.black : Colors.white,
                             ),
                             label: 'Income',
-                            color:
-                                isDark ? darkProfitColorAccent : primaryColor,
+                            color: isDark ? Dark.profitCard : Light.profitCard,
                           ),
                           FilterBtns(
                             setState: setState,
                             icon: Icon(
                               Icons.file_upload_outlined,
-                              color: isDark ? blackColor : whiteColor,
+                              color: isDark ? Colors.black : Colors.white,
                             ),
                             label: 'Expense',
                             color: isDark ? Colors.red.shade300 : Colors.red,
@@ -1892,7 +1880,7 @@ class _BookUIState extends State<BookUI> {
               color: isSelected
                   ? isDark
                       ? color
-                      : blackColor
+                      : Colors.black
                   : Colors.grey.shade600,
             ),
             textAlign: TextAlign.center,

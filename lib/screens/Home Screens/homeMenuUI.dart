@@ -5,7 +5,6 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/user.dart';
-import '../../Utility/colors.dart';
 import '../../Utility/components.dart';
 import '../../Utility/sdp.dart';
 
@@ -37,7 +36,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: sdp(context, 10),
-                      color: isDark ? whiteColor : blackColor,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -48,7 +47,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             ),
             Container(
               decoration: BoxDecoration(
-                color: isDark ? DarkColors.scaffold : LightColors.scaffold,
+                color: isDark ? Dark.scaffold : Light.scaffold,
                 borderRadius: kRadius(20),
               ),
               width: double.infinity,
@@ -62,8 +61,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                     children: [
                       HomeMenuBtn(
                         label: 'Account',
-                        borderColor:
-                            isDark ? DarkColors.fadeText : LightColors.fadeText,
+                        borderColor: isDark ? Dark.fadeText : Light.fadeText,
                         child: GestureDetector(
                           onTap: () {
                             NavPush(context, AccountUI());
@@ -150,7 +148,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: isDark ? whiteColor : blackColor,
+              color: isDark ? Colors.white : Colors.black,
               fontSize: sdp(context, 10),
             ),
             textAlign: TextAlign.center,

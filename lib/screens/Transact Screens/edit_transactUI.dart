@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
-import '../../Utility/colors.dart';
 import '../../Utility/sdp.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
@@ -263,7 +262,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         width: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? DarkColors.card : LightColors.card,
+                          color: isDark ? Dark.card : Light.card,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -272,7 +271,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           icon: Icon(
                             Icons.close,
                             size: 20,
-                            color: isDark ? whiteColor : Colors.black,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                       ),
@@ -300,7 +299,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 backgroundColor: Colors.blue,
                                 child: Icon(
                                   Icons.short_text_rounded,
-                                  color: whiteColor,
+                                  color: Colors.white,
                                 ),
                               ),
                               SizedBox(
@@ -314,9 +313,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   maxLines: 5,
                                   minLines: 1,
                                   cursorColor:
-                                      isDark ? whiteColor : Colors.black,
+                                      isDark ? Colors.white : Colors.black,
                                   style: TextStyle(
-                                    color: isDark ? whiteColor : Colors.black,
+                                    color: isDark ? Colors.white : Colors.black,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   decoration: InputDecoration(
@@ -342,7 +341,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   Icon(
                                     Icons.schedule,
                                     size: sdp(context, 15),
-                                    color: isDark ? whiteColor : Colors.black,
+                                    color: isDark ? Colors.white : Colors.black,
                                   ),
                                   SizedBox(
                                     width: 10,
@@ -350,7 +349,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   Text(
                                     'Created on',
                                     style: TextStyle(
-                                      color: isDark ? whiteColor : Colors.black,
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -374,15 +374,15 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                         decoration: BoxDecoration(
                                           borderRadius: kRadius(10),
                                           color: isDark
-                                              ? darkGreyColor
+                                              ? Dark.scaffold
                                               : Colors.white,
                                         ),
                                         child: Text(
                                           _selectedDateMap['displayDate'],
                                           style: TextStyle(
                                             color: isDark
-                                                ? whiteColor
-                                                : blackColor,
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -409,14 +409,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                       decoration: BoxDecoration(
                                         borderRadius: kRadius(10),
                                         color: isDark
-                                            ? darkGreyColor
-                                            : Colors.white,
+                                            ? Dark.scaffold
+                                            : Light.scaffold,
                                       ),
                                       child: Text(
                                         _selectedTimeMap['displayTime'],
                                         style: TextStyle(
-                                          color:
-                                              isDark ? whiteColor : blackColor,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -438,7 +436,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 backgroundColor: Colors.amber.shade900,
                                 child: Icon(
                                   Icons.person,
-                                  color: whiteColor,
+                                  color: Colors.white,
                                   size: sdp(context, 12),
                                 ),
                               ),
@@ -453,9 +451,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   textCapitalization:
                                       TextCapitalization.sentences,
                                   cursorColor:
-                                      isDark ? whiteColor : Colors.black,
+                                      isDark ? Colors.white : Colors.black,
                                   style: TextStyle(
-                                    color: isDark ? whiteColor : Colors.black,
+                                    color: isDark ? Colors.white : Colors.black,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   decoration: InputDecoration(
@@ -632,7 +630,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         boxShadow: [
           BoxShadow(
             color: mode == 'Income'
-                ? lightProfitColorAccent.withOpacity(0.3)
+                ? Light.profitCard.withOpacity(0.3)
                 : isDark
                     ? Colors.grey.shade600
                     : Colors.grey.shade200,
@@ -655,7 +653,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       width: double.infinity,
       margin: EdgeInsets.only(top: 15),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : whiteColor,
+        color: isDark ? Colors.grey.shade900 : Colors.white,
         borderRadius: kRadius(30),
       ),
       child: Column(
@@ -684,7 +682,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                 ),
                 Text(
                   date!,
-                  style: TextStyle(color: isDark ? whiteColor : darkGreyColor),
+                  style:
+                      TextStyle(color: isDark ? Colors.white : Dark.scaffold),
                 ),
               ],
             ),
@@ -694,7 +693,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  isDark ? Colors.grey.shade900 : whiteColor,
+                  isDark ? Colors.grey.shade900 : Colors.white,
                   isDark ? Colors.grey.withOpacity(0) : Colors.grey.shade300,
                 ],
                 begin: Alignment.centerLeft,
@@ -706,14 +705,14 @@ class _EditTransactUIState extends State<EditTransactUI> {
               keyboardType: TextInputType.number,
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: isDark ? whiteColor : Colors.black,
+                color: isDark ? Colors.white : Colors.black,
                 fontSize: sdp(context, 20),
               ),
-              cursorColor: isDark ? whiteColor : Colors.black,
+              cursorColor: isDark ? Colors.white : Colors.black,
               decoration: InputDecoration(
                 prefixText: 'INR ',
                 prefixStyle: TextStyle(
-                  color: isDark ? whiteColor : Colors.grey.shade700,
+                  color: isDark ? Colors.white : Colors.grey.shade700,
                   fontSize: sdp(context, 20),
                   fontWeight: FontWeight.w300,
                 ),
@@ -738,7 +737,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         width: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? darkGreyColor : cardColorlight,
+                          color: isDark ? Dark.scaffold : Light.scaffold,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -760,8 +759,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       BoxShadow(
                         color: transactType == 'Income'
                             ? isDark
-                                ? darkProfitColorAccent.withOpacity(0.5)
-                                : lightProfitColorAccent.withOpacity(0.2)
+                                ? Dark.profitCard.withOpacity(0.5)
+                                : Light.profitCard.withOpacity(0.2)
                             : isDark
                                 ? Colors.redAccent.withOpacity(0.6)
                                 : Colors.red.withOpacity(0.2),
@@ -789,7 +788,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         gradient: LinearGradient(
                           colors: [
                             transactType == 'Income'
-                                ? primaryColor
+                                ? Dark.profitText
                                 : Colors.redAccent,
                             transactType == 'Income'
                                 ? Colors.lightGreenAccent
@@ -842,11 +841,11 @@ class _EditTransactUIState extends State<EditTransactUI> {
       ),
       color: label == 'Expense'
           ? isDark
-              ? DarkColors.lossCard
-              : LightColors.lossCard
+              ? Dark.lossCard
+              : Light.lossCard
           : isDark
-              ? DarkColors.profitCard
-              : LightColors.profitCard,
+              ? Dark.profitCard
+              : Light.profitCard,
       elevation: 0,
       highlightElevation: 0,
       child: Row(

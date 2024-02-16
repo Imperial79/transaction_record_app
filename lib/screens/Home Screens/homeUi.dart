@@ -1,14 +1,10 @@
-import 'dart:developer';
-
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -17,7 +13,6 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Utility/sdp.dart';
-import '../../models/userModel.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
@@ -81,6 +76,7 @@ class _HomeUiState extends State<HomeUi>
     _scrollController.dispose();
   }
 
+  // ignore: non_constant_identifier_names
   Widget BookList() {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
@@ -113,18 +109,16 @@ class _HomeUiState extends State<HomeUi>
                                   style: TextStyle(
                                     fontSize: sdp(context, 10),
                                     letterSpacing: 10,
-                                    color: isDark
-                                        ? DarkColors.fadeText
-                                        : LightColors.fadeText,
+                                    color:
+                                        isDark ? Dark.fadeText : Light.fadeText,
                                   ),
                                 ),
                               )
                             : Text(
                                 'Searching for "${_searchController.text}"',
                                 style: TextStyle(
-                                  color: isDark
-                                      ? DarkColors.fadeText
-                                      : LightColors.fadeText,
+                                  color:
+                                      isDark ? Dark.fadeText : Light.fadeText,
                                 ),
                               ),
                         height10,
@@ -169,7 +163,7 @@ class _HomeUiState extends State<HomeUi>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _searchController.text.isEmpty ? _showAdd.value = true : false;
+    _showAdd.value = _searchController.text.isEmpty;
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
@@ -220,8 +214,6 @@ class _HomeUiState extends State<HomeUi>
                                       child: Hero(
                                         tag: 'profImg',
                                         child: CircleAvatar(
-                                          backgroundColor:
-                                              darkProfitColorAccent,
                                           radius: sdp(context, 10),
                                           child: ClipRRect(
                                             borderRadius: kRadius(50),
@@ -229,8 +221,7 @@ class _HomeUiState extends State<HomeUi>
                                                 ? Center(
                                                     child:
                                                         CircularProgressIndicator(
-                                                      color:
-                                                          darkProfitColorAccent,
+                                                      color: Dark.profitCard,
                                                       strokeWidth: 1.5,
                                                     ),
                                                   )
@@ -252,8 +243,8 @@ class _HomeUiState extends State<HomeUi>
                                               fontSize: 20,
                                               fontWeight: FontWeight.w400,
                                               color: isDark
-                                                  ? whiteColor
-                                                  : blackColor,
+                                                  ? Colors.white
+                                                  : Colors.black,
                                             ),
                                           ),
                                           width10,
@@ -267,8 +258,8 @@ class _HomeUiState extends State<HomeUi>
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w900,
                                                   color: isDark
-                                                      ? whiteColor
-                                                      : blackColor,
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               );
                                             },
@@ -287,7 +278,7 @@ class _HomeUiState extends State<HomeUi>
                                       child: CircleAvatar(
                                         radius: sdp(context, 10),
                                         backgroundColor: isDark
-                                            ? cardColordark
+                                            ? Dark.card
                                             : Colors.grey.shade200,
                                         child: Icon(
                                           _showHomeMenu.value
@@ -295,8 +286,9 @@ class _HomeUiState extends State<HomeUi>
                                               : Icons
                                                   .keyboard_arrow_down_rounded,
                                           size: sdp(context, 15),
-                                          color:
-                                              isDark ? whiteColor : blackColor,
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
                                     ),
@@ -361,14 +353,14 @@ class _HomeUiState extends State<HomeUi>
     bool isCompleted =
         bookData.expense != 0 && (bookData.income == bookData.expense);
 
-    Color _kCardColor = cardColordark;
+    Color _kCardColor = Dark.card;
     Color _textColor = Colors.black;
 
     if (isCompleted) {
-      _kCardColor = isDark ? DarkColors.profitCard : LightColors.profitCard;
+      _kCardColor = isDark ? Dark.profitCard : Light.profitCard;
       _textColor = Colors.black;
     } else {
-      _kCardColor = isDark ? DarkColors.card : LightColors.card;
+      _kCardColor = isDark ? Dark.card : Light.card;
       _textColor = isDark ? Colors.white : Colors.black;
     }
     return Column(
@@ -382,7 +374,6 @@ class _HomeUiState extends State<HomeUi>
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
                 fontSize: 15,
-                color: isDark ? greyColorAccent : blackColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -398,8 +389,8 @@ class _HomeUiState extends State<HomeUi>
           ),
           openElevation: 0,
           transitionType: ContainerTransitionType.fadeThrough,
-          closedColor: isDark ? DarkColors.card : LightColors.card,
-          openColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
+          closedColor: isDark ? Dark.card : Light.card,
+          openColor: isDark ? Dark.scaffold : Light.scaffold,
           middleColor: isDark ? Colors.black : Colors.white,
           closedBuilder: (context, openContainer) {
             return GestureDetector(
@@ -513,8 +504,7 @@ class _HomeUiState extends State<HomeUi>
                         ),
                       ),
                       Card(
-                        color:
-                            isDark ? DarkColors.scaffold : LightColors.scaffold,
+                        color: isDark ? Dark.scaffold : Light.scaffold,
                         child: Padding(
                           padding: EdgeInsets.all(10),
                           child: Row(

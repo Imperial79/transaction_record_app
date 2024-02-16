@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
@@ -102,7 +101,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
     return KScaffold(
       isLoading: isLoading,
       appBar: AppBar(
-        backgroundColor: isDark ? DarkColors.scaffold : LightColors.scaffold,
+        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
         title: Text('Notifications'),
       ),
       body: SafeArea(
@@ -160,7 +159,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: kRadius(15),
-        color: isDark ? DarkColors.card : LightColors.card,
+        color: isDark ? Dark.card : Light.card,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,8 +206,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isDark ? DarkColors.lossCard : LightColors.lossCard,
+                  backgroundColor: isDark ? Dark.lossCard : Light.lossCard,
                   foregroundColor: Colors.white,
                 ),
                 child: Text('Reject'),

@@ -1,10 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -100,8 +98,6 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: sdp(context, 25),
                                     fontWeight: FontWeight.bold,
-                                    color:
-                                        isDark ? greyColorAccent : blackColor,
                                   ),
                                 ),
                                 SizedBox(
@@ -112,16 +108,14 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w500,
-                                    color:
-                                        isDark ? greyColorAccent : blackColor,
                                   ),
                                 ),
                                 Text(
                                   '#OpenSource',
                                   style: TextStyle(
                                     color: isDark
-                                        ? profitHighlightColor
-                                        : textLinkColor,
+                                        ? Dark.profitCard
+                                        : Light.profitCard,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
                                   ),
@@ -129,8 +123,8 @@ class _LoginUIState extends State<LoginUI> {
                                 TextLink(
                                   link: _githubLink,
                                   color: isDark
-                                      ? profitHighlightColor
-                                      : textLinkColor,
+                                      ? Dark.profitCard
+                                      : Light.profitCard,
                                   text: '#Github',
                                 )
                               ],
@@ -141,7 +135,7 @@ class _LoginUIState extends State<LoginUI> {
                               SvgPicture.asset(
                                 'lib/assets/icons/cloud.svg',
                                 colorFilter: svgColor(
-                                  isDark ? profitHighlightColor : textLinkColor,
+                                  isDark ? Dark.profitText : Light.profitText,
                                 ),
                                 height: sdp(context, 20),
                               ),
@@ -153,8 +147,8 @@ class _LoginUIState extends State<LoginUI> {
                                     fontWeight: FontWeight.w900,
                                     fontSize: sdp(context, 10),
                                     color: isDark
-                                        ? profitHighlightColor
-                                        : textLinkColor,
+                                        ? Dark.profitText
+                                        : Light.profitText,
                                   ),
                                 ),
                               ),
@@ -178,9 +172,7 @@ class _LoginUIState extends State<LoginUI> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: kRadius(15),
-                                color: isDark
-                                    ? DarkColors.lossCard
-                                    : LightColors.lossCard,
+                                color: isDark ? Dark.lossCard : Light.lossCard,
                                 // color: Color(0xffda8363),
                                 border: Border.all(color: Colors.red.shade100),
                               ),
@@ -217,7 +209,6 @@ class _LoginUIState extends State<LoginUI> {
                             style: TextStyle(
                               fontSize: sdp(context, 10),
                               fontWeight: FontWeight.w600,
-                              color: isDark ? greyColorAccent : blackColor,
                             ),
                           ),
                           SizedBox(
@@ -229,17 +220,15 @@ class _LoginUIState extends State<LoginUI> {
                               TextLink(
                                 text: 'Terms and Conditions',
                                 link: Uri.parse(''),
-                                color: isDark
-                                    ? profitHighlightColor
-                                    : textLinkColor,
+                                color:
+                                    isDark ? Dark.profitText : Light.profitText,
                                 textAlign: TextAlign.start,
                               ),
                               TextLink(
                                 text: 'Privacy Policy',
                                 link: _privacyPolicyUrl,
-                                color: isDark
-                                    ? profitHighlightColor
-                                    : textLinkColor,
+                                color:
+                                    isDark ? Dark.profitText : Light.profitText,
                                 textAlign: TextAlign.end,
                               ),
                             ],
@@ -264,7 +253,7 @@ class _LoginUIState extends State<LoginUI> {
             Transform.scale(
               scale: 0.5,
               child: CircularProgressIndicator(
-                color: isDark ? profitHighlightColor : primaryColor,
+                color: isDark ? Dark.profitCard : Light.profitCard,
               ),
             ),
             SizedBox(
@@ -274,7 +263,7 @@ class _LoginUIState extends State<LoginUI> {
               'Fetching Your Transacts',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: isDark ? whiteColor : Colors.black,
+                color: isDark ? Colors.white : Colors.black,
                 fontSize: 20,
               ),
             ),

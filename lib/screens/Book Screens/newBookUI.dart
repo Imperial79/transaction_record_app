@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
@@ -99,30 +98,27 @@ class _NewBookUIState extends State<NewBookUI> {
                         style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w900,
-                          color: isDark ? whiteColor : blackColor,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                         cursorWidth: 1,
-                        cursorColor: isDark ? whiteColor : blackColor,
+                        cursorColor: isDark ? Colors.white : Colors.black,
                         decoration: InputDecoration(
-                          focusColor: isDark ? whiteColor : blackColor,
+                          focusColor: isDark ? Colors.white : Colors.black,
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: isDark ? darkGreyColor : blackColor,
+                              color: isDark ? Dark.card : Colors.black,
                               width: 2,
                             ),
                           ),
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color:
-                                  isDark ? darkGreyColor : Colors.grey.shade300,
+                              color: isDark ? Dark.card : Colors.grey.shade300,
                             ),
                           ),
                           hintText: 'Book title',
                           hintStyle: TextStyle(
                             fontSize: 40,
-                            color: isDark
-                                ? DarkColors.fadeText
-                                : LightColors.fadeText,
+                            color: isDark ? Dark.fadeText : Light.fadeText,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -133,14 +129,14 @@ class _NewBookUIState extends State<NewBookUI> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 13),
                         decoration: BoxDecoration(
-                          color: isDark ? DarkColors.card : LightColors.card,
+                          color: isDark ? Dark.card : Light.card,
                           borderRadius: kRadius(15),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.short_text_rounded,
-                              color: isDark ? whiteColor : blackColor,
+                              color: isDark ? Colors.white : Colors.black,
                             ),
                             width10,
                             Expanded(
@@ -148,9 +144,8 @@ class _NewBookUIState extends State<NewBookUI> {
                                 controller: bookDescriptionController,
                                 maxLines: 10,
                                 minLines: 1,
-                                cursorColor: isDark
-                                    ? DarkColors.primaryButton
-                                    : LightColors.primaryButton,
+                                cursorColor:
+                                    isDark ? Dark.primary : Light.primary,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -158,9 +153,8 @@ class _NewBookUIState extends State<NewBookUI> {
                                   border: InputBorder.none,
                                   hintText: 'Add description',
                                   hintStyle: TextStyle(
-                                    color: isDark
-                                        ? DarkColors.fadeText
-                                        : LightColors.fadeText,
+                                    color:
+                                        isDark ? Dark.fadeText : Light.fadeText,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -174,7 +168,7 @@ class _NewBookUIState extends State<NewBookUI> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 13, vertical: 20),
                         decoration: BoxDecoration(
-                          color: isDark ? cardColordark : cardColorlight,
+                          color: isDark ? Dark.card : Light.card,
                           borderRadius: kRadius(15),
                         ),
                         child: Column(
@@ -184,7 +178,7 @@ class _NewBookUIState extends State<NewBookUI> {
                                 Icon(
                                   Icons.schedule,
                                   size: 20,
-                                  color: isDark ? whiteColor : blackColor,
+                                  color: isDark ? Colors.white : Colors.black,
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -192,7 +186,7 @@ class _NewBookUIState extends State<NewBookUI> {
                                 Text(
                                   'Created on',
                                   style: TextStyle(
-                                    color: isDark ? whiteColor : blackColor,
+                                    color: isDark ? Colors.white : Colors.black,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -207,13 +201,15 @@ class _NewBookUIState extends State<NewBookUI> {
                                     decoration: BoxDecoration(
                                       borderRadius: kRadius(10),
                                       color: isDark
-                                          ? DarkColors.scaffold
-                                          : LightColors.scaffold,
+                                          ? Dark.scaffold
+                                          : Light.scaffold,
                                     ),
                                     child: Text(
                                       DateFormat.yMMMMd().format(_selectedDate),
                                       style: TextStyle(
-                                        color: isDark ? whiteColor : blackColor,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black,
                                       ),
                                     ),
                                   ),
@@ -225,14 +221,14 @@ class _NewBookUIState extends State<NewBookUI> {
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
-                                    color: isDark
-                                        ? DarkColors.scaffold
-                                        : LightColors.scaffold,
+                                    color:
+                                        isDark ? Dark.scaffold : Light.scaffold,
                                   ),
                                   child: Text(
                                     _selectedTime,
                                     style: TextStyle(
-                                      color: isDark ? whiteColor : blackColor,
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
                                     ),
                                   ),
                                 ),
@@ -263,7 +259,7 @@ class _NewBookUIState extends State<NewBookUI> {
             createBook();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: isDark ? darkProfitColorAccent : Colors.black,
+            backgroundColor: isDark ? Dark.profitCard : Colors.black,
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: kRadius(20),
@@ -271,7 +267,7 @@ class _NewBookUIState extends State<NewBookUI> {
           ),
           icon: Icon(
             Icons.add_circle,
-            color: isDark ? blackColor : whiteColor,
+            color: isDark ? Colors.black : Colors.white,
           ),
           label: Container(
             width: double.infinity,
@@ -279,51 +275,11 @@ class _NewBookUIState extends State<NewBookUI> {
               'Create',
               style: TextStyle(
                 fontSize: sdp(context, 15),
-                color: isDark ? blackColor : whiteColor,
+                color: isDark ? Colors.black : Colors.white,
               ),
             ),
           ),
         ),
-        // MaterialButton(
-        //   onPressed: () {
-        //     createBook();
-        //   },
-        //   shape: RoundedRectangleBorder(
-        //     borderRadius: kRadius(10),
-        //   ),
-        //   elevation: 0,
-        //   padding: EdgeInsets.zero,
-        //   child: Ink(
-        //     padding: EdgeInsets.symmetric(
-        //       vertical: 15,
-        //       horizontal: 25,
-        //     ),
-        //     decoration: BoxDecoration(
-        //       borderRadius: kRadius(10),
-        //       gradient: buttonGradient,
-        //     ),
-        //     child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: [
-        //         Icon(
-        //           Icons.add_circle_outline_rounded,
-        //           color: Colors.white,
-        //         ),
-        //         SizedBox(
-        //           width: 10,
-        //         ),
-        //         Text(
-        //           'Create Book',
-        //           style: TextStyle(
-        //             fontWeight: FontWeight.w600,
-        //             color: Colors.white,
-        //             fontSize: 18,
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
       ),
     );
   }
@@ -344,8 +300,8 @@ class _NewBookUIState extends State<NewBookUI> {
           side: BorderSide(
             color: isSelected
                 ? isDark
-                    ? kProfitColorAccent
-                    : kProfitColor
+                    ? Dark.profitText
+                    : Light.profitText
                 : Colors.transparent,
           ),
         ),
@@ -356,8 +312,8 @@ class _NewBookUIState extends State<NewBookUI> {
               CircleAvatar(
                 backgroundColor: isSelected
                     ? isDark
-                        ? kProfitColorAccent
-                        : kProfitColor
+                        ? Dark.profitText
+                        : Light.profitText
                     : Colors.grey.shade400,
                 radius: 5,
               ),

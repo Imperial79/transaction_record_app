@@ -8,7 +8,6 @@ import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
-import 'colors.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
 
 final oCcy = new NumberFormat("#,##0.00", "en_US");
@@ -41,7 +40,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
           'Create your first Transact',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            color: blackColor,
+            color: Colors.black,
             fontSize: 20,
           ),
         ),
@@ -52,7 +51,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: blackColor,
+            color: Colors.black,
             fontSize: 15,
           ),
         ),
@@ -86,12 +85,12 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
               ),
               icon: Icon(
                 Icons.bolt,
-                color: isDark ? blackColor : whiteColor,
+                color: isDark ? Colors.black : Colors.white,
               ),
               label: Text(
                 'Create',
                 style: TextStyle(
-                  color: isDark ? blackColor : whiteColor,
+                  color: isDark ? Colors.black : Colors.white,
                 ),
               ),
             ),
@@ -158,7 +157,7 @@ Widget DummyTransactList(BuildContext context) {
             padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: isDark ? Color(0xFF333333) : cardColorlight,
+              color: isDark ? Color(0xFF333333) : Light.card,
               borderRadius: kRadius(20),
             ),
             child: Column(
@@ -241,7 +240,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     decoration: BoxDecoration(
       borderRadius: kRadius(15),
-      color: isExpense ? Color(0xffca705f) : darkProfitColorAccent,
+      color: isExpense ? Color(0xffca705f) : Dark.profitCard,
       border: Border.all(
         color: isExpense
             ? isDark
@@ -297,7 +296,7 @@ Widget kRenameModal({
             bottom: MediaQuery.of(context).viewInsets.bottom + 20,
           ),
           decoration: BoxDecoration(
-            color: isDark ? cardColordark : cardColorlight,
+            color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
@@ -313,7 +312,7 @@ Widget kRenameModal({
                     style: TextStyle(
                       fontSize: sdp(context, 16),
                       fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.blue.shade800 : whiteColor,
+                      color: isDark ? Colors.blue.shade800 : Colors.white,
                     ),
                   ),
                 ),
@@ -321,7 +320,7 @@ Widget kRenameModal({
                 Text(
                   'Rename Book',
                   style: TextStyle(
-                    color: isDark ? whiteColor : blackColor,
+                    color: isDark ? Colors.white : Colors.black,
                     fontSize: sdp(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
@@ -342,27 +341,27 @@ Widget kRenameModal({
                   style: TextStyle(
                     fontSize: sdp(context, 20),
                     fontWeight: FontWeight.w900,
-                    color: isDark ? whiteColor : blackColor,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                   cursorWidth: 1,
-                  cursorColor: isDark ? whiteColor : blackColor,
+                  cursorColor: isDark ? Colors.white : Colors.black,
                   decoration: InputDecoration(
-                    focusColor: isDark ? whiteColor : blackColor,
+                    focusColor: isDark ? Colors.white : Colors.black,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: isDark ? darkGreyColor : blackColor,
+                        color: isDark ? Dark.scaffold : Colors.black,
                         width: 2,
                       ),
                     ),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: isDark ? darkGreyColor : Colors.grey.shade300,
+                        color: isDark ? Dark.scaffold : Colors.grey.shade300,
                       ),
                     ),
                     hintText: 'Book title',
                     hintStyle: TextStyle(
                       fontSize: sdp(context, 20),
-                      color: isDark ? darkGreyColor : Colors.grey.shade400,
+                      color: isDark ? Dark.scaffold : Colors.grey.shade400,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -406,7 +405,7 @@ Widget ConfirmDeleteModal({
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
-            color: isDark ? cardColordark : cardColorlight,
+            color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
@@ -422,7 +421,7 @@ Widget ConfirmDeleteModal({
                     style: TextStyle(
                       fontSize: sdp(context, 16),
                       fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.red.shade800 : whiteColor,
+                      color: isDark ? Colors.red.shade800 : Colors.white,
                     ),
                   ),
                 ),
@@ -430,7 +429,7 @@ Widget ConfirmDeleteModal({
                 Text(
                   label,
                   style: TextStyle(
-                    color: isDark ? whiteColor : blackColor,
+                    color: isDark ? Colors.white : Colors.black,
                     fontSize: sdp(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
@@ -454,18 +453,19 @@ Widget ConfirmDeleteModal({
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? blackColor : lossColor,
+                        backgroundColor: isDark ? Colors.black : Light.lossCard,
                         foregroundColor:
-                            isDark ? Colors.red.shade300 : whiteColor,
+                            isDark ? Colors.red.shade300 : Colors.white,
                       ),
                       child: Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: onDelete,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? blackColor : primaryColor,
+                        backgroundColor:
+                            isDark ? Colors.black : Light.profitText,
                         foregroundColor:
-                            isDark ? darkProfitColorAccent : whiteColor,
+                            isDark ? Dark.profitText : Colors.white,
                       ),
                       child: Text('Yes'),
                     ),
@@ -514,7 +514,7 @@ Widget CustomCard(BuildContext context, {required Widget child}) {
     margin: EdgeInsets.only(bottom: 13),
     padding: EdgeInsets.all(13),
     decoration: BoxDecoration(
-      color: isDark ? cardColordark : cardColorlight,
+      color: isDark ? Dark.card : Light.card,
       borderRadius: kRadius(15),
     ),
     child: child,
@@ -601,7 +601,7 @@ Widget NewBookCard(BuildContext context) => Container(
         borderRadius: kRadius(20),
         gradient: LinearGradient(
           colors: [
-            kProfitColor,
+            Light.profitCard,
             Colors.black,
           ],
           begin: Alignment.topLeft,
@@ -659,7 +659,7 @@ Widget BookDeleteModal({
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
-            color: isDark ? cardColordark : cardColorlight,
+            color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
@@ -680,7 +680,7 @@ Widget BookDeleteModal({
                 Text(
                   "Book Options",
                   style: TextStyle(
-                    color: isDark ? whiteColor : blackColor,
+                    color: isDark ? Colors.white : Colors.black,
                     fontSize: sdp(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
@@ -766,7 +766,7 @@ Widget AnimatedFloatingButton(
     child: DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: kRadius(20),
-        color: isDark ? Colors.greenAccent : blackColor,
+        color: isDark ? Colors.greenAccent : Colors.black,
       ),
       child: AnimatedSize(
         reverseDuration: Duration(milliseconds: 300),
@@ -791,7 +791,7 @@ Widget AnimatedFloatingButton(
                 children: [
                   Icon(
                     Icons.add_circle_outline,
-                    color: isDark ? blackColor : Colors.white,
+                    color: isDark ? Colors.black : Colors.white,
                     size: 30,
                   ),
                   if (showFullAddBtn) const SizedBox(width: 10),
@@ -801,7 +801,7 @@ Widget AnimatedFloatingButton(
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: sdp(context, 11),
-                        color: isDark ? blackColor : Colors.white,
+                        color: isDark ? Colors.black : Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -827,15 +827,13 @@ Widget KSearchBar(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: isDark ? cardColordark : cardColorlight,
+            color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(100),
           ),
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: isDark
-                    ? DarkColors.primaryButton
-                    : LightColors.primaryButton,
+                backgroundColor: isDark ? Dark.primary : Light.primary,
                 child: SvgPicture.asset(
                   "lib/assets/icons/search.svg",
                   height: sdp(context, 15),
@@ -857,8 +855,7 @@ Widget KSearchBar(
                     hintText: 'Search by name or amount',
                     hintStyle: TextStyle(
                       fontWeight: FontWeight.w400,
-                      color:
-                          isDark ? DarkColors.fadeText : LightColors.fadeText,
+                      color: isDark ? Dark.fadeText : Light.fadeText,
                       fontSize: sdp(context, 12),
                     ),
                   ),
@@ -879,7 +876,7 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
       customText,
       style: TextStyle(
         fontSize: sdp(context, 20),
-        color: isDark ? DarkColors.fadeText : LightColors.fadeText,
+        color: isDark ? Dark.fadeText : Light.fadeText,
       ),
     ),
   );
@@ -893,17 +890,14 @@ AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
         ? Container(
             height: double.infinity,
             width: double.infinity,
-            color: isDark
-                ? DarkColors.card.withOpacity(.8)
-                : LightColors.card.withOpacity(.8),
+            color:
+                isDark ? Dark.card.withOpacity(.8) : Light.card.withOpacity(.8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(
-                  color: isDark
-                      ? DarkColors.primaryButton
-                      : LightColors.primaryButton,
+                  color: isDark ? Dark.primary : Light.primary,
                 ),
               ],
             ),

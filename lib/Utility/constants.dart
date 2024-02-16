@@ -1,10 +1,11 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/user.dart';
-
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../models/userModel.dart';
 import '../screens/Home Screens/homeUi.dart';
 
@@ -64,5 +65,25 @@ class Constants {
     } catch (e) {
       log("Error while fetching data from Hive $e");
     }
+  }
+}
+
+// ValueNotifier<bool> hasInternet = ValueNotifier(true);
+
+class ConnectionConfig {
+  static InternetConnection _connection = new InternetConnection();
+  static ValueNotifier<bool> hasInternet = ValueNotifier(true);
+
+  static void listenForConnection() {
+    _connection.onStatusChange.listen((status) {
+      switch (status) {
+        case InternetStatus.connected:
+          hasInternet.value = true;
+          break;
+        case InternetStatus.disconnected:
+          hasInternet.value = false;
+          break;
+      }
+    });
   }
 }

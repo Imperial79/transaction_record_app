@@ -46,8 +46,9 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_svg: ^2.0.9
   animations: ^2.0.11
-  firebase_core_web: ^2.11.4
-  cloud_firestore_web: ^3.10.4
+  lottie: ^3.0.0  
+  connectivity_plus: ^5.0.2
+  internet_connection_checker_plus: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +74,7 @@ flutter:
     - lib/assets/image/
     - lib/assets/logo/
     - lib/assets/icons/
+    - lib/assets/loading/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

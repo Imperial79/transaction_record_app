@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 
-import '../Utility/colors.dart';
 import '../Utility/constants.dart';
+import '../Utility/newColors.dart';
 import '../services/user.dart';
 
 class MigrateUI extends StatefulWidget {

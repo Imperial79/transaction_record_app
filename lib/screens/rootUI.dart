@@ -1,14 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/colors.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/main.dart';
-import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
@@ -54,7 +50,7 @@ class _RootUIState extends State<RootUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
-    return KScaffold(
+    return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,8 +123,8 @@ class _RootUIState extends State<RootUI> {
                                 : CircleAvatar(
                                     radius: sdp(context, 10),
                                     backgroundColor: isDark
-                                        ? DarkColors.profitText
-                                        : LightColors.profitText,
+                                        ? Dark.profitText
+                                        : Light.profitText,
                                     foregroundColor:
                                         isDark ? Colors.black : Colors.white,
                                     child: Padding(
