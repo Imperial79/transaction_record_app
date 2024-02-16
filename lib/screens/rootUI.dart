@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/main.dart';
