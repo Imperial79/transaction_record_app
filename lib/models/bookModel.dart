@@ -81,7 +81,7 @@ class Book {
       uid: map['uid'] as String,
       users: map['users'] != null
           ? List<dynamic>.from((map['users'] as List<dynamic>))
-          : null,
+          : [],
     );
   }
 

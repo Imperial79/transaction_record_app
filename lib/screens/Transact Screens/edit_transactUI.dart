@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -106,7 +108,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     if (amountField.text != '') {
       if (widget.trData.date != _selectedDateMap['displayDate'] ||
           widget.trData.time != _selectedTimeMap['displayTime']) {
-        _selectedTimeStamp = await convertTimeToTS(
+        _selectedTimeStamp = convertTimeToTS(
             _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
       }
 

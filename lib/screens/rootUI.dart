@@ -33,6 +33,8 @@ class _RootUIState extends State<RootUI> {
   void _init() async {
     await Constants.getUserDetailsFromPreference()
         .then((value) => setState(() {}));
+
+    QActions.init(context);
   }
 
   void _onPageChanged(int index) {

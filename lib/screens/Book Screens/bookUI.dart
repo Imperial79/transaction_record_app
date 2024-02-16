@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -206,7 +208,7 @@ class _BookUIState extends State<BookUI> {
 
   @override
   Widget build(BuildContext context) {
-    _searchController.text.isEmpty ? _showThings.value = true : false;
+    _showThings.value = _searchController.text.isEmpty;
     isSearching = _searchController.text.isNotEmpty;
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(

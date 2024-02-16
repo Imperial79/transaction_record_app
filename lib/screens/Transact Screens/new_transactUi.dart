@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,7 +74,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
     if (amountField.text != '') {
       if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
           _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
-        _selectedTimeStamp = await convertTimeToTS(
+        _selectedTimeStamp = convertTimeToTS(
             _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
       }
       transactId = _selectedTimeStamp;

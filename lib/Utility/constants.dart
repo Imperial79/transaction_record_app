@@ -4,6 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:quick_actions/quick_actions.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
+import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../models/userModel.dart';
@@ -53,10 +57,11 @@ class Constants {
 
   static Future<void> getUserDetailsFromPreference() async {
     try {
-      if (globalUser.uid == '') {
+      final isAuth = await AuthMethods.getCurrentuser();
+      if (globalUser.uid == '' && isAuth != null) {
         final _userBox = await Hive.openBox('USERBOX');
         final userMap = await _userBox.get('userData');
-
+        log("HIve Data from inside -> $userMap");
         displayNameGlobal.value = userMap['name'];
         globalUser = KUser.fromMap(userMap);
 
@@ -67,8 +72,6 @@ class Constants {
     }
   }
 }
-
-// ValueNotifier<bool> hasInternet = ValueNotifier(true);
 
 class ConnectionConfig {
   static InternetConnection _connection = new InternetConnection();
@@ -82,6 +85,24 @@ class ConnectionConfig {
           break;
         case InternetStatus.disconnected:
           hasInternet.value = false;
+          break;
+      }
+    });
+  }
+}
+
+class QActions {
+  static QuickActions _qActions = const QuickActions();
+
+  static void init(BuildContext context) {
+    _qActions.initialize((type) {
+      switch (type) {
+        case "add_book_action":
+          NavPush(context, RootUI());
+          pageControllerGlobal.value.animateToPage(1,
+              duration: Duration(milliseconds: 600), curve: Curves.ease);
+          break;
+        default:
           break;
       }
     });

@@ -17,6 +17,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
   ConnectionConfig.listenForConnection();
+
   runApp(MyApp());
 }
 
@@ -40,8 +41,22 @@ class MyApp extends StatelessWidget {
                   : ThemeMode.system,
           theme: KThemeData.light(),
           darkTheme: KThemeData.dark(),
-          home: StreamBuilder(
-            stream: AuthMethods.ifAuthStateChange(),
+          // home: StreamBuilder(
+          //   stream: AuthMethods.ifAuthStateChange(),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       return RootUI();
+          //     } else if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return SplashUI();
+          //     } else if (snapshot.connectionState == ConnectionState.none) {
+          //       return SplashUI();
+          //     } else {
+          //       return LoginUI();
+          //     }
+          //   },
+          // ),
+          home: FutureBuilder(
+            future: AuthMethods.getCurrentuser(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return RootUI();

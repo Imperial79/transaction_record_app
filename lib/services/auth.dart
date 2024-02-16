@@ -18,38 +18,62 @@ class AuthMethods {
   static final FirebaseAuth auth = FirebaseAuth.instance;
 
   static Future<User?> getCurrentuser() async {
-    return await auth.currentUser;
+    return auth.currentUser;
   }
 
   static Stream<User?> ifAuthStateChange() {
     return auth.authStateChanges();
   }
 
-  static Future<String> signInWithgoogle(BuildContext context) async {
+  static Future<User?> _googleSignIn() async {
     try {
-      await Hive.openBox('USERBOX');
-      final _userBox = Hive.box('USERBOX');
-
-      final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
-
+      await auth.signOut();
       await _googleSignIn.signOut();
-
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-
+      final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
       final GoogleSignInAuthentication? googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+          await googleAccount!.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
+      final AuthCredential authCred = GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication!.idToken,
         accessToken: googleSignInAuthentication.accessToken,
       );
 
-      UserCredential _creds =
-          await _firebaseAuth.signInWithCredential(credential);
+      UserCredential _creds = await auth.signInWithCredential(authCred);
 
       User? gUserData = _creds.user;
+      return gUserData;
+    } catch (e) {
+      log("Google Sign In Error -> $e");
+      return null;
+    }
+  }
+
+  static Future<String> signIn(BuildContext context) async {
+    try {
+      await Hive.openBox('USERBOX');
+      final _userBox = Hive.box('USERBOX');
+
+      // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+      // final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+      // await _googleSignIn.signOut();
+
+      // final GoogleSignInAccount? googleSignInAccount =
+      //     await _googleSignIn.signIn();
+
+      // final GoogleSignInAuthentication? googleSignInAuthentication =
+      //     await googleSignInAccount!.authentication;
+
+      // final AuthCredential credential = GoogleAuthProvider.credential(
+      //   idToken: googleSignInAuthentication!.idToken,
+      //   accessToken: googleSignInAuthentication.accessToken,
+      // );
+
+      // UserCredential _creds =
+      //     await _firebaseAuth.signInWithCredential(credential);
+
+      User? gUserData = await _googleSignIn();
 
       log("-----------------GOOGLE SIGNIN--------------------");
       if (gUserData != null) {
@@ -60,20 +84,21 @@ class AuthMethods {
             .then(
           (user) async {
             final dbUser = user.data();
+            late KUser _user;
+
             if (dbUser != null) {
-              KUser oldUser = new KUser(
+              log("User exists");
+              _user = new KUser(
                 username: dbUser['username'],
                 email: dbUser['email'],
                 name: dbUser['name'],
                 uid: dbUser['uid'],
-                imgUrl: gUserData.photoURL!,
+                imgUrl: gUserData.photoURL ?? dbUser['imgUrl'],
               );
 
-              await _userBox.put('userData', oldUser.toMap());
-
-              // globalUser = oldUser;
+              // await _userBox.put('userData', oldUser.toMap());
             } else {
-              KUser newUser = new KUser(
+              _user = new KUser(
                 username: Constants.getUsername(email: gUserData.email!),
                 email: gUserData.email!,
                 name: gUserData.displayName!,
@@ -81,16 +106,18 @@ class AuthMethods {
                 imgUrl: gUserData.photoURL!,
               );
 
-              await _userBox.put('userData', newUser.toMap());
+              // await _userBox.put('userData', newUser.toMap());
 
-              // globalUser = newUser;
               await _databaseMethods.addUserInfoToDB(
-                uid: newUser.uid,
-                userMap: newUser.toMap(),
+                uid: _user.uid,
+                userMap: _user.toMap(),
               );
             }
+            await _userBox.put('userData', _user.toMap()).then((value) {
+              log("Hive Data -> ${_userBox.get("userData")}");
+            });
 
-            navPopUntilPush(context, RootUI());
+            NavPushReplacement(context, RootUI());
           },
         );
         return 'success';
@@ -98,7 +125,7 @@ class AuthMethods {
       return 'fail';
     } catch (e) {
       await Hive.close();
-      log("Error while google sigin-> $e");
+      log("Error handling user data-> $e");
       return 'fail';
     }
   }

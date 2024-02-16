@@ -1,7 +1,7 @@
-import 'dart:developer';
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
@@ -26,25 +26,6 @@ class _LoginUIState extends State<LoginUI> {
 
   bool _isLoading = false;
   String logoPath = 'lib/assets/logo/logo.png';
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  _init() async {
-    bool _boxExist = await Hive.boxExists('USERBOX');
-    if (_boxExist) {
-      if (!Hive.isBoxOpen("USERBOX")) {
-        await Hive.openBox('USERBOX');
-      } else {
-        log("Box is Open");
-      }
-    } else {
-      log("Box does not exists");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +143,7 @@ class _LoginUIState extends State<LoginUI> {
                             splashColor: Colors.red,
                             onTap: () async {
                               setState(() => _isLoading = true);
-                              String res =
-                                  await AuthMethods.signInWithgoogle(context);
+                              String res = await AuthMethods.signIn(context);
                               if (res == 'fail') {
                                 if (mounted) setState(() => _isLoading = false);
                               }

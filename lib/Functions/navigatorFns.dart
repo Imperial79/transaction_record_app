@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
