@@ -54,7 +54,12 @@ class _HomeUiState extends State<HomeUi>
     dateTitle = '';
 
     _scrollFunction();
-    getUserDetailsFromPreference();
+    _init();
+  }
+
+  void _init() async {
+    await Constants.getUserDetailsFromPreference()
+        .then((value) => setState(() {}));
   }
 
   _scrollFunction() {
@@ -68,22 +73,6 @@ class _HomeUiState extends State<HomeUi>
         showAdd.value = true;
       }
     });
-  }
-
-  Future<void> getUserDetailsFromPreference() async {
-    try {
-      if (globalUser.uid == '') {
-        final _userBox = await Hive.openBox('USERBOX');
-        Map<dynamic, dynamic> userMap = await _userBox.get('userData');
-        setState(() {
-          displayNameGlobal.value = userMap['name'];
-          globalUser = KUser.fromMap(userMap);
-        });
-        await Hive.close();
-      }
-    } catch (e) {
-      log("Error while fetching data from Hive $e");
-    }
   }
 
   @override

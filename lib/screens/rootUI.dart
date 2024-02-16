@@ -32,23 +32,12 @@ class _RootUIState extends State<RootUI> {
   @override
   void initState() {
     super.initState();
-    getUserDetailsFromPreference();
+    _init();
   }
 
-  Future<void> getUserDetailsFromPreference() async {
-    try {
-      if (globalUser.uid == '') {
-        final _userBox = await Hive.openBox('USERBOX');
-        Map<dynamic, dynamic> userMap = await _userBox.get('userData');
-        setState(() {
-          displayNameGlobal.value = userMap['name'];
-          globalUser = KUser.fromMap(userMap);
-        });
-        await Hive.close();
-      }
-    } catch (e) {
-      log("Error while fetching data from Hive $e");
-    }
+  void _init() async {
+    await Constants.getUserDetailsFromPreference()
+        .then((value) => setState(() {}));
   }
 
   void _onPageChanged(int index) {

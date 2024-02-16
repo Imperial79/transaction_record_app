@@ -1,6 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/services/user.dart';
+
+import '../models/userModel.dart';
+import '../screens/Home Screens/homeUi.dart';
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
@@ -42,5 +48,21 @@ class Constants {
 
   static String getSearchString(String text) {
     return text.trim().toLowerCase();
+  }
+
+  static Future<void> getUserDetailsFromPreference() async {
+    try {
+      if (globalUser.uid == '') {
+        final _userBox = await Hive.openBox('USERBOX');
+        final userMap = await _userBox.get('userData');
+
+        displayNameGlobal.value = userMap['name'];
+        globalUser = KUser.fromMap(userMap);
+
+        await Hive.close();
+      }
+    } catch (e) {
+      log("Error while fetching data from Hive $e");
+    }
   }
 }

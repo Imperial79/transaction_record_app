@@ -867,7 +867,7 @@ class _BookUIState extends State<BookUI> {
                               if (_searchController.text.isEmpty) {
                                 return TransactTile(transact);
                               } else if (transact.amount.contains(searchKey) ||
-                                  transact.description!
+                                  transact.description
                                       .toLowerCase()
                                       .contains(searchKey) ||
                                   transact.source
@@ -880,7 +880,7 @@ class _BookUIState extends State<BookUI> {
                               if (searchKey.isEmpty) {
                                 return TransactTile(transact);
                               } else if (transact.amount.contains(searchKey) ||
-                                  transact.description!
+                                  transact.description
                                       .toLowerCase()
                                       .contains(searchKey) ||
                                   transact.source
@@ -1263,7 +1263,7 @@ class _BookUIState extends State<BookUI> {
                                     icon: Icons.person,
                                   ),
                                   Visibility(
-                                    visible: transactData.description!
+                                    visible: transactData.description
                                         .trim()
                                         .isNotEmpty,
                                     child: Container(
@@ -1276,7 +1276,7 @@ class _BookUIState extends State<BookUI> {
                                             : LightColors.scaffold,
                                         borderRadius: kRadius(10),
                                       ),
-                                      child: Text(transactData.description!),
+                                      child: Text(transactData.description),
                                     ),
                                   )
                                 ],

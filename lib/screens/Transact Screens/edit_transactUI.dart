@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
@@ -53,7 +52,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     super.initState();
     // title.text = widget.snap['title'];
     amountField.text = widget.trData.amount;
-    descriptionField.text = widget.trData.description!;
+    descriptionField.text = widget.trData.description;
     sourceField.text = widget.trData.source;
     _selectedDateMap['displayDate'] = widget.trData.date;
     _selectedDateMap['tsDate'] = widget.trData.ts;

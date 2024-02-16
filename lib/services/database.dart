@@ -15,9 +15,11 @@ class DatabaseMethods {
   }
 
   //Adding user to database QUERY
-  Future<void> addUserInfoToDB(
-      String uid, Map<String, dynamic> userInfoMap) async {
-    return await firestore.collection("users").doc(uid).set(userInfoMap);
+  Future<void> addUserInfoToDB({
+    required String uid,
+    required Map<String, dynamic> userMap,
+  }) async {
+    return await firestore.collection("users").doc(uid).set(userMap);
   }
 
   //  UPDATE TRANSACTS

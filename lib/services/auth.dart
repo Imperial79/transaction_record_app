@@ -10,7 +10,6 @@ import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
-import 'package:transaction_record_app/services/user.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 class AuthMethods {
@@ -72,7 +71,7 @@ class AuthMethods {
 
               await _userBox.put('userData', oldUser.toMap());
 
-              globalUser = oldUser;
+              // globalUser = oldUser;
             } else {
               KUser newUser = new KUser(
                 username: Constants.getUsername(email: gUserData.email!),
@@ -84,9 +83,11 @@ class AuthMethods {
 
               await _userBox.put('userData', newUser.toMap());
 
-              globalUser = newUser;
+              // globalUser = newUser;
               await _databaseMethods.addUserInfoToDB(
-                  newUser.uid, newUser.toMap());
+                uid: newUser.uid,
+                userMap: newUser.toMap(),
+              );
             }
 
             navPopUntilPush(context, RootUI());
