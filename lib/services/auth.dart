@@ -11,6 +11,7 @@ import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/services/user.dart';
 
 class AuthMethods {
   static DatabaseMethods _databaseMethods = new DatabaseMethods();
@@ -144,6 +145,8 @@ class AuthMethods {
 
     await auth.signOut().then((value) {
       log("Logged Out from Auth");
+      globalUser =
+          KUser(username: '', email: '', name: '', uid: '', imgUrl: '');
     });
     NavPushReplacement(context, LoginUI());
   }

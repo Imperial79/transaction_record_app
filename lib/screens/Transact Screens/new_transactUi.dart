@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
@@ -47,6 +48,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
     'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
     'tsTime': DateFormat('HH:mm').format(DateTime.now()),
   };
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -71,46 +73,60 @@ class _NewTransactUiState extends State<NewTransactUi> {
   }
 
   saveTransacts() async {
-    if (amountField.text != '') {
-      if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
-          _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
-        _selectedTimeStamp = convertTimeToTS(
-            _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      if (amountField.text != '') {
+        if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
+            _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
+          _selectedTimeStamp = convertTimeToTS(
+              _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
+        }
+        transactId = _selectedTimeStamp;
+        final _uploadableAmount =
+            amountField.text.replaceAll(' ', '').replaceAll(',', '');
+
+        Transact newTransact = Transact(
+          uid: globalUser.uid,
+          transactId: transactId,
+          amount: _uploadableAmount,
+          source: sourceField.text,
+          transactMode: transactMode,
+          description: descriptionField.text,
+          type: transactType,
+          date: _selectedDateMap['displayDate'],
+          time: _selectedTimeMap['displayTime'],
+          bookId: widget.bookId,
+          ts: _selectedTimeStamp,
+        );
+
+        databaseMethods.uploadTransacts(
+          newTransact.toMap(),
+          widget.bookId,
+          transactId,
+        );
+
+        handleNewNoteTransaction(_uploadableAmount);
+
+        //  resetting the values
+        amountField.clear();
+        descriptionField.clear();
+        sourceField.clear();
+        transactType = 'Income';
+        source = 'From';
+
+        Navigator.pop(context);
       }
-      transactId = _selectedTimeStamp;
-      final _uploadableAmount =
-          amountField.text.replaceAll(' ', '').replaceAll(',', '');
-
-      Transact newTransact = Transact(
-        uid: globalUser.uid,
-        transactId: transactId,
-        amount: _uploadableAmount,
-        source: sourceField.text,
-        transactMode: transactMode,
-        description: descriptionField.text,
-        type: transactType,
-        date: _selectedDateMap['displayDate'],
-        time: _selectedTimeMap['displayTime'],
-        bookId: widget.bookId,
-        ts: _selectedTimeStamp,
-      );
-
-      databaseMethods.uploadTransacts(
-        newTransact.toMap(),
-        widget.bookId,
-        transactId,
-      );
-
-      handleNewNoteTransaction(_uploadableAmount);
-
-      //  resetting the values
-      amountField.clear();
-      descriptionField.clear();
-      sourceField.clear();
-      transactType = 'Income';
-      source = 'From';
-
-      Navigator.pop(context);
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      ShowSnackBar(context,
+          content: "Unable to create Transact", isDanger: true);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -126,6 +142,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(15.0),
@@ -531,35 +548,33 @@ class _NewTransactUiState extends State<NewTransactUi> {
                       ),
                     ],
                   ),
-                  child: MaterialButton(
+                  child: ElevatedButton(
                     onPressed: () {
                       saveTransacts();
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: kRadius(20),
+                    style: ElevatedButton.styleFrom(
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: kRadius(10),
+                      // ),
+                      padding: EdgeInsets.zero,
                     ),
-                    elevation: 0,
-                    padding: EdgeInsets.zero,
                     child: Ink(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 25,
-                      ),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                       decoration: BoxDecoration(
-                        borderRadius: kRadius(20),
-                        // gradient: LinearGradient(
-                        //   colors: [
-                        //     transactType == 'Income'
-                        //         ? primaryColor
-                        //         : Colors.redAccent,
-                        //     transactType == 'Income'
-                        //         ? Colors.lightGreenAccent
-                        //         : Color.fromARGB(255, 189, 56, 56),
-                        //   ],
-                        // ),
+                        borderRadius: kRadius(100),
+                        gradient: LinearGradient(
+                          colors: [
+                            transactType == 'Income'
+                                ? Dark.profitCard
+                                : Colors.redAccent,
+                            transactType == 'Income'
+                                ? Colors.lightGreenAccent
+                                : Color.fromARGB(255, 189, 56, 56),
+                          ],
+                        ),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             transactType == 'Income'
@@ -569,17 +584,15 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                 ? Colors.black
                                 : Colors.white,
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          width10,
                           Text(
-                            'Update ' + transactType,
+                            transactType,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: transactType == 'Income'
                                   ? Colors.black
                                   : Colors.white,
-                              fontSize: 18,
+                              fontSize: sdp(context, 13),
                             ),
                           ),
                         ],
