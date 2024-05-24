@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
@@ -9,6 +11,7 @@ import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'Utility/newColors.dart';
+import 'package:flutter_shortcuts/flutter_shortcuts.dart';
 
 ValueNotifier<String> themeMode = ValueNotifier("system");
 
@@ -21,8 +24,43 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    final FlutterShortcuts flutterShortcuts = FlutterShortcuts();
+    flutterShortcuts.initialize(debug: true);
+    flutterShortcuts.listenAction((String incomingAction) {
+      // setState(() {
+      //   action = incomingAction;
+      // });
+      log(incomingAction);
+    });
+    flutterShortcuts.setShortcutItems(
+      shortcutItems: <ShortcutItem>[
+        // const ShortcutItem(
+        //   id: "1",
+        //   action: 'Home page action',
+        //   shortLabel: 'Home Page',
+        //   icon: 'assets/icons/home.png',
+        // ),
+        const ShortcutItem(
+          id: "2",
+          action: 'Bookmark page action',
+          shortLabel: 'Bookmark Page',
+          icon: "ic_launcher",
+          shortcutIconAsset: ShortcutIconAsset.androidAsset,
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,20 +79,6 @@ class MyApp extends StatelessWidget {
                   : ThemeMode.system,
           theme: KThemeData.light(),
           darkTheme: KThemeData.dark(),
-          // home: StreamBuilder(
-          //   stream: AuthMethods.ifAuthStateChange(),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return RootUI();
-          //     } else if (snapshot.connectionState == ConnectionState.waiting) {
-          //       return SplashUI();
-          //     } else if (snapshot.connectionState == ConnectionState.none) {
-          //       return SplashUI();
-          //     } else {
-          //       return LoginUI();
-          //     }
-          //   },
-          // ),
           home: FutureBuilder(
             future: AuthMethods.getCurrentuser(),
             builder: (context, snapshot) {

@@ -50,11 +50,6 @@ class _NewTransactUiState extends State<NewTransactUi> {
   };
   bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   handleNewNoteTransaction(String uploadableAmount) {
     //  calculating the Income and Expense for new transact
     if (transactType == 'Income') {
@@ -118,12 +113,13 @@ class _NewTransactUiState extends State<NewTransactUi> {
 
         Navigator.pop(context);
       }
-      setState(() {
-        isLoading = false;
-      });
     } catch (e) {
-      ShowSnackBar(context,
-          content: "Unable to create Transact", isDanger: true);
+      ShowSnackBar(
+        context,
+        content: "Unable to create Transact!",
+        isDanger: true,
+      );
+    } finally {
       setState(() {
         isLoading = false;
       });
