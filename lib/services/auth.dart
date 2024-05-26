@@ -28,10 +28,15 @@ class AuthMethods {
 
   static Future<User?> _googleSignIn() async {
     try {
+      log('1');
       final GoogleSignIn _googleSignIn = GoogleSignIn();
+      log('2');
       await auth.signOut();
+      log('3');
       await _googleSignIn.signOut();
+      log('4');
       final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
+      log('5');
       final GoogleSignInAuthentication? googleSignInAuthentication =
           await googleAccount!.authentication;
 
@@ -39,7 +44,7 @@ class AuthMethods {
         idToken: googleSignInAuthentication!.idToken,
         accessToken: googleSignInAuthentication.accessToken,
       );
-
+      log('6');
       UserCredential _creds = await auth.signInWithCredential(authCred);
 
       User? gUserData = _creds.user;

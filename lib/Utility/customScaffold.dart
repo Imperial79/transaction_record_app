@@ -36,45 +36,82 @@ class _KScaffoldState extends State<KScaffold> {
       children: [
         Scaffold(
           appBar: widget.appBar,
-          body: Stack(
-            alignment: Alignment.topCenter,
+          body: Column(
+            // alignment: Alignment.topCenter,
             children: [
-              widget.body,
-              SafeArea(
-                child: Align(
+              ValueListenableBuilder(
+                valueListenable: ConnectionConfig.hasInternet,
+                builder: (context, bool hasInternet, child) => AnimatedSize(
                   alignment: Alignment.topCenter,
-                  child: ValueListenableBuilder(
-                    valueListenable: ConnectionConfig.hasInternet,
-                    builder: (context, bool hasInternet, child) => AnimatedSize(
-                      alignment: Alignment.topCenter,
-                      duration: Duration(milliseconds: 1000),
-                      child: hasInternet
-                          ? Container(width: double.infinity)
-                          : Container(
-                              color: isDark ? Dark.lossCard : Light.lossCard,
-                              padding: EdgeInsets.all(5),
-                              width: double.infinity,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.signal_wifi_off_rounded,
-                                    size: sdp(context, 10),
-                                  ),
-                                  width10,
-                                  Text(
-                                    "No Connection",
-                                    style: TextStyle(color: Colors.white),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: hasInternet
+                      ? Container(width: double.infinity)
+                      : Container(
+                          color: isDark ? Dark.lossCard : Light.lossCard,
+                          padding: EdgeInsets.all(5),
+                          width: double.infinity,
+                          child: SafeArea(
+                            bottom: false,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.signal_wifi_off_rounded,
+                                  size: sdp(context, 10),
+                                  color: Colors.white,
+                                ),
+                                width10,
+                                Text(
+                                  "No Connection",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                    ),
-                  ),
+                          ),
+                        ),
                 ),
               ),
+              Expanded(child: widget.body),
+              // SafeArea(
+              //   child: Align(
+              //     alignment: Alignment.topCenter,
+              //     child: ValueListenableBuilder(
+              //       valueListenable: ConnectionConfig.hasInternet,
+              //       builder: (context, bool hasInternet, child) => AnimatedSize(
+              //         alignment: Alignment.topCenter,
+              //         duration: Duration(milliseconds: 1000),
+              //         child: hasInternet
+              //             ? Container(width: double.infinity)
+              //             : Container(
+              //                 color: isDark ? Dark.lossCard : Light.lossCard,
+              //                 padding: EdgeInsets.all(5),
+              //                 width: double.infinity,
+              //                 child: Row(
+              //                   mainAxisSize: MainAxisSize.min,
+              //                   mainAxisAlignment: MainAxisAlignment.center,
+              //                   children: [
+              //                     Icon(
+              //                       Icons.signal_wifi_off_rounded,
+              //                       size: sdp(context, 10),
+              //                     ),
+              //                     width10,
+              //                     Text(
+              //                       "No Connection",
+              //                       style: TextStyle(color: Colors.white),
+              //                       textAlign: TextAlign.center,
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           floatingActionButtonAnimator: widget.floatingActionButtonAnimator,

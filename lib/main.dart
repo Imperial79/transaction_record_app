@@ -40,9 +40,6 @@ class _MyAppState extends State<MyApp> {
     final FlutterShortcuts flutterShortcuts = FlutterShortcuts();
     flutterShortcuts.initialize(debug: true);
     flutterShortcuts.listenAction((String incomingAction) {
-      // setState(() {
-      //   action = incomingAction;
-      // });
       log(incomingAction);
       if (incomingAction == "Bookmark page action") {
         NavPush(context, NewBookUI());
