@@ -91,7 +91,7 @@ class _HomeUiState extends State<HomeUi>
               Filter('uid', isEqualTo: globalUser.uid),
             ),
           )
-          .orderBy('bookId', descending: true)
+          .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         dateTitle = '';

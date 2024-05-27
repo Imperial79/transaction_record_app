@@ -13,6 +13,7 @@ class Book {
   String time = '';
   String type = '';
   String uid = '';
+  String createdAt = '';
   List<dynamic>? users = [];
   Book({
     required this.bookId,
@@ -24,6 +25,7 @@ class Book {
     required this.time,
     required this.type,
     required this.uid,
+    required this.createdAt,
     this.users,
   });
 
@@ -37,7 +39,8 @@ class Book {
     String? time,
     String? type,
     String? uid,
-    List<dynamic>? users,
+    String? createdAt,
+    ValueGetter<List<dynamic>?>? users,
   }) {
     return Book(
       bookId: bookId ?? this.bookId,
@@ -49,12 +52,13 @@ class Book {
       time: time ?? this.time,
       type: type ?? this.type,
       uid: uid ?? this.uid,
-      users: users ?? this.users,
+      createdAt: createdAt ?? this.createdAt,
+      users: users != null ? users() : this.users,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'bookId': bookId,
       'bookName': bookName,
       'bookDescription': bookDescription,
@@ -64,42 +68,42 @@ class Book {
       'time': time,
       'type': type,
       'uid': uid,
+      'createdAt': createdAt,
       'users': users,
     };
   }
 
   factory Book.fromMap(Map<String, dynamic> map) {
     return Book(
-      bookId: map['bookId'] as String,
-      bookName: map['bookName'] as String,
-      bookDescription: map['bookDescription'] as String,
-      date: map['date'] as String,
-      expense: double.parse("${map['expense']}"),
-      income: double.parse("${map['income']}"),
-      time: map['time'] as String,
-      type: map['type'] as String,
-      uid: map['uid'] as String,
-      users: map['users'] != null
-          ? List<dynamic>.from((map['users'] as List<dynamic>))
-          : [],
+      bookId: map['bookId'] ?? '',
+      bookName: map['bookName'] ?? '',
+      bookDescription: map['bookDescription'] ?? '',
+      date: map['date'] ?? '',
+      expense: map['expense']?.toDouble() ?? 0.0,
+      income: map['income']?.toDouble() ?? 0.0,
+      time: map['time'] ?? '',
+      type: map['type'] ?? '',
+      uid: map['uid'] ?? '',
+      createdAt: map['createdAt'] ?? '',
+      users: List<dynamic>.from(map['users']),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Book.fromJson(String source) =>
-      Book.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Book.fromJson(String source) => Book.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'Book(bookId: $bookId, bookName: $bookName, bookDescription: $bookDescription, date: $date, expense: $expense, income: $income, time: $time, type: $type, uid: $uid, users: $users)';
+    return 'Book(bookId: $bookId, bookName: $bookName, bookDescription: $bookDescription, date: $date, expense: $expense, income: $income, time: $time, type: $type, uid: $uid, createdAt: $createdAt, users: $users)';
   }
 
   @override
-  bool operator ==(covariant Book other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other.bookId == bookId &&
+    return other is Book &&
+        other.bookId == bookId &&
         other.bookName == bookName &&
         other.bookDescription == bookDescription &&
         other.date == date &&
@@ -108,6 +112,7 @@ class Book {
         other.time == time &&
         other.type == type &&
         other.uid == uid &&
+        other.createdAt == createdAt &&
         listEquals(other.users, users);
   }
 
@@ -122,6 +127,7 @@ class Book {
         time.hashCode ^
         type.hashCode ^
         uid.hashCode ^
+        createdAt.hashCode ^
         users.hashCode;
   }
 }

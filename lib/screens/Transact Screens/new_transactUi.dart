@@ -102,6 +102,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
           transactId,
         );
 
+        await FirebaseFirestore.instance
+            .collection('transactBooks')
+            .doc(widget.bookId)
+            .update({"createdAt": "${DateTime.now()}"});
+
         handleNewNoteTransaction(_uploadableAmount);
 
         //  resetting the values

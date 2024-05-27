@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/customScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
@@ -40,23 +41,26 @@ class _NewBookUIState extends State<NewBookUI> {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime =
             DateFormat().add_jm().format(_selectedTimeStamp).toString();
+        Book newBook = Book(
+          bookId: "$_selectedTimeStamp",
+          bookName: bookTitleController.text,
+          bookDescription: bookDescriptionController.text,
+          date: displayDate,
+          expense: 0.0,
+          income: 0.0,
+          time: displayTime,
+          type: selectedBookType,
+          uid: globalUser.uid,
+          createdAt: "$_selectedTimeStamp",
+          users: [],
+        );
 
-        Map<String, dynamic> newBookMap = {
-          'bookName': bookTitleController.text,
-          'bookDescription': bookDescriptionController.text,
-          'date': displayDate,
-          'time': displayTime,
-          'bookId': "$_selectedTimeStamp",
-          'income': 0,
-          'expense': 0,
-          'type': selectedBookType,
-          'users': [],
-          'uid': globalUser.uid,
-        };
         await FirebaseFirestore.instance
             .collection('transactBooks')
             .doc("$_selectedTimeStamp")
-            .set(newBookMap);
+            .set(
+              newBook.toMap(),
+            );
 
         ShowSnackBar(context, content: 'Book Created');
         FocusScope.of(context).unfocus();
