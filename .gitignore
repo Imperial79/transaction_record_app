@@ -24,6 +24,7 @@
 android/key.properties
 upload-keystore.jks
 lib/key.jks
+lib/key.properties
 
 # Flutter/Dart/Pub related
 **/doc/api/
