@@ -1,5 +1,4 @@
 // ignore_for_file: non_constant_identifier_names, duplicate_ignore
-
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,13 +7,13 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/Due_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
-import '../../Utility/sdp.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
@@ -22,13 +21,13 @@ import '../Book Screens/bookUI.dart';
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
 ValueNotifier<String> displayNameGlobal = ValueNotifier(globalUser.name);
 
-class HomeUi extends StatefulWidget {
+class Home_UI extends StatefulWidget {
   @override
-  _HomeUiState createState() => _HomeUiState();
+  _Home_UIState createState() => _Home_UIState();
 }
 
-class _HomeUiState extends State<HomeUi>
-    with AutomaticKeepAliveClientMixin<HomeUi> {
+class _Home_UIState extends State<Home_UI>
+    with AutomaticKeepAliveClientMixin<Home_UI> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   List? data;
   String dateTitle = '';
@@ -108,8 +107,8 @@ class _HomeUiState extends State<HomeUi>
                                 child: Text(
                                   'RECENT BOOKS',
                                   style: TextStyle(
-                                    fontSize: sdp(context, 10),
-                                    letterSpacing: 10,
+                                    fontSize: 12,
+                                    letterSpacing: 7,
                                     color:
                                         isDark ? Dark.fadeText : Light.fadeText,
                                   ),
@@ -123,7 +122,7 @@ class _HomeUiState extends State<HomeUi>
                                 ),
                               ),
                         height10,
-                        ListView.separated(
+                        ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
@@ -132,19 +131,17 @@ class _HomeUiState extends State<HomeUi>
                                 Book.fromMap(snapshot.data!.docs[index].data());
 
                             if (_searchController.text.isEmpty) {
-                              return TransactBookCard(newBook);
+                              return _bookTile(newBook);
                             } else {
-                              if (Constants.getSearchString(newBook.bookName)
-                                      .contains(_searchController.text) ||
-                                  Constants.getSearchString(
-                                          newBook.bookDescription)
-                                      .contains(_searchController.text)) {
-                                return TransactBookCard(newBook);
+                              if (kCompare(_searchController.text,
+                                      newBook.bookName) ||
+                                  kCompare(_searchController.text,
+                                      newBook.bookDescription)) {
+                                return _bookTile(newBook);
                               }
-                              return Container();
+                              return SizedBox();
                             }
                           },
-                          separatorBuilder: (context, index) => height10,
                         ),
                       ],
                     ),
@@ -210,12 +207,12 @@ class _HomeUiState extends State<HomeUi>
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        NavPush(context, AccountUI());
+                                        navPush(context, AccountUI());
                                       },
                                       child: Hero(
                                         tag: 'profImg',
                                         child: CircleAvatar(
-                                          radius: sdp(context, 10),
+                                          radius: 12,
                                           child: ClipRRect(
                                             borderRadius: kRadius(50),
                                             child: globalUser.imgUrl == ''
@@ -277,7 +274,7 @@ class _HomeUiState extends State<HomeUi>
                                       },
                                       borderRadius: kRadius(100),
                                       child: CircleAvatar(
-                                        radius: sdp(context, 10),
+                                        radius: 12,
                                         backgroundColor: isDark
                                             ? Dark.card
                                             : Colors.grey.shade200,
@@ -286,7 +283,7 @@ class _HomeUiState extends State<HomeUi>
                                               ? Icons.keyboard_arrow_up_rounded
                                               : Icons
                                                   .keyboard_arrow_down_rounded,
-                                          size: sdp(context, 15),
+                                          size: 20,
                                           color: isDark
                                               ? Colors.white
                                               : Colors.black,
@@ -323,9 +320,7 @@ class _HomeUiState extends State<HomeUi>
                       },
                     ),
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
+                  height15,
                   BookList(),
                   SizedBox(
                     height: 70,
@@ -339,7 +334,7 @@ class _HomeUiState extends State<HomeUi>
     );
   }
 
-  Widget TransactBookCard(Book bookData) {
+  Widget _bookTile(Book bookData) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
     if (dateTitle == bookData.date) {
@@ -358,8 +353,8 @@ class _HomeUiState extends State<HomeUi>
     Color _textColor = Colors.black;
 
     if (isCompleted) {
-      _kCardColor = isDark ? Dark.profitCard : Light.profitCard;
-      _textColor = Colors.black;
+      _kCardColor = isDark ? Dark.completeCard : Light.completeCard;
+      _textColor = Colors.white;
     } else {
       _kCardColor = isDark ? Dark.card : Light.card;
       _textColor = isDark ? Colors.white : Colors.black;
@@ -382,7 +377,10 @@ class _HomeUiState extends State<HomeUi>
         ),
         OpenContainer(
           openBuilder: (context, closedContainer) {
-            return BookUI(snap: bookData);
+            if (bookData.type == "regular") return BookUI(snap: bookData);
+            return Due_Book_UI(
+              bookData: bookData,
+            );
           },
           closedElevation: 0,
           closedShape: RoundedRectangleBorder(
@@ -435,8 +433,8 @@ class _HomeUiState extends State<HomeUi>
                                         child: Text(
                                           bookData.bookName,
                                           style: TextStyle(
-                                            fontSize: sdp(context, 15.5),
-                                            fontWeight: FontWeight.w700,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500,
                                             color: _textColor,
                                           ),
                                           maxLines: 1,
@@ -447,10 +445,10 @@ class _HomeUiState extends State<HomeUi>
                                       bookData.users != null &&
                                               bookData.users!.length > 0
                                           ? CircleAvatar(
-                                              radius: sdp(context, 10),
+                                              radius: 12,
                                               child: Icon(
                                                 Icons.groups_2,
-                                                size: sdp(context, 10),
+                                                size: 12,
                                               ),
                                             )
                                           : SizedBox(),
@@ -467,7 +465,7 @@ class _HomeUiState extends State<HomeUi>
                                           Icon(
                                             Icons.note,
                                             color: _textColor,
-                                            size: sdp(context, 11),
+                                            size: 12,
                                           ),
                                           width5,
                                           Text(
@@ -486,7 +484,7 @@ class _HomeUiState extends State<HomeUi>
                                       Icon(
                                         Icons.schedule,
                                         color: _textColor,
-                                        size: sdp(context, 11),
+                                        size: 12,
                                       ),
                                       width5,
                                       Text(
@@ -504,51 +502,52 @@ class _HomeUiState extends State<HomeUi>
                           ],
                         ),
                       ),
-                      Card(
-                        color: isDark ? Dark.scaffold : Light.scaffold,
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            children: [
-                              TransactStatsCard(
-                                crossAlign: CrossAxisAlignment.start,
-                                textColor: Colors.black,
-                                amount: "₹ " + oCcy.format(bookData.income),
-                                label: 'Income',
-                                cardColor: isDark
-                                    ? Colors.lightGreen
-                                    : Color(0xFFB5FFB7),
-                                amountColor: isDark
-                                    ? Colors.lightGreenAccent
-                                    : Colors.lightGreen.shade900,
-                              ),
-                              TransactStatsCard(
-                                crossAlign: CrossAxisAlignment.center,
-                                amount: "₹ " + oCcy.format(bookData.expense),
-                                label: 'Expense',
-                                cardColor: isDark
-                                    ? Colors.black
-                                    : Colors.grey.shade300,
-                                textColor: isDark ? Colors.white : Colors.black,
-                                amountColor:
-                                    isDark ? Colors.white : Colors.black,
-                              ),
-                              TransactStatsCard(
-                                crossAlign: CrossAxisAlignment.end,
-                                label: 'Current',
-                                amount: "₹ " +
-                                    oCcy.format(
-                                        bookData.income - bookData.expense),
-                                cardColor: isDark
-                                    ? Colors.blue.shade200
-                                    : Color.fromARGB(255, 197, 226, 250),
-                                textColor: Colors.blue.shade900,
-                                amountColor: isDark
-                                    ? Colors.blue.shade100
-                                    : Colors.blue.shade900,
-                              ),
-                            ],
-                          ),
+                      Padding(
+                        padding: EdgeInsets.all(0),
+                        child: Row(
+                          children: [
+                            _bookStats(
+                              index: 0,
+                              crossAlign: CrossAxisAlignment.start,
+                              textColor: isDark ? Colors.white : Colors.black,
+                              amount: "₹ " + oCcy.format(bookData.income),
+                              label: 'Income',
+                              cardColor: isDark
+                                  ? Color(0xFF223B05)
+                                  : Color(0xFFB5FFB7),
+                              amountColor: isDark
+                                  ? Colors.lightGreenAccent
+                                  : Colors.lightGreen.shade900,
+                            ),
+                            width5,
+                            _bookStats(
+                              index: 1,
+                              crossAlign: CrossAxisAlignment.center,
+                              amount: "₹ " + oCcy.format(bookData.expense),
+                              label: 'Expense',
+                              cardColor:
+                                  isDark ? Colors.black : Colors.grey.shade300,
+                              textColor: isDark ? Colors.white : Colors.black,
+                              amountColor: isDark ? Colors.white : Colors.black,
+                            ),
+                            width5,
+                            _bookStats(
+                              index: 3,
+                              crossAlign: CrossAxisAlignment.end,
+                              label: 'Current',
+                              amount: "₹ " +
+                                  oCcy.format(
+                                      bookData.income - bookData.expense),
+                              cardColor: isDark
+                                  ? const Color(0xFF0B2A43)
+                                  : Color.fromARGB(255, 197, 226, 250),
+                              textColor:
+                                  isDark ? Colors.white : Colors.blue.shade900,
+                              amountColor: isDark
+                                  ? Colors.blue.shade100
+                                  : Colors.blue.shade900,
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -558,37 +557,42 @@ class _HomeUiState extends State<HomeUi>
             );
           },
         ),
+        height10,
       ],
     );
   }
 
-  Widget TransactStatsCard({
+  Widget _bookStats({
+    required int index,
     final amount,
-    final cardColor,
+    required Color cardColor,
     final label,
-    final textColor,
+    required Color textColor,
     final amountColor,
     required CrossAxisAlignment crossAlign,
   }) {
     return Expanded(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: index == 0
+              ? BorderRadius.horizontal(
+                  left: Radius.circular(10),
+                )
+              : index == 1
+                  ? null
+                  : BorderRadius.horizontal(right: Radius.circular(10)),
+        ),
         child: Column(
           crossAxisAlignment: crossAlign,
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: kRadius(50),
-              ),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: sdp(context, 10),
-                ),
+            Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
               ),
             ),
             height5,
@@ -596,7 +600,7 @@ class _HomeUiState extends State<HomeUi>
               amount,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: sdp(context, 10),
+                fontSize: 12,
                 color: amountColor,
               ),
               textAlign: TextAlign.end,

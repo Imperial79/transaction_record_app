@@ -8,7 +8,6 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/user.dart';
 import '../../Utility/components.dart';
-import '../../Utility/sdp.dart';
 
 class HomeMenuUI extends StatefulWidget {
   const HomeMenuUI({Key? key}) : super(key: key);
@@ -37,7 +36,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                     'SETTINGS',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: sdp(context, 10),
+                      fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
@@ -66,7 +65,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                         borderColor: isDark ? Dark.fadeText : Light.fadeText,
                         child: GestureDetector(
                           onTap: () {
-                            NavPush(context, AccountUI());
+                            navPush(context, AccountUI());
                           },
                           child: ClipRRect(
                             borderRadius: kRadius(20),
@@ -136,8 +135,8 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: sdp(context, 40),
-            width: sdp(context, 40),
+            height: 50,
+            width: 50,
             decoration: BoxDecoration(
               color: btnColor,
               borderRadius: kRadius(20),
@@ -151,7 +150,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: isDark ? Colors.white : Colors.black,
-              fontSize: sdp(context, 10),
+              fontSize: 12,
             ),
             textAlign: TextAlign.center,
           ),

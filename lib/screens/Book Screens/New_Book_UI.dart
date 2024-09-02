@@ -2,49 +2,49 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/services/user.dart';
-import '../../Utility/sdp.dart';
 
-class NewBookUI extends StatefulWidget {
-  const NewBookUI({Key? key}) : super(key: key);
+class New_Book_UI extends StatefulWidget {
+  const New_Book_UI({Key? key}) : super(key: key);
 
   @override
-  State<NewBookUI> createState() => _NewBookUIState();
+  State<New_Book_UI> createState() => _New_Book_UIState();
 }
 
-class _NewBookUIState extends State<NewBookUI> {
+class _New_Book_UIState extends State<New_Book_UI> {
   bool isLoading = false;
   DateTime _selectedDate = DateTime.now();
   DateTime _selectedTimeStamp = DateTime.now();
   String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
 
-  final bookTitleController = TextEditingController(
+  final _bookTitle = TextEditingController(
       text: DateFormat('MMMM, yyyy').format(DateTime.now()));
-  final bookDescriptionController = TextEditingController();
+  final _bookDescription = TextEditingController();
   final dbMethod = DatabaseMethods();
 
   String selectedBookType = 'regular';
 
-  void createBook() async {
+  void _createBook() async {
     try {
       setState(() {
         isLoading = true;
       });
-      if (bookTitleController.text.isNotEmpty) {
+      if (_bookTitle.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime =
             DateFormat().add_jm().format(_selectedTimeStamp).toString();
         Book newBook = Book(
           bookId: "$_selectedTimeStamp",
-          bookName: bookTitleController.text,
-          bookDescription: bookDescriptionController.text,
+          bookName: _bookTitle.text,
+          bookDescription: _bookDescription.text,
           date: displayDate,
           expense: 0.0,
           income: 0.0,
@@ -62,21 +62,25 @@ class _NewBookUIState extends State<NewBookUI> {
               newBook.toMap(),
             );
 
-        ShowSnackBar(context, content: 'Book Created');
+        kSnackbar(context, content: 'Book Created');
         FocusScope.of(context).unfocus();
         pageControllerGlobal.value.animateToPage(0,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
       }
-
-      setState(() {
-        isLoading = false;
-      });
     } catch (e) {
+      kSnackbar(context, content: "$e", isDanger: true);
+    } finally {
       setState(() {
         isLoading = false;
       });
-      ShowSnackBar(context, content: "$e", isDanger: true);
     }
+  }
+
+  @override
+  void dispose() {
+    _bookTitle.dispose();
+    _bookDescription.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,7 +100,7 @@ class _NewBookUIState extends State<NewBookUI> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextField(
-                        controller: bookTitleController,
+                        controller: _bookTitle,
                         keyboardType: TextInputType.text,
                         textCapitalization: TextCapitalization.words,
                         style: TextStyle(
@@ -145,7 +149,7 @@ class _NewBookUIState extends State<NewBookUI> {
                             width10,
                             Expanded(
                               child: TextField(
-                                controller: bookDescriptionController,
+                                controller: _bookDescription,
                                 maxLines: 10,
                                 minLines: 1,
                                 cursorColor:
@@ -241,12 +245,18 @@ class _NewBookUIState extends State<NewBookUI> {
                           ],
                         ),
                       ),
-                      // height20,
-                      // Text("Book Type"),
-                      // height10,
-                      // bookTypeBtn('Regular Book'),
-                      // height5,
-                      // bookTypeBtn('Due Book'),
+                      height20,
+                      Text("Book Type"),
+                      height10,
+                      bookTypeBtn(
+                        label: 'Regular Book',
+                        identifier: "regular",
+                      ),
+                      height10,
+                      bookTypeBtn(
+                        label: 'Due Book',
+                        identifier: "due",
+                      ),
                     ],
                   ),
                 ),
@@ -258,71 +268,89 @@ class _NewBookUIState extends State<NewBookUI> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: ElevatedButton.icon(
-          onPressed: () {
-            createBook();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isDark ? Dark.profitCard : Colors.black,
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: kRadius(20),
-            ),
-          ),
-          icon: Icon(
-            Icons.add_circle,
-            color: isDark ? Colors.black : Colors.white,
-          ),
-          label: Container(
-            width: double.infinity,
-            child: Text(
-              'Create',
-              style: TextStyle(
-                fontSize: sdp(context, 15),
-                color: isDark ? Colors.black : Colors.white,
-              ),
-            ),
-          ),
-        ),
+        child: KButton.icon(isDark, onPressed: () {
+          _createBook();
+        }, icon: Icon(Icons.add_circle_outline), label: "Create Book"),
+        // ElevatedButton.icon(
+        //   onPressed: () {
+        //     createBook();
+        //   },
+        //   style: ElevatedButton.styleFrom(
+        //     backgroundColor: isDark ? Dark.profitCard : Colors.black,
+        //     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        //     shape: RoundedRectangleBorder(
+        //       borderRadius: kRadius(20),
+        //     ),
+        //   ),
+        //   icon: Icon(
+        //     Icons.add_circle,
+        //     color: isDark ? Colors.black : Colors.white,
+        //   ),
+        //   label: Container(
+        //     width: double.infinity,
+        //     child: Text(
+        //       'Create',
+        //       style: TextStyle(
+        //         fontSize: 20,
+        //         color: isDark ? Colors.black : Colors.white,
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ),
     );
   }
 
-  Widget bookTypeBtn(String label) {
-    bool isSelected = selectedBookType == label;
+  Widget bookTypeBtn({
+    required String label,
+    required String identifier,
+  }) {
+    bool isSelected = selectedBookType == identifier;
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedBookType = label;
+          selectedBookType = identifier;
         });
       },
       child: Card(
         elevation: 0,
-        color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+        // color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+        color: isSelected
+            ? isDark
+                ? Dark.profitText
+                : Light.profitCard
+            : isDark
+                ? Dark.card
+                : Light.card,
         shape: RoundedRectangleBorder(
           borderRadius: kRadius(15),
-          side: BorderSide(
-            color: isSelected
-                ? isDark
-                    ? Dark.profitText
-                    : Light.profitText
-                : Colors.transparent,
-          ),
+          // side: BorderSide(
+          //   color: isSelected
+          //       ? isDark
+          //           ? Dark.profitText
+          //           : Light.profitText
+          //       : Colors.transparent,
+          // ),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: isSelected
-                    ? isDark
-                        ? Dark.profitText
-                        : Light.profitText
-                    : Colors.grey.shade400,
+                backgroundColor:
+                    isSelected ? Colors.black : Colors.grey.shade400,
                 radius: 5,
               ),
               width10,
-              Expanded(child: Text(label))
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected ? Colors.black : null,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

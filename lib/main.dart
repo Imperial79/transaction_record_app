@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/firebase_options.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/screens/Splash%20Screen/splashUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/auth.dart';
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     flutterShortcuts.listenAction((String incomingAction) {
       log(incomingAction);
       if (incomingAction == "Bookmark page action") {
-        NavPush(context, NewBookUI());
+        navPush(context, New_Book_UI());
       }
     });
     flutterShortcuts.setShortcutItems(
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
         //   icon: 'assets/icons/home.png',
         // ),
         const ShortcutItem(
-          id: "2",
+          id: "1",
           action: 'Bookmark page action',
           shortLabel: 'Bookmark Page',
           icon: "ic_launcher",

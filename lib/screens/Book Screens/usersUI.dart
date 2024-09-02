@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/services/user.dart';
 
@@ -66,13 +65,13 @@ class _UsersUIState extends State<UsersUI> {
       }).whenComplete(() async {
         _allUsers.remove(userUid);
         widget.users.remove(userUid);
-        ShowSnackBar(context, content: "User Removed!");
+        kSnackbar(context, content: "User Removed!");
         await _fetchBookUsers();
       });
       setState(() => isLoading = false);
     } catch (e) {
       setState(() => isLoading = false);
-      ShowSnackBar(context, content: "Unable to remove user: $e");
+      kSnackbar(context, content: "Unable to remove user: $e");
     }
   }
 
@@ -111,7 +110,7 @@ class _UsersUIState extends State<UsersUI> {
       children: [
         CircleAvatar(
           backgroundImage: NetworkImage(user.imgUrl),
-          radius: sdp(context, 12),
+          radius: 15,
         ),
         width10,
         Expanded(
@@ -121,7 +120,7 @@ class _UsersUIState extends State<UsersUI> {
               Text(
                 user.uid == globalUser.uid ? "You" : user.name,
                 style: TextStyle(
-                  fontSize: sdp(context, 12),
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
               ),

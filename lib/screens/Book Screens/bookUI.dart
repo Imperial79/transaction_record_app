@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
@@ -17,7 +17,6 @@ import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactU
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/user.dart';
 import '../../Functions/navigatorFns.dart';
-import '../../Utility/sdp.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
 
@@ -300,7 +299,7 @@ class _BookUIState extends State<BookUI> {
                                           child: Text(
                                             widget.snap.bookName,
                                             style: TextStyle(
-                                              fontSize: sdp(context, 14),
+                                              fontSize: 15,
                                             ),
                                           ),
                                         ),
@@ -314,7 +313,7 @@ class _BookUIState extends State<BookUI> {
                                           },
                                           borderRadius: kRadius(100),
                                           child: CircleAvatar(
-                                            radius: sdp(context, 10),
+                                            radius: 12,
                                             backgroundColor: isDark
                                                 ? Dark.card
                                                 : Colors.grey.shade200,
@@ -325,7 +324,7 @@ class _BookUIState extends State<BookUI> {
                                                         .keyboard_arrow_up_rounded
                                                     : Icons
                                                         .keyboard_arrow_down_rounded,
-                                                size: sdp(context, 15),
+                                                size: 20,
                                                 color: isDark
                                                     ? Colors.white
                                                     : Colors.black,
@@ -337,7 +336,7 @@ class _BookUIState extends State<BookUI> {
                                         InkWell(
                                           borderRadius: kRadius(100),
                                           onTap: () {
-                                            NavPush(
+                                            navPush(
                                                 context,
                                                 UsersUI(
                                                   users: widget.snap.users!,
@@ -347,10 +346,10 @@ class _BookUIState extends State<BookUI> {
                                           },
                                           child: FittedBox(
                                             child: CircleAvatar(
-                                              radius: sdp(context, 10),
+                                              radius: 12,
                                               child: Icon(
                                                 Icons.groups_2,
-                                                size: sdp(context, 10),
+                                                size: 12,
                                               ),
                                             ),
                                           ),
@@ -476,7 +475,7 @@ class _BookUIState extends State<BookUI> {
           ? SizedBox.shrink()
           : InkWell(
               onTap: () {
-                NavPush(
+                navPush(
                   context,
                   NewTransactUi(
                     bookId: widget.snap.bookId,
@@ -554,7 +553,7 @@ class _BookUIState extends State<BookUI> {
                 Text(
                   'Settlement',
                   style: TextStyle(
-                    fontSize: sdp(context, 20),
+                    fontSize: 30,
                   ),
                 ),
                 height20,
@@ -564,7 +563,7 @@ class _BookUIState extends State<BookUI> {
                     Expanded(child: Text('Will Pay')),
                     Expanded(
                         child: CircleAvatar(
-                      radius: sdp(context, 10),
+                      radius: 12,
                       backgroundColor: isDark ? Dark.primary : Light.primary,
                       child: FittedBox(
                         child: Padding(
@@ -619,7 +618,7 @@ class _BookUIState extends State<BookUI> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  radius: sdp(context, 10),
+                                  radius: 12,
                                   backgroundImage: NetworkImage(payerImg),
                                 ),
                                 width10,
@@ -664,7 +663,7 @@ class _BookUIState extends State<BookUI> {
                                 ),
                                 width10,
                                 CircleAvatar(
-                                  radius: sdp(context, 10),
+                                  radius: 12,
                                   backgroundImage: NetworkImage(recieverImg),
                                 ),
                               ],
@@ -697,7 +696,7 @@ class _BookUIState extends State<BookUI> {
                     TextSpan(
                       text: 'INR ',
                       style: TextStyle(
-                        fontSize: sdp(context, 22),
+                        fontSize: 25,
                         color: isDark ? Colors.white : Colors.black,
                         fontFamily: 'Product',
                         fontWeight: FontWeight.w200,
@@ -706,7 +705,7 @@ class _BookUIState extends State<BookUI> {
                     TextSpan(
                       text: oCcy.format(ds['income'] - ds['expense']),
                       style: TextStyle(
-                        fontSize: sdp(context, 22),
+                        fontSize: 25,
                         color: isDark ? Colors.white : Colors.black,
                         fontFamily: 'Product',
                         fontWeight: FontWeight.w900,
@@ -769,8 +768,8 @@ class _BookUIState extends State<BookUI> {
 
   Container _filterButton(BuildContext context) {
     return Container(
-      height: sdp(context, 30),
-      width: sdp(context, 30),
+      height: 40,
+      width: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isDark
@@ -894,7 +893,7 @@ class _BookUIState extends State<BookUI> {
                       : Text(
                           'No Transacts',
                           style: TextStyle(
-                            fontSize: sdp(context, 20),
+                            fontSize: 30,
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
@@ -920,7 +919,7 @@ class _BookUIState extends State<BookUI> {
         children: [
           SvgPicture.asset(
             'lib/assets/icons/search.svg',
-            height: sdp(context, 15),
+            height: 20,
             colorFilter: svgColor(
               isDark ? Dark.text : Light.text,
             ),
@@ -980,8 +979,8 @@ class _BookUIState extends State<BookUI> {
                               children: [
                                 Container(
                                   padding: EdgeInsets.all(10),
-                                  height: sdp(context, 30),
-                                  width: sdp(context, 30),
+                                  height: 40,
+                                  width: 40,
                                   decoration: BoxDecoration(
                                     color: Colors.grey.withOpacity(0.5),
                                     shape: BoxShape.circle,
@@ -1092,14 +1091,14 @@ class _BookUIState extends State<BookUI> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CircleAvatar(
-                            radius: sdp(context, 10),
+                            radius: 12,
                             backgroundImage:
                                 NetworkImage(snapshot.data!.data()!['imgUrl']),
                           );
                         }
 
                         return CircleAvatar(
-                          radius: sdp(context, 10),
+                          radius: 12,
                         );
                       },
                     ),
@@ -1109,9 +1108,9 @@ class _BookUIState extends State<BookUI> {
               child: GestureDetector(
                 onTap: () {
                   if (transactData.uid == globalUser.uid)
-                    NavPush(context, EditTransactUI(trData: transactData));
+                    navPush(context, EditTransactUI(trData: transactData));
                   else
-                    ShowSnackBar(
+                    kSnackbar(
                       context,
                       content: "You cannot edit other's transactions",
                       isDanger: true,
@@ -1144,8 +1143,8 @@ class _BookUIState extends State<BookUI> {
                                     children: [
                                       Container(
                                         padding: EdgeInsets.all(6),
-                                        height: sdp(context, 25),
-                                        width: sdp(context, 25),
+                                        height: 30,
+                                        width: 30,
                                         decoration: BoxDecoration(
                                           color: isIncome
                                               ? isDark
@@ -1200,7 +1199,7 @@ class _BookUIState extends State<BookUI> {
                                                     transactData.amount)),
                                                 style: TextStyle(
                                                   fontFamily: "Product",
-                                                  fontSize: sdp(context, 16),
+                                                  fontSize: 20,
                                                   fontWeight: FontWeight.w800,
                                                   color: isIncome
                                                       ? isDark
@@ -1214,8 +1213,7 @@ class _BookUIState extends State<BookUI> {
                                                   TextSpan(
                                                     text: " INR",
                                                     style: TextStyle(
-                                                      fontSize:
-                                                          sdp(context, 10),
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                     ),
@@ -1242,7 +1240,7 @@ class _BookUIState extends State<BookUI> {
                                                 transactData.transactMode,
                                                 style: TextStyle(
                                                   letterSpacing: 1,
-                                                  fontSize: sdp(context, 6),
+                                                  fontSize: 10,
                                                   fontWeight: FontWeight.w900,
                                                   color: isDark
                                                       ? Colors.black
@@ -1313,7 +1311,7 @@ class _BookUIState extends State<BookUI> {
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),
                 child: CircleAvatar(
-                  radius: sdp(context, 10),
+                  radius: 12,
                   backgroundImage: NetworkImage(globalUser.imgUrl),
                 ),
               ),
@@ -1355,7 +1353,7 @@ class _BookUIState extends State<BookUI> {
               child: Text(
                 isEmpty ? 'No Information Provided' : content,
                 style: TextStyle(
-                  fontSize: sdp(context, 10),
+                  fontSize: 12,
                   fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
                   fontStyle: isEmpty ? FontStyle.italic : null,
                 ),
@@ -1387,7 +1385,7 @@ class _BookUIState extends State<BookUI> {
                 child: Text(
                   'ACTIONS',
                   style: TextStyle(
-                    fontSize: sdp(context, 8),
+                    fontSize: 12,
                     letterSpacing: 5,
                     fontWeight: FontWeight.w500,
                   ),
@@ -1436,7 +1434,7 @@ class _BookUIState extends State<BookUI> {
                 },
                 label: 'Edit',
                 icon: Icons.edit,
-                iconSize: sdp(context, 11),
+                iconSize: 12,
                 btnColor: Colors.black,
                 textColor: Colors.white,
               ),
@@ -1469,8 +1467,8 @@ class _BookUIState extends State<BookUI> {
                   );
                 },
                 label: 'Delete Book',
-                iconSize: sdp(context, 11),
-                labelSize: sdp(context, 8),
+                iconSize: 12,
+                labelSize: 12,
                 icon: Icons.delete,
                 btnColor: Colors.black,
                 textColor: Colors.white,
@@ -1493,9 +1491,9 @@ class _BookUIState extends State<BookUI> {
                     },
                   );
                 },
-                labelSize: sdp(context, 10),
+                labelSize: 12,
                 label: 'Clear all',
-                iconSize: sdp(context, 10),
+                iconSize: 12,
                 icon: Icons.restore,
                 btnColor:
                     isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
@@ -1512,9 +1510,9 @@ class _BookUIState extends State<BookUI> {
                     ),
                   );
                 },
-                labelSize: sdp(context, 10),
+                labelSize: 12,
                 label: 'Add User(s)',
-                iconSize: sdp(context, 12),
+                iconSize: 15,
                 icon: Icons.person_add_alt_1,
                 btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
@@ -1523,9 +1521,9 @@ class _BookUIState extends State<BookUI> {
                 onPressed: () {
                   distribute();
                 },
-                labelSize: sdp(context, 10),
+                labelSize: 12,
                 label: 'Distribute',
-                iconSize: sdp(context, 12),
+                iconSize: 15,
                 icon: Icons.alt_route_rounded,
                 btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
@@ -1654,7 +1652,7 @@ class _BookUIState extends State<BookUI> {
                               .doc("$currentTime")
                               .set(_requestMap)
                               .then(
-                                (value) => ShowSnackBar(
+                                (value) => kSnackbar(
                                   context,
                                   content:
                                       "Request to join book has been sent to ${selectedUsers.length} user(s)",
@@ -1757,7 +1755,7 @@ class _BookUIState extends State<BookUI> {
                               style: TextStyle(
                                 color: isDark ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
-                                fontSize: sdp(context, 16),
+                                fontSize: 20,
                               ),
                             ),
                           ),

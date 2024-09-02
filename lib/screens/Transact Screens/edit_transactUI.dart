@@ -1,14 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
-
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
-import '../../Utility/sdp.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
@@ -125,7 +122,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
         bookId: widget.trData.bookId,
         ts: _selectedTimeStamp,
       );
-      log('$updatedTransact');
       databaseMethods.updateTransacts(
         widget.trData.bookId,
         widget.trData.transactId,
@@ -149,9 +145,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
     return StatefulBuilder(
       builder: (context, StateSetter setState) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: kRadius(12),
-          ),
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: kRadius(12),
+          // ),
           icon: Icon(
             Icons.delete,
             color: Colors.red,
@@ -160,7 +156,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
           title: Text(
             'Delete Transact ?',
             style: TextStyle(
-              color: Colors.black,
+              color: isDark ? Colors.white : Colors.black,
             ),
           ),
           content: Text(
@@ -182,8 +178,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
             ),
             MaterialButton(
               onPressed: () {
-                _deleteTransact();
                 Navigator.pop(context);
+                _deleteTransact();
               },
               color: Colors.red,
               shape: RoundedRectangleBorder(
@@ -202,34 +198,42 @@ class _EditTransactUIState extends State<EditTransactUI> {
   }
 
   _deleteTransact() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await DatabaseMethods()
-        .deleteTransact(widget.trData.bookId, widget.trData.transactId);
-    if (transactType == 'Income') {
-      Map<String, dynamic> _updatedMap = {
-        'income':
-            FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
-      };
-      await DatabaseMethods().updateBookTransactions(
-        widget.trData.bookId,
-        _updatedMap,
-      );
-    } else {
-      Map<String, dynamic> _updatedMap = {
-        'expense':
-            FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
-      };
-      await DatabaseMethods().updateBookTransactions(
-        widget.trData.bookId,
-        _updatedMap,
-      );
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await DatabaseMethods()
+          .deleteTransact(widget.trData.bookId, widget.trData.transactId);
+      if (transactType == 'Income') {
+        Map<String, dynamic> _updatedMap = {
+          'income':
+              FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
+        };
+        await DatabaseMethods().updateBookTransactions(
+          widget.trData.bookId,
+          _updatedMap,
+        );
+      } else {
+        Map<String, dynamic> _updatedMap = {
+          'expense':
+              FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
+        };
+        await DatabaseMethods().updateBookTransactions(
+          widget.trData.bookId,
+          _updatedMap,
+        );
+      }
+
+      Navigator.pop(context);
+    } catch (e) {
+      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-    setState(() {
-      _isLoading = false;
-    });
-    Navigator.pop(context);
   }
 
   //------------------------------------->
@@ -249,373 +253,330 @@ class _EditTransactUIState extends State<EditTransactUI> {
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: _isLoading,
       body: SafeArea(
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isDark ? Dark.card : Light.card,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            size: 20,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                      _modeIndicatorPill(widget.trData.type),
-                    ],
-                  ),
-                ),
-                height10,
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(15),
-                    physics: BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Row(
+                children: [
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark ? Dark.card : Light.card,
                     ),
-                    child: Column(
-                      children: [
-                        /// description Box ----------->
-                        CustomCard(
-                          context,
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 15,
-                                backgroundColor: Colors.blue,
-                                child: Icon(
-                                  Icons.short_text_rounded,
-                                  color: Colors.white,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        size: 20,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  _modeIndicatorPill(widget.trData.type),
+                ],
+              ),
+            ),
+            height10,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(15),
+                physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                child: Column(
+                  children: [
+                    /// description Box ----------->
+                    CustomCard(
+                      context,
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.blue,
+                            child: Icon(
+                              Icons.short_text_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: TextField(
+                              controller: descriptionField,
+                              textCapitalization: TextCapitalization.sentences,
+                              maxLines: 5,
+                              minLines: 1,
+                              cursorColor: isDark ? Colors.white : Colors.black,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Add description (Optional)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
                                 ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    CustomCard(
+                      context,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 20,
+                                color: isDark ? Colors.white : Colors.black,
                               ),
                               SizedBox(
                                 width: 10,
                               ),
-                              Flexible(
-                                child: TextField(
-                                  controller: descriptionField,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  cursorColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Add description (Optional)',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        CustomCard(
-                          context,
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.schedule,
-                                    size: sdp(context, 15),
-                                    color: isDark ? Colors.white : Colors.black,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'Created on',
-                                    style: TextStyle(
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        _selectedDateMap = await selectDate(
-                                            context,
-                                            setState,
-                                            DateTime.parse(widget.trData.ts));
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius: kRadius(10),
-                                          color: isDark
-                                              ? Dark.scaffold
-                                              : Colors.white,
-                                        ),
-                                        child: Text(
-                                          _selectedDateMap['displayDate'],
-                                          style: TextStyle(
-                                            color: isDark
-                                                ? Colors.white
-                                                : Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 6,
-                                  ),
-                                  InkWell(
-                                    onTap: () async {
-                                      _selectedTimeMap = await selectTime(
-                                        context,
-                                        setState,
-                                        TimeOfDay.fromDateTime(
-                                          DateTime.parse(
-                                            _selectedDateMap['tsDate'],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: kRadius(10),
-                                        color: isDark
-                                            ? Dark.scaffold
-                                            : Light.scaffold,
-                                      ),
-                                      child: Text(
-                                        _selectedTimeMap['displayTime'],
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        CustomCard(
-                          context,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                radius: 15,
-                                backgroundColor: Colors.amber.shade900,
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                  size: sdp(context, 12),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: TextField(
-                                  controller: sourceField,
-                                  maxLines: 4,
-                                  minLines: 1,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  cursorColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Add source (Optional)',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            RotatedBox(
-                              quarterTurns: 45,
-                              child: Text(
-                                'CASH',
+                              Text(
+                                'Created on',
                                 style: TextStyle(
-                                  color: transactMode == 'ONLINE'
-                                      ? Colors.grey
-                                      : isDark
-                                          ? Colors.lightGreenAccent
-                                          : Colors.lightGreen,
+                                  color: isDark ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: sdp(context, 6),
-                            ),
-                            transactTypeToggle(context),
-                            SizedBox(
-                              width: sdp(context, 6),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                style: TextStyle(
-                                  fontFamily: 'Product',
-                                  color: transactMode == 'ONLINE'
-                                      ? isDark
-                                          ? Colors.blue.shade200
-                                          : Colors.blue.shade700
-                                      : Colors.grey,
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    _selectedDateMap = await selectDate(
+                                        context,
+                                        setState,
+                                        DateTime.parse(widget.trData.ts));
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: kRadius(10),
+                                      color:
+                                          isDark ? Dark.scaffold : Colors.white,
+                                    ),
+                                    child: Text(
+                                      _selectedDateMap['displayDate'],
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                children: [
-                                  TextSpan(
-                                    text: 'ON',
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  _selectedTimeMap = await selectTime(
+                                    context,
+                                    setState,
+                                    TimeOfDay.fromDateTime(
+                                      DateTime.parse(
+                                        _selectedDateMap['tsDate'],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: kRadius(10),
+                                    color:
+                                        isDark ? Dark.scaffold : Light.scaffold,
+                                  ),
+                                  child: Text(
+                                    _selectedTimeMap['displayTime'],
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: sdp(context, 13),
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: '\nLINE',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: sdp(context, 11),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: sdp(context, 10),
-                        ),
-                        MaterialButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertBox(context);
-                              },
-                            );
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: kRadius(10),
+                            ],
                           ),
-                          elevation: 0,
-                          padding: EdgeInsets.zero,
-                          child: Ink(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 25,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: kRadius(10),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.red,
-                                  Colors.red.shade900,
-                                ],
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Delete Transact',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        BottomCard(context,
-                            date: _selectedDateMap['displayDate']),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            Visibility(
-              visible: _isLoading,
-              child: Container(
-                alignment: Alignment.center,
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.white.withOpacity(0.9),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Transform.scale(
-                        scale: 0.7,
-                        child: CircularProgressIndicator(
-                          color: Colors.red,
-                        ),
+
+                    CustomCard(
+                      context,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.amber.shade900,
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: TextField(
+                              controller: sourceField,
+                              maxLines: 4,
+                              minLines: 1,
+                              textCapitalization: TextCapitalization.sentences,
+                              cursorColor: isDark ? Colors.white : Colors.black,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Add source (Optional)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      'Deleting Transact',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RotatedBox(
+                          quarterTurns: 45,
+                          child: Text(
+                            'CASH',
+                            style: TextStyle(
+                              color: transactMode == 'ONLINE'
+                                  ? Colors.grey
+                                  : isDark
+                                      ? Colors.lightGreenAccent
+                                      : Colors.lightGreen,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        transactTypeToggle(context),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontFamily: 'Product',
+                              color: transactMode == 'ONLINE'
+                                  ? isDark
+                                      ? Colors.blue.shade200
+                                      : Colors.blue.shade700
+                                  : Colors.grey,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'ON',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '\nLINE',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertBox(context);
+                          },
+                        );
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: kRadius(10),
+                      ),
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                      child: Ink(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 25,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: kRadius(10),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.red,
+                              Colors.red.shade900,
+                            ],
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Delete Transact',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    BottomCard(context, date: _selectedDateMap['displayDate']),
                   ],
                 ),
               ),
@@ -671,7 +632,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                   transactMode,
                   style: TextStyle(
                     letterSpacing: 10,
-                    fontSize: sdp(context, 15),
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: transactMode == 'CASH'
                         ? isDark
@@ -708,14 +669,14 @@ class _EditTransactUIState extends State<EditTransactUI> {
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 color: isDark ? Colors.white : Colors.black,
-                fontSize: sdp(context, 20),
+                fontSize: 30,
               ),
               cursorColor: isDark ? Colors.white : Colors.black,
               decoration: InputDecoration(
                 prefixText: 'INR ',
                 prefixStyle: TextStyle(
                   color: isDark ? Colors.white : Colors.grey.shade700,
-                  fontSize: sdp(context, 20),
+                  fontSize: 30,
                   fontWeight: FontWeight.w300,
                 ),
                 border: InputBorder.none,
@@ -723,7 +684,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w800,
                   color: Colors.grey.shade400,
-                  fontSize: sdp(context, 20),
+                  fontSize: 30,
                 ),
               ),
             ),
@@ -888,7 +849,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       },
       child: Container(
         padding: EdgeInsets.all(10),
-        width: sdp(context, 220),
+        width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
               .withOpacity(0.2),
@@ -903,19 +864,19 @@ class _EditTransactUIState extends State<EditTransactUI> {
             backgroundColor: transactMode == 'ONLINE'
                 ? Colors.blue.shade700
                 : Colors.lightGreen,
-            radius: sdp(context, 15),
+            radius: 20,
             child: transactMode == 'ONLINE'
                 ? Icon(
                     Icons.wallet,
                     color: Colors.white,
-                    size: sdp(context, 13),
+                    size: 15,
                   )
                 : Text(
                     '₹',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
-                      fontSize: sdp(context, 13),
+                      fontSize: 15,
                     ),
                   ),
           ),

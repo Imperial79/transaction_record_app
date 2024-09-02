@@ -28,15 +28,14 @@ class AuthMethods {
 
   static Future<User?> _googleSignIn() async {
     try {
-      log('1');
       final GoogleSignIn _googleSignIn = GoogleSignIn();
-      log('2');
+
       await auth.signOut();
-      log('3');
+
       await _googleSignIn.signOut();
-      log('4');
+
       final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
-      log('5');
+
       final GoogleSignInAuthentication? googleSignInAuthentication =
           await googleAccount!.authentication;
 
@@ -44,7 +43,7 @@ class AuthMethods {
         idToken: googleSignInAuthentication!.idToken,
         accessToken: googleSignInAuthentication.accessToken,
       );
-      log('6');
+
       UserCredential _creds = await auth.signInWithCredential(authCred);
 
       User? gUserData = _creds.user;
@@ -81,7 +80,6 @@ class AuthMethods {
 
       User? gUserData = await _googleSignIn();
 
-      log("-----------------GOOGLE SIGNIN--------------------");
       if (gUserData != null) {
         await FirebaseFirestore.instance
             .collection('users')
@@ -93,7 +91,6 @@ class AuthMethods {
             late KUser _user;
 
             if (dbUser != null) {
-              log("User exists");
               _user = new KUser(
                 username: dbUser['username'],
                 email: dbUser['email'],
@@ -119,9 +116,7 @@ class AuthMethods {
                 userMap: _user.toMap(),
               );
             }
-            await _userBox.put('userData', _user.toMap()).then((value) {
-              log("Hive Data -> ${_userBox.get("userData")}");
-            });
+            await _userBox.put('userData', _user.toMap());
 
             NavPushReplacement(context, RootUI());
           },
@@ -140,16 +135,11 @@ class AuthMethods {
     final userBox = await Hive.openBox('USERBOX');
     userBox.delete('userData');
 
-    await Hive.deleteBoxFromDisk('USERBOX').then((value) {
-      log("Box USER deleted from disk");
-    });
+    await Hive.deleteBoxFromDisk('USERBOX');
     await Hive.close();
-    await GoogleSignIn().signOut().then((value) {
-      log("Logged Out from GoggleSignIn");
-    });
+    await GoogleSignIn().signOut();
 
     await auth.signOut().then((value) {
-      log("Logged Out from Auth");
       globalUser =
           KUser(username: '', email: '', name: '', uid: '', imgUrl: '');
     });

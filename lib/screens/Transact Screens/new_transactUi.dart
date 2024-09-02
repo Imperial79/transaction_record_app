@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import '../../Utility/newColors.dart';
-import '../../Utility/sdp.dart';
 import '../../services/user.dart';
 
 class NewTransactUi extends StatefulWidget {
@@ -68,6 +67,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
   }
 
   saveTransacts() async {
+    FocusScope.of(context).unfocus();
     try {
       setState(() {
         isLoading = true;
@@ -119,7 +119,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
         Navigator.pop(context);
       }
     } catch (e) {
-      ShowSnackBar(
+      kSnackbar(
         context,
         content: "Unable to create Transact!",
         isDanger: true,
@@ -245,7 +245,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                               children: [
                                 Icon(
                                   Icons.schedule,
-                                  size: sdp(context, 15),
+                                  size: 20,
                                   color: isDark ? Colors.white : Colors.black,
                                 ),
                                 SizedBox(
@@ -331,7 +331,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                               child: Icon(
                                 Icons.person,
                                 color: Colors.white,
-                                size: sdp(context, 12),
+                                size: 15,
                               ),
                             ),
                             SizedBox(
@@ -382,11 +382,11 @@ class _NewTransactUiState extends State<NewTransactUi> {
                             ),
                           ),
                           SizedBox(
-                            width: sdp(context, 6),
+                            width: 10,
                           ),
                           transactTypeToggle(context),
                           SizedBox(
-                            width: sdp(context, 6),
+                            width: 10,
                           ),
                           RichText(
                             text: TextSpan(
@@ -403,14 +403,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
                                   text: 'ON',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: sdp(context, 13),
+                                    fontSize: 15,
                                   ),
                                 ),
                                 TextSpan(
                                   text: '\nLINE',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
-                                    fontSize: sdp(context, 11),
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
@@ -451,7 +451,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                   transactMode,
                   style: TextStyle(
                     letterSpacing: 10,
-                    fontSize: sdp(context, 15),
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: transactMode == 'CASH'
                         ? isDark
@@ -486,14 +486,14 @@ class _NewTransactUiState extends State<NewTransactUi> {
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 color: isDark ? Colors.white : Colors.black,
-                fontSize: sdp(context, 20),
+                fontSize: 30,
               ),
               cursorColor: isDark ? Colors.white : Colors.black,
               decoration: InputDecoration(
                 prefixText: 'INR ',
                 prefixStyle: TextStyle(
                   color: isDark ? Colors.white : Colors.grey.shade700,
-                  fontSize: sdp(context, 20),
+                  fontSize: 30,
                   fontWeight: FontWeight.w300,
                 ),
                 border: InputBorder.none,
@@ -501,7 +501,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w800,
                   color: Colors.grey.shade400,
-                  fontSize: sdp(context, 20),
+                  fontSize: 30,
                 ),
               ),
             ),
@@ -593,7 +593,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
                               color: transactType == 'Income'
                                   ? Colors.black
                                   : Colors.white,
-                              fontSize: sdp(context, 13),
+                              fontSize: 15,
                             ),
                           ),
                         ],
@@ -624,7 +624,7 @@ class _NewTransactUiState extends State<NewTransactUi> {
       },
       child: Container(
         padding: EdgeInsets.all(10),
-        width: sdp(context, 220),
+        width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
               .withOpacity(0.2),
@@ -639,19 +639,19 @@ class _NewTransactUiState extends State<NewTransactUi> {
             backgroundColor: transactMode == 'ONLINE'
                 ? Colors.blue.shade700
                 : Colors.lightGreen,
-            radius: sdp(context, 15),
+            radius: 20,
             child: transactMode == 'ONLINE'
                 ? Icon(
                     Icons.wallet,
                     color: Colors.white,
-                    size: sdp(context, 13),
+                    size: 15,
                   )
                 : Text(
                     '₹',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
-                      fontSize: sdp(context, 13),
+                      fontSize: 15,
                     ),
                   ),
           ),
@@ -695,13 +695,13 @@ class _NewTransactUiState extends State<NewTransactUi> {
             : isSelected
                 ? Colors.white
                 : Colors.grey,
-        size: sdp(context, 12),
+        size: 15,
       ),
       label: Text(
         label,
         style: TextStyle(
           fontWeight: FontWeight.w500,
-          // fontSize: sdp(context, 8),
+          // fontSize: 12,
           color: isIncome
               ? isSelected
                   ? Colors.black

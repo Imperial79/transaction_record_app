@@ -11,7 +11,7 @@ import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/services/user.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../models/userModel.dart';
-import '../screens/Home Screens/homeUi.dart';
+import '../screens/Home Screens/Home_UI.dart';
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
@@ -61,7 +61,7 @@ class Constants {
       if (globalUser.uid == '' && isAuth != null) {
         final _userBox = await Hive.openBox('USERBOX');
         final userMap = await _userBox.get('userData');
-        log("HIve Data from inside -> $userMap");
+
         displayNameGlobal.value = userMap['name'];
         globalUser = KUser.fromMap(userMap);
 
@@ -98,7 +98,7 @@ class QActions {
     _qActions.initialize((type) {
       switch (type) {
         case "add_book_action":
-          NavPush(context, RootUI());
+          navPush(context, RootUI());
           pageControllerGlobal.value.animateToPage(1,
               duration: Duration(milliseconds: 600), curve: Curves.ease);
           break;
@@ -107,4 +107,8 @@ class QActions {
       }
     });
   }
+}
+
+bool kCompare(String searchKey, String text) {
+  return text.toLowerCase().trim().contains(searchKey.toLowerCase().trim());
 }

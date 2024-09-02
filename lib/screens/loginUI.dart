@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/components.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/services/auth.dart';
-
-import '../Utility/sdp.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);
@@ -37,31 +35,6 @@ class _LoginUIState extends State<LoginUI> {
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              Spacer(),
-              Flexible(
-                flex: 1,
-                child: AnimatedAlign(
-                  duration: Duration(milliseconds: 300),
-                  alignment: _isLoading
-                      ? Alignment.bottomCenter
-                      : Alignment.bottomLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: isDark ? Colors.grey : Colors.tealAccent,
-                          blurRadius: 100,
-                          spreadRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      logoPath,
-                      height: sdp(context, 60),
-                    ),
-                  ),
-                ),
-              ),
               _isLoading
                   ? _loadingScreen()
                   : Flexible(
@@ -74,29 +47,32 @@ class _LoginUIState extends State<LoginUI> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Image.asset(
+                                  logoPath,
+                                  height: 70,
+                                ),
+                                height10,
                                 Text(
                                   'Transact Record',
                                   style: TextStyle(
-                                    fontSize: sdp(context, 25),
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
                                   ),
-                                ),
-                                SizedBox(
-                                  height: sdp(context, 10),
                                 ),
                                 Text(
-                                  'Your Personal Money Manager',
+                                  '"Your Personal Money Manager"',
                                   style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
+                                height20,
                                 Text(
                                   '#OpenSource',
                                   style: TextStyle(
                                     color: isDark
-                                        ? Dark.profitCard
-                                        : Light.profitCard,
+                                        ? Dark.profitText
+                                        : Light.profitText,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
                                   ),
@@ -104,8 +80,8 @@ class _LoginUIState extends State<LoginUI> {
                                 TextLink(
                                   link: _githubLink,
                                   color: isDark
-                                      ? Dark.profitCard
-                                      : Light.profitCard,
+                                      ? Dark.profitText
+                                      : Light.profitText,
                                   text: '#Github',
                                 )
                               ],
@@ -118,7 +94,7 @@ class _LoginUIState extends State<LoginUI> {
                                 colorFilter: svgColor(
                                   isDark ? Dark.profitText : Light.profitText,
                                 ),
-                                height: sdp(context, 20),
+                                height: 30,
                               ),
                               width10,
                               Expanded(
@@ -126,7 +102,7 @@ class _LoginUIState extends State<LoginUI> {
                                   'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: sdp(context, 10),
+                                    fontSize: 12,
                                     color: isDark
                                         ? Dark.profitText
                                         : Light.profitText,
@@ -148,10 +124,10 @@ class _LoginUIState extends State<LoginUI> {
                                 if (mounted) setState(() => _isLoading = false);
                               }
                             },
-                            child: Container(
+                            child: Ink(
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                borderRadius: kRadius(15),
+                                borderRadius: kRadius(10),
                                 color: isDark ? Dark.lossCard : Light.lossCard,
                                 // color: Color(0xffda8363),
                                 border: Border.all(color: Colors.red.shade100),
@@ -163,7 +139,7 @@ class _LoginUIState extends State<LoginUI> {
                                   Text(
                                     'G',
                                     style: TextStyle(
-                                      fontSize: 40,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.white,
                                     ),
@@ -187,7 +163,7 @@ class _LoginUIState extends State<LoginUI> {
                           Text(
                             'By signing in, you agree with our ',
                             style: TextStyle(
-                              fontSize: sdp(context, 10),
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

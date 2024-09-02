@@ -1,12 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
-
+import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
@@ -41,19 +39,17 @@ class _AccountUIState extends State<AccountUI> {
         _userMap['userDisplayName'] = nameController.text;
         _userBox.put('userData', _userMap);
       }
-      log("After Update-> ${_userBox.get('userData')}");
 
       setState(() {
         displayNameGlobal.value = nameController.text;
         globalUser.name = nameController.text;
       });
 
-      ShowSnackBar(context, content: "Name Updated");
+      kSnackbar(context, content: "Name Updated");
       setState(() => isLoading = false);
     } else {
       setState(() => isLoading = false);
-      ShowSnackBar(context,
-          content: 'Please fill all the Fields', isDanger: true);
+      kSnackbar(context, content: 'Please fill all the Fields', isDanger: true);
     }
   }
 

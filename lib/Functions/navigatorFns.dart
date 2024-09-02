@@ -5,7 +5,7 @@ import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-Future<Null> NavPush(BuildContext context, screen) async {
+Future<Null> navPush(BuildContext context, screen) async {
   await Navigator.push(
       context, MaterialPageRoute(builder: (context) => screen));
 }
@@ -17,10 +17,10 @@ Future<void> NavPushReplacement(BuildContext context, screen) {
 
 Future<void> navPopUntilPush(BuildContext context, Widget screen) {
   Navigator.popUntil(context, (route) => false);
-  return NavPush(context, screen);
+  return navPush(context, screen);
 }
 
-ShowSnackBar(
+kSnackbar(
   BuildContext context, {
   required String content,
   bool isDanger = false,

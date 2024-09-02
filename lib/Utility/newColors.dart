@@ -15,6 +15,7 @@ class Light {
   static final Color profitText = Colors.lightGreen.shade700;
   static final Color lossText = Colors.red.shade900;
   static final Color profitCard = Color(0xff98d3cb);
+  static final Color completeCard = Color(0xff98d3cb);
   static final Color lossCard = Color(0xffca705f);
   static final Color primary = Colors.black;
   static final Color fadeText = Colors.grey;
@@ -26,7 +27,8 @@ class Dark {
   static final Color text = Colors.white;
   static final Color profitText = Colors.lightGreen.shade200;
   static final Color lossText = Colors.red.shade100;
-  static final Color profitCard = Color.fromARGB(255, 128, 203, 193);
+  static final Color profitCard = Color(0xFF80CBC1);
+  static final Color completeCard = Color.fromARGB(255, 57, 92, 87);
   static final Color lossCard = Colors.redAccent.shade200;
   static final Color primary = Color(0xff98d3cb);
   static final Color fadeText = Colors.grey;

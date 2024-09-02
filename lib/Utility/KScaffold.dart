@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/Utility/sdp.dart';
 
 // ignore: must_be_immutable
 class KScaffold extends StatefulWidget {
@@ -37,6 +36,7 @@ class _KScaffoldState extends State<KScaffold> {
         Scaffold(
           appBar: widget.appBar,
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             // alignment: Alignment.topCenter,
             children: [
               ValueListenableBuilder(
@@ -59,7 +59,7 @@ class _KScaffoldState extends State<KScaffold> {
                               children: [
                                 Icon(
                                   Icons.signal_wifi_off_rounded,
-                                  size: sdp(context, 10),
+                                  size: 12,
                                   color: Colors.white,
                                 ),
                                 width10,
@@ -97,7 +97,7 @@ class _KScaffoldState extends State<KScaffold> {
               //                   children: [
               //                     Icon(
               //                       Icons.signal_wifi_off_rounded,
-              //                       size: sdp(context, 10),
+              //                       size: 12,
               //                     ),
               //                     width10,
               //                     Text(

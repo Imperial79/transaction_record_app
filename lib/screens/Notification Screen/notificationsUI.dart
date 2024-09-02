@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/Utility/sdp.dart';
 
 import '../../services/user.dart';
 
@@ -34,14 +33,14 @@ class _NotificationsUIState extends State<NotificationsUI> {
             'users': FieldValue.arrayUnion([globalUser.uid])
           }).then((value) async {
             await _removeFromRequest(requestId: requestId).then(
-              (value) => ShowSnackBar(
+              (value) => kSnackbar(
                 context,
                 content: "\"$bookName\" Book joined successfully!",
               ),
             );
           });
         } else {
-          ShowSnackBar(
+          kSnackbar(
             context,
             content: "Book does not exists anymore!",
             isDanger: true,
@@ -56,7 +55,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       setState(() {
         isLoading = false;
       });
-      ShowSnackBar(context, content: "Something went wrong!", isDanger: true);
+      kSnackbar(context, content: "Something went wrong!", isDanger: true);
     }
   }
 
@@ -73,7 +72,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
           await FirebaseRefs.requestRef.doc(requestId).update({
             'users': FieldValue.arrayRemove([globalUser.uid]),
           }).then(
-            (value) => ShowSnackBar(
+            (value) => kSnackbar(
               context,
               content: 'Request Rejected!',
             ),
@@ -87,7 +86,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       setState(() {
         isLoading = false;
       });
-      ShowSnackBar(
+      kSnackbar(
         context,
         content: "Something went wrong!",
         isDanger: true,
@@ -148,7 +147,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
   Widget _dummyNotificationsCard() {
     return Card(
       child: SizedBox(
-        height: sdp(context, 100),
+        height: 150,
         width: double.infinity,
       ),
     );
@@ -182,7 +181,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
           Text(
             'Join my book "${requestData['bookName']}" so that we can share the expense details!',
             style: TextStyle(
-              fontSize: sdp(context, 12),
+              fontSize: 15,
             ),
           ),
           height10,
@@ -232,7 +231,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
               Text(
                 data["name"] ?? "User",
                 style: TextStyle(
-                  fontSize: sdp(context, 12),
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),

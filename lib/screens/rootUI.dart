@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/Utility/sdp.dart';
 import 'package:transaction_record_app/main.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/newBookUI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
 import 'package:transaction_record_app/services/user.dart';
-
-import 'migrateUI.dart';
 
 ValueNotifier<PageController> pageControllerGlobal =
     ValueNotifier(PageController(initialPage: 0));
@@ -46,8 +43,8 @@ class _RootUIState extends State<RootUI> {
   }
 
   List<Widget> _pages = [
-    HomeUi(),
-    NewBookUI(),
+    Home_UI(),
+    New_Book_UI(),
   ];
 
   @override
@@ -104,7 +101,7 @@ class _RootUIState extends State<RootUI> {
                 ),
                 IconButton(
                   onPressed: () {
-                    NavPush(context, NotificationsUI());
+                    navPush(context, NotificationsUI());
                   },
                   icon: StreamBuilder<dynamic>(
                     stream: FirebaseRefs.requestRef
@@ -123,7 +120,7 @@ class _RootUIState extends State<RootUI> {
                             : snapshot.data!.docs.length == 0
                                 ? Icon(Icons.notifications)
                                 : CircleAvatar(
-                                    radius: sdp(context, 10),
+                                    radius: 12,
                                     backgroundColor: isDark
                                         ? Dark.profitText
                                         : Light.profitText,
@@ -182,7 +179,7 @@ class _RootUIState extends State<RootUI> {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: sdp(context, 15),
+          fontSize: 20,
           color: isActive
               ? isDark
                   ? Colors.white

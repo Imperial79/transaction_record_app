@@ -6,8 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/Utility/sdp.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeUI.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
@@ -25,6 +24,21 @@ Widget get width15 => SizedBox(width: 15);
 Widget get width20 => SizedBox(width: 20);
 
 BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
+
+Widget kPill({
+  required Widget child,
+  EdgeInsetsGeometry? padding,
+  Color? color,
+}) {
+  return Container(
+    padding: padding,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: kRadius(100),
+    ),
+    child: child,
+  );
+}
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
@@ -74,7 +88,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             ),
             child: ElevatedButton.icon(
               onPressed: () {
-                NavPush(
+                navPush(
                   context,
                   NewTransactUi(
                     bookId: bookId,
@@ -178,8 +192,8 @@ Widget DummyTransactList(BuildContext context) {
                             children: [
                               Container(
                                 padding: EdgeInsets.all(10),
-                                height: sdp(context, 30),
-                                width: sdp(context, 30),
+                                height: 40,
+                                width: 40,
                                 decoration: BoxDecoration(
                                   color: Colors.grey.withOpacity(0.5),
                                   shape: BoxShape.circle,
@@ -312,7 +326,7 @@ Widget kRenameModal({
                   child: Text(
                     'Aa',
                     style: TextStyle(
-                      fontSize: sdp(context, 16),
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: isDark ? Colors.blue.shade800 : Colors.white,
                     ),
@@ -323,7 +337,7 @@ Widget kRenameModal({
                   'Rename Book',
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black,
-                    fontSize: sdp(context, 16),
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -331,7 +345,7 @@ Widget kRenameModal({
                   'Change the book name',
                   style: TextStyle(
                     color: isDark ? Colors.blue.shade300 : Colors.blueAccent,
-                    fontSize: sdp(context, 16),
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -341,7 +355,7 @@ Widget kRenameModal({
                   keyboardType: TextInputType.text,
                   textCapitalization: TextCapitalization.words,
                   style: TextStyle(
-                    fontSize: sdp(context, 20),
+                    fontSize: 30,
                     fontWeight: FontWeight.w900,
                     color: isDark ? Colors.white : Colors.black,
                   ),
@@ -362,7 +376,7 @@ Widget kRenameModal({
                     ),
                     hintText: 'Book title',
                     hintStyle: TextStyle(
-                      fontSize: sdp(context, 20),
+                      fontSize: 30,
                       color: isDark ? Dark.scaffold : Colors.grey.shade400,
                       fontWeight: FontWeight.w900,
                     ),
@@ -421,7 +435,7 @@ Widget ConfirmDeleteModal({
                   child: Text(
                     '!',
                     style: TextStyle(
-                      fontSize: sdp(context, 16),
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: isDark ? Colors.red.shade800 : Colors.white,
                     ),
@@ -432,7 +446,7 @@ Widget ConfirmDeleteModal({
                   label,
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black,
-                    fontSize: sdp(context, 16),
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -440,7 +454,7 @@ Widget ConfirmDeleteModal({
                   content,
                   style: TextStyle(
                     color: isDark ? Colors.red.shade300 : Colors.redAccent,
-                    fontSize: sdp(context, 16),
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -619,7 +633,7 @@ Widget NewBookCard(BuildContext context) => Container(
             style: TextStyle(
               fontWeight: FontWeight.w700,
               color: Colors.white,
-              fontSize: sdp(context, 20),
+              fontSize: 30,
               letterSpacing: 1,
             ),
           ),
@@ -683,7 +697,7 @@ Widget BookDeleteModal({
                   "Book Options",
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black,
-                    fontSize: sdp(context, 16),
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -699,10 +713,10 @@ Widget BookDeleteModal({
                         bookId: bookId,
                       );
                       Navigator.pop(context);
-                      ShowSnackBar(context,
+                      kSnackbar(context,
                           content: "\"$bookName\" Book Deleted!");
                     } catch (e) {
-                      ShowSnackBar(
+                      kSnackbar(
                         context,
                         content:
                             "Unable to delete book! Check your connection or try again later.",
@@ -737,7 +751,7 @@ Widget BookDeleteModal({
                               "Delete book",
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: sdp(context, 15),
+                                fontSize: 20,
                                 color:
                                     isDark ? Colors.red.shade200 : Colors.red,
                               ),
@@ -784,8 +798,8 @@ Widget AnimatedFloatingButton(
           ) {
             return Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: showFullAddBtn ? sdp(context, 11) : sdp(context, 9),
-                vertical: sdp(context, 9),
+                horizontal: showFullAddBtn ? 12 : 10,
+                vertical: 10,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -802,7 +816,7 @@ Widget AnimatedFloatingButton(
                       'Create Book',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: sdp(context, 11),
+                        fontSize: 12,
                         color: isDark ? Colors.black : Colors.white,
                       ),
                       textAlign: TextAlign.center,
@@ -838,7 +852,7 @@ Widget KSearchBar(
                 backgroundColor: isDark ? Dark.primary : Light.primary,
                 child: SvgPicture.asset(
                   "lib/assets/icons/search.svg",
-                  height: sdp(context, 15),
+                  height: 20,
                   colorFilter: svgColor(isDark ? Colors.black : Colors.white),
                 ),
               ),
@@ -850,7 +864,7 @@ Widget KSearchBar(
                   controller: controller,
                   keyboardType: TextInputType.text,
                   style: TextStyle(
-                    fontSize: sdp(context, 12),
+                    fontSize: 15,
                   ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -858,7 +872,7 @@ Widget KSearchBar(
                     hintStyle: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: isDark ? Dark.fadeText : Light.fadeText,
-                      fontSize: sdp(context, 12),
+                      fontSize: 15,
                     ),
                   ),
                   onChanged: onChanged,
@@ -877,7 +891,7 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
     child: Text(
       customText,
       style: TextStyle(
-        fontSize: sdp(context, 20),
+        fontSize: 30,
         color: isDark ? Dark.fadeText : Light.fadeText,
       ),
     ),

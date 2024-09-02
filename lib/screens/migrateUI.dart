@@ -1,11 +1,7 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Utility/customScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import '../Utility/constants.dart';
 import '../Utility/newColors.dart';
 
 class MigrateUI extends StatefulWidget {
@@ -33,7 +29,6 @@ class _MigrateUIState extends State<MigrateUI> {
               (value) async {
                 double income = 0.0;
                 double expense = 0.0;
-                log('Transact Book - $bookName - $bookId');
                 value.docs.forEach(
                   (transact) {
                     bool isIncome = transact.data()['type'] == "Income";
@@ -45,9 +40,6 @@ class _MigrateUIState extends State<MigrateUI> {
                     }
                   },
                 );
-
-                log("Final income - $income");
-                log("Final expense - $expense");
 
                 await FirebaseFirestore.instance
                     .collection('transactBooks')
