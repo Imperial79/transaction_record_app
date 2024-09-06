@@ -94,7 +94,7 @@ class _LoginUIState extends State<LoginUI> {
                                 colorFilter: svgColor(
                                   isDark ? Dark.profitText : Light.profitText,
                                 ),
-                                height: 30,
+                                height: 20,
                               ),
                               width10,
                               Expanded(

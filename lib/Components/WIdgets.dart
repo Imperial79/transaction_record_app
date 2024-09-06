@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 
 import '../Utility/newColors.dart';
+import '../models/userModel.dart';
 
 Widget kBackButton(
   context, {
@@ -32,6 +33,54 @@ Widget kBackButton(
                 )
               : SizedBox(),
         ],
+      ),
+    ),
+  );
+}
+
+Padding kUserTile(
+  bool isDark, {
+  required List selectedUsers,
+  required KUser userData,
+  required bool isSelecting,
+  void Function()? onTap,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: kRadius(15),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: kRadius(15),
+          color: selectedUsers.contains(userData.uid)
+              ? isDark
+                  ? Dark.profitCard.withOpacity(.6)
+                  : Light.profitCard
+              : Colors.transparent,
+        ),
+        padding: EdgeInsets.all(10),
+        child: Row(
+          children: [
+            selectedUsers.contains(userData.uid)
+                ? CircleAvatar(
+                    child: Icon(Icons.done),
+                  )
+                : CircleAvatar(
+                    backgroundImage: NetworkImage(userData.imgUrl),
+                  ),
+            width20,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(userData.name),
+                  Text(userData.username),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );

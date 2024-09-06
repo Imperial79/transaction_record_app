@@ -504,51 +504,94 @@ class _Home_UIState extends State<Home_UI>
                       ),
                       Padding(
                         padding: EdgeInsets.all(0),
-                        child: Row(
-                          children: [
-                            _bookStats(
-                              index: 0,
-                              crossAlign: CrossAxisAlignment.start,
-                              textColor: isDark ? Colors.white : Colors.black,
-                              amount: "₹ " + oCcy.format(bookData.income),
-                              label: 'Income',
-                              cardColor: isDark
-                                  ? Color(0xFF223B05)
-                                  : Color(0xFFB5FFB7),
-                              amountColor: isDark
-                                  ? Colors.lightGreenAccent
-                                  : Colors.lightGreen.shade900,
-                            ),
-                            width5,
-                            _bookStats(
-                              index: 1,
-                              crossAlign: CrossAxisAlignment.center,
-                              amount: "₹ " + oCcy.format(bookData.expense),
-                              label: 'Expense',
-                              cardColor:
-                                  isDark ? Colors.black : Colors.grey.shade300,
-                              textColor: isDark ? Colors.white : Colors.black,
-                              amountColor: isDark ? Colors.white : Colors.black,
-                            ),
-                            width5,
-                            _bookStats(
-                              index: 3,
-                              crossAlign: CrossAxisAlignment.end,
-                              label: 'Current',
-                              amount: "₹ " +
-                                  oCcy.format(
-                                      bookData.income - bookData.expense),
-                              cardColor: isDark
-                                  ? const Color(0xFF0B2A43)
-                                  : Color.fromARGB(255, 197, 226, 250),
-                              textColor:
-                                  isDark ? Colors.white : Colors.blue.shade900,
-                              amountColor: isDark
-                                  ? Colors.blue.shade100
-                                  : Colors.blue.shade900,
-                            ),
-                          ],
-                        ),
+                        child: bookData.type == "due"
+                            ? Row(
+                                children: [
+                                  _bookStats(
+                                    index: 0,
+                                    crossAlign: CrossAxisAlignment.start,
+                                    textColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amount: "₹ " +
+                                        oCcy.format(
+                                            bookData.income - bookData.expense),
+                                    label: 'Received',
+                                    cardColor: isDark
+                                        ? Color(0xFF223B05)
+                                        : Color(0xFFB5FFB7),
+                                    amountColor: isDark
+                                        ? Colors.lightGreenAccent
+                                        : Colors.lightGreen.shade900,
+                                  ),
+                                  _bookStats(
+                                    index: 2,
+                                    crossAlign: CrossAxisAlignment.end,
+                                    label: "Due",
+                                    amount:
+                                        "₹ " + oCcy.format(bookData.expense),
+                                    cardColor: isDark
+                                        ? Color(0xFF0B2A43)
+                                        : Color.fromARGB(255, 197, 226, 250),
+                                    textColor: isDark
+                                        ? Colors.white
+                                        : Colors.blue.shade900,
+                                    amountColor: isDark
+                                        ? Colors.blue.shade100
+                                        : Colors.blue.shade900,
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  _bookStats(
+                                    index: 0,
+                                    crossAlign: CrossAxisAlignment.start,
+                                    textColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amount: "₹ " + oCcy.format(bookData.income),
+                                    label: 'Income',
+                                    cardColor: isDark
+                                        ? Color(0xFF223B05)
+                                        : Color(0xFFB5FFB7),
+                                    amountColor: isDark
+                                        ? Colors.lightGreenAccent
+                                        : Colors.lightGreen.shade900,
+                                  ),
+                                  width5,
+                                  _bookStats(
+                                    index: 1,
+                                    crossAlign: CrossAxisAlignment.center,
+                                    amount:
+                                        "₹ " + oCcy.format(bookData.expense),
+                                    label: 'Expense',
+                                    cardColor: isDark
+                                        ? Colors.black
+                                        : Colors.grey.shade300,
+                                    textColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amountColor:
+                                        isDark ? Colors.white : Colors.black,
+                                  ),
+                                  width5,
+                                  _bookStats(
+                                    index: 2,
+                                    crossAlign: CrossAxisAlignment.end,
+                                    label: 'Current',
+                                    amount: "₹ " +
+                                        oCcy.format(
+                                            bookData.income - bookData.expense),
+                                    cardColor: isDark
+                                        ? const Color(0xFF0B2A43)
+                                        : Color.fromARGB(255, 197, 226, 250),
+                                    textColor: isDark
+                                        ? Colors.white
+                                        : Colors.blue.shade900,
+                                    amountColor: isDark
+                                        ? Colors.blue.shade100
+                                        : Colors.blue.shade900,
+                                  ),
+                                ],
+                              ),
                       ),
                     ],
                   ),
@@ -564,9 +607,9 @@ class _Home_UIState extends State<Home_UI>
 
   Widget _bookStats({
     required int index,
-    final amount,
+    String amount = "0",
     required Color cardColor,
-    final label,
+    String label = "label",
     required Color textColor,
     final amountColor,
     required CrossAxisAlignment crossAlign,

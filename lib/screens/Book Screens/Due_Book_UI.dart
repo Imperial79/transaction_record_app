@@ -10,6 +10,7 @@ import '../../Functions/navigatorFns.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';
 import '../../models/transactModel.dart';
+import '../../models/userModel.dart';
 import '../../services/database.dart';
 import '../../services/user.dart';
 import '../Transact Screens/edit_transactUI.dart';
@@ -39,12 +40,51 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
 
   // int bookListCounter = 5;
   int searchingBookListCounter = 50;
+  bool isLoading = false;
   bool isSearching = false;
+
+  Future<void> _addUsers({
+    required String bookName,
+    required String bookId,
+  }) async {
+    try {
+      Navigator.pop(context);
+      setState(() {
+        isLoading = true;
+      });
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+
+      Map<String, dynamic> _requestMap = {
+        'id': "$currentTime",
+        'date': Constants.getDisplayDate(currentTime),
+        'time': Constants.getDisplayTime(currentTime),
+        'senderId': globalUser.uid,
+        'users': selectedUsers,
+        'bookName': bookName,
+        'bookId': bookId,
+      };
+
+      await FirebaseRefs.requestRef.doc("$currentTime").set(_requestMap).then(
+            (value) => kSnackbar(
+              context,
+              content:
+                  "Request to join book has been sent to ${selectedUsers.length} user(s)",
+            ),
+          );
+    } catch (e) {
+      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(12),
@@ -55,7 +95,21 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   kBackButton(context),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.delete_outline))
+                  Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => _addUserDialog(
+                            isDark,
+                            bookId: bookData.bookId,
+                            bookName: bookData.bookName,
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.person_add)),
+                  IconButton(
+                      onPressed: () {}, icon: Icon(Icons.delete_outline)),
                 ],
               ),
               height20,
@@ -127,6 +181,122 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         elevation: 0,
         highlightElevation: 0,
         child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  List<String> selectedUsers = [];
+  // bool isSelecting = false;
+  Widget _addUserDialog(
+    bool isDark, {
+    required String bookId,
+    required String bookName,
+  }) {
+    final _searchUser = TextEditingController();
+    selectedUsers = [];
+    bool isSelecting = false;
+
+    void onSelect(setState, String uid) {
+      setState(() {
+        if (!selectedUsers.contains(uid)) {
+          selectedUsers.add(uid);
+        } else {
+          selectedUsers.remove(uid);
+        }
+      });
+
+      if (selectedUsers.length == 0) {
+        setState(() {
+          isSelecting = false;
+        });
+      } else {
+        setState(() {
+          isSelecting = true;
+        });
+      }
+    }
+
+    return StatefulBuilder(
+      builder: (context, setState) => Dialog(
+        elevation: 0,
+        insetPadding: EdgeInsets.all(15),
+        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KSearchBar(
+                context,
+                isDark: isDark,
+                controller: _searchUser,
+                onChanged: (_) {
+                  setState(() {});
+                },
+              ),
+              Visibility(
+                visible: isSelecting,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text('Selected ${selectedUsers.length} user(s)'),
+                ),
+              ),
+              height20,
+              FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                future: FirebaseRefs.userRef
+                    .where('uid', isNotEqualTo: globalUser.uid)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.docs.length == 0) {
+                      return Text('No Users');
+                    }
+                    return Flexible(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          KUser userData =
+                              KUser.fromMap(snapshot.data!.docs[index].data());
+
+                          if (kCompare(_searchUser.text, userData.name) ||
+                              kCompare(_searchUser.text, userData.username)) {
+                            return kUserTile(
+                              isDark,
+                              userData: userData,
+                              isSelecting: isSelecting,
+                              selectedUsers: selectedUsers,
+                              onTap: () {
+                                onSelect(setState, userData.uid);
+                              },
+                            );
+                          }
+                          return SizedBox.shrink();
+                        },
+                      ),
+                    );
+                  }
+                  return LinearProgressIndicator();
+                },
+              ),
+              selectedUsers.length > 0
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _addUsers(
+                            bookId: bookData.bookId,
+                            bookName: bookData.bookName,
+                          );
+                        },
+                        child: Text('Send Request'),
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
       ),
     );
   }

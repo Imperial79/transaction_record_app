@@ -16,6 +16,7 @@ import 'package:transaction_record_app/screens/Book%20Screens/usersUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
 import 'package:transaction_record_app/services/user.dart';
+import '../../Components/WIdgets.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
@@ -1613,10 +1614,11 @@ class _BookUIState extends State<BookUI> {
                                   .contains(_searchUser.text) ||
                               Constants.getSearchString(userData.username)
                                   .contains(_searchUser.text)) {
-                            return _userTile(
-                              userData,
-                              isSelecting,
+                            return kUserTile(
                               isDark,
+                              userData: userData,
+                              isSelecting: isSelecting,
+                              selectedUsers: selectedUsers,
                               onTap: () {
                                 onSelect(setState, userData.uid);
                               },
@@ -1664,54 +1666,6 @@ class _BookUIState extends State<BookUI> {
                       ),
                     )
                   : SizedBox.shrink(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding _userTile(
-    // Map<String, dynamic> userData,
-    KUser userData,
-    bool isSelecting,
-    bool isDark, {
-    void Function()? onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: kRadius(15),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: kRadius(15),
-            color: selectedUsers.contains(userData.uid)
-                ? isDark
-                    ? Dark.profitCard.withOpacity(.6)
-                    : Light.profitCard
-                : Colors.transparent,
-          ),
-          padding: EdgeInsets.all(10),
-          child: Row(
-            children: [
-              selectedUsers.contains(userData.uid)
-                  ? CircleAvatar(
-                      child: Icon(Icons.done),
-                    )
-                  : CircleAvatar(
-                      backgroundImage: NetworkImage(userData.imgUrl),
-                    ),
-              width20,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(userData.name),
-                    Text(userData.username),
-                  ],
-                ),
-              ),
             ],
           ),
         ),

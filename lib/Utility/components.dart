@@ -872,7 +872,7 @@ Widget KSearchBar(
                     hintStyle: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: isDark ? Dark.fadeText : Light.fadeText,
-                      fontSize: 15,
+                      fontSize: 17,
                     ),
                   ),
                   onChanged: onChanged,
@@ -895,29 +895,5 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
         color: isDark ? Dark.fadeText : Light.fadeText,
       ),
     ),
-  );
-}
-
-AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
-  return AnimatedSwitcher(
-    duration: Duration(milliseconds: 200),
-    reverseDuration: Duration(milliseconds: 200),
-    child: isLoading ?? false
-        ? Container(
-            height: double.infinity,
-            width: double.infinity,
-            color:
-                isDark ? Dark.card.withOpacity(.8) : Light.card.withOpacity(.8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(
-                  color: isDark ? Dark.primary : Light.primary,
-                ),
-              ],
-            ),
-          )
-        : SizedBox(),
   );
 }
