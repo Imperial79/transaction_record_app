@@ -1,5 +1,5 @@
 // ignore_for_file: non_constant_identifier_names, duplicate_ignore
-import 'package:animations/animations.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -375,230 +375,207 @@ class _Home_UIState extends State<Home_UI>
             ),
           ),
         ),
-        OpenContainer(
-          openBuilder: (context, closedContainer) {
-            if (bookData.type == "regular") return BookUI(snap: bookData);
-            return Due_Book_UI(
-              bookData: bookData,
-            );
+        GestureDetector(
+          onTap: () {
+            if (bookData.type == "due") {
+              navPush(context, Due_Book_UI(bookData: bookData));
+            } else {
+              navPush(context, BookUI(bookData: bookData));
+            }
           },
-          closedElevation: 0,
-          closedShape: RoundedRectangleBorder(
-            borderRadius: kRadius(20),
-          ),
-          openElevation: 0,
-          transitionType: ContainerTransitionType.fadeThrough,
-          closedColor: isDark ? Dark.card : Light.card,
-          openColor: isDark ? Dark.scaffold : Light.scaffold,
-          middleColor: isDark ? Colors.black : Colors.white,
-          closedBuilder: (context, openContainer) {
-            return GestureDetector(
-              onTap: () {
-                openContainer();
-              },
-              onLongPress: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  builder: (context) {
-                    return BookDeleteModal(
-                      bookId: bookData.bookId,
-                      bookName: bookData.bookName,
-                    );
-                  },
+          onLongPress: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              builder: (context) {
+                return BookDeleteModal(
+                  bookId: bookData.bookId,
+                  bookName: bookData.bookName,
                 );
               },
-              child: Card(
-                color: _kCardColor,
-                child: Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
+            );
+          },
+          child: Card(
+            color: _kCardColor,
+            child: Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          bookData.bookName,
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500,
-                                            color: _textColor,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                  Expanded(
+                                    child: Text(
+                                      bookData.bookName,
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500,
+                                        color: _textColor,
                                       ),
-                                      width10,
-                                      bookData.users != null &&
-                                              bookData.users!.length > 0
-                                          ? CircleAvatar(
-                                              radius: 12,
-                                              child: Icon(
-                                                Icons.groups_2,
-                                                size: 12,
-                                              ),
-                                            )
-                                          : SizedBox(),
-                                    ],
-                                  ),
-                                  Visibility(
-                                    visible: bookData.bookDescription
-                                        .toString()
-                                        .isNotEmpty,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.note,
-                                            color: _textColor,
-                                            size: 12,
-                                          ),
-                                          width5,
-                                          Text(
-                                            bookData.bookDescription,
-                                            style: TextStyle(
-                                              color: _textColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  height5,
-                                  Row(
+                                  width10,
+                                  bookData.users != null &&
+                                          bookData.users!.length > 0
+                                      ? CircleAvatar(
+                                          radius: 12,
+                                          child: Icon(
+                                            Icons.groups_2,
+                                            size: 12,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ],
+                              ),
+                              Visibility(
+                                visible: bookData.bookDescription
+                                    .toString()
+                                    .isNotEmpty,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                  child: Row(
                                     children: [
                                       Icon(
-                                        Icons.schedule,
+                                        Icons.note,
                                         color: _textColor,
                                         size: 12,
                                       ),
                                       width5,
                                       Text(
-                                        bookData.date + ' | ' + bookData.time,
+                                        bookData.bookDescription,
                                         style: TextStyle(
-                                          fontSize: 12,
                                           color: _textColor,
                                         ),
                                       ),
                                     ],
                                   ),
+                                ),
+                              ),
+                              height5,
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    color: _textColor,
+                                    size: 12,
+                                  ),
+                                  width5,
+                                  Text(
+                                    bookData.date + ' | ' + bookData.time,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: _textColor,
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(0),
-                        child: bookData.type == "due"
-                            ? Row(
-                                children: [
-                                  _bookStats(
-                                    index: 0,
-                                    crossAlign: CrossAxisAlignment.start,
-                                    textColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amount: "₹ " +
-                                        oCcy.format(
-                                            bookData.income - bookData.expense),
-                                    label: 'Received',
-                                    cardColor: isDark
-                                        ? Color(0xFF223B05)
-                                        : Color(0xFFB5FFB7),
-                                    amountColor: isDark
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen.shade900,
-                                  ),
-                                  _bookStats(
-                                    index: 2,
-                                    crossAlign: CrossAxisAlignment.end,
-                                    label: "Due",
-                                    amount:
-                                        "₹ " + oCcy.format(bookData.expense),
-                                    cardColor: isDark
-                                        ? Color(0xFF0B2A43)
-                                        : Color.fromARGB(255, 197, 226, 250),
-                                    textColor: isDark
-                                        ? Colors.white
-                                        : Colors.blue.shade900,
-                                    amountColor: isDark
-                                        ? Colors.blue.shade100
-                                        : Colors.blue.shade900,
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  _bookStats(
-                                    index: 0,
-                                    crossAlign: CrossAxisAlignment.start,
-                                    textColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amount: "₹ " + oCcy.format(bookData.income),
-                                    label: 'Income',
-                                    cardColor: isDark
-                                        ? Color(0xFF223B05)
-                                        : Color(0xFFB5FFB7),
-                                    amountColor: isDark
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen.shade900,
-                                  ),
-                                  width5,
-                                  _bookStats(
-                                    index: 1,
-                                    crossAlign: CrossAxisAlignment.center,
-                                    amount:
-                                        "₹ " + oCcy.format(bookData.expense),
-                                    label: 'Expense',
-                                    cardColor: isDark
-                                        ? Colors.black
-                                        : Colors.grey.shade300,
-                                    textColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amountColor:
-                                        isDark ? Colors.white : Colors.black,
-                                  ),
-                                  width5,
-                                  _bookStats(
-                                    index: 2,
-                                    crossAlign: CrossAxisAlignment.end,
-                                    label: 'Current',
-                                    amount: "₹ " +
-                                        oCcy.format(
-                                            bookData.income - bookData.expense),
-                                    cardColor: isDark
-                                        ? const Color(0xFF0B2A43)
-                                        : Color.fromARGB(255, 197, 226, 250),
-                                    textColor: isDark
-                                        ? Colors.white
-                                        : Colors.blue.shade900,
-                                    amountColor: isDark
-                                        ? Colors.blue.shade100
-                                        : Colors.blue.shade900,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.all(0),
+                    child: bookData.type == "due"
+                        ? Row(
+                            children: [
+                              _bookStats(
+                                index: 0,
+                                crossAlign: CrossAxisAlignment.start,
+                                textColor: isDark ? Colors.white : Colors.black,
+                                amount: "₹ " + oCcy.format(bookData.income),
+                                label: 'Received',
+                                cardColor: isDark
+                                    ? Color(0xFF223B05)
+                                    : Color(0xFFB5FFB7),
+                                amountColor: isDark
+                                    ? Colors.lightGreenAccent
+                                    : Colors.lightGreen.shade900,
+                              ),
+                              _bookStats(
+                                index: 2,
+                                crossAlign: CrossAxisAlignment.end,
+                                label: "Due",
+                                amount: "₹ " + oCcy.format(bookData.expense),
+                                cardColor: isDark
+                                    ? Color(0xFF0B2A43)
+                                    : Color.fromARGB(255, 197, 226, 250),
+                                textColor: isDark
+                                    ? Colors.white
+                                    : Colors.blue.shade900,
+                                amountColor: isDark
+                                    ? Colors.blue.shade100
+                                    : Colors.blue.shade900,
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              _bookStats(
+                                index: 0,
+                                crossAlign: CrossAxisAlignment.start,
+                                textColor: isDark ? Colors.white : Colors.black,
+                                amount: "₹ " + oCcy.format(bookData.income),
+                                label: 'Income',
+                                cardColor: isDark
+                                    ? Color(0xFF223B05)
+                                    : Color(0xFFB5FFB7),
+                                amountColor: isDark
+                                    ? Colors.lightGreenAccent
+                                    : Colors.lightGreen.shade900,
+                              ),
+                              width5,
+                              _bookStats(
+                                index: 1,
+                                crossAlign: CrossAxisAlignment.center,
+                                amount: "₹ " + oCcy.format(bookData.expense),
+                                label: 'Expense',
+                                cardColor: isDark
+                                    ? Colors.black
+                                    : Colors.grey.shade300,
+                                textColor: isDark ? Colors.white : Colors.black,
+                                amountColor:
+                                    isDark ? Colors.white : Colors.black,
+                              ),
+                              width5,
+                              _bookStats(
+                                index: 2,
+                                crossAlign: CrossAxisAlignment.end,
+                                label: 'Current',
+                                amount: "₹ " +
+                                    oCcy.format(
+                                        bookData.income - bookData.expense),
+                                cardColor: isDark
+                                    ? const Color(0xFF0B2A43)
+                                    : Color.fromARGB(255, 197, 226, 250),
+                                textColor: isDark
+                                    ? Colors.white
+                                    : Colors.blue.shade900,
+                                amountColor: isDark
+                                    ? Colors.blue.shade100
+                                    : Colors.blue.shade900,
+                              ),
+                            ],
+                          ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         ),
         height10,
       ],

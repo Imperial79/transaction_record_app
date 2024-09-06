@@ -22,14 +22,16 @@ import '../../services/database.dart';
 import '../../Utility/components.dart';
 
 class BookUI extends StatefulWidget {
-  final Book snap;
-  const BookUI({Key? key, required this.snap}) : super(key: key);
+  final Book bookData;
+  const BookUI({Key? key, required this.bookData}) : super(key: key);
 
   @override
-  State<BookUI> createState() => _BookUIState();
+  State<BookUI> createState() => _BookUIState(bookData: bookData);
 }
 
 class _BookUIState extends State<BookUI> {
+  final Book bookData;
+  _BookUIState({required this.bookData});
   String dateTitle = '';
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
@@ -71,7 +73,7 @@ class _BookUIState extends State<BookUI> {
     setState(() {
       isLoading = true;
     });
-    await FirebaseRefs.transactBookRef(widget.snap.bookId)
+    await FirebaseRefs.transactBookRef(bookData.bookId)
         .get()
         .then((value) async {
       List<dynamic> groupMembers = [];
@@ -86,7 +88,7 @@ class _BookUIState extends State<BookUI> {
       );
       double totalExpense = value.data()!['expense'];
 
-      await FirebaseRefs.transactsRef(widget.snap.bookId)
+      await FirebaseRefs.transactsRef(bookData.bookId)
           .get()
           .then((snapshot) async {
         snapshot.docs.forEach((element) {
@@ -298,7 +300,7 @@ class _BookUIState extends State<BookUI> {
                                       children: [
                                         Flexible(
                                           child: Text(
-                                            widget.snap.bookName,
+                                            bookData.bookName,
                                             style: TextStyle(
                                               fontSize: 15,
                                             ),
@@ -340,9 +342,9 @@ class _BookUIState extends State<BookUI> {
                                             navPush(
                                                 context,
                                                 UsersUI(
-                                                  users: widget.snap.users!,
-                                                  ownerUid: widget.snap.uid,
-                                                  bookId: widget.snap.bookId,
+                                                  users: bookData.users!,
+                                                  ownerUid: bookData.uid,
+                                                  bookId: bookData.bookId,
                                                 ));
                                           },
                                           child: FittedBox(
@@ -373,7 +375,7 @@ class _BookUIState extends State<BookUI> {
                                           bool showBookMenu, Widget? child) {
                                         return showBookMenu
                                             ? BookMenu(
-                                                widget.snap.bookId,
+                                                bookData.bookId,
                                                 context,
                                               )
                                             : Container();
@@ -392,7 +394,7 @@ class _BookUIState extends State<BookUI> {
                   child: Column(
                     children: [
                       StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseRefs.transactBookRef(widget.snap.bookId)
+                        stream: FirebaseRefs.transactBookRef(bookData.bookId)
                             .snapshots(),
                         builder: (context, snapshot) {
                           return AnimatedSwitcher(
@@ -420,7 +422,7 @@ class _BookUIState extends State<BookUI> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TransactList(
-                            widget.snap.bookId,
+                            bookData.bookId,
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
@@ -479,7 +481,7 @@ class _BookUIState extends State<BookUI> {
                 navPush(
                   context,
                   NewTransactUi(
-                    bookId: widget.snap.bookId,
+                    bookId: bookData.bookId,
                   ),
                 ).then((value) {
                   setState(() {
@@ -1079,8 +1081,8 @@ class _BookUIState extends State<BookUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             transactData.uid != globalUser.uid &&
-                    widget.snap.users != null &&
-                    widget.snap.users!.length > 0
+                    bookData.users != null &&
+                    bookData.users!.length > 0
                 ? Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child:
@@ -1307,8 +1309,8 @@ class _BookUIState extends State<BookUI> {
             ),
             Visibility(
               visible: transactData.uid == globalUser.uid &&
-                  widget.snap.users != null &&
-                  widget.snap.users!.length > 0,
+                  bookData.users != null &&
+                  bookData.users!.length > 0,
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),
                 child: CircleAvatar(
@@ -1400,7 +1402,7 @@ class _BookUIState extends State<BookUI> {
                   borderRadius: kRadius(50),
                 ),
                 child: Text(
-                  '${widget.snap.date}',
+                  '${bookData.date}',
                   style: TextStyle(
                     color: isDark ? Dark.fadeText : Light.fadeText,
                     fontWeight: FontWeight.w600,
@@ -1427,8 +1429,8 @@ class _BookUIState extends State<BookUI> {
                     isScrollControlled: true,
                     builder: (context) {
                       return kRenameModal(
-                        bookId: widget.snap.bookId,
-                        oldBookName: widget.snap.bookName,
+                        bookId: bookData.bookId,
+                        oldBookName: bookData.bookName,
                       );
                     },
                   );
@@ -1453,8 +1455,8 @@ class _BookUIState extends State<BookUI> {
                           });
                           await BookMethods.deleteBook(
                             context,
-                            bookName: widget.snap.bookName,
-                            bookId: widget.snap.bookId,
+                            bookName: bookData.bookName,
+                            bookId: bookData.bookId,
                           );
                           setState(() {
                             _isLoading = false;
@@ -1506,8 +1508,8 @@ class _BookUIState extends State<BookUI> {
                     context: context,
                     builder: (context) => _addUserDialog(
                       isDark,
-                      bookId: widget.snap.bookId,
-                      bookName: widget.snap.bookName,
+                      bookId: bookData.bookId,
+                      bookName: bookData.bookName,
                     ),
                   );
                 },
@@ -1786,9 +1788,9 @@ class _BookUIState extends State<BookUI> {
 
   _clearAllTransacts() async {
     setState(() => _isLoading = true);
-    await DatabaseMethods().deleteAllTransacts(widget.snap.bookId);
-    await DatabaseMethods().updateBookTransactions(
-        widget.snap.bookId, {"income": 0, "expense": 0});
+    await DatabaseMethods().deleteAllTransacts(bookData.bookId);
+    await DatabaseMethods()
+        .updateBookTransactions(bookData.bookId, {"income": 0, "expense": 0});
     setState(() => _isLoading = false);
   }
 
