@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
+import 'package:transaction_record_app/Utility/KTextfield.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import '../../Functions/transactFunctions.dart';
 import '../../models/transactModel.dart';
@@ -259,7 +261,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
               child: Row(
                 children: [
                   Container(
@@ -285,57 +287,34 @@ class _EditTransactUIState extends State<EditTransactUI> {
                 ],
               ),
             ),
-            height10,
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 physics: BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// description Box ----------->
-                    CustomCard(
-                      context,
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            backgroundColor: Colors.blue,
-                            child: Icon(
-                              Icons.short_text_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Flexible(
-                            child: TextField(
-                              controller: descriptionField,
-                              textCapitalization: TextCapitalization.sentences,
-                              maxLines: 5,
-                              minLines: 1,
-                              cursorColor: isDark ? Colors.white : Colors.black,
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Add description (Optional)',
-                                hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                    KTextfield.regular(
+                      isDark,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      controller: descriptionField,
+                      maxLines: 4,
+                      minLines: 1,
+                      hintText: 'Add description (Optional)',
+                      icon: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.blue,
+                        child: Icon(
+                          Icons.short_text_rounded,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-
-                    CustomCard(
+                    height10,
+                    kCard(
                       context,
                       child: Column(
                         children: [
@@ -346,9 +325,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 size: 20,
                                 color: isDark ? Colors.white : Colors.black,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              width10,
                               Text(
                                 'Created on',
                                 style: TextStyle(
@@ -425,51 +402,26 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         ],
                       ),
                     ),
-
-                    CustomCard(
-                      context,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            backgroundColor: Colors.amber.shade900,
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.white,
-                              size: 15,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: sourceField,
-                              maxLines: 4,
-                              minLines: 1,
-                              textCapitalization: TextCapitalization.sentences,
-                              cursorColor: isDark ? Colors.white : Colors.black,
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Add source (Optional)',
-                                hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                    height10,
+                    KTextfield.regular(
+                      isDark,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      controller: sourceField,
+                      maxLines: 4,
+                      minLines: 1,
+                      hintText: 'Add source (Optional)',
+                      icon: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.amber.shade900,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 15,
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    height10,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -487,13 +439,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        transactTypeToggle(context),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        width10,
+                        _modeToggle(context),
+                        width10,
                         RichText(
                           text: TextSpan(
                             style: TextStyle(
@@ -524,9 +472,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 12,
-                    ),
+                    height20,
                     MaterialButton(
                       onPressed: () {
                         showDialog(
@@ -576,7 +522,103 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         ),
                       ),
                     ),
-                    BottomCard(context, date: _selectedDateMap['displayDate']),
+                    height20,
+                    // BottomCard(context, date: _selectedDateMap['displayDate']),
+                    height10,
+                    Text(
+                      transactMode,
+                      style: TextStyle(
+                        letterSpacing: 5,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: transactMode == 'CASH'
+                            ? isDark
+                                ? Colors.lightGreenAccent
+                                : Colors.lightGreen
+                            : isDark
+                                ? Colors.blue.shade200
+                                : Colors.blue.shade700,
+                      ),
+                    ),
+                    Text(
+                      DateFormat('dd MMMM, yyyy').format(DateTime.now()),
+                    ),
+                    height10,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            isDark ? Dark.scaffold : Light.scaffold,
+                            isDark
+                                ? Colors.grey.withOpacity(0)
+                                : Colors.grey.shade300,
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: amountField,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? Colors.white : Colors.black,
+                          fontSize: 30,
+                        ),
+                        cursorColor: isDark ? Colors.white : Colors.black,
+                        decoration: InputDecoration(
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child: Text(
+                              "INR",
+                              style: TextStyle(
+                                color: isDark
+                                    ? Colors.white
+                                    : Colors.grey.shade700,
+                                fontSize: 30,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ),
+                          prefixIconConstraints:
+                              BoxConstraints(minHeight: 0, minWidth: 0),
+                          border: InputBorder.none,
+                          hintText: '0.00',
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade400,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                    height20,
+                    KButton.icon(
+                      isDark,
+                      isOutlined: true,
+                      onPressed: updateTransacts,
+                      backgroundColor: transactType == "Income"
+                          ? isDark
+                              ? Dark.profitCard
+                              : Light.profitCard
+                          : isDark
+                              ? Dark.lossCard
+                              : Light.lossCard,
+                      icon: Icon(
+                        transactType == 'Income'
+                            ? Icons.file_download_outlined
+                            : Icons.file_upload_outlined,
+                        color: transactType == "Income"
+                            ? isDark
+                                ? Dark.profitCard
+                                : Light.profitCard
+                            : isDark
+                                ? Dark.lossCard
+                                : Light.lossCard,
+                      ),
+                      label: "Update transact",
+                    ),
                   ],
                 ),
               ),
@@ -587,27 +629,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
     );
   }
 
-  Container _modeIndicatorPill(String mode) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: mode == 'Income'
-                ? Light.profitCard.withOpacity(0.3)
-                : isDark
-                    ? Colors.grey.shade600
-                    : Colors.grey.shade200,
-            blurRadius: 50,
-            spreadRadius: 10,
-          ),
-        ],
-      ),
-      child: TransactTypeCard(
-        icon: mode == 'Income'
-            ? Icons.file_download_outlined
-            : Icons.file_upload_outlined,
-        label: widget.trData.type,
-      ),
+  Widget _modeIndicatorPill(String mode) {
+    return _typeBtn(
+      icon: mode == 'Income'
+          ? Icons.file_download_outlined
+          : Icons.file_upload_outlined,
+      label: widget.trData.type,
     );
   }
 
@@ -770,9 +797,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 ? Colors.black
                                 : Colors.white,
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          width10,
                           Text(
                             'Update ' + transactType,
                             style: TextStyle(
@@ -796,7 +821,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     );
   }
 
-  Widget TransactTypeCard({final label, icon}) {
+  Widget _typeBtn({final label, icon}) {
     return MaterialButton(
       onPressed: () {},
       shape: RoundedRectangleBorder(
@@ -834,7 +859,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     );
   }
 
-  GestureDetector transactTypeToggle(BuildContext context) {
+  Widget _modeToggle(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -867,16 +892,16 @@ class _EditTransactUIState extends State<EditTransactUI> {
             radius: 20,
             child: transactMode == 'ONLINE'
                 ? Icon(
-                    Icons.wallet,
+                    Icons.webhook_sharp,
                     color: Colors.white,
-                    size: 15,
+                    size: 20,
                   )
                 : Text(
                     '₹',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500,
-                      fontSize: 15,
+                      fontSize: 20,
                     ),
                   ),
           ),

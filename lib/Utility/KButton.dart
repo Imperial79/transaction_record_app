@@ -36,11 +36,29 @@ class KButton {
     required void Function()? onPressed,
     required Widget icon,
     String label = "label",
+    Color? backgroundColor,
+    Color? textColor,
+    bool isOutlined = false,
   }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isDark ? Dark.profitCard : Colors.black,
+        backgroundColor: !isOutlined
+            ? backgroundColor != null
+                ? backgroundColor
+                : isDark
+                    ? Dark.profitCard
+                    : Colors.black
+            : Colors.transparent,
+        side: BorderSide(
+          color: isOutlined
+              ? backgroundColor != null
+                  ? backgroundColor
+                  : isDark
+                      ? Dark.profitCard
+                      : Colors.black
+              : Colors.transparent,
+        ),
         padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         shape: RoundedRectangleBorder(
           borderRadius: kRadius(15),
@@ -56,10 +74,35 @@ class KButton {
               label,
               style: TextStyle(
                 fontSize: 20,
-                color: isDark ? Colors.black : Colors.white,
+                color: !isOutlined
+                    ? textColor != null
+                        ? textColor
+                        : isDark
+                            ? Colors.black
+                            : Colors.white
+                    : backgroundColor != null
+                        ? backgroundColor
+                        : isDark
+                            ? Dark.profitCard
+                            : Colors.black,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  static text(bool isDark,
+      {void Function()? onTap, String label = "label", double fontSize = 17}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: kRadius(100),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isDark ? Dark.profitText : Light.profitText,
+          fontSize: fontSize,
         ),
       ),
     );

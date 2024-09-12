@@ -112,3 +112,9 @@ class QActions {
 bool kCompare(String searchKey, String text) {
   return text.toLowerCase().trim().contains(searchKey.toLowerCase().trim());
 }
+
+String kMoneyFormat(dynamic amount) {
+  double amt = double.parse("${amount}");
+  final oCcy = new NumberFormat("#,##0.00", "en_US");
+  return oCcy.format(amt);
+}

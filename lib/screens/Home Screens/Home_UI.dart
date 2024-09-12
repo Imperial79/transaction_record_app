@@ -127,8 +127,8 @@ class _Home_UIState extends State<Home_UI>
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            Book newBook =
-                                Book.fromMap(snapshot.data!.docs[index].data());
+                            BookModel newBook = BookModel.fromMap(
+                                snapshot.data!.docs[index].data());
 
                             if (_searchController.text.isEmpty) {
                               return _bookTile(newBook);
@@ -334,7 +334,7 @@ class _Home_UIState extends State<Home_UI>
     );
   }
 
-  Widget _bookTile(Book bookData) {
+  Widget _bookTile(BookModel bookData) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
     if (dateTitle == bookData.date) {
@@ -497,7 +497,7 @@ class _Home_UIState extends State<Home_UI>
                                 index: 0,
                                 crossAlign: CrossAxisAlignment.start,
                                 textColor: isDark ? Colors.white : Colors.black,
-                                amount: "₹ " + oCcy.format(bookData.income),
+                                amount: "₹ " + kMoneyFormat(bookData.income),
                                 label: 'Received',
                                 cardColor: isDark
                                     ? Color(0xFF223B05)
@@ -510,7 +510,8 @@ class _Home_UIState extends State<Home_UI>
                                 index: 2,
                                 crossAlign: CrossAxisAlignment.end,
                                 label: "Due",
-                                amount: "₹ " + oCcy.format(bookData.expense),
+                                amount:
+                                    "₹ " + kMoneyFormat(bookData.targetAmount),
                                 cardColor: isDark
                                     ? Color(0xFF0B2A43)
                                     : Color.fromARGB(255, 197, 226, 250),
@@ -529,7 +530,7 @@ class _Home_UIState extends State<Home_UI>
                                 index: 0,
                                 crossAlign: CrossAxisAlignment.start,
                                 textColor: isDark ? Colors.white : Colors.black,
-                                amount: "₹ " + oCcy.format(bookData.income),
+                                amount: "₹ " + kMoneyFormat(bookData.income),
                                 label: 'Income',
                                 cardColor: isDark
                                     ? Color(0xFF223B05)
@@ -542,7 +543,7 @@ class _Home_UIState extends State<Home_UI>
                               _bookStats(
                                 index: 1,
                                 crossAlign: CrossAxisAlignment.center,
-                                amount: "₹ " + oCcy.format(bookData.expense),
+                                amount: "₹ " + kMoneyFormat(bookData.expense),
                                 label: 'Expense',
                                 cardColor: isDark
                                     ? Colors.black
@@ -557,7 +558,7 @@ class _Home_UIState extends State<Home_UI>
                                 crossAlign: CrossAxisAlignment.end,
                                 label: 'Current',
                                 amount: "₹ " +
-                                    oCcy.format(
+                                    kMoneyFormat(
                                         bookData.income - bookData.expense),
                                 cardColor: isDark
                                     ? const Color(0xFF0B2A43)

@@ -55,8 +55,8 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   'Transact Record',
                                   style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 Text(

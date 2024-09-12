@@ -3,15 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
 
-final oCcy = new NumberFormat("#,##0.00", "en_US");
 const String appLogoPath = 'lib/assets/logo/logo.png';
 
 Widget get height5 => SizedBox(height: 5);
@@ -22,6 +21,9 @@ Widget get width5 => SizedBox(width: 5);
 Widget get width10 => SizedBox(width: 10);
 Widget get width15 => SizedBox(width: 15);
 Widget get width20 => SizedBox(width: 20);
+
+Widget kHeight(double height) => SizedBox(height: height);
+Widget kWidth(double width) => SizedBox(width: width);
 
 BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
 
@@ -90,7 +92,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
               onPressed: () {
                 navPush(
                   context,
-                  NewTransactUi(
+                  New_Transact_UI(
                     bookId: bookId,
                   ),
                 );
@@ -281,7 +283,7 @@ Widget StatsCard({final label, content, isBook, bookId}) {
             width5,
             Expanded(
               child: Text(
-                oCcy.format(double.parse(content)) + ' INR',
+                '${kMoneyFormat(content)} INR',
                 style: TextStyle(
                   color: isExpense ? Colors.white : Colors.black,
                   fontSize: 17,
@@ -525,9 +527,8 @@ Widget BookMenuBtn({
   );
 }
 
-Widget CustomCard(BuildContext context, {required Widget child}) {
+Widget kCard(BuildContext context, {required Widget child}) {
   return Container(
-    margin: EdgeInsets.only(bottom: 13),
     padding: EdgeInsets.all(13),
     decoration: BoxDecoration(
       color: isDark ? Dark.card : Light.card,

@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-
 import '../../Functions/navigatorFns.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';
@@ -17,7 +17,7 @@ import '../Transact Screens/edit_transactUI.dart';
 import '../Transact Screens/new_transactUi.dart';
 
 class Due_Book_UI extends StatefulWidget {
-  final Book bookData;
+  final BookModel bookData;
   Due_Book_UI({super.key, required this.bookData});
 
   @override
@@ -25,7 +25,7 @@ class Due_Book_UI extends StatefulWidget {
 }
 
 class _Due_Book_UIState extends State<Due_Book_UI> {
-  final Book bookData;
+  final BookModel bookData;
   _Due_Book_UIState(this.bookData);
 
   String dateTitle = '';
@@ -112,6 +112,23 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                       onPressed: () {}, icon: Icon(Icons.delete_outline)),
                 ],
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Due Amount"),
+                        Text(
+                          "₹ ${kMoneyFormat(bookData.targetAmount)}",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  ),
+                  KButton.text(isDark, onTap: () {}, label: "Edit")
+                ],
+              ),
               height20,
               Text(
                 bookData.bookName,
@@ -129,27 +146,27 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                 stream:
                     FirebaseRefs.transactBookRef(bookData.bookId).snapshots(),
                 builder: (context, snapshot) {
+                  final data = BookModel.fromMap(snapshot.data!.data()!);
                   return AnimatedSwitcher(
                     duration: Duration(milliseconds: 600),
                     switchInCurve: Curves.easeIn,
                     switchOutCurve: Curves.easeOut,
                     child: snapshot.hasData && snapshot.data!.data() != null
-                        ? snapshot.data!.data()!['expense'] != 0
+                        ? data.targetAmount != 0
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "${double.parse("${snapshot.data!.data()!['income'] / snapshot.data!.data()!['expense']}").toStringAsFixed(2)}% completed",
+                                    "${double.parse("${(data.income - data.expense) / data.targetAmount}").toStringAsFixed(2)}% completed",
                                     style: TextStyle(),
                                   ),
                                   height5,
                                   ClipRRect(
-                                    borderRadius: kRadius(10),
+                                    borderRadius: kRadius(5),
                                     child: LinearProgressIndicator(
-                                      minHeight: 50,
-                                      value: ((snapshot.data!
-                                              .data()!['income'] /
-                                          snapshot.data!.data()!['expense'])),
+                                      minHeight: 30,
+                                      value: (((data.income - data.expense) /
+                                          data.targetAmount)),
                                     ),
                                   ),
                                 ],
@@ -169,14 +186,10 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         onPressed: () {
           navPush(
             context,
-            NewTransactUi(
+            New_Transact_UI(
               bookId: bookData.bookId,
             ),
-          ).then((value) {
-            setState(() {
-              // fetchBookTransacts();
-            });
-          });
+          );
         },
         elevation: 0,
         highlightElevation: 0,

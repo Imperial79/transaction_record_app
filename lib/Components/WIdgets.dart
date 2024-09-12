@@ -85,3 +85,12 @@ Padding kUserTile(
     ),
   );
 }
+
+Widget kLabel(String text) {
+  return Padding(
+    padding: EdgeInsets.only(top: 20, bottom: 15),
+    child: Text(
+      text,
+    ),
+  );
+}

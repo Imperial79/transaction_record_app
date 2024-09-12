@@ -45,13 +45,14 @@ class _MigrateUIState extends State<MigrateUI> {
                     .collection('transactBooks')
                     .doc(bookId)
                     .set(
-                      Book(
+                      BookModel(
                         bookId: bookId,
                         bookName: bookName,
                         bookDescription: bookData['bookDescription'],
                         date: bookData['date'],
                         expense: expense,
                         income: income,
+                        targetAmount: bookData["targetAmount"],
                         time: bookData['time'],
                         type: bookData['type'],
                         uid: bookData['uid'],

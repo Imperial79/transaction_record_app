@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-class Book {
+class BookModel {
   String bookId = '';
   String bookName = '';
   String bookDescription = '';
@@ -14,8 +14,9 @@ class Book {
   String type = '';
   String uid = '';
   String createdAt = '';
+  double targetAmount = 0;
   List<dynamic>? users = [];
-  Book({
+  BookModel({
     required this.bookId,
     required this.bookName,
     required this.bookDescription,
@@ -26,10 +27,11 @@ class Book {
     required this.type,
     required this.uid,
     required this.createdAt,
+    required this.targetAmount,
     this.users,
   });
 
-  Book copyWith({
+  BookModel copyWith({
     String? bookId,
     String? bookName,
     String? bookDescription,
@@ -40,9 +42,10 @@ class Book {
     String? type,
     String? uid,
     String? createdAt,
-    ValueGetter<List<dynamic>?>? users,
+    double? targetAmount,
+    List<dynamic>? users,
   }) {
-    return Book(
+    return BookModel(
       bookId: bookId ?? this.bookId,
       bookName: bookName ?? this.bookName,
       bookDescription: bookDescription ?? this.bookDescription,
@@ -53,7 +56,8 @@ class Book {
       type: type ?? this.type,
       uid: uid ?? this.uid,
       createdAt: createdAt ?? this.createdAt,
-      users: users != null ? users() : this.users,
+      targetAmount: targetAmount ?? this.targetAmount,
+      users: users ?? this.users,
     );
   }
 
@@ -69,12 +73,13 @@ class Book {
       'type': type,
       'uid': uid,
       'createdAt': createdAt,
+      'targetAmount': targetAmount,
       'users': users,
     };
   }
 
-  factory Book.fromMap(Map<String, dynamic> map) {
-    return Book(
+  factory BookModel.fromMap(Map<String, dynamic> map) {
+    return BookModel(
       bookId: map['bookId'] ?? '',
       bookName: map['bookName'] ?? '',
       bookDescription: map['bookDescription'] ?? '',
@@ -85,13 +90,15 @@ class Book {
       type: map['type'] ?? '',
       uid: map['uid'] ?? '',
       createdAt: map['createdAt'] ?? '',
+      targetAmount: map['targetAmount']?.toDouble() ?? 0.0,
       users: List<dynamic>.from(map['users']),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Book.fromJson(String source) => Book.fromMap(json.decode(source));
+  factory BookModel.fromJson(String source) =>
+      BookModel.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -102,7 +109,7 @@ class Book {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Book &&
+    return other is BookModel &&
         other.bookId == bookId &&
         other.bookName == bookName &&
         other.bookDescription == bookDescription &&

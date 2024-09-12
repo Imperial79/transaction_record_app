@@ -30,61 +30,63 @@ class _KScaffoldState extends State<KScaffold> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Scaffold(
-          appBar: widget.appBar,
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // alignment: Alignment.topCenter,
-            children: [
-              ValueListenableBuilder(
-                valueListenable: ConnectionConfig.hasInternet,
-                builder: (context, bool hasInternet, child) => AnimatedSize(
-                  alignment: Alignment.topCenter,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  child: hasInternet
-                      ? Container(width: double.infinity)
-                      : Container(
-                          color: isDark ? Dark.lossCard : Light.lossCard,
-                          padding: EdgeInsets.all(5),
-                          width: double.infinity,
-                          child: SafeArea(
-                            bottom: false,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.signal_wifi_off_rounded,
-                                  size: 12,
-                                  color: Colors.white,
-                                ),
-                                width10,
-                                Text(
-                                  "No Connection",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Scaffold(
+            appBar: widget.appBar,
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // alignment: Alignment.topCenter,
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: ConnectionConfig.hasInternet,
+                  builder: (context, bool hasInternet, child) => AnimatedSize(
+                    alignment: Alignment.topCenter,
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    child: hasInternet
+                        ? Container(width: double.infinity)
+                        : Container(
+                            color: isDark ? Dark.lossCard : Light.lossCard,
+                            padding: EdgeInsets.all(5),
+                            width: double.infinity,
+                            child: SafeArea(
+                              bottom: false,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.signal_wifi_off_rounded,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                  width10,
+                                  Text(
+                                    "No Connection",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
-              Expanded(child: widget.body),
-            ],
+                Expanded(child: widget.body),
+              ],
+            ),
+            floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
+            floatingActionButtonLocation: widget.floatingActionButtonLocation,
+            floatingActionButton: widget.floatingActionButton,
           ),
-          floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
-          floatingActionButtonLocation: widget.floatingActionButtonLocation,
-          floatingActionButton: widget.floatingActionButton,
-        ),
-        FullScreenLoading(isLoading: widget.isLoading),
-      ],
+          FullScreenLoading(isLoading: widget.isLoading),
+        ],
+      ),
     );
   }
 

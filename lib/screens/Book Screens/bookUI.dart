@@ -22,7 +22,7 @@ import '../../services/database.dart';
 import '../../Utility/components.dart';
 
 class BookUI extends StatefulWidget {
-  final Book bookData;
+  final BookModel bookData;
   const BookUI({Key? key, required this.bookData}) : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class BookUI extends StatefulWidget {
 }
 
 class _BookUIState extends State<BookUI> {
-  final Book bookData;
+  final BookModel bookData;
   _BookUIState({required this.bookData});
   String dateTitle = '';
   bool showDateWidget = false;
@@ -39,8 +39,6 @@ class _BookUIState extends State<BookUI> {
   final ValueNotifier<bool> _showThings = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
   final ValueNotifier<int> bookListCounter = ValueNotifier<int>(5);
-
-  final oCcy = new NumberFormat("#,##0.00", "en_US");
   bool _isLoading = false;
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
@@ -480,7 +478,7 @@ class _BookUIState extends State<BookUI> {
               onTap: () {
                 navPush(
                   context,
-                  NewTransactUi(
+                  New_Transact_UI(
                     bookId: bookData.bookId,
                   ),
                 ).then((value) {
@@ -706,7 +704,7 @@ class _BookUIState extends State<BookUI> {
                       ),
                     ),
                     TextSpan(
-                      text: oCcy.format(ds['income'] - ds['expense']),
+                      text: kMoneyFormat(ds['income'] - ds['expense']),
                       style: TextStyle(
                         fontSize: 25,
                         color: isDark ? Colors.white : Colors.black,
@@ -1198,8 +1196,8 @@ class _BookUIState extends State<BookUI> {
                                           children: [
                                             Text.rich(
                                               TextSpan(
-                                                text: oCcy.format(double.parse(
-                                                    transactData.amount)),
+                                                text: kMoneyFormat(
+                                                    transactData.amount),
                                                 style: TextStyle(
                                                   fontFamily: "Product",
                                                   fontSize: 20,
