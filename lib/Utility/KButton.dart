@@ -1,12 +1,36 @@
 import 'package:flutter/material.dart';
 
-import 'components.dart';
+import 'commons.dart';
 import 'newColors.dart';
 
 class KButton {
+  static regular(
+    bool isDark, {
+    void Function()? onPressed,
+    String label = "label",
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isDark ? Dark.profitCard : Colors.black,
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: kRadius(100),
+        ),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 15,
+          color: isDark ? Colors.black : Colors.white,
+        ),
+      ),
+    );
+  }
+
   static full(
     bool isDark, {
-    required void Function()? onPressed,
+    void Function()? onPressed,
     String label = "label",
   }) {
     return ElevatedButton(

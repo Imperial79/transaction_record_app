@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
+import 'package:transaction_record_app/Utility/KTextfield.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import '../../Functions/navigatorFns.dart';
+import '../../Utility/commons.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';
 import '../../models/transactModel.dart';
@@ -30,15 +32,15 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
 
   String dateTitle = '';
   bool showDateWidget = false;
-  final ValueNotifier<int> bookListCounter = ValueNotifier<int>(5);
+  final ValueNotifier<int> bookListCounter = ValueNotifier<int>(20);
 
   final oCcy = new NumberFormat("#,##0.00", "en_US");
 
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
+  final _newTargetAmount = new TextEditingController();
 
-  // int bookListCounter = 5;
   int searchingBookListCounter = 50;
   bool isLoading = false;
   bool isSearching = false;
@@ -80,6 +82,37 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
     }
   }
 
+  _setNewTarget() async {
+    Navigator.pop(context);
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      await FirebaseFirestore.instance
+          .collection("transactBooks")
+          .doc(bookData.bookId)
+          .update({
+        "targetAmount": double.parse(_newTargetAmount.text),
+      });
+
+      kSnackbar(context,
+          content: "New target set successfully!", isDanger: false);
+    } catch (e) {
+      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _newTargetAmount.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
@@ -112,68 +145,107 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                       onPressed: () {}, icon: Icon(Icons.delete_outline)),
                 ],
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Due Amount"),
-                        Text(
-                          "₹ ${kMoneyFormat(bookData.targetAmount)}",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    ),
-                  ),
-                  KButton.text(isDark, onTap: () {}, label: "Edit")
-                ],
-              ),
-              height20,
-              Text(
-                bookData.bookName,
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              Text(
-                DateFormat("dd MMM, yyyy").format(
-                  DateTime.parse(bookData.bookId),
-                ),
-              ),
-              height20,
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream:
                     FirebaseRefs.transactBookRef(bookData.bookId).snapshots(),
                 builder: (context, snapshot) {
-                  final data = BookModel.fromMap(snapshot.data!.data()!);
-                  return AnimatedSwitcher(
-                    duration: Duration(milliseconds: 600),
-                    switchInCurve: Curves.easeIn,
-                    switchOutCurve: Curves.easeOut,
-                    child: snapshot.hasData && snapshot.data!.data() != null
-                        ? data.targetAmount != 0
-                            ? Column(
+                  if (snapshot.hasData) {
+                    final data = BookModel.fromMap(snapshot.data!.data()!);
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text("Due Amount"),
                                   Text(
-                                    "${double.parse("${(data.income - data.expense) / data.targetAmount}").toStringAsFixed(2)}% completed",
-                                    style: TextStyle(),
-                                  ),
-                                  height5,
-                                  ClipRRect(
-                                    borderRadius: kRadius(5),
-                                    child: LinearProgressIndicator(
-                                      minHeight: 30,
-                                      value: (((data.income - data.expense) /
-                                          data.targetAmount)),
-                                    ),
+                                    "₹ ${kMoneyFormat(data.targetAmount)}",
+                                    style: TextStyle(fontSize: 20),
                                   ),
                                 ],
-                              )
-                            : Text("Add a target value!")
-                        : LinearProgressIndicator(),
-                  );
+                              ),
+                            ),
+                            KButton.text(isDark, onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => kAlertDialog(
+                                  isDark,
+                                  title: "Target Amount",
+                                  subTitle: "Set target value",
+                                  content: KTextfield.regular(
+                                    isDark,
+                                    controller: _newTargetAmount,
+                                    hintText: "0.00",
+                                    fontSize: 30,
+                                    maxLines: 1,
+                                    minLines: 1,
+                                    keyboardType: TextInputType.number,
+                                    fieldColor:
+                                        isDark ? Colors.black : Colors.white,
+                                    prefix: Text(
+                                      "INR",
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  actions: [
+                                    KButton.regular(
+                                      isDark,
+                                      onPressed: _setNewTarget,
+                                      label: "Set Target",
+                                    )
+                                  ],
+                                ),
+                              );
+                            }, label: "Edit")
+                          ],
+                        ),
+                        height20,
+                        Text(
+                          data.bookName,
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(
+                          DateFormat("dd MMM, yyyy").format(
+                            DateTime.parse(data.bookId),
+                          ),
+                        ),
+                        height20,
+                        AnimatedSwitcher(
+                          duration: Duration(milliseconds: 600),
+                          switchInCurve: Curves.easeIn,
+                          switchOutCurve: Curves.easeOut,
+                          child: data.targetAmount != 0
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${(double.parse("${(data.income - data.expense) / data.targetAmount}") * 100).toStringAsFixed(1)}% completed",
+                                    ),
+                                    height5,
+                                    ClipRRect(
+                                      borderRadius: kRadius(5),
+                                      child: LinearProgressIndicator(
+                                        minHeight: 30,
+                                        value: (((data.income - data.expense) /
+                                            data.targetAmount)),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Text("Add a target value!"),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return LinearProgressIndicator();
+                  }
                 },
               ),
               height20,
@@ -382,7 +454,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
-                  : DummyTransactList(context),
+                  : DummyTransactList(),
             );
           },
         );

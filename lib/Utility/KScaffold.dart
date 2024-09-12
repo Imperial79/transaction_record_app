@@ -4,6 +4,8 @@ import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 
+import 'commons.dart';
+
 // ignore: must_be_immutable
 class KScaffold extends StatefulWidget {
   PreferredSizeWidget? appBar;

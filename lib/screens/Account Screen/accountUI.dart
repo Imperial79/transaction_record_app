@@ -3,12 +3,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
-import '../../Utility/components.dart';
+import '../../Utility/commons.dart';
 
 class AccountUI extends StatefulWidget {
   const AccountUI({Key? key}) : super(key: key);
@@ -61,113 +62,110 @@ class _AccountUIState extends State<AccountUI> {
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Account',
-                        style: TextStyle(
-                          fontSize: 25,
-                        ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Account',
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                  Text(
+                    "v$kAppVersion",
+                    style: TextStyle(),
+                  ),
+                ],
+              ),
+              height20,
+              Hero(
+                tag: 'profImg',
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(globalUser.imgUrl),
+                ),
+              ),
+              height10,
+              Row(
+                children: [
+                  Icon(
+                    Icons.tag,
+                    color: isDark ? Dark.fadeText : Light.fadeText,
+                  ),
+                  width5,
+                  Flexible(
+                    child: Text(
+                      globalUser.username,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: isDark ? Dark.fadeText : Light.fadeText,
                       ),
-                      height20,
-                      Hero(
-                        tag: 'profImg',
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(globalUser.imgUrl),
-                        ),
-                      ),
-                      height10,
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.tag,
-                            color: isDark ? Dark.fadeText : Light.fadeText,
-                          ),
-                          width5,
-                          Flexible(
-                            child: Text(
-                              globalUser.username,
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: isDark ? Dark.fadeText : Light.fadeText,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TextField(
-                        controller: nameController,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w900,
-                        ),
-                        cursorWidth: 1,
-                        cursorColor: isDark ? Colors.white : Colors.black,
-                        decoration: InputDecoration(
-                          focusColor: isDark ? Colors.white : Colors.black,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: isDark ? Colors.white : Colors.black,
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color:
-                                  isDark ? Colors.grey : Colors.grey.shade300,
-                            ),
-                          ),
-                          hintText: 'Name',
-                          hintStyle: TextStyle(
-                            fontSize: 25,
-                            color: isDark
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: emailController,
-                        enabled: false,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        cursorWidth: 1,
-                        cursorColor: Colors.black,
-                        decoration: InputDecoration(
-                          focusColor: Colors.black,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          hintText: 'Email',
-                          hintStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey.shade400,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              TextField(
+                controller: nameController,
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w900,
+                ),
+                cursorWidth: 1,
+                cursorColor: isDark ? Colors.white : Colors.black,
+                decoration: InputDecoration(
+                  focusColor: isDark ? Colors.white : Colors.black,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.white : Colors.black,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.grey : Colors.grey.shade300,
+                    ),
+                  ),
+                  hintText: 'Name',
+                  hintStyle: TextStyle(
+                    fontSize: 25,
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              height10,
+              TextField(
+                controller: emailController,
+                enabled: false,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorWidth: 1,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  focusColor: Colors.black,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  hintText: 'Email',
+                  hintStyle: TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 
+import '../Utility/commons.dart';
 import '../Utility/newColors.dart';
 import '../models/userModel.dart';
 
@@ -91,6 +91,53 @@ Widget kLabel(String text) {
     padding: EdgeInsets.only(top: 20, bottom: 15),
     child: Text(
       text,
+    ),
+  );
+}
+
+Widget kAlertDialog(
+  bool isDark, {
+  required String title,
+  required String subTitle,
+  Widget? content,
+  required List<Widget> actions,
+}) {
+  return Dialog(
+    elevation: 0,
+    backgroundColor: isDark ? Dark.card : Light.card,
+    child: Padding(
+      padding: EdgeInsets.all(15.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          height15,
+          Text(
+            subTitle,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          if (content != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: content,
+            ),
+          height15,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: actions,
+          ),
+        ],
+      ),
     ),
   );
 }

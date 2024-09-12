@@ -10,22 +10,7 @@ import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
-
-const String appLogoPath = 'lib/assets/logo/logo.png';
-
-Widget get height5 => SizedBox(height: 5);
-Widget get height10 => SizedBox(height: 10);
-Widget get height15 => SizedBox(height: 15);
-Widget get height20 => SizedBox(height: 20);
-Widget get width5 => SizedBox(width: 5);
-Widget get width10 => SizedBox(width: 10);
-Widget get width15 => SizedBox(width: 15);
-Widget get width20 => SizedBox(width: 20);
-
-Widget kHeight(double height) => SizedBox(height: height);
-Widget kWidth(double width) => SizedBox(width: width);
-
-BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
+import 'commons.dart';
 
 Widget kPill({
   required Widget child,
@@ -165,7 +150,7 @@ class AppTitle extends StatelessWidget {
   }
 }
 
-Widget DummyTransactList(BuildContext context) {
+Widget DummyTransactList() {
   return Column(
     children: [
       for (int i = 0; i <= 10; i++)
@@ -557,7 +542,8 @@ bool isKeyboardOpen(BuildContext context) {
   return MediaQuery.of(context).viewInsets.bottom != 0;
 }
 
-Widget ALertBox(BuildContext context, {final label, content, onPress}) {
+Widget kDeleteAlertDialog(BuildContext context,
+    {final label, content, onPress}) {
   return StatefulBuilder(
     builder: (context, StateSetter setState) {
       return AlertDialog(

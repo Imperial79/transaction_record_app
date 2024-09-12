@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/services/auth.dart';
+
+import '../Utility/commons.dart';
 
 class LoginUI extends StatefulWidget {
   LoginUI({Key? key}) : super(key: key);

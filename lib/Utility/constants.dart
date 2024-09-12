@@ -13,6 +13,8 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import '../models/userModel.dart';
 import '../screens/Home Screens/Home_UI.dart';
 
+const String kAppVersion = "2.5.0";
+
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
   // static final myUID = globalUser.uid;
