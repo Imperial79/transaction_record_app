@@ -22,30 +22,25 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 15.0),
+      margin: EdgeInsets.symmetric(horizontal: 12.0),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'SETTINGS',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
+              padding: EdgeInsets.only(top: 5, left: 5, bottom: 5),
+              child: Center(
+                child: Text(
+                  'SETTINGS',
+                  style: TextStyle(
+                    letterSpacing: 7,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
-                ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
             ),
             Container(
               decoration: BoxDecoration(

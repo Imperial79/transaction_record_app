@@ -218,12 +218,12 @@ class _New_Book_UIState extends State<New_Book_UI> {
               height20,
               Text("Book Type"),
               height10,
-              bookTypeBtn(
+              _bookTypeBtn(
                 label: 'Regular Book',
                 identifier: "regular",
               ),
               height10,
-              bookTypeBtn(
+              _bookTypeBtn(
                 label: 'Due Book',
                 identifier: "due",
               ),
@@ -255,14 +255,15 @@ class _New_Book_UIState extends State<New_Book_UI> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: KButton.icon(isDark, onPressed: () {
-          _createBook();
-        }, icon: Icon(Icons.add_circle_outline), label: "Create Book"),
+        child: KButton.icon(isDark,
+            onPressed: _createBook,
+            icon: Icon(Icons.add_circle_outline),
+            label: "Create Book"),
       ),
     );
   }
 
-  Widget bookTypeBtn({
+  Widget _bookTypeBtn({
     required String label,
     required String identifier,
   }) {
@@ -285,8 +286,8 @@ class _New_Book_UIState extends State<New_Book_UI> {
                 width: 2,
                 color: isSelected
                     ? isDark
-                        ? Dark.profitText
-                        : Light.profitCard
+                        ? Dark.primaryAccent
+                        : Light.primaryAccent
                     : isDark
                         ? Dark.card
                         : Light.card,
@@ -300,8 +301,8 @@ class _New_Book_UIState extends State<New_Book_UI> {
                 CircleAvatar(
                   backgroundColor: isSelected
                       ? isDark
-                          ? Dark.profitText
-                          : Light.profitCard
+                          ? Dark.primaryAccent
+                          : Light.primaryAccent
                       : isDark
                           ? Dark.text
                           : Light.text,
@@ -317,8 +318,8 @@ class _New_Book_UIState extends State<New_Book_UI> {
                         style: TextStyle(
                             color: isSelected
                                 ? isDark
-                                    ? Dark.profitText
-                                    : Light.profitCard
+                                    ? Dark.primaryAccent
+                                    : Light.primaryAccent
                                 : isDark
                                     ? Dark.text
                                     : Light.text,
@@ -335,7 +336,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                         ),
                       if (isSelected && selectedBookType == "regular")
                         Text(
-                          "Regular book is used for daily transaction tracking.",
+                          "Regular book is used for daily transaction audits.",
                           style: TextStyle(
                             fontStyle: FontStyle.italic,
                             color: isDark ? Dark.fadeText : Light.fadeText,

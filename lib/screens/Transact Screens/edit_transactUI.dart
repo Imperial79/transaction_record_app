@@ -601,8 +601,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       onPressed: updateTransacts,
                       backgroundColor: transactType == "Income"
                           ? isDark
-                              ? Dark.profitCard
-                              : Light.profitCard
+                              ? Dark.primaryAccent
+                              : Light.primaryAccent
                           : isDark
                               ? Dark.lossCard
                               : Light.lossCard,
@@ -612,8 +612,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             : Icons.file_upload_outlined,
                         color: transactType == "Income"
                             ? isDark
-                                ? Dark.profitCard
-                                : Light.profitCard
+                                ? Dark.primaryAccent
+                                : Light.primaryAccent
                             : isDark
                                 ? Dark.lossCard
                                 : Light.lossCard,

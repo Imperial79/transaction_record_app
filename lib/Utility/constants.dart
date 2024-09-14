@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -13,7 +12,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import '../models/userModel.dart';
 import '../screens/Home Screens/Home_UI.dart';
 
-const String kAppVersion = "2.5.0";
+const String kAppVersion = "2.5.1";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;

@@ -39,7 +39,7 @@ class _BookUIState extends State<BookUI> {
 
   final ValueNotifier<bool> _showThings = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
-  final ValueNotifier<int> bookListCounter = ValueNotifier<int>(5);
+  final ValueNotifier<int> bookListCounter = ValueNotifier<int>(20);
   bool _isLoading = false;
   final _searchController = TextEditingController();
   String _selectedSortType = 'All';
@@ -701,7 +701,7 @@ class _BookUIState extends State<BookUI> {
                         fontSize: 25,
                         color: isDark ? Colors.white : Colors.black,
                         fontFamily: 'Product',
-                        fontWeight: FontWeight.w200,
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                     TextSpan(

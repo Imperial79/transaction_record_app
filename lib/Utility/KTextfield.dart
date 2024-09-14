@@ -34,11 +34,7 @@ class KTextfield {
       ),
       child: Row(
         children: [
-          if (icon != null)
-            Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: icon,
-            ),
+          if (icon != null) icon,
           Flexible(
             child: TextField(
               controller: controller,

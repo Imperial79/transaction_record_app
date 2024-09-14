@@ -12,6 +12,7 @@ class Light {
   static final Color scaffold = Colors.white;
   static final Color card = Colors.grey.shade200;
   static final Color text = Colors.black;
+  static final Color primaryAccent = Colors.lightGreen.shade900;
   static final Color profitText = Colors.lightGreen.shade700;
   static final Color lossText = Colors.red.shade900;
   static final Color profitCard = Color(0xff98d3cb);
@@ -27,6 +28,7 @@ class Dark {
   static final Color scaffold = Colors.black;
   static final Color card = Colors.grey.shade900;
   static final Color text = Colors.white;
+  static final Color primaryAccent = Colors.lightGreen.shade200;
   static final Color profitText = Colors.lightGreen.shade200;
   static final Color lossText = Colors.red.shade100;
   static final Color profitCard = Color(0xFF80CBC1);

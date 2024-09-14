@@ -246,13 +246,13 @@ class _Home_UIState extends State<Home_UI>
                                                   : Colors.black,
                                             ),
                                           ),
-                                          width10,
+                                          width5,
                                           ValueListenableBuilder(
                                             valueListenable: displayNameGlobal,
                                             builder:
                                                 (context, String name, child) {
                                               return Text(
-                                                globalUser.name,
+                                                globalUser.name.toLowerCase(),
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w900,
@@ -355,7 +355,7 @@ class _Home_UIState extends State<Home_UI>
 
     if (isCompleted) {
       _kCardColor = isDark ? Dark.completeCard : Light.completeCard;
-      _textColor = Colors.white;
+      _textColor = isDark ? Colors.white : Colors.black;
     } else {
       _kCardColor = isDark ? Dark.card : Light.card;
       _textColor = isDark ? Colors.white : Colors.black;
@@ -398,6 +398,9 @@ class _Home_UIState extends State<Home_UI>
             );
           },
           child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: kRadius(10),
+            ),
             color: _kCardColor,
             child: Padding(
               padding: EdgeInsets.all(5.0),
@@ -498,8 +501,10 @@ class _Home_UIState extends State<Home_UI>
                                 index: 0,
                                 crossAlign: CrossAxisAlignment.start,
                                 textColor: isDark ? Colors.white : Colors.black,
-                                amount: "₹ " + kMoneyFormat(bookData.income),
-                                label: 'Received',
+                                amount: "₹ " +
+                                    kMoneyFormat(bookData.targetAmount -
+                                        bookData.income),
+                                label: 'Due',
                                 cardColor: isDark
                                     ? Color(0xFF223B05)
                                     : Color(0xFFB5FFB7),
@@ -510,7 +515,7 @@ class _Home_UIState extends State<Home_UI>
                               _bookStats(
                                 index: 2,
                                 crossAlign: CrossAxisAlignment.end,
-                                label: "Due",
+                                label: "Target",
                                 amount:
                                     "₹ " + kMoneyFormat(bookData.targetAmount),
                                 cardColor: isDark
