@@ -116,6 +116,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isCompleted = bookData.targetAmount != 0 &&
+        (bookData.income == bookData.targetAmount);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -124,27 +126,31 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  kBackButton(context),
-                  Spacer(),
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => _addUserDialog(
-                            isDark,
-                            bookId: bookData.bookId,
-                            bookName: bookData.bookName,
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.person_add)),
-                  IconButton(
-                      onPressed: () {}, icon: Icon(Icons.delete_outline)),
-                ],
+              Card(
+                color: isDark ? Dark.card : Light.card,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    kBackButton(context),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => _addUserDialog(
+                              isDark,
+                              bookId: bookData.bookId,
+                              bookName: bookData.bookName,
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.person_add)),
+                    IconButton(
+                        onPressed: () {}, icon: Icon(Icons.delete_outline)),
+                  ],
+                ),
               ),
+              height20,
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream:
                     FirebaseRefs.transactBookRef(bookData.bookId).snapshots(),
@@ -160,48 +166,61 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Due Amount"),
+                                  Text(!isCompleted
+                                      ? "Due Amount"
+                                      : "Final Sum"),
                                   Text(
-                                    "₹ ${kMoneyFormat(data.targetAmount)}",
-                                    style: TextStyle(fontSize: 20),
+                                    !isCompleted
+                                        ? "INR ${kMoneyFormat(data.targetAmount - data.income)}"
+                                        : "INR ${kMoneyFormat(data.income)}",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: isCompleted
+                                          ? Dark.profitText
+                                          : Light.profitText,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                            KButton.text(isDark, onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => kAlertDialog(
-                                  isDark,
-                                  title: "Target Amount",
-                                  subTitle: "Set target value",
-                                  content: KTextfield.regular(
+                            KButton.text(
+                              isDark,
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => kAlertDialog(
                                     isDark,
-                                    controller: _newTargetAmount,
-                                    hintText: "0.00",
-                                    fontSize: 30,
-                                    maxLines: 1,
-                                    minLines: 1,
-                                    keyboardType: TextInputType.number,
-                                    fieldColor:
-                                        isDark ? Colors.black : Colors.white,
-                                    prefix: Text(
-                                      "INR",
-                                      style: TextStyle(
-                                        fontSize: 30,
+                                    title: "Target Amount",
+                                    subTitle: "Set target value",
+                                    content: KTextfield.regular(
+                                      isDark,
+                                      controller: _newTargetAmount,
+                                      hintText: "0.00",
+                                      fontSize: 30,
+                                      maxLines: 1,
+                                      minLines: 1,
+                                      keyboardType: TextInputType.number,
+                                      fieldColor:
+                                          isDark ? Colors.black : Colors.white,
+                                      prefix: Text(
+                                        "INR",
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                        ),
                                       ),
                                     ),
+                                    actions: [
+                                      KButton.regular(
+                                        isDark,
+                                        onPressed: _setNewTarget,
+                                        label: "Set Target",
+                                      )
+                                    ],
                                   ),
-                                  actions: [
-                                    KButton.regular(
-                                      isDark,
-                                      onPressed: _setNewTarget,
-                                      label: "Set Target",
-                                    )
-                                  ],
-                                ),
-                              );
-                            }, label: "Edit")
+                                );
+                              },
+                              label: "Edit",
+                            )
                           ],
                         ),
                         height20,
@@ -216,31 +235,44 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                             DateTime.parse(data.bookId),
                           ),
                         ),
-                        height20,
-                        AnimatedSwitcher(
-                          duration: Duration(milliseconds: 600),
-                          switchInCurve: Curves.easeIn,
-                          switchOutCurve: Curves.easeOut,
-                          child: data.targetAmount != 0
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${(double.parse("${(data.income - data.expense) / data.targetAmount}") * 100).toStringAsFixed(1)}% completed",
-                                    ),
-                                    height5,
-                                    ClipRRect(
-                                      borderRadius: kRadius(5),
-                                      child: LinearProgressIndicator(
-                                        minHeight: 30,
-                                        value: (((data.income - data.expense) /
-                                            data.targetAmount)),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Text("Add a target value!"),
-                        ),
+                        if (!isCompleted)
+                          Padding(
+                            padding: EdgeInsets.only(top: 20.0),
+                            child: AnimatedSwitcher(
+                              duration: Duration(milliseconds: 600),
+                              switchInCurve: Curves.easeIn,
+                              switchOutCurve: Curves.easeOut,
+                              child: data.targetAmount != 0
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Completed",
+                                            ),
+                                            Text(
+                                                "${(double.parse("${(data.income - data.expense) / data.targetAmount}") * 100).toStringAsFixed(1)}%")
+                                          ],
+                                        ),
+                                        height5,
+                                        ClipRRect(
+                                          borderRadius: kRadius(5),
+                                          child: LinearProgressIndicator(
+                                            minHeight: 30,
+                                            value:
+                                                (((data.income - data.expense) /
+                                                    data.targetAmount)),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Text("Add a target value!"),
+                            ),
+                          ),
                       ],
                     );
                   } else {

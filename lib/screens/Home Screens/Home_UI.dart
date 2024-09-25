@@ -346,12 +346,17 @@ class _Home_UIState extends State<Home_UI>
     }
 
     // Change Card color -------------------->
-
-    bool isCompleted =
-        bookData.expense != 0 && (bookData.income == bookData.expense);
-
     Color _kCardColor = Dark.card;
     Color _textColor = Colors.black;
+    bool isCompleted = false;
+
+    if (bookData.type == "regular") {
+      isCompleted =
+          bookData.expense != 0 && (bookData.income == bookData.expense);
+    } else {
+      isCompleted = bookData.targetAmount != 0 &&
+          (bookData.income == bookData.targetAmount);
+    }
 
     if (isCompleted) {
       _kCardColor = isDark ? Dark.completeCard : Light.completeCard;
@@ -403,182 +408,213 @@ class _Home_UIState extends State<Home_UI>
             ),
             color: _kCardColor,
             child: Padding(
-              padding: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      bookData.bookName,
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                        color: _textColor,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  width10,
-                                  bookData.users != null &&
-                                          bookData.users!.length > 0
-                                      ? CircleAvatar(
-                                          radius: 12,
-                                          child: Icon(
-                                            Icons.groups_2,
-                                            size: 12,
-                                          ),
-                                        )
-                                      : SizedBox(),
-                                ],
-                              ),
-                              Visibility(
-                                visible: bookData.bookDescription
-                                    .toString()
-                                    .isNotEmpty,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.note,
-                                        color: _textColor,
-                                        size: 12,
-                                      ),
-                                      width5,
-                                      Text(
-                                        bookData.bookDescription,
-                                        style: TextStyle(
-                                          color: _textColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              height5,
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.schedule,
-                                    color: _textColor,
-                                    size: 12,
-                                  ),
-                                  width5,
-                                  Text(
-                                    bookData.date + ' | ' + bookData.time,
+                  if (isCompleted)
+                    Text(
+                      "Completed",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color:
+                            isDark ? Dark.onCompleteCard : Light.onCompleteCard,
+                      ),
+                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    bookData.bookName,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
                                       color: _textColor,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ],
+                                ),
+                                width10,
+                                bookData.users != null &&
+                                        bookData.users!.length > 0
+                                    ? CircleAvatar(
+                                        radius: 12,
+                                        child: Icon(
+                                          Icons.groups_2,
+                                          size: 12,
+                                        ),
+                                      )
+                                    : SizedBox(),
+                              ],
+                            ),
+                            Visibility(
+                              visible: bookData.bookDescription
+                                  .toString()
+                                  .isNotEmpty,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.note,
+                                      color: _textColor,
+                                      size: 12,
+                                    ),
+                                    width5,
+                                    Text(
+                                      bookData.bookDescription,
+                                      style: TextStyle(
+                                        color: _textColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            ),
+                            height5,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  color: _textColor,
+                                  size: 12,
+                                ),
+                                width5,
+                                Text(
+                                  bookData.date + ' | ' + bookData.time,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: _textColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (!isCompleted)
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: bookData.type == "due"
+                          ? Row(
+                              children: [
+                                _bookStats(
+                                  index: 0,
+                                  crossAlign: CrossAxisAlignment.start,
+                                  textColor:
+                                      isDark ? Colors.white : Colors.black,
+                                  amount: "₹ " +
+                                      kMoneyFormat(bookData.targetAmount -
+                                          bookData.income),
+                                  label: 'Due',
+                                  cardColor: isDark
+                                      ? Dark.completeCard
+                                      : Color(0xFFB5FFB7),
+                                  amountColor: isDark
+                                      ? Dark.onCompleteCard
+                                      : Colors.lightGreen.shade900,
+                                ),
+                                _bookStats(
+                                  index: 2,
+                                  crossAlign: CrossAxisAlignment.end,
+                                  label: "Target",
+                                  amount: "₹ " +
+                                      kMoneyFormat(bookData.targetAmount),
+                                  cardColor: isDark
+                                      ? Color(0xFF0B2A43)
+                                      : Color.fromARGB(255, 197, 226, 250),
+                                  textColor: isDark
+                                      ? Colors.white
+                                      : Colors.blue.shade900,
+                                  amountColor: isDark
+                                      ? Colors.blue.shade100
+                                      : Colors.blue.shade900,
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                _bookStats(
+                                  index: 0,
+                                  crossAlign: CrossAxisAlignment.start,
+                                  textColor:
+                                      isDark ? Colors.white : Colors.black,
+                                  amount: "₹ " + kMoneyFormat(bookData.income),
+                                  label: 'Income',
+                                  cardColor: isDark
+                                      ? Color(0xFF223B05)
+                                      : Color(0xFFB5FFB7),
+                                  amountColor: isDark
+                                      ? Colors.lightGreenAccent
+                                      : Colors.lightGreen.shade900,
+                                ),
+                                width5,
+                                _bookStats(
+                                  index: 1,
+                                  crossAlign: CrossAxisAlignment.center,
+                                  amount: "₹ " + kMoneyFormat(bookData.expense),
+                                  label: 'Expense',
+                                  cardColor: isDark
+                                      ? Colors.black
+                                      : Colors.grey.shade300,
+                                  textColor:
+                                      isDark ? Colors.white : Colors.black,
+                                  amountColor:
+                                      isDark ? Colors.white : Colors.black,
+                                ),
+                                width5,
+                                _bookStats(
+                                  index: 2,
+                                  crossAlign: CrossAxisAlignment.end,
+                                  label: 'Current',
+                                  amount: "₹ " +
+                                      kMoneyFormat(
+                                          bookData.income - bookData.expense),
+                                  cardColor: isDark
+                                      ? const Color(0xFF0B2A43)
+                                      : Color.fromARGB(255, 197, 226, 250),
+                                  textColor: isDark
+                                      ? Colors.white
+                                      : Colors.blue.shade900,
+                                  amountColor: isDark
+                                      ? Colors.blue.shade100
+                                      : Colors.blue.shade900,
+                                ),
+                              ],
+                            ),
+                    ),
+                  if (isCompleted)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        height10,
+                        Text(
+                          "Final Sum",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        Text(
+                          "INR ${kMoneyFormat(bookData.income)}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: isDark
+                                ? Dark.onCompleteCard
+                                : Light.onCompleteCard,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(0),
-                    child: bookData.type == "due"
-                        ? Row(
-                            children: [
-                              _bookStats(
-                                index: 0,
-                                crossAlign: CrossAxisAlignment.start,
-                                textColor: isDark ? Colors.white : Colors.black,
-                                amount: "₹ " +
-                                    kMoneyFormat(bookData.targetAmount -
-                                        bookData.income),
-                                label: 'Due',
-                                cardColor: isDark
-                                    ? Color(0xFF223B05)
-                                    : Color(0xFFB5FFB7),
-                                amountColor: isDark
-                                    ? Colors.lightGreenAccent
-                                    : Colors.lightGreen.shade900,
-                              ),
-                              _bookStats(
-                                index: 2,
-                                crossAlign: CrossAxisAlignment.end,
-                                label: "Target",
-                                amount:
-                                    "₹ " + kMoneyFormat(bookData.targetAmount),
-                                cardColor: isDark
-                                    ? Color(0xFF0B2A43)
-                                    : Color.fromARGB(255, 197, 226, 250),
-                                textColor: isDark
-                                    ? Colors.white
-                                    : Colors.blue.shade900,
-                                amountColor: isDark
-                                    ? Colors.blue.shade100
-                                    : Colors.blue.shade900,
-                              ),
-                            ],
-                          )
-                        : Row(
-                            children: [
-                              _bookStats(
-                                index: 0,
-                                crossAlign: CrossAxisAlignment.start,
-                                textColor: isDark ? Colors.white : Colors.black,
-                                amount: "₹ " + kMoneyFormat(bookData.income),
-                                label: 'Income',
-                                cardColor: isDark
-                                    ? Color(0xFF223B05)
-                                    : Color(0xFFB5FFB7),
-                                amountColor: isDark
-                                    ? Colors.lightGreenAccent
-                                    : Colors.lightGreen.shade900,
-                              ),
-                              width5,
-                              _bookStats(
-                                index: 1,
-                                crossAlign: CrossAxisAlignment.center,
-                                amount: "₹ " + kMoneyFormat(bookData.expense),
-                                label: 'Expense',
-                                cardColor: isDark
-                                    ? Colors.black
-                                    : Colors.grey.shade300,
-                                textColor: isDark ? Colors.white : Colors.black,
-                                amountColor:
-                                    isDark ? Colors.white : Colors.black,
-                              ),
-                              width5,
-                              _bookStats(
-                                index: 2,
-                                crossAlign: CrossAxisAlignment.end,
-                                label: 'Current',
-                                amount: "₹ " +
-                                    kMoneyFormat(
-                                        bookData.income - bookData.expense),
-                                cardColor: isDark
-                                    ? const Color(0xFF0B2A43)
-                                    : Color.fromARGB(255, 197, 226, 250),
-                                textColor: isDark
-                                    ? Colors.white
-                                    : Colors.blue.shade900,
-                                amountColor: isDark
-                                    ? Colors.blue.shade100
-                                    : Colors.blue.shade900,
-                              ),
-                            ],
-                          ),
-                  ),
                 ],
               ),
             ),
