@@ -66,13 +66,13 @@ class _UsersUIState extends State<UsersUI> {
       }).whenComplete(() async {
         _allUsers.remove(userUid);
         widget.users.remove(userUid);
-        kSnackbar(context, content: "User Removed!");
+        KSnackbar(context, content: "User Removed!");
         await _fetchBookUsers();
       });
       setState(() => isLoading = false);
     } catch (e) {
       setState(() => isLoading = false);
-      kSnackbar(context, content: "Unable to remove user: $e");
+      KSnackbar(context, content: "Unable to remove user: $e");
     }
   }
 

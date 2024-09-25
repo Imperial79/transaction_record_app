@@ -10,14 +10,16 @@ ColorFilter svgColor(Color color) => ColorFilter.mode(
 
 class Light {
   static final Color scaffold = Colors.white;
+  static final Color modal = Colors.grey.shade300;
   static final Color card = Colors.grey.shade200;
   static final Color text = Colors.black;
   static final Color primaryAccent = Colors.lightGreen.shade900;
   static final Color profitText = Colors.lightGreen.shade700;
   static final Color lossText = Colors.red.shade900;
   static final Color profitCard = Color(0xff98d3cb);
-  static final Color completeCard = Color(0xff98d3cb);
-  static final Color onCompleteCard = text;
+  static final Color onProfitCard = text;
+  static final Color completeCard = Color(0xFFB5FFB7);
+  static final Color onCompleteCard = Colors.lightGreen.shade900;
   static final Color lossCard = Color(0xffca705f);
   static final Color onLossCard = primary;
   static final Color primary = Colors.black;
@@ -25,15 +27,15 @@ class Light {
 }
 
 class Dark {
-  // static final Color scaffold = Colors.grey.shade900;
   static final Color scaffold = Colors.black;
+  static final Color modal = Colors.grey.shade700;
   static final Color card = Colors.grey.shade900;
   static final Color text = Colors.white;
   static final Color primaryAccent = Colors.lightGreen.shade200;
   static final Color profitText = Colors.lightGreen.shade200;
   static final Color lossText = Colors.red.shade100;
   static final Color profitCard = Color(0xFF80CBC1);
-  // static final Color completeCard = Color(0xFF014239);
+  static final Color onProfitCard = Colors.black;
   static final Color completeCard = Color(0xFF223B05);
   static final Color onCompleteCard = Colors.lightGreenAccent;
   static final Color lossCard = Colors.redAccent.shade200;

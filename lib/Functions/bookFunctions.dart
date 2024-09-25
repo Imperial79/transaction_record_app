@@ -14,12 +14,12 @@ class BookMethods {
     try {
       await DatabaseMethods().deleteBookWithCollections(bookId);
 
-      kSnackbar(
+      KSnackbar(
         context,
         content: '"$bookName"' + ' book has been deleted!',
       );
     } catch (e) {
-      kSnackbar(
+      KSnackbar(
         context,
         content:
             'Unable to delete book "$bookName"! Check your connection or try again after sometime.',
@@ -39,12 +39,12 @@ class BookMethods {
           .doc(bookId)
           .update({'bookName': newBookName});
 
-      kSnackbar(
+      KSnackbar(
         context,
         content: 'Book has been renamed to "$newBookName"!',
       );
     } catch (e) {
-      kSnackbar(
+      KSnackbar(
         context,
         content:
             'Unable to rename book to "$newBookName"! Please try again after sometime',

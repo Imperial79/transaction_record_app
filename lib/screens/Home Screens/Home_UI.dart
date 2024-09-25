@@ -14,6 +14,7 @@ import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/Due_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
+import '../../Functions/bookFunctions.dart';
 import '../../Utility/commons.dart';
 import '../../services/user.dart';
 import '../../Utility/components.dart';
@@ -41,6 +42,7 @@ class _Home_UIState extends State<Home_UI>
   final ValueNotifier<bool> _showHomeMenu = ValueNotifier<bool>(false);
 
   bool isKeyboardOpen = false;
+  bool isLoading = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -159,12 +161,44 @@ class _Home_UIState extends State<Home_UI>
     );
   }
 
+  _deleteBook({
+    required String bookName,
+    required String bookId,
+  }) async {
+    Navigator.pop(context);
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      await BookMethods.deleteBook(
+        context,
+        bookName: bookName,
+        bookId: bookId,
+      );
+
+      KSnackbar(context, content: "\"$bookName\" Book Deleted!");
+    } catch (e) {
+      KSnackbar(
+        context,
+        content:
+            "Unable to delete book! Check your connection or try again later.",
+        isDanger: true,
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     _showAdd.value = _searchController.text.isEmpty;
     isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -395,7 +429,7 @@ class _Home_UIState extends State<Home_UI>
               backgroundColor: Colors.transparent,
               elevation: 0,
               builder: (context) {
-                return BookDeleteModal(
+                return _deleteModal(
                   bookId: bookData.bookId,
                   bookName: bookData.bookName,
                 );
@@ -403,6 +437,7 @@ class _Home_UIState extends State<Home_UI>
             );
           },
           child: Card(
+            margin: EdgeInsets.only(bottom: 10),
             shape: RoundedRectangleBorder(
               borderRadius: kRadius(10),
             ),
@@ -521,10 +556,10 @@ class _Home_UIState extends State<Home_UI>
                                   label: 'Due',
                                   cardColor: isDark
                                       ? Dark.completeCard
-                                      : Color(0xFFB5FFB7),
+                                      : Light.completeCard,
                                   amountColor: isDark
                                       ? Dark.onCompleteCard
-                                      : Colors.lightGreen.shade900,
+                                      : Light.onCompleteCard,
                                 ),
                                 _bookStats(
                                   index: 2,
@@ -620,8 +655,83 @@ class _Home_UIState extends State<Home_UI>
             ),
           ),
         ),
-        height10,
       ],
+    );
+  }
+
+  Widget _deleteModal({
+    required String bookName,
+    required String bookId,
+  }) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return SafeArea(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            margin: EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+              color: isDark ? Dark.modal : Light.modal,
+              borderRadius: kRadius(20),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundColor:
+                        isDark ? Colors.grey.shade300 : Colors.black,
+                    child: Icon(
+                      Icons.menu_open_sharp,
+                      color: isDark ? Light.text : Dark.text,
+                    ),
+                  ),
+                  height10,
+                  Text(
+                    "Book Options",
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  height20,
+                  GestureDetector(
+                    onTap: () {
+                      _deleteBook(bookId: bookId, bookName: bookName);
+                    },
+                    child: Card(
+                      elevation: 0,
+                      color: isDark ? Dark.card : Light.card,
+                      child: Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              size: 30,
+                            ),
+                            width10,
+                            Flexible(
+                              child: Text(
+                                "Delete book",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

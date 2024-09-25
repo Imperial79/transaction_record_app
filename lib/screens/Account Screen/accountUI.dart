@@ -46,11 +46,11 @@ class _AccountUIState extends State<AccountUI> {
         globalUser.name = nameController.text;
       });
 
-      kSnackbar(context, content: "Name Updated");
+      KSnackbar(context, content: "Name Updated");
       setState(() => isLoading = false);
     } else {
       setState(() => isLoading = false);
-      kSnackbar(context, content: 'Please fill all the Fields', isDanger: true);
+      KSnackbar(context, content: 'Please fill all the Fields', isDanger: true);
     }
   }
 

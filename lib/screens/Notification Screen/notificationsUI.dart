@@ -34,14 +34,14 @@ class _NotificationsUIState extends State<NotificationsUI> {
             'users': FieldValue.arrayUnion([globalUser.uid])
           }).then((value) async {
             await _removeFromRequest(requestId: requestId).then(
-              (value) => kSnackbar(
+              (value) => KSnackbar(
                 context,
                 content: "\"$bookName\" Book joined successfully!",
               ),
             );
           });
         } else {
-          kSnackbar(
+          KSnackbar(
             context,
             content: "Book does not exists anymore!",
             isDanger: true,
@@ -56,7 +56,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       setState(() {
         isLoading = false;
       });
-      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
     }
   }
 
@@ -73,7 +73,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
           await FirebaseRefs.requestRef.doc(requestId).update({
             'users': FieldValue.arrayRemove([globalUser.uid]),
           }).then(
-            (value) => kSnackbar(
+            (value) => KSnackbar(
               context,
               content: 'Request Rejected!',
             ),
@@ -87,7 +87,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
       setState(() {
         isLoading = false;
       });
-      kSnackbar(
+      KSnackbar(
         context,
         content: "Something went wrong!",
         isDanger: true,

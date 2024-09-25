@@ -1112,7 +1112,7 @@ class _BookUIState extends State<BookUI> {
                   if (transactData.uid == globalUser.uid)
                     navPush(context, EditTransactUI(trData: transactData));
                   else
-                    kSnackbar(
+                    KSnackbar(
                       context,
                       content: "You cannot edit other's transactions",
                       isDanger: true,
@@ -1655,7 +1655,7 @@ class _BookUIState extends State<BookUI> {
                               .doc("$currentTime")
                               .set(_requestMap)
                               .then(
-                                (value) => kSnackbar(
+                                (value) => KSnackbar(
                                   context,
                                   content:
                                       "Request to join book has been sent to ${selectedUsers.length} user(s)",

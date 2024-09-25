@@ -69,13 +69,13 @@ class _New_Book_UIState extends State<New_Book_UI> {
               newBook.toMap(),
             );
 
-        kSnackbar(context, content: 'Book Created');
+        KSnackbar(context, content: 'Book Created');
 
         pageControllerGlobal.value.animateToPage(0,
             duration: Duration(milliseconds: 300), curve: Curves.ease);
       }
     } catch (e) {
-      kSnackbar(context, content: "$e", isDanger: true);
+      KSnackbar(context, content: "$e", isDanger: true);
     } finally {
       setState(() {
         isLoading = false;

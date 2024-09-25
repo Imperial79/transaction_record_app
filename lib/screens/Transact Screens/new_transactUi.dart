@@ -122,7 +122,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
         Navigator.pop(context);
       }
     } catch (e) {
-      kSnackbar(
+      KSnackbar(
         context,
         content: "Unable to create Transact!",
         isDanger: true,

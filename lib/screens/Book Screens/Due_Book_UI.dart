@@ -67,14 +67,14 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
       };
 
       await FirebaseRefs.requestRef.doc("$currentTime").set(_requestMap).then(
-            (value) => kSnackbar(
+            (value) => KSnackbar(
               context,
               content:
                   "Request to join book has been sent to ${selectedUsers.length} user(s)",
             ),
           );
     } catch (e) {
-      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
       setState(() {
         isLoading = false;
@@ -96,10 +96,10 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         "targetAmount": double.parse(_newTargetAmount.text),
       });
 
-      kSnackbar(context,
+      KSnackbar(context,
           content: "New target set successfully!", isDanger: false);
     } catch (e) {
-      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
       setState(() {
         isLoading = false;
@@ -126,25 +126,33 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                color: isDark ? Dark.card : Light.card,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: kRadius(10),
+                  color: isDark ? Dark.card : Light.card,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     kBackButton(context),
                     Spacer(),
                     IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => _addUserDialog(
-                              isDark,
-                              bookId: bookData.bookId,
-                              bookName: bookData.bookName,
-                            ),
-                          );
-                        },
-                        icon: Icon(Icons.person_add)),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => _addUserDialog(
+                            isDark,
+                            bookId: bookData.bookId,
+                            bookName: bookData.bookName,
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.person_add,
+                        color:
+                            isDark ? Colors.blueAccent : Colors.blue.shade700,
+                      ),
+                    ),
                     IconButton(
                         onPressed: () {}, icon: Icon(Icons.delete_outline)),
                   ],
@@ -176,8 +184,10 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: isCompleted
-                                          ? Dark.profitText
-                                          : Light.profitText,
+                                          ? isDark
+                                              ? Dark.profitText
+                                              : Light.profitText
+                                          : null,
                                     ),
                                   ),
                                 ],
@@ -567,7 +577,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                   if (transactData.uid == globalUser.uid)
                     navPush(context, EditTransactUI(trData: transactData));
                   else
-                    kSnackbar(
+                    KSnackbar(
                       context,
                       content: "You cannot edit other's transactions",
                       isDanger: true,

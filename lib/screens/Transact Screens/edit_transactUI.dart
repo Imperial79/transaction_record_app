@@ -229,7 +229,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
 
       Navigator.pop(context);
     } catch (e) {
-      kSnackbar(context, content: "Something went wrong!", isDanger: true);
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
       if (mounted) {
         setState(() {

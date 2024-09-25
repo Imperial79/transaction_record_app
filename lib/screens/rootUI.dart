@@ -93,11 +93,13 @@ class _RootUIState extends State<RootUI> {
                       }
                     });
                   },
-                  icon: Icon(themeMode.value == "dark"
-                      ? Icons.light_mode
-                      : themeMode.value == "light"
-                          ? Icons.auto_awesome
-                          : Icons.dark_mode),
+                  icon: Icon(
+                    themeMode.value == "dark"
+                        ? Icons.light_mode
+                        : themeMode.value == "light"
+                            ? Icons.auto_awesome
+                            : Icons.dark_mode,
+                  ),
                 ),
                 IconButton(
                   onPressed: () {
