@@ -8,6 +8,7 @@ import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:upgrader/upgrader.dart';
 import 'Utility/newColors.dart';
 
 ValueNotifier<String> themeMode = ValueNotifier("system");
@@ -46,19 +47,22 @@ class _MyAppState extends State<MyApp> {
                   : ThemeMode.system,
           theme: KThemeData.light(),
           darkTheme: KThemeData.dark(),
-          home: FutureBuilder(
-            future: AuthMethods.getCurrentuser(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return RootUI();
-              } else if (snapshot.connectionState == ConnectionState.waiting) {
-                return SplashUI();
-              } else if (snapshot.connectionState == ConnectionState.none) {
-                return SplashUI();
-              } else {
-                return LoginUI();
-              }
-            },
+          home: UpgradeAlert(
+            child: FutureBuilder(
+              future: AuthMethods.getCurrentuser(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return RootUI();
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return SplashUI();
+                } else if (snapshot.connectionState == ConnectionState.none) {
+                  return SplashUI();
+                } else {
+                  return LoginUI();
+                }
+              },
+            ),
           ),
         );
       },
