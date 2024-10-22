@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-Future<Null> navPush(BuildContext context, screen) async {
+Future<void> navPush(BuildContext context, screen) async {
   await Navigator.push(
       context, MaterialPageRoute(builder: (context) => screen));
 }
@@ -32,7 +32,7 @@ void KSnackbar(
   DelightToastBar(
     position: DelightSnackbarPosition.top,
     autoDismiss: true,
-    snackbarDuration: Duration(seconds: 3),
+    snackbarDuration: const Duration(seconds: 3),
     builder: (context) => ToastCard(
       shadowColor: Colors.transparent,
       color: isDanger

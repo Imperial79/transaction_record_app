@@ -16,7 +16,7 @@ class BookMethods {
 
       KSnackbar(
         context,
-        content: '"$bookName"' + ' book has been deleted!',
+        content: '"$bookName"' ' book has been deleted!',
       );
     } catch (e) {
       KSnackbar(

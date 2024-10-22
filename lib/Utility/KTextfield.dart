@@ -23,13 +23,9 @@ class KTextfield {
       isNumField = true;
     }
     return Container(
-      padding: padding ?? EdgeInsets.symmetric(horizontal: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: fieldColor != null
-            ? fieldColor
-            : isDark
-                ? Dark.card
-                : Light.card,
+        color: fieldColor ?? (isDark ? Dark.card : Light.card),
         borderRadius: kRadius(15),
       ),
       child: Row(
@@ -54,14 +50,14 @@ class KTextfield {
                 border: InputBorder.none,
                 prefixIcon: prefix != null
                     ? Padding(
-                        padding: EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: 10.0),
                         child: prefix,
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: 12,
                       ),
                 prefixIconConstraints:
-                    BoxConstraints(minHeight: 0, minWidth: 0),
+                    const BoxConstraints(minHeight: 0, minWidth: 0),
                 hintText: hintText,
                 hintStyle: TextStyle(
                   fontSize: fontSize,

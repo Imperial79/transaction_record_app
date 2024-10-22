@@ -109,10 +109,8 @@ class DatabaseMethods {
           .get()
           .then((value) async {
         if (value.docs.isEmpty) {
-          print('No collection ahead');
           _deleteBook(bookId);
         } else {
-          print('Collection ahead');
           await firestore
               .collection('transactBooks')
               .doc(bookId)
@@ -128,7 +126,6 @@ class DatabaseMethods {
       });
       return 'success';
     } catch (e) {
-      print(e);
       return 'fail';
     }
   }

@@ -80,17 +80,15 @@ class _BookUIState extends State<BookUI> {
       groupMembers.addAll(value.data()!['users']);
       groupMembers.add(value.data()!['uid']);
 
-      Map<String, double> expenseMap = Map.fromIterable(
-        groupMembers,
-        key: (item) => item,
-        value: (_) => 0.0,
-      );
+      Map<String, double> expenseMap = {
+        for (var item in groupMembers) item: 0.0
+      };
       double totalExpense = value.data()!['expense'];
 
       await FirebaseRefs.transactsRef(bookData.bookId)
           .get()
           .then((snapshot) async {
-        snapshot.docs.forEach((element) {
+        for (var element in snapshot.docs) {
           final transact = element.data();
 
           if (expenseMap.containsKey(transact['uid'])) {
@@ -104,7 +102,7 @@ class _BookUIState extends State<BookUI> {
                       double.parse(transact['amount']);
             }
           }
-        });
+        }
         double perHead = totalExpense / groupMembers.length;
 
         List<Map<String, dynamic>> payer = [];
@@ -128,13 +126,12 @@ class _BookUIState extends State<BookUI> {
             .where('uid', whereIn: payGetUsers)
             .get()
             .then((value) {
-          value.docs.forEach((element) {
-            print(element.data());
+          for (var element in value.docs) {
             balanceSheetUsers[element.data()['uid']] = {
               'name': element.data()['name'],
               'imgUrl': element.data()['imgUrl'],
             };
-          });
+          }
         });
 
         List<Map<String, dynamic>> balanceSheet = [];
@@ -221,8 +218,8 @@ class _BookUIState extends State<BookUI> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnimatedSize(
-                  reverseDuration: Duration(milliseconds: 300),
-                  duration: Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   alignment: Alignment.topCenter,
                   curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
@@ -237,47 +234,46 @@ class _BookUIState extends State<BookUI> {
                                   Row(
                                     children: [
                                       AnimatedSize(
-                                        duration: Duration(milliseconds: 300),
+                                        duration:
+                                            const Duration(milliseconds: 300),
                                         reverseDuration:
-                                            Duration(milliseconds: 300),
+                                            const Duration(milliseconds: 300),
                                         alignment: Alignment.centerLeft,
                                         curve: Curves.ease,
-                                        child: Container(
-                                          child: IconButton(
-                                            color: isDark
-                                                ? Dark.profitText
-                                                : Light.profitText,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            icon: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.arrow_back,
-                                                  color: isDark
-                                                      ? Dark.profitCard
-                                                      : Colors.black,
-                                                ),
-                                                _searchController.text.isEmpty
-                                                    ? SizedBox(
-                                                        width: 10,
-                                                      )
-                                                    : SizedBox(),
-                                                _searchController.text.isEmpty
-                                                    ? Text(
-                                                        'Return',
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color: isDark
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                        ),
-                                                      )
-                                                    : SizedBox(),
-                                              ],
-                                            ),
+                                        child: IconButton(
+                                          color: isDark
+                                              ? Dark.profitText
+                                              : Light.profitText,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          icon: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_back,
+                                                color: isDark
+                                                    ? Dark.profitCard
+                                                    : Colors.black,
+                                              ),
+                                              _searchController.text.isEmpty
+                                                  ? const SizedBox(
+                                                      width: 10,
+                                                    )
+                                                  : const SizedBox(),
+                                              _searchController.text.isEmpty
+                                                  ? Text(
+                                                      'Return',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: isDark
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -288,8 +284,8 @@ class _BookUIState extends State<BookUI> {
                                   ),
 
                                   Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -300,7 +296,7 @@ class _BookUIState extends State<BookUI> {
                                         Flexible(
                                           child: Text(
                                             bookData.bookName,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 15,
                                             ),
                                           ),
@@ -346,7 +342,7 @@ class _BookUIState extends State<BookUI> {
                                                   bookId: bookData.bookId,
                                                 ));
                                           },
-                                          child: FittedBox(
+                                          child: const FittedBox(
                                             child: CircleAvatar(
                                               radius: 12,
                                               child: Icon(
@@ -364,8 +360,8 @@ class _BookUIState extends State<BookUI> {
                                   height10,
                                   AnimatedSize(
                                     reverseDuration:
-                                        Duration(milliseconds: 300),
-                                    duration: Duration(milliseconds: 300),
+                                        const Duration(milliseconds: 300),
+                                    duration: const Duration(milliseconds: 300),
                                     alignment: Alignment.topCenter,
                                     curve: Curves.ease,
                                     child: ValueListenableBuilder<bool>(
@@ -389,7 +385,7 @@ class _BookUIState extends State<BookUI> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     children: [
                       StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -397,7 +393,7 @@ class _BookUIState extends State<BookUI> {
                             .snapshots(),
                         builder: (context, snapshot) {
                           return AnimatedSwitcher(
-                            duration: Duration(milliseconds: 600),
+                            duration: const Duration(milliseconds: 600),
                             switchInCurve: Curves.easeIn,
                             switchOutCurve: Curves.easeOut,
                             child: snapshot.hasData &&
@@ -414,9 +410,9 @@ class _BookUIState extends State<BookUI> {
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -455,10 +451,10 @@ class _BookUIState extends State<BookUI> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    Text(
+                    const Text(
                       'Deleting Book',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -474,7 +470,7 @@ class _BookUIState extends State<BookUI> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: isKeyboardOpen(context) || _isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : InkWell(
               onTap: () {
                 navPush(
@@ -494,8 +490,8 @@ class _BookUIState extends State<BookUI> {
                   color: isDark ? Dark.profitCard : Colors.black,
                 ),
                 child: AnimatedSize(
-                  reverseDuration: Duration(milliseconds: 300),
-                  duration: Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   alignment: Alignment.centerLeft,
                   curve: Curves.ease,
                   child: ValueListenableBuilder<bool>(
@@ -545,14 +541,14 @@ class _BookUIState extends State<BookUI> {
       List<dynamic> balanceSheet, Map<String, dynamic> balanceSheetUsers) {
     return StatefulBuilder(
       builder: (context, setState) => SingleChildScrollView(
-        padding: EdgeInsets.all(15),
-        child: Container(
+        padding: const EdgeInsets.all(15),
+        child: SizedBox(
           width: double.infinity,
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Settlement',
                   style: TextStyle(
                     fontSize: 30,
@@ -562,14 +558,14 @@ class _BookUIState extends State<BookUI> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Text('Will Pay')),
+                    const Expanded(child: Text('Will Pay')),
                     Expanded(
                         child: CircleAvatar(
                       radius: 12,
                       backgroundColor: isDark ? Dark.primary : Light.primary,
                       child: FittedBox(
                         child: Padding(
-                          padding: EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(5.0),
                           child: Text(
                             '₹',
                             style: TextStyle(
@@ -579,7 +575,7 @@ class _BookUIState extends State<BookUI> {
                         ),
                       ),
                     )),
-                    Expanded(
+                    const Expanded(
                       child: Text(
                         'To',
                         textAlign: TextAlign.end,
@@ -609,7 +605,7 @@ class _BookUIState extends State<BookUI> {
                         balanceSheetUsers[balanceSheet[index]['recieverUid']]
                             ['imgUrl'];
                     return Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: kRadius(10),
                         color: isDark ? Dark.scaffold : Light.scaffold,
@@ -635,7 +631,7 @@ class _BookUIState extends State<BookUI> {
                           ),
                           width10,
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 20),
                             decoration: BoxDecoration(
                               borderRadius: kRadius(100),
@@ -731,7 +727,7 @@ class _BookUIState extends State<BookUI> {
                 bookId: ds['bookId'],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -754,14 +750,14 @@ class _BookUIState extends State<BookUI> {
         Expanded(
           child: Card(
             color: isDark ? Dark.card : Light.card,
-            child: SizedBox(height: 100),
+            child: const SizedBox(height: 100),
           ),
         ),
         width10,
         Expanded(
           child: Card(
             color: isDark ? Dark.card : Light.card,
-            child: SizedBox(height: 100),
+            child: const SizedBox(height: 100),
           ),
         ),
       ],
@@ -848,13 +844,13 @@ class _BookUIState extends State<BookUI> {
             dateTitle = '';
 
             return AnimatedSwitcher(
-              duration: Duration(milliseconds: 600),
+              duration: const Duration(milliseconds: 600),
               switchInCurve: Curves.easeIn,
               switchOutCurve: Curves.easeOut,
               child: snapshot.hasData
-                  ? snapshot.data!.docs.length > 0
+                  ? snapshot.data!.docs.isNotEmpty
                       ? ListView.builder(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -889,7 +885,7 @@ class _BookUIState extends State<BookUI> {
                                 return TransactTile(transact);
                               }
                             }
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           },
                         )
                       : Text(
@@ -909,11 +905,11 @@ class _BookUIState extends State<BookUI> {
 
   Container _SearchBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-      margin: EdgeInsets.only(left: 10, top: 10, bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+      margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
       decoration: BoxDecoration(
         color: isDark ? Dark.card : Light.card,
-        borderRadius: BorderRadius.horizontal(
+        borderRadius: const BorderRadius.horizontal(
           left: Radius.circular(100),
         ),
       ),
@@ -957,9 +953,9 @@ class _BookUIState extends State<BookUI> {
       children: [
         for (int i = 0; i <= 5; i++)
           Container(
-            margin: EdgeInsets.only(bottom: 20),
+            margin: const EdgeInsets.only(bottom: 20),
             child: Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: isDark ? Dark.card : Light.card,
@@ -980,7 +976,7 @@ class _BookUIState extends State<BookUI> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   height: 40,
                                   width: 40,
                                   decoration: BoxDecoration(
@@ -988,7 +984,7 @@ class _BookUIState extends State<BookUI> {
                                     shape: BoxShape.circle,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Container(
@@ -996,10 +992,10 @@ class _BookUIState extends State<BookUI> {
                                   height: 20,
                                   color: Colors.grey.withOpacity(0.5),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Container(
@@ -1017,16 +1013,17 @@ class _BookUIState extends State<BookUI> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.5),
                       borderRadius: kRadius(100),
                     ),
-                    child: Container(
+                    child: const SizedBox(
                       width: 200,
                       height: 20,
                     ),
@@ -1065,7 +1062,7 @@ class _BookUIState extends State<BookUI> {
         Visibility(
           visible: showDateWidget,
           child: Padding(
-            padding: EdgeInsets.only(bottom: 10, top: 5),
+            padding: const EdgeInsets.only(bottom: 10, top: 5),
             child: Text(
               dateLabel,
               style: TextStyle(
@@ -1081,9 +1078,9 @@ class _BookUIState extends State<BookUI> {
           children: [
             transactData.uid != globalUser.uid &&
                     bookData.users != null &&
-                    bookData.users!.length > 0
+                    bookData.users!.isNotEmpty
                 ? Padding(
-                    padding: EdgeInsets.only(right: 10.0),
+                    padding: const EdgeInsets.only(right: 10.0),
                     child:
                         FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                       future: FirebaseFirestore.instance
@@ -1099,29 +1096,30 @@ class _BookUIState extends State<BookUI> {
                           );
                         }
 
-                        return CircleAvatar(
+                        return const CircleAvatar(
                           radius: 12,
                         );
                       },
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  if (transactData.uid == globalUser.uid)
+                  if (transactData.uid == globalUser.uid) {
                     navPush(context, EditTransactUI(trData: transactData));
-                  else
+                  } else {
                     KSnackbar(
                       context,
                       content: "You cannot edit other's transactions",
                       isDanger: true,
                     );
+                  }
                 },
                 child: Container(
-                  margin: EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 20),
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: isDark ? Dark.card : Light.card,
@@ -1144,7 +1142,7 @@ class _BookUIState extends State<BookUI> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.all(6),
+                                        padding: const EdgeInsets.all(6),
                                         height: 30,
                                         width: 30,
                                         decoration: BoxDecoration(
@@ -1171,7 +1169,7 @@ class _BookUIState extends State<BookUI> {
                                                     blurRadius: 30,
                                                     spreadRadius: 1,
                                                   )
-                                                : BoxShadow(),
+                                                : const BoxShadow(),
                                           ],
                                         ),
                                         child: FittedBox(
@@ -1211,7 +1209,7 @@ class _BookUIState extends State<BookUI> {
                                                           ? Dark.lossText
                                                           : Light.lossText,
                                                 ),
-                                                children: [
+                                                children: const [
                                                   TextSpan(
                                                     text: " INR",
                                                     style: TextStyle(
@@ -1224,8 +1222,10 @@ class _BookUIState extends State<BookUI> {
                                               ),
                                             ),
                                             Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 5, vertical: 1),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 1),
                                               decoration: BoxDecoration(
                                                 color: transactData
                                                             .transactMode ==
@@ -1234,7 +1234,8 @@ class _BookUIState extends State<BookUI> {
                                                         ? Dark.profitText
                                                         : Colors.black
                                                     : isDark
-                                                        ? Color(0xFF9DC4FF)
+                                                        ? const Color(
+                                                            0xFF9DC4FF)
                                                         : Colors.blue.shade900,
                                                 borderRadius: kRadius(100),
                                               ),
@@ -1265,8 +1266,8 @@ class _BookUIState extends State<BookUI> {
                                         .trim()
                                         .isNotEmpty,
                                     child: Container(
-                                      margin: EdgeInsets.only(top: 10),
-                                      padding: EdgeInsets.all(8),
+                                      margin: const EdgeInsets.only(top: 10),
+                                      padding: const EdgeInsets.all(8),
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: isDark
@@ -1286,14 +1287,14 @@ class _BookUIState extends State<BookUI> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.schedule_rounded,
                               size: 15,
                             ),
                             width5,
                             Text(
                               transactData.time.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1309,9 +1310,9 @@ class _BookUIState extends State<BookUI> {
             Visibility(
               visible: transactData.uid == globalUser.uid &&
                   bookData.users != null &&
-                  bookData.users!.length > 0,
+                  bookData.users!.isNotEmpty,
               child: Padding(
-                padding: EdgeInsets.only(left: 10.0),
+                padding: const EdgeInsets.only(left: 10.0),
                 child: CircleAvatar(
                   radius: 12,
                   backgroundImage: NetworkImage(globalUser.imgUrl),
@@ -1333,7 +1334,7 @@ class _BookUIState extends State<BookUI> {
     return Visibility(
       visible: !isEmpty,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -1342,7 +1343,7 @@ class _BookUIState extends State<BookUI> {
               radius: 10,
               child: FittedBox(
                 child: Padding(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   child: Icon(
                     icon,
                     color: Colors.white,
@@ -1371,8 +1372,8 @@ class _BookUIState extends State<BookUI> {
 
   Widget BookMenu(String bookId, BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
-      margin: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       width: double.infinity,
       decoration: BoxDecoration(
         color: isDark ? Dark.card : Light.card,
@@ -1383,7 +1384,7 @@ class _BookUIState extends State<BookUI> {
         children: [
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Text(
                   'ACTIONS',
                   style: TextStyle(
@@ -1395,13 +1396,14 @@ class _BookUIState extends State<BookUI> {
               ),
               width10,
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
                   borderRadius: kRadius(50),
                 ),
                 child: Text(
-                  '${bookData.date}',
+                  bookData.date,
                   style: TextStyle(
                     color: isDark ? Dark.fadeText : Light.fadeText,
                     fontWeight: FontWeight.w600,
@@ -1516,7 +1518,7 @@ class _BookUIState extends State<BookUI> {
                 label: 'Add User(s)',
                 iconSize: 15,
                 icon: Icons.person_add_alt_1,
-                btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
+                btnColor: isDark ? Dark.profitText : const Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
               BookMenuBtn(
@@ -1527,7 +1529,7 @@ class _BookUIState extends State<BookUI> {
                 label: 'Distribute',
                 iconSize: 15,
                 icon: Icons.alt_route_rounded,
-                btnColor: isDark ? Dark.profitText : Color(0xFF27576D),
+                btnColor: isDark ? Dark.profitText : const Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
             ],
@@ -1544,7 +1546,7 @@ class _BookUIState extends State<BookUI> {
     required String bookId,
     required String bookName,
   }) {
-    final _searchUser = TextEditingController();
+    final searchUser = TextEditingController();
     selectedUsers = [];
     bool isSelecting = false;
 
@@ -1557,7 +1559,7 @@ class _BookUIState extends State<BookUI> {
         }
       });
 
-      if (selectedUsers.length == 0) {
+      if (selectedUsers.isEmpty) {
         setState(() {
           isSelecting = false;
         });
@@ -1571,7 +1573,7 @@ class _BookUIState extends State<BookUI> {
     return StatefulBuilder(
       builder: (context, setState) => Dialog(
         elevation: 0,
-        insetPadding: EdgeInsets.all(15),
+        insetPadding: const EdgeInsets.all(15),
         backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -1582,7 +1584,7 @@ class _BookUIState extends State<BookUI> {
               KSearchBar(
                 context,
                 isDark: isDark,
-                controller: _searchUser,
+                controller: searchUser,
                 onChanged: (_) {
                   setState(() {});
                 },
@@ -1590,7 +1592,7 @@ class _BookUIState extends State<BookUI> {
               Visibility(
                 visible: isSelecting,
                 child: Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   child: Text('Selected ${selectedUsers.length} user(s)'),
                 ),
               ),
@@ -1601,8 +1603,8 @@ class _BookUIState extends State<BookUI> {
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data!.docs.length == 0) {
-                      return Text('No Users');
+                    if (snapshot.data!.docs.isEmpty) {
+                      return const Text('No Users');
                     }
                     return Flexible(
                       child: ListView.builder(
@@ -1612,9 +1614,9 @@ class _BookUIState extends State<BookUI> {
                           KUser userData =
                               KUser.fromMap(snapshot.data!.docs[index].data());
                           if (Constants.getSearchString(userData.name)
-                                  .contains(_searchUser.text) ||
+                                  .contains(searchUser.text) ||
                               Constants.getSearchString(userData.username)
-                                  .contains(_searchUser.text)) {
+                                  .contains(searchUser.text)) {
                             return kUserTile(
                               isDark,
                               userData: userData,
@@ -1625,15 +1627,15 @@ class _BookUIState extends State<BookUI> {
                               },
                             );
                           }
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         },
                       ),
                     );
                   }
-                  return LinearProgressIndicator();
+                  return const LinearProgressIndicator();
                 },
               ),
-              selectedUsers.length > 0
+              selectedUsers.isNotEmpty
                   ? Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: ElevatedButton(
@@ -1641,7 +1643,7 @@ class _BookUIState extends State<BookUI> {
                           int currentTime =
                               DateTime.now().millisecondsSinceEpoch;
 
-                          Map<String, dynamic> _requestMap = {
+                          Map<String, dynamic> requestMap = {
                             'id': "$currentTime",
                             'date': Constants.getDisplayDate(currentTime),
                             'time': Constants.getDisplayTime(currentTime),
@@ -1653,7 +1655,7 @@ class _BookUIState extends State<BookUI> {
 
                           await FirebaseRefs.requestRef
                               .doc("$currentTime")
-                              .set(_requestMap)
+                              .set(requestMap)
                               .then(
                                 (value) => KSnackbar(
                                   context,
@@ -1663,10 +1665,10 @@ class _BookUIState extends State<BookUI> {
                               );
                           Navigator.pop(context);
                         },
-                        child: Text('Send Request'),
+                        child: const Text('Send Request'),
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
             ],
           ),
         ),
@@ -1684,8 +1686,8 @@ class _BookUIState extends State<BookUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(20),
-                  padding: EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: kRadius(20),
                     color: isDark ? Dark.card : Colors.white,
@@ -1697,7 +1699,7 @@ class _BookUIState extends State<BookUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 4),
                             decoration: BoxDecoration(
                               color: isDark
@@ -1736,7 +1738,7 @@ class _BookUIState extends State<BookUI> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(
@@ -1771,7 +1773,7 @@ class _BookUIState extends State<BookUI> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                     ],
@@ -1811,7 +1813,7 @@ class _BookUIState extends State<BookUI> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isSelected ? color : Colors.grey,
@@ -1825,7 +1827,7 @@ class _BookUIState extends State<BookUI> {
             ),
             child: icon,
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(

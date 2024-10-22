@@ -22,14 +22,14 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 5, left: 5, bottom: 5),
+              padding: const EdgeInsets.only(top: 5, left: 5, bottom: 5),
               child: Center(
                 child: Text(
                   'SETTINGS',
@@ -48,7 +48,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                 borderRadius: kRadius(20),
               ),
               width: double.infinity,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -61,7 +61,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                         borderColor: isDark ? Dark.fadeText : Light.fadeText,
                         child: GestureDetector(
                           onTap: () {
-                            navPush(context, AccountUI());
+                            navPush(context, const AccountUI());
                           },
                           child: ClipRRect(
                             borderRadius: kRadius(20),
@@ -71,7 +71,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                             ),
                           ),
                         ),
-                        btnColor: Color.fromARGB(255, 210, 235, 255),
+                        btnColor: const Color.fromARGB(255, 210, 235, 255),
                       ),
                       // HomeMenuBtn(
                       //   label: 'Switch',
@@ -108,7 +108,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                         ),
                         btnColor: isDark
                             ? Colors.red.shade900
-                            : Color.fromARGB(255, 255, 208, 205),
+                            : const Color.fromARGB(255, 255, 208, 205),
                       ),
                     ],
                   ),

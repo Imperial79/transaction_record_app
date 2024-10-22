@@ -30,7 +30,7 @@ class Home_UI extends StatefulWidget {
 
 class _Home_UIState extends State<Home_UI>
     with AutomaticKeepAliveClientMixin<Home_UI> {
-  DatabaseMethods databaseMethods = new DatabaseMethods();
+  DatabaseMethods databaseMethods = DatabaseMethods();
   List? data;
   String dateTitle = '';
   bool showDateWidget = false;
@@ -98,10 +98,10 @@ class _Home_UIState extends State<Home_UI>
       builder: (context, snapshot) {
         dateTitle = '';
         return (snapshot.hasData)
-            ? (snapshot.data!.docs.length == 0)
+            ? (snapshot.data!.docs.isEmpty)
                 ? NewBookCard(context)
                 : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -126,7 +126,7 @@ class _Home_UIState extends State<Home_UI>
                               ),
                         height10,
                         ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -142,14 +142,14 @@ class _Home_UIState extends State<Home_UI>
                                       newBook.bookDescription)) {
                                 return _bookTile(newBook);
                               }
-                              return SizedBox();
+                              return const SizedBox();
                             }
                           },
                         ),
                       ],
                     ),
                   )
-            : Center(
+            : const Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),
                   child: CircularProgressIndicator(
@@ -204,8 +204,8 @@ class _Home_UIState extends State<Home_UI>
         child: Column(
           children: [
             AnimatedSize(
-              reverseDuration: Duration(milliseconds: 300),
-              duration: Duration(milliseconds: 300),
+              reverseDuration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               alignment: Alignment.topCenter,
               curve: Curves.ease,
               child: ValueListenableBuilder<bool>(
@@ -213,16 +213,16 @@ class _Home_UIState extends State<Home_UI>
                 builder: (BuildContext context, bool showFullHomeMenu,
                     Widget? child) {
                   return AnimatedSwitcher(
-                    duration: Duration(milliseconds: 500),
-                    reverseDuration: Duration(milliseconds: 100),
-                    child: showFullHomeMenu ? HomeMenuUI() : Container(),
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 100),
+                    child: showFullHomeMenu ? const HomeMenuUI() : Container(),
                   );
                 },
               ),
             ),
             AnimatedSize(
-              reverseDuration: Duration(milliseconds: 300),
-              duration: Duration(milliseconds: 300),
+              reverseDuration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               alignment: Alignment.topCenter,
               curve: Curves.ease,
               child: ValueListenableBuilder<bool>(
@@ -235,14 +235,15 @@ class _Home_UIState extends State<Home_UI>
                             children: [
                               height10,
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        navPush(context, AccountUI());
+                                        navPush(context, const AccountUI());
                                       },
                                       child: Hero(
                                         tag: 'profImg',
@@ -251,7 +252,7 @@ class _Home_UIState extends State<Home_UI>
                                           child: ClipRRect(
                                             borderRadius: kRadius(50),
                                             child: globalUser.imgUrl == ''
-                                                ? Center(
+                                                ? const Center(
                                                     child:
                                                         CircularProgressIndicator(
                                                       color: Dark.profitCard,
@@ -338,12 +339,12 @@ class _Home_UIState extends State<Home_UI>
             ),
             Expanded(
               child: ListView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 controller: _scrollController,
                 children: [
                   height10,
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: KSearchBar(
                       context,
                       isDark: isDark,
@@ -357,7 +358,7 @@ class _Home_UIState extends State<Home_UI>
                   ),
                   height15,
                   BookList(),
-                  SizedBox(
+                  const SizedBox(
                     height: 70,
                   ),
                 ],
@@ -380,8 +381,8 @@ class _Home_UIState extends State<Home_UI>
     }
 
     // Change Card color -------------------->
-    Color _kCardColor = Dark.card;
-    Color _textColor = Colors.black;
+    Color kCardColor = Dark.card;
+    Color textColor = Colors.black;
     bool isCompleted = false;
 
     if (bookData.type == "regular") {
@@ -393,11 +394,11 @@ class _Home_UIState extends State<Home_UI>
     }
 
     if (isCompleted) {
-      _kCardColor = isDark ? Dark.completeCard : Light.completeCard;
-      _textColor = isDark ? Colors.white : Colors.black;
+      kCardColor = isDark ? Dark.completeCard : Light.completeCard;
+      textColor = isDark ? Colors.white : Colors.black;
     } else {
-      _kCardColor = isDark ? Dark.card : Light.card;
-      _textColor = isDark ? Colors.white : Colors.black;
+      kCardColor = isDark ? Dark.card : Light.card;
+      textColor = isDark ? Colors.white : Colors.black;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,10 +406,10 @@ class _Home_UIState extends State<Home_UI>
         Visibility(
           visible: showDateWidget,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
               dateTitle == todayDate ? 'Today' : dateTitle,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
@@ -437,13 +438,13 @@ class _Home_UIState extends State<Home_UI>
             );
           },
           child: Card(
-            margin: EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 10),
             shape: RoundedRectangleBorder(
               borderRadius: kRadius(10),
             ),
-            color: _kCardColor,
+            color: kCardColor,
             child: Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -473,7 +474,7 @@ class _Home_UIState extends State<Home_UI>
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w500,
-                                      color: _textColor,
+                                      color: textColor,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -481,15 +482,15 @@ class _Home_UIState extends State<Home_UI>
                                 ),
                                 width10,
                                 bookData.users != null &&
-                                        bookData.users!.length > 0
-                                    ? CircleAvatar(
+                                        bookData.users!.isNotEmpty
+                                    ? const CircleAvatar(
                                         radius: 12,
                                         child: Icon(
                                           Icons.groups_2,
                                           size: 12,
                                         ),
                                       )
-                                    : SizedBox(),
+                                    : const SizedBox(),
                               ],
                             ),
                             Visibility(
@@ -497,19 +498,19 @@ class _Home_UIState extends State<Home_UI>
                                   .toString()
                                   .isNotEmpty,
                               child: Padding(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: Row(
                                   children: [
                                     Icon(
                                       Icons.note,
-                                      color: _textColor,
+                                      color: textColor,
                                       size: 12,
                                     ),
                                     width5,
                                     Text(
                                       bookData.bookDescription,
                                       style: TextStyle(
-                                        color: _textColor,
+                                        color: textColor,
                                       ),
                                     ),
                                   ],
@@ -521,15 +522,15 @@ class _Home_UIState extends State<Home_UI>
                               children: [
                                 Icon(
                                   Icons.schedule,
-                                  color: _textColor,
+                                  color: textColor,
                                   size: 12,
                                 ),
                                 width5,
                                 Text(
-                                  bookData.date + ' | ' + bookData.time,
+                                  '${bookData.date} | ${bookData.time}',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: _textColor,
+                                    color: textColor,
                                   ),
                                 ),
                               ],
@@ -541,7 +542,7 @@ class _Home_UIState extends State<Home_UI>
                   ),
                   if (!isCompleted)
                     Padding(
-                      padding: EdgeInsets.only(top: 10.0),
+                      padding: const EdgeInsets.only(top: 10.0),
                       child: bookData.type == "due"
                           ? Row(
                               children: [
@@ -550,9 +551,8 @@ class _Home_UIState extends State<Home_UI>
                                   crossAlign: CrossAxisAlignment.start,
                                   textColor:
                                       isDark ? Colors.white : Colors.black,
-                                  amount: "₹ " +
-                                      kMoneyFormat(bookData.targetAmount -
-                                          bookData.income),
+                                  amount:
+                                      "₹ ${kMoneyFormat(bookData.targetAmount - bookData.income)}",
                                   label: 'Due',
                                   cardColor: isDark
                                       ? Dark.completeCard
@@ -565,11 +565,12 @@ class _Home_UIState extends State<Home_UI>
                                   index: 2,
                                   crossAlign: CrossAxisAlignment.end,
                                   label: "Target",
-                                  amount: "₹ " +
-                                      kMoneyFormat(bookData.targetAmount),
+                                  amount:
+                                      "₹ ${kMoneyFormat(bookData.targetAmount)}",
                                   cardColor: isDark
-                                      ? Color(0xFF0B2A43)
-                                      : Color.fromARGB(255, 197, 226, 250),
+                                      ? const Color(0xFF0B2A43)
+                                      : const Color.fromARGB(
+                                          255, 197, 226, 250),
                                   textColor: isDark
                                       ? Colors.white
                                       : Colors.blue.shade900,
@@ -586,11 +587,11 @@ class _Home_UIState extends State<Home_UI>
                                   crossAlign: CrossAxisAlignment.start,
                                   textColor:
                                       isDark ? Colors.white : Colors.black,
-                                  amount: "₹ " + kMoneyFormat(bookData.income),
+                                  amount: "₹ ${kMoneyFormat(bookData.income)}",
                                   label: 'Income',
                                   cardColor: isDark
-                                      ? Color(0xFF223B05)
-                                      : Color(0xFFB5FFB7),
+                                      ? const Color(0xFF223B05)
+                                      : const Color(0xFFB5FFB7),
                                   amountColor: isDark
                                       ? Colors.lightGreenAccent
                                       : Colors.lightGreen.shade900,
@@ -599,7 +600,7 @@ class _Home_UIState extends State<Home_UI>
                                 _bookStats(
                                   index: 1,
                                   crossAlign: CrossAxisAlignment.center,
-                                  amount: "₹ " + kMoneyFormat(bookData.expense),
+                                  amount: "₹ ${kMoneyFormat(bookData.expense)}",
                                   label: 'Expense',
                                   cardColor: isDark
                                       ? Colors.black
@@ -614,12 +615,12 @@ class _Home_UIState extends State<Home_UI>
                                   index: 2,
                                   crossAlign: CrossAxisAlignment.end,
                                   label: 'Current',
-                                  amount: "₹ " +
-                                      kMoneyFormat(
-                                          bookData.income - bookData.expense),
+                                  amount:
+                                      "₹ ${kMoneyFormat(bookData.income - bookData.expense)}",
                                   cardColor: isDark
                                       ? const Color(0xFF0B2A43)
-                                      : Color.fromARGB(255, 197, 226, 250),
+                                      : const Color.fromARGB(
+                                          255, 197, 226, 250),
                                   textColor: isDark
                                       ? Colors.white
                                       : Colors.blue.shade900,
@@ -635,7 +636,7 @@ class _Home_UIState extends State<Home_UI>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         height10,
-                        Text(
+                        const Text(
                           "Final Sum",
                           style: TextStyle(fontSize: 15),
                         ),
@@ -667,8 +668,8 @@ class _Home_UIState extends State<Home_UI>
       builder: (context, setState) {
         return SafeArea(
           child: Container(
-            padding: EdgeInsets.all(20),
-            margin: EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               color: isDark ? Dark.modal : Light.modal,
               borderRadius: kRadius(20),
@@ -704,15 +705,15 @@ class _Home_UIState extends State<Home_UI>
                       elevation: 0,
                       color: isDark ? Dark.card : Light.card,
                       child: Padding(
-                        padding: EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(15),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.delete,
                               size: 30,
                             ),
                             width10,
-                            Flexible(
+                            const Flexible(
                               child: Text(
                                 "Delete book",
                                 style: TextStyle(
@@ -746,16 +747,16 @@ class _Home_UIState extends State<Home_UI>
   }) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: cardColor,
           borderRadius: index == 0
-              ? BorderRadius.horizontal(
+              ? const BorderRadius.horizontal(
                   left: Radius.circular(10),
                 )
               : index == 1
                   ? null
-                  : BorderRadius.horizontal(right: Radius.circular(10)),
+                  : const BorderRadius.horizontal(right: Radius.circular(10)),
         ),
         child: Column(
           crossAxisAlignment: crossAlign,

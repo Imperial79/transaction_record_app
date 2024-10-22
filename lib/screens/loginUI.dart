@@ -10,17 +10,17 @@ import 'package:transaction_record_app/services/auth.dart';
 import '../Utility/commons.dart';
 
 class LoginUI extends StatefulWidget {
-  LoginUI({Key? key}) : super(key: key);
+  const LoginUI({Key? key}) : super(key: key);
 
   @override
   _LoginUIState createState() => _LoginUIState();
 }
 
 class _LoginUIState extends State<LoginUI> {
-  Uri _privacyPolicyUrl = Uri.parse(
+  final Uri _privacyPolicyUrl = Uri.parse(
       'https://www.freeprivacypolicy.com/live/d6175538-7c18-42f4-989e-2c6351204f4b');
 
-  Uri _githubLink =
+  final Uri _githubLink =
       Uri.parse('https://github.com/Imperial79/transaction_record_app');
 
   bool _isLoading = false;
@@ -33,7 +33,7 @@ class _LoginUIState extends State<LoginUI> {
     return KScaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               _isLoading
@@ -53,14 +53,14 @@ class _LoginUIState extends State<LoginUI> {
                                   height: 70,
                                 ),
                                 height10,
-                                Text(
+                                const Text(
                                   'Transact Record',
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                Text(
+                                const Text(
                                   '"Your Personal Money Manager"',
                                   style: TextStyle(
                                     fontSize: 15,
@@ -112,7 +112,7 @@ class _LoginUIState extends State<LoginUI> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           InkWell(
@@ -133,11 +133,11 @@ class _LoginUIState extends State<LoginUI> {
                                 // color: Color(0xffda8363),
                                 border: Border.all(color: Colors.red.shade100),
                               ),
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   vertical: 7, horizontal: 20),
                               child: Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     'G',
                                     style: TextStyle(
                                       fontSize: 30,
@@ -146,7 +146,7 @@ class _LoginUIState extends State<LoginUI> {
                                     ),
                                   ),
                                   width10,
-                                  Text(
+                                  const Text(
                                     "Login with Google",
                                     style: TextStyle(
                                       fontSize: 20,
@@ -158,17 +158,17 @@ class _LoginUIState extends State<LoginUI> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
-                          Text(
+                          const Text(
                             'By signing in, you agree with our ',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Row(
@@ -213,7 +213,7 @@ class _LoginUIState extends State<LoginUI> {
                 color: isDark ? Dark.profitCard : Light.profitCard,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
@@ -236,7 +236,7 @@ class _LoginUIState extends State<LoginUI> {
         launchTheUrl(link!);
       },
       style: TextButton.styleFrom(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         visualDensity: VisualDensity.compact,
       ),
       child: Text(

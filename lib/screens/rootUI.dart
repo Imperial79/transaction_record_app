@@ -42,9 +42,9 @@ class _RootUIState extends State<RootUI> {
     });
   }
 
-  List<Widget> _pages = [
+  final List<Widget> _pages = [
     Home_UI(),
-    New_Book_UI(),
+    const New_Book_UI(),
   ];
 
   @override
@@ -103,7 +103,7 @@ class _RootUIState extends State<RootUI> {
                 ),
                 IconButton(
                   onPressed: () {
-                    navPush(context, NotificationsUI());
+                    navPush(context, const NotificationsUI());
                   },
                   icon: StreamBuilder<dynamic>(
                     stream: FirebaseRefs.requestRef
@@ -111,16 +111,16 @@ class _RootUIState extends State<RootUI> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       return AnimatedSwitcher(
-                        duration: Duration(milliseconds: 600),
+                        duration: const Duration(milliseconds: 600),
                         switchInCurve: Curves.easeIn,
                         switchOutCurve: Curves.easeOut,
                         child: !snapshot.hasData
                             ? Transform.scale(
                                 scale: .5,
-                                child: CircularProgressIndicator(),
+                                child: const CircularProgressIndicator(),
                               )
                             : snapshot.data!.docs.length == 0
-                                ? Icon(Icons.notifications)
+                                ? const Icon(Icons.notifications)
                                 : CircleAvatar(
                                     radius: 12,
                                     backgroundColor: isDark
@@ -129,7 +129,7 @@ class _RootUIState extends State<RootUI> {
                                     foregroundColor:
                                         isDark ? Colors.black : Colors.white,
                                     child: Padding(
-                                      padding: EdgeInsets.all(5.0),
+                                      padding: const EdgeInsets.all(5.0),
                                       child: FittedBox(
                                         fit: BoxFit.contain,
                                         child: Text(
@@ -146,16 +146,16 @@ class _RootUIState extends State<RootUI> {
             Expanded(
               child: ValueListenableBuilder(
                   valueListenable: pageControllerGlobal,
-                  builder: (context, PageController _pageController, child) {
+                  builder: (context, PageController pageController, child) {
                     return PageView.builder(
                       scrollDirection: Axis.horizontal,
-                      controller: _pageController,
+                      controller: pageController,
                       itemCount: _pages.length,
                       onPageChanged: _onPageChanged,
                       itemBuilder: (context, index) {
                         return PageStorage(
-                          child: _pages[index],
                           bucket: _pageStorageBucket,
+                          child: _pages[index],
                         );
                       },
                     );
@@ -176,7 +176,7 @@ class _RootUIState extends State<RootUI> {
     return TextButton(
       onPressed: () {
         pageControllerGlobal.value.animateToPage(index,
-            duration: Duration(milliseconds: 300), curve: Curves.ease);
+            duration: const Duration(milliseconds: 300), curve: Curves.ease);
       },
       child: Text(
         label,

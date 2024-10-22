@@ -34,11 +34,11 @@ class _AccountUIState extends State<AccountUI> {
 
       await DatabaseMethods().updateAccountDetails(globalUser.uid, accountMap);
 
-      final _userBox = await Hive.openBox("USERBOX");
-      final _userMap = _userBox.get("userData");
-      if (_userMap != null) {
-        _userMap['userDisplayName'] = nameController.text;
-        _userBox.put('userData', _userMap);
+      final userBox = await Hive.openBox("USERBOX");
+      final userMap = userBox.get("userData");
+      if (userMap != null) {
+        userMap['userDisplayName'] = nameController.text;
+        userBox.put('userData', userMap);
       }
 
       setState(() {
@@ -63,11 +63,11 @@ class _AccountUIState extends State<AccountUI> {
       isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              const Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -111,7 +111,7 @@ class _AccountUIState extends State<AccountUI> {
               ),
               TextField(
                 controller: nameController,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w900,
                 ),
@@ -142,7 +142,7 @@ class _AccountUIState extends State<AccountUI> {
               TextField(
                 controller: emailController,
                 enabled: false,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
@@ -150,7 +150,7 @@ class _AccountUIState extends State<AccountUI> {
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
                   focusColor: Colors.black,
-                  focusedBorder: UnderlineInputBorder(
+                  focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.black,
                       width: 2,
@@ -176,7 +176,7 @@ class _AccountUIState extends State<AccountUI> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: MaterialButton(
             onPressed: () {
               updateAccountDetails();
@@ -187,7 +187,7 @@ class _AccountUIState extends State<AccountUI> {
             elevation: 0,
             padding: EdgeInsets.zero,
             child: Ink(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 vertical: 15,
                 horizontal: 25,
               ),
@@ -202,7 +202,7 @@ class _AccountUIState extends State<AccountUI> {
                     Icons.file_upload_outlined,
                     color: isDark ? Colors.black : Colors.white,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(

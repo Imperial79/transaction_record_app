@@ -19,11 +19,11 @@ void main() async {
   await Hive.initFlutter();
   ConnectionConfig.listenForConnection();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -52,14 +52,14 @@ class _MyAppState extends State<MyApp> {
               future: AuthMethods.getCurrentuser(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return RootUI();
+                  return const RootUI();
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return SplashUI();
+                  return const SplashUI();
                 } else if (snapshot.connectionState == ConnectionState.none) {
-                  return SplashUI();
+                  return const SplashUI();
                 } else {
-                  return LoginUI();
+                  return const LoginUI();
                 }
               },
             ),

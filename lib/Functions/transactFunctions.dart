@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 String? _hour, _minute, _time;
 
 DateTime selectedDate = DateTime.now();
-TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+TimeOfDay selectedTime = const TimeOfDay(hour: 00, minute: 00);
 
 TextEditingController _dateController = TextEditingController();
 TextEditingController _timeController = TextEditingController();
@@ -56,7 +56,7 @@ Future<Map<String, dynamic>> selectTime(
 
       _hour = selectedTime.hour.toString();
       _minute = selectedTime.minute.toString();
-      _time = _hour! + ' : ' + _minute!;
+      _time = '${_hour!} : ${_minute!}';
       _timeController.text = _time!;
       _timeController.text = formatDate(
           DateTime(2019, 08, 1, selectedTime.hour, selectedTime.minute),
@@ -78,10 +78,8 @@ Future<Map<String, dynamic>> selectTime(
 
 String convertTimeToTS(date, time) {
   var nowNanoSec = DateTime.now().toString().split('.').last;
-  String _selectedTimeStamp = date.toString().split(' ').first +
-      ' ' +
-      time.toString().split(' ').first +
-      ':00.$nowNanoSec';
-  print(_selectedTimeStamp);
-  return _selectedTimeStamp;
+  String selectedTimeStamp =
+      '${date.toString().split(' ').first} ${time.toString().split(' ').first}:00.$nowNanoSec';
+
+  return selectedTimeStamp;
 }

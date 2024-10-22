@@ -25,7 +25,7 @@ class EditTransactUI extends StatefulWidget {
 class _EditTransactUIState extends State<EditTransactUI> {
   //  Variables -------------->
 
-  DatabaseMethods databaseMethods = new DatabaseMethods();
+  DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
@@ -71,35 +71,35 @@ class _EditTransactUIState extends State<EditTransactUI> {
       //  If newType is INCOME
       //--------------------------------------------
 
-      double _oldAmount = double.parse(widget.trData.amount);
-      double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.trData.type;
+      double oldAmount = double.parse(widget.trData.amount);
+      double newAmount = double.parse(amountField.text);
+      String oldType = widget.trData.type;
 
       //--------------------------------------------
 
-      if (_oldType == 'Income') {
+      if (oldType == 'Income') {
         databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+            {'income': FieldValue.increment((0.0 - oldAmount) + newAmount)});
       } else {
         //  if oldType was expense ----------->
         databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+            {'expense': FieldValue.increment((0.0 - oldAmount) + newAmount)});
       }
     } else {
       //  If newType is Expense ---------------->
 
-      double _oldAmount = double.parse(widget.trData.amount);
-      double _newAmount = double.parse(amountField.text);
-      String _oldType = widget.trData.type;
+      double oldAmount = double.parse(widget.trData.amount);
+      double newAmount = double.parse(amountField.text);
+      String oldType = widget.trData.type;
 
       //--------------------------------------------
-      if (_oldType == 'Income') {
+      if (oldType == 'Income') {
         databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'income': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+            {'income': FieldValue.increment((0.0 - oldAmount) + newAmount)});
       } else {
         //  if oldType was expense ----------->
         databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'expense': FieldValue.increment((0.0 - _oldAmount) + _newAmount)});
+            {'expense': FieldValue.increment((0.0 - oldAmount) + newAmount)});
       }
     }
   }
@@ -151,7 +151,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
           // shape: RoundedRectangleBorder(
           //   borderRadius: kRadius(12),
           // ),
-          icon: Icon(
+          icon: const Icon(
             Icons.delete,
             color: Colors.red,
             size: 30,
@@ -162,7 +162,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
               color: isDark ? Colors.white : Colors.black,
             ),
           ),
-          content: Text(
+          content: const Text(
             'Do you really want to delete this Transact ? This cannot be undone!',
             style: TextStyle(
               color: Colors.red,
@@ -175,7 +175,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text(
+              child: const Text(
                 'Cancel',
               ),
             ),
@@ -189,7 +189,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                 borderRadius: kRadius(5),
               ),
               elevation: 0,
-              child: Text(
+              child: const Text(
                 'Delete',
                 style: TextStyle(color: Colors.white),
               ),
@@ -208,22 +208,22 @@ class _EditTransactUIState extends State<EditTransactUI> {
       await DatabaseMethods()
           .deleteTransact(widget.trData.bookId, widget.trData.transactId);
       if (transactType == 'Income') {
-        Map<String, dynamic> _updatedMap = {
+        Map<String, dynamic> updatedMap = {
           'income':
               FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
         };
         await DatabaseMethods().updateBookTransactions(
           widget.trData.bookId,
-          _updatedMap,
+          updatedMap,
         );
       } else {
-        Map<String, dynamic> _updatedMap = {
+        Map<String, dynamic> updatedMap = {
           'expense':
               FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
         };
         await DatabaseMethods().updateBookTransactions(
           widget.trData.bookId,
-          _updatedMap,
+          updatedMap,
         );
       }
 
@@ -262,7 +262,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
               child: Row(
                 children: [
                   Container(
@@ -283,15 +284,15 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   _modeIndicatorPill(widget.trData.type),
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                physics: BouncingScrollPhysics(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 child: Column(
@@ -299,13 +300,13 @@ class _EditTransactUIState extends State<EditTransactUI> {
                   children: [
                     KTextfield.regular(
                       isDark,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       controller: descriptionField,
                       maxLines: 4,
                       minLines: 1,
                       hintText: 'Add description (Optional)',
-                      icon: CircleAvatar(
+                      icon: const CircleAvatar(
                         radius: 15,
                         backgroundColor: Colors.blue,
                         child: Icon(
@@ -336,7 +337,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Row(
@@ -350,7 +351,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                         DateTime.parse(widget.trData.ts));
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       borderRadius: kRadius(10),
                                       color:
@@ -368,7 +369,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 6,
                               ),
                               InkWell(
@@ -384,7 +385,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   );
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
                                     color:
@@ -392,7 +393,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                   ),
                                   child: Text(
                                     _selectedTimeMap['displayTime'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -406,8 +407,8 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     height10,
                     KTextfield.regular(
                       isDark,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       controller: sourceField,
                       maxLines: 4,
                       minLines: 1,
@@ -415,7 +416,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       icon: CircleAvatar(
                         radius: 15,
                         backgroundColor: Colors.amber.shade900,
-                        child: Icon(
+                        child: const Icon(
                           Icons.person,
                           color: Colors.white,
                           size: 15,
@@ -453,7 +454,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                       : Colors.blue.shade700
                                   : Colors.grey,
                             ),
-                            children: [
+                            children: const [
                               TextSpan(
                                 text: 'ON',
                                 style: TextStyle(
@@ -489,7 +490,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                       elevation: 0,
                       padding: EdgeInsets.zero,
                       child: Ink(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           vertical: 15,
                           horizontal: 25,
                         ),
@@ -502,7 +503,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             ],
                           ),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(
                               Icons.delete,
@@ -546,7 +547,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     ),
                     height10,
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -570,7 +571,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                         cursorColor: isDark ? Colors.white : Colors.black,
                         decoration: InputDecoration(
                           prefixIcon: Padding(
-                            padding: EdgeInsets.only(right: 10.0),
+                            padding: const EdgeInsets.only(right: 10.0),
                             child: Text(
                               "INR",
                               style: TextStyle(
@@ -583,7 +584,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                             ),
                           ),
                           prefixIconConstraints:
-                              BoxConstraints(minHeight: 0, minWidth: 0),
+                              const BoxConstraints(minHeight: 0, minWidth: 0),
                           border: InputBorder.none,
                           hintText: '0.00',
                           hintStyle: TextStyle(
@@ -642,7 +643,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
   Container BottomCard(BuildContext context, {String? date}) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(top: 15),
+      margin: const EdgeInsets.only(top: 15),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : Colors.white,
         borderRadius: kRadius(30),
@@ -652,7 +653,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -680,7 +681,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -718,7 +719,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -734,14 +735,14 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           onPressed: () {
                             FocusScope.of(context).unfocus();
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,
                             size: 20,
                             color: Colors.black,
                           ),
                         ),
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: 20,
                       ),
                 Container(
@@ -770,7 +771,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     elevation: 0,
                     padding: EdgeInsets.zero,
                     child: Ink(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 15,
                         horizontal: 25,
                       ),
@@ -783,7 +784,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                                 : Colors.redAccent,
                             transactType == 'Income'
                                 ? Colors.lightGreenAccent
-                                : Color.fromARGB(255, 189, 56, 56),
+                                : const Color.fromARGB(255, 189, 56, 56),
                           ],
                         ),
                       ),
@@ -800,7 +801,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
                           ),
                           width10,
                           Text(
-                            'Update ' + transactType,
+                            'Update $transactType',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: transactType == 'Income'
@@ -845,7 +846,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
             size: 20,
             color: label == 'Expense' ? Colors.white : Colors.black,
           ),
-          SizedBox(
+          const SizedBox(
             width: 7,
           ),
           Text(
@@ -874,7 +875,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
@@ -883,7 +884,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
         ),
         child: AnimatedAlign(
           curve: Curves.ease,
-          duration: Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 250),
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
@@ -892,12 +893,12 @@ class _EditTransactUIState extends State<EditTransactUI> {
                 : Colors.lightGreen,
             radius: 20,
             child: transactMode == 'ONLINE'
-                ? Icon(
+                ? const Icon(
                     Icons.webhook_sharp,
                     color: Colors.white,
                     size: 20,
                   )
-                : Text(
+                : const Text(
                     '₹',
                     style: TextStyle(
                       color: Colors.black,

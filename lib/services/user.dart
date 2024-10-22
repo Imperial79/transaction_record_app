@@ -9,4 +9,4 @@ import 'package:transaction_record_app/models/userModel.dart';
 // }
 
 KUser globalUser =
-    new KUser(username: '', email: '', name: '', uid: '', imgUrl: '');
+    KUser(username: '', email: '', name: '', uid: '', imgUrl: '');

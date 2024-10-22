@@ -9,31 +9,29 @@ Widget kBackButton(
   bool isSearching = false,
 }) {
   isDark = Theme.of(context).brightness == Brightness.dark;
-  return Container(
-    child: IconButton(
-      color: isDark ? Dark.profitText : Light.profitText,
-      onPressed: () {
-        Navigator.pop(context);
-      },
-      icon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.arrow_back,
-            color: isDark ? Dark.profitCard : Colors.black,
-          ),
-          !isSearching ? width10 : SizedBox(),
-          !isSearching
-              ? Text(
-                  'Return',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                )
-              : SizedBox(),
-        ],
-      ),
+  return IconButton(
+    color: isDark ? Dark.profitText : Light.profitText,
+    onPressed: () {
+      Navigator.pop(context);
+    },
+    icon: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.arrow_back,
+          color: isDark ? Dark.profitCard : Colors.black,
+        ),
+        !isSearching ? width10 : const SizedBox(),
+        !isSearching
+            ? Text(
+                'Return',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              )
+            : const SizedBox(),
+      ],
     ),
   );
 }
@@ -59,11 +57,11 @@ Padding kUserTile(
                   : Light.profitCard
               : Colors.transparent,
         ),
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Row(
           children: [
             selectedUsers.contains(userData.uid)
-                ? CircleAvatar(
+                ? const CircleAvatar(
                     child: Icon(Icons.done),
                   )
                 : CircleAvatar(
@@ -88,7 +86,7 @@ Padding kUserTile(
 
 Widget kLabel(String text) {
   return Padding(
-    padding: EdgeInsets.only(top: 20, bottom: 15),
+    padding: const EdgeInsets.only(top: 20, bottom: 15),
     child: Text(
       text,
     ),
@@ -106,14 +104,14 @@ Widget kAlertDialog(
     elevation: 0,
     backgroundColor: isDark ? Dark.card : Light.card,
     child: Padding(
-      padding: EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
@@ -121,7 +119,7 @@ Widget kAlertDialog(
           height15,
           Text(
             subTitle,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
             ),

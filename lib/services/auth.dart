@@ -14,7 +14,7 @@ import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/services/user.dart';
 
 class AuthMethods {
-  static DatabaseMethods _databaseMethods = new DatabaseMethods();
+  static final DatabaseMethods _databaseMethods = DatabaseMethods();
 
   static final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -28,25 +28,25 @@ class AuthMethods {
 
   static Future<User?> _googleSignIn() async {
     try {
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
       await auth.signOut();
 
-      await _googleSignIn.signOut();
+      await googleSignIn.signOut();
 
-      final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
 
-      final GoogleSignInAuthentication? googleSignInAuthentication =
+      final GoogleSignInAuthentication googleSignInAuthentication =
           await googleAccount!.authentication;
 
       final AuthCredential authCred = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication!.idToken,
+        idToken: googleSignInAuthentication.idToken,
         accessToken: googleSignInAuthentication.accessToken,
       );
 
-      UserCredential _creds = await auth.signInWithCredential(authCred);
+      UserCredential creds = await auth.signInWithCredential(authCred);
 
-      User? gUserData = _creds.user;
+      User? gUserData = creds.user;
       return gUserData;
     } catch (e) {
       log("Google Sign In Error -> $e");
@@ -57,26 +57,7 @@ class AuthMethods {
   static Future<String> signIn(BuildContext context) async {
     try {
       await Hive.openBox('USERBOX');
-      final _userBox = Hive.box('USERBOX');
-
-      // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-      // final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-      // await _googleSignIn.signOut();
-
-      // final GoogleSignInAccount? googleSignInAccount =
-      //     await _googleSignIn.signIn();
-
-      // final GoogleSignInAuthentication? googleSignInAuthentication =
-      //     await googleSignInAccount!.authentication;
-
-      // final AuthCredential credential = GoogleAuthProvider.credential(
-      //   idToken: googleSignInAuthentication!.idToken,
-      //   accessToken: googleSignInAuthentication.accessToken,
-      // );
-
-      // UserCredential _creds =
-      //     await _firebaseAuth.signInWithCredential(credential);
+      final userBox = Hive.box('USERBOX');
 
       User? gUserData = await _googleSignIn();
 
@@ -88,10 +69,10 @@ class AuthMethods {
             .then(
           (user) async {
             final dbUser = user.data();
-            late KUser _user;
+            KUser? finalUser;
 
             if (dbUser != null) {
-              _user = new KUser(
+              finalUser = KUser(
                 username: dbUser['username'],
                 email: dbUser['email'],
                 name: dbUser['name'],
@@ -101,7 +82,7 @@ class AuthMethods {
 
               // await _userBox.put('userData', oldUser.toMap());
             } else {
-              _user = new KUser(
+              finalUser = KUser(
                 username: Constants.getUsername(email: gUserData.email!),
                 email: gUserData.email!,
                 name: gUserData.displayName!,
@@ -112,13 +93,13 @@ class AuthMethods {
               // await _userBox.put('userData', newUser.toMap());
 
               await _databaseMethods.addUserInfoToDB(
-                uid: _user.uid,
-                userMap: _user.toMap(),
+                uid: finalUser.uid,
+                userMap: finalUser.toMap(),
               );
             }
-            await _userBox.put('userData', _user.toMap());
+            await userBox.put('userData', finalUser.toMap());
 
-            NavPushReplacement(context, RootUI());
+            NavPushReplacement(context, const RootUI());
           },
         );
         return 'success';
@@ -143,6 +124,6 @@ class AuthMethods {
       globalUser =
           KUser(username: '', email: '', name: '', uid: '', imgUrl: '');
     });
-    NavPushReplacement(context, LoginUI());
+    NavPushReplacement(context, const LoginUI());
   }
 }

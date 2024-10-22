@@ -16,7 +16,7 @@ import '../../Utility/newColors.dart';
 import '../../services/user.dart';
 
 class New_Transact_UI extends StatefulWidget {
-  final bookId;
+  final String bookId;
 
   const New_Transact_UI({
     Key? key,
@@ -27,7 +27,7 @@ class New_Transact_UI extends StatefulWidget {
 }
 
 class _New_Transact_UIState extends State<New_Transact_UI> {
-  DatabaseMethods databaseMethods = new DatabaseMethods();
+  DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
@@ -46,7 +46,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
     'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
     'tsTime': DateFormat('HH:mm').format(DateTime.now()),
   };
-  Map<String, dynamic> _todayTimeMap = {
+  final Map<String, dynamic> _todayTimeMap = {
     'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
     'tsTime': DateFormat('HH:mm').format(DateTime.now()),
   };
@@ -82,13 +82,13 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
               _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
         }
         transactId = _selectedTimeStamp;
-        final _uploadableAmount =
+        final uploadableAmount =
             amountField.text.replaceAll(' ', '').replaceAll(',', '');
 
         Transact newTransact = Transact(
           uid: globalUser.uid,
           transactId: transactId,
-          amount: _uploadableAmount,
+          amount: uploadableAmount,
           source: sourceField.text,
           transactMode: transactMode,
           description: descriptionField.text,
@@ -110,7 +110,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
             .doc(widget.bookId)
             .update({"createdAt": "${DateTime.now()}"});
 
-        handleNewNoteTransaction(_uploadableAmount);
+        handleNewNoteTransaction(uploadableAmount);
 
         //  resetting the values
         amountField.clear();
@@ -152,7 +152,8 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
               child: Row(
                 children: [
                   Container(
@@ -173,7 +174,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   _typeBtn(
                     icon: Icons.file_download_outlined,
                     label: 'Income',
@@ -188,8 +189,8 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                physics: BouncingScrollPhysics(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 child: Column(
@@ -197,13 +198,13 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                   children: [
                     KTextfield.regular(
                       isDark,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       controller: descriptionField,
                       maxLines: 4,
                       minLines: 1,
                       hintText: 'Add description (Optional)',
-                      icon: CircleAvatar(
+                      icon: const CircleAvatar(
                         radius: 15,
                         backgroundColor: Colors.blue,
                         child: Icon(
@@ -244,7 +245,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                                         context, setState, DateTime.now());
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       borderRadius: kRadius(10),
                                       color: isDark
@@ -253,14 +254,14 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                                     ),
                                     child: Text(
                                       _selectedDateMap['displayDate'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 6,
                               ),
                               InkWell(
@@ -269,7 +270,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                                       context, setState, TimeOfDay.now());
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
                                     color:
@@ -293,8 +294,8 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                     height10,
                     KTextfield.regular(
                       isDark,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       controller: sourceField,
                       maxLines: 4,
                       minLines: 1,
@@ -302,7 +303,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                       icon: CircleAvatar(
                         radius: 15,
                         backgroundColor: Colors.amber.shade900,
-                        child: Icon(
+                        child: const Icon(
                           Icons.person,
                           color: Colors.white,
                           size: 15,
@@ -340,7 +341,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                                       : Colors.blue.shade700
                                   : Colors.grey,
                             ),
-                            children: [
+                            children: const [
                               TextSpan(
                                 text: 'ON',
                                 style: TextStyle(
@@ -381,7 +382,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                     ),
                     height10,
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -405,7 +406,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                         cursorColor: isDark ? Colors.white : Colors.black,
                         decoration: InputDecoration(
                           prefixIcon: Padding(
-                            padding: EdgeInsets.only(right: 10.0),
+                            padding: const EdgeInsets.only(right: 10.0),
                             child: Text(
                               "INR",
                               style: TextStyle(
@@ -418,7 +419,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                             ),
                           ),
                           prefixIconConstraints:
-                              BoxConstraints(minHeight: 0, minWidth: 0),
+                              const BoxConstraints(minHeight: 0, minWidth: 0),
                           border: InputBorder.none,
                           hintText: '0.00',
                           hintStyle: TextStyle(
@@ -475,7 +476,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
@@ -484,7 +485,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
         ),
         child: AnimatedAlign(
           curve: Curves.ease,
-          duration: Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 250),
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
@@ -493,12 +494,12 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                 : Colors.lightGreen,
             radius: 20,
             child: transactMode == 'ONLINE'
-                ? Icon(
+                ? const Icon(
                     Icons.webhook_sharp,
                     color: Colors.white,
                     size: 20,
                   )
-                : Text(
+                : const Text(
                     '₹',
                     style: TextStyle(
                       color: Colors.black,
@@ -522,7 +523,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
         });
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         elevation: 0,
         backgroundColor: isIncome
             ? isSelected

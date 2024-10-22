@@ -60,8 +60,8 @@ class Constants {
     try {
       final isAuth = await AuthMethods.getCurrentuser();
       if (globalUser.uid == '' && isAuth != null) {
-        final _userBox = await Hive.openBox('USERBOX');
-        final userMap = await _userBox.get('userData');
+        final userBox = await Hive.openBox('USERBOX');
+        final userMap = await userBox.get('userData');
 
         displayNameGlobal.value = userMap['name'];
         globalUser = KUser.fromMap(userMap);
@@ -75,7 +75,7 @@ class Constants {
 }
 
 class ConnectionConfig {
-  static InternetConnection _connection = new InternetConnection();
+  static final InternetConnection _connection = InternetConnection();
   static ValueNotifier<bool> hasInternet = ValueNotifier(true);
 
   static void listenForConnection() {
@@ -93,15 +93,15 @@ class ConnectionConfig {
 }
 
 class QActions {
-  static QuickActions _qActions = const QuickActions();
+  static const QuickActions _qActions = QuickActions();
 
   static void init(BuildContext context) {
     _qActions.initialize((type) {
       switch (type) {
         case "add_book_action":
-          navPush(context, RootUI());
+          navPush(context, const RootUI());
           pageControllerGlobal.value.animateToPage(1,
-              duration: Duration(milliseconds: 600), curve: Curves.ease);
+              duration: const Duration(milliseconds: 600), curve: Curves.ease);
           break;
         default:
           break;
@@ -115,7 +115,7 @@ bool kCompare(String searchKey, String text) {
 }
 
 String kMoneyFormat(dynamic amount) {
-  double amt = double.parse("${amount}");
-  final oCcy = new NumberFormat("#,##0.00", "en_US");
+  double amt = double.parse("$amount");
+  final oCcy = NumberFormat("#,##0.00", "en_US");
   return oCcy.format(amt);
 }

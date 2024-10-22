@@ -102,25 +102,25 @@ class _NotificationsUIState extends State<NotificationsUI> {
       isLoading: isLoading,
       appBar: AppBar(
         backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
-        title: Text('Notifications'),
+        title: const Text('Notifications'),
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(15.0),
           child: StreamBuilder<dynamic>(
             stream: FirebaseRefs.requestRef
                 .where('users', arrayContains: globalUser.uid)
                 .snapshots(),
             builder: (context, snapshot) {
               return AnimatedSwitcher(
-                duration: Duration(milliseconds: 600),
+                duration: const Duration(milliseconds: 600),
                 child: snapshot.hasData
                     ? snapshot.data.docs.length == 0
                         ? NoData(context, customText: 'No Notifications Yet')
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Recent Notifications'),
+                              const Text('Recent Notifications'),
                               height10,
                               ListView.separated(
                                 shrinkWrap: true,
@@ -135,7 +135,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
                             ],
                           )
                     : snapshot.hasError
-                        ? Text('Has Error')
+                        ? const Text('Has Error')
                         : _dummyNotificationsCard(),
               );
             },
@@ -146,7 +146,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
   }
 
   Widget _dummyNotificationsCard() {
-    return Card(
+    return const Card(
       child: SizedBox(
         height: 150,
         width: double.infinity,
@@ -156,7 +156,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
 
   Widget _notificationCard(requestData) {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: kRadius(15),
         color: isDark ? Dark.card : Light.card,
@@ -174,14 +174,14 @@ class _NotificationsUIState extends State<NotificationsUI> {
               }
               return Transform.scale(
                 scale: .5,
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               );
             },
           ),
           height10,
           Text(
             'Join my book "${requestData['bookName']}" so that we can share the expense details!',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 15,
             ),
           ),
@@ -196,7 +196,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
                     requestId: requestData['id'],
                   );
                 },
-                child: Text('Accept'),
+                child: const Text('Accept'),
               ),
               width10,
               ElevatedButton(
@@ -209,7 +209,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
                   backgroundColor: isDark ? Dark.lossCard : Light.lossCard,
                   foregroundColor: Colors.white,
                 ),
-                child: Text('Reject'),
+                child: const Text('Reject'),
               ),
             ],
           )
@@ -231,7 +231,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
             children: [
               Text(
                 data["name"] ?? "User",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),

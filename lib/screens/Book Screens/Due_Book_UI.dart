@@ -20,7 +20,7 @@ import '../Transact Screens/new_transactUi.dart';
 
 class Due_Book_UI extends StatefulWidget {
   final BookModel bookData;
-  Due_Book_UI({super.key, required this.bookData});
+  const Due_Book_UI({super.key, required this.bookData});
 
   @override
   State<Due_Book_UI> createState() => _Due_Book_UIState(bookData);
@@ -34,12 +34,12 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
   bool showDateWidget = false;
   final ValueNotifier<int> bookListCounter = ValueNotifier<int>(20);
 
-  final oCcy = new NumberFormat("#,##0.00", "en_US");
+  final oCcy = NumberFormat("#,##0.00", "en_US");
 
   final _searchController = TextEditingController();
-  String _selectedSortType = 'All';
+  final String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
-  final _newTargetAmount = new TextEditingController();
+  final _newTargetAmount = TextEditingController();
 
   int searchingBookListCounter = 50;
   bool isLoading = false;
@@ -56,7 +56,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
       });
       int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-      Map<String, dynamic> _requestMap = {
+      Map<String, dynamic> requestMap = {
         'id': "$currentTime",
         'date': Constants.getDisplayDate(currentTime),
         'time': Constants.getDisplayTime(currentTime),
@@ -66,7 +66,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         'bookId': bookId,
       };
 
-      await FirebaseRefs.requestRef.doc("$currentTime").set(_requestMap).then(
+      await FirebaseRefs.requestRef.doc("$currentTime").set(requestMap).then(
             (value) => KSnackbar(
               context,
               content:
@@ -122,7 +122,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
       isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -135,7 +135,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     kBackButton(context),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
                       onPressed: () {
                         showDialog(
@@ -154,7 +154,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                       ),
                     ),
                     IconButton(
-                        onPressed: () {}, icon: Icon(Icons.delete_outline)),
+                        onPressed: () {},
+                        icon: const Icon(Icons.delete_outline)),
                   ],
                 ),
               ),
@@ -212,7 +213,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                       keyboardType: TextInputType.number,
                                       fieldColor:
                                           isDark ? Colors.black : Colors.white,
-                                      prefix: Text(
+                                      prefix: const Text(
                                         "INR",
                                         style: TextStyle(
                                           fontSize: 30,
@@ -236,7 +237,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                         height20,
                         Text(
                           data.bookName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                           ),
                         ),
@@ -247,9 +248,9 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                         ),
                         if (!isCompleted)
                           Padding(
-                            padding: EdgeInsets.only(top: 20.0),
+                            padding: const EdgeInsets.only(top: 20.0),
                             child: AnimatedSwitcher(
-                              duration: Duration(milliseconds: 600),
+                              duration: const Duration(milliseconds: 600),
                               switchInCurve: Curves.easeIn,
                               switchOutCurve: Curves.easeOut,
                               child: data.targetAmount != 0
@@ -261,7 +262,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Completed",
                                             ),
                                             Text(
@@ -280,13 +281,13 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                         ),
                                       ],
                                     )
-                                  : Text("Add a target value!"),
+                                  : const Text("Add a target value!"),
                             ),
                           ),
                       ],
                     );
                   } else {
-                    return LinearProgressIndicator();
+                    return const LinearProgressIndicator();
                   }
                 },
               ),
@@ -307,7 +308,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         },
         elevation: 0,
         highlightElevation: 0,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -319,7 +320,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
     required String bookId,
     required String bookName,
   }) {
-    final _searchUser = TextEditingController();
+    final searchUser = TextEditingController();
     selectedUsers = [];
     bool isSelecting = false;
 
@@ -332,7 +333,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         }
       });
 
-      if (selectedUsers.length == 0) {
+      if (selectedUsers.isEmpty) {
         setState(() {
           isSelecting = false;
         });
@@ -346,7 +347,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
     return StatefulBuilder(
       builder: (context, setState) => Dialog(
         elevation: 0,
-        insetPadding: EdgeInsets.all(15),
+        insetPadding: const EdgeInsets.all(15),
         backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -357,7 +358,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
               KSearchBar(
                 context,
                 isDark: isDark,
-                controller: _searchUser,
+                controller: searchUser,
                 onChanged: (_) {
                   setState(() {});
                 },
@@ -365,7 +366,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
               Visibility(
                 visible: isSelecting,
                 child: Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   child: Text('Selected ${selectedUsers.length} user(s)'),
                 ),
               ),
@@ -376,8 +377,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data!.docs.length == 0) {
-                      return Text('No Users');
+                    if (snapshot.data!.docs.isEmpty) {
+                      return const Text('No Users');
                     }
                     return Flexible(
                       child: ListView.builder(
@@ -387,8 +388,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                           KUser userData =
                               KUser.fromMap(snapshot.data!.docs[index].data());
 
-                          if (kCompare(_searchUser.text, userData.name) ||
-                              kCompare(_searchUser.text, userData.username)) {
+                          if (kCompare(searchUser.text, userData.name) ||
+                              kCompare(searchUser.text, userData.username)) {
                             return kUserTile(
                               isDark,
                               userData: userData,
@@ -399,15 +400,15 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                               },
                             );
                           }
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         },
                       ),
                     );
                   }
-                  return LinearProgressIndicator();
+                  return const LinearProgressIndicator();
                 },
               ),
-              selectedUsers.length > 0
+              selectedUsers.isNotEmpty
                   ? Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: ElevatedButton(
@@ -417,10 +418,10 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                             bookName: bookData.bookName,
                           );
                         },
-                        child: Text('Send Request'),
+                        child: const Text('Send Request'),
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
             ],
           ),
         ),
@@ -445,13 +446,13 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
             dateTitle = '';
 
             return AnimatedSwitcher(
-              duration: Duration(milliseconds: 600),
+              duration: const Duration(milliseconds: 600),
               switchInCurve: Curves.easeIn,
               switchOutCurve: Curves.easeOut,
               child: snapshot.hasData
-                  ? snapshot.data!.docs.length > 0
+                  ? snapshot.data!.docs.isNotEmpty
                       ? ListView.builder(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -486,7 +487,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                 return _transactTile(transact);
                               }
                             }
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           },
                         )
                       : Text(
@@ -530,7 +531,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
         Visibility(
           visible: showDateWidget,
           child: Padding(
-            padding: EdgeInsets.only(bottom: 10, top: 5),
+            padding: const EdgeInsets.only(bottom: 10, top: 5),
             child: Text(
               dateLabel,
               style: TextStyle(
@@ -546,9 +547,9 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
           children: [
             transactData.uid != globalUser.uid &&
                     bookData.users != null &&
-                    bookData.users!.length > 0
+                    bookData.users!.isNotEmpty
                 ? Padding(
-                    padding: EdgeInsets.only(right: 10.0),
+                    padding: const EdgeInsets.only(right: 10.0),
                     child:
                         FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                       future: FirebaseFirestore.instance
@@ -564,29 +565,30 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                           );
                         }
 
-                        return CircleAvatar(
+                        return const CircleAvatar(
                           radius: 12,
                         );
                       },
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  if (transactData.uid == globalUser.uid)
+                  if (transactData.uid == globalUser.uid) {
                     navPush(context, EditTransactUI(trData: transactData));
-                  else
+                  } else {
                     KSnackbar(
                       context,
                       content: "You cannot edit other's transactions",
                       isDanger: true,
                     );
+                  }
                 },
                 child: Container(
-                  margin: EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 20),
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: isDark ? Dark.card : Light.card,
@@ -609,7 +611,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.all(6),
+                                        padding: const EdgeInsets.all(6),
                                         height: 30,
                                         width: 30,
                                         decoration: BoxDecoration(
@@ -636,7 +638,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                                     blurRadius: 30,
                                                     spreadRadius: 1,
                                                   )
-                                                : BoxShadow(),
+                                                : const BoxShadow(),
                                           ],
                                         ),
                                         child: FittedBox(
@@ -676,7 +678,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                                           ? Dark.lossText
                                                           : Light.lossText,
                                                 ),
-                                                children: [
+                                                children: const [
                                                   TextSpan(
                                                     text: " INR",
                                                     style: TextStyle(
@@ -689,8 +691,10 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                               ),
                                             ),
                                             Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 5, vertical: 1),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 1),
                                               decoration: BoxDecoration(
                                                 color: transactData
                                                             .transactMode ==
@@ -699,7 +703,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                                         ? Dark.profitText
                                                         : Colors.black
                                                     : isDark
-                                                        ? Color(0xFF9DC4FF)
+                                                        ? const Color(
+                                                            0xFF9DC4FF)
                                                         : Colors.blue.shade900,
                                                 borderRadius: kRadius(100),
                                               ),
@@ -730,8 +735,8 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                                         .trim()
                                         .isNotEmpty,
                                     child: Container(
-                                      margin: EdgeInsets.only(top: 10),
-                                      padding: EdgeInsets.all(8),
+                                      margin: const EdgeInsets.only(top: 10),
+                                      padding: const EdgeInsets.all(8),
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: isDark
@@ -751,14 +756,14 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.schedule_rounded,
                               size: 15,
                             ),
                             width5,
                             Text(
                               transactData.time.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -774,9 +779,9 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
             Visibility(
               visible: transactData.uid == globalUser.uid &&
                   bookData.users != null &&
-                  bookData.users!.length > 0,
+                  bookData.users!.isNotEmpty,
               child: Padding(
-                padding: EdgeInsets.only(left: 10.0),
+                padding: const EdgeInsets.only(left: 10.0),
                 child: CircleAvatar(
                   radius: 12,
                   backgroundImage: NetworkImage(globalUser.imgUrl),
@@ -798,7 +803,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
     return Visibility(
       visible: !isEmpty,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -807,7 +812,7 @@ class _Due_Book_UIState extends State<Due_Book_UI> {
               radius: 10,
               child: FittedBox(
                 child: Padding(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   child: Icon(
                     icon,
                     color: Colors.white,

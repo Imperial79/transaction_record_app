@@ -29,9 +29,9 @@ Widget kPill({
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
   return Container(
-    margin: EdgeInsets.only(top: 0),
+    margin: const EdgeInsets.only(top: 0),
     width: double.infinity,
-    padding: EdgeInsets.all(20),
+    padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: isDark ? Colors.amber : Colors.amber.shade100,
       borderRadius: kRadius(30),
@@ -39,7 +39,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Create your first Transact',
           style: TextStyle(
             fontWeight: FontWeight.w900,
@@ -47,10 +47,10 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             fontSize: 20,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Text(
+        const Text(
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
             fontWeight: FontWeight.w500,
@@ -58,7 +58,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             fontSize: 15,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Align(
@@ -155,12 +155,12 @@ Widget DummyTransactList() {
     children: [
       for (int i = 0; i <= 10; i++)
         Container(
-          margin: EdgeInsets.only(bottom: 20),
+          margin: const EdgeInsets.only(bottom: 20),
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: isDark ? Color(0xFF333333) : Light.card,
+              color: isDark ? const Color(0xFF333333) : Light.card,
               borderRadius: kRadius(20),
             ),
             child: Column(
@@ -178,7 +178,7 @@ Widget DummyTransactList() {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 height: 40,
                                 width: 40,
                                 decoration: BoxDecoration(
@@ -186,7 +186,7 @@ Widget DummyTransactList() {
                                   shape: BoxShape.circle,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Container(
@@ -194,10 +194,10 @@ Widget DummyTransactList() {
                                 height: 20,
                                 color: Colors.grey.withOpacity(0.5),
                               ),
-                              Spacer(),
+                              const Spacer(),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Container(
@@ -215,16 +215,17 @@ Widget DummyTransactList() {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.5),
                     borderRadius: kRadius(100),
                   ),
-                  child: Container(
+                  child: const SizedBox(
                     width: 200,
                     height: 20,
                   ),
@@ -240,10 +241,10 @@ Widget DummyTransactList() {
 Widget StatsCard({final label, content, isBook, bookId}) {
   bool isExpense = label == 'Expenses';
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     decoration: BoxDecoration(
       borderRadius: kRadius(15),
-      color: isExpense ? Color(0xffca705f) : Dark.profitCard,
+      color: isExpense ? const Color(0xffca705f) : Dark.profitCard,
       border: Border.all(
         color: isExpense
             ? isDark
@@ -287,12 +288,12 @@ Widget kRenameModal({
   required String bookId,
   required String oldBookName,
 }) {
-  final newBookName = new TextEditingController(text: oldBookName);
+  final newBookName = TextEditingController(text: oldBookName);
   return StatefulBuilder(
     builder: (context, setState) {
       return SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
           margin: EdgeInsets.only(
             left: 20,
             right: 20,
@@ -303,7 +304,7 @@ Widget kRenameModal({
             borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -384,8 +385,8 @@ Widget kRenameModal({
                     );
                     Navigator.pop(context);
                   },
-                  icon: Icon(Icons.file_upload_outlined),
-                  label: Text('Update'),
+                  icon: const Icon(Icons.file_upload_outlined),
+                  label: const Text('Update'),
                 ),
               ],
             ),
@@ -405,8 +406,8 @@ Widget ConfirmDeleteModal({
     builder: (context, setState) {
       return SafeArea(
         child: Container(
-          padding: EdgeInsets.all(20),
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(20),
@@ -428,7 +429,7 @@ Widget ConfirmDeleteModal({
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   label,
                   style: TextStyle(
@@ -445,7 +446,7 @@ Widget ConfirmDeleteModal({
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
@@ -460,7 +461,7 @@ Widget ConfirmDeleteModal({
                         foregroundColor:
                             isDark ? Colors.red.shade300 : Colors.white,
                       ),
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: onDelete,
@@ -470,7 +471,7 @@ Widget ConfirmDeleteModal({
                         foregroundColor:
                             isDark ? Dark.profitText : Colors.white,
                       ),
-                      child: Text('Yes'),
+                      child: const Text('Yes'),
                     ),
                   ],
                 ),
@@ -514,7 +515,7 @@ Widget BookMenuBtn({
 
 Widget kCard(BuildContext context, {required Widget child}) {
   return Container(
-    padding: EdgeInsets.all(13),
+    padding: const EdgeInsets.all(13),
     decoration: BoxDecoration(
       color: isDark ? Dark.card : Light.card,
       borderRadius: kRadius(15),
@@ -550,20 +551,20 @@ Widget kDeleteAlertDialog(BuildContext context,
         shape: RoundedRectangleBorder(
           borderRadius: kRadius(12),
         ),
-        icon: Icon(
+        icon: const Icon(
           Icons.delete,
           color: Colors.red,
           size: 30,
         ),
         title: Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
           ),
         ),
         content: Text(
           content,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.red,
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -574,7 +575,7 @@ Widget kDeleteAlertDialog(BuildContext context,
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               'Cancel',
             ),
           ),
@@ -585,7 +586,7 @@ Widget kDeleteAlertDialog(BuildContext context,
               borderRadius: kRadius(5),
             ),
             elevation: 0,
-            child: Text(
+            child: const Text(
               'Delete',
               style: TextStyle(color: Colors.white),
             ),
@@ -597,12 +598,12 @@ Widget kDeleteAlertDialog(BuildContext context,
 }
 
 Widget NewBookCard(BuildContext context) => Container(
-      margin: EdgeInsets.all(15),
+      margin: const EdgeInsets.all(15),
       width: double.infinity,
-      padding: EdgeInsets.all(13),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         borderRadius: kRadius(20),
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             Light.profitCard,
             Colors.black,
@@ -615,7 +616,7 @@ Widget NewBookCard(BuildContext context) => Container(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             'Create your first Transact Book',
             style: TextStyle(
               fontWeight: FontWeight.w700,
@@ -625,7 +626,7 @@ Widget NewBookCard(BuildContext context) => Container(
             ),
           ),
           height10,
-          Text(
+          const Text(
             'Track your daily expenses by creating categorised Transact Book',
             style: TextStyle(
               fontWeight: FontWeight.w400,
@@ -640,11 +641,11 @@ Widget NewBookCard(BuildContext context) => Container(
               onPressed: () {
                 pageControllerGlobal.value.animateToPage(
                   1,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.ease,
                 );
               },
-              child: Text('Create'),
+              child: const Text('Create'),
             ),
           ),
         ],
@@ -665,8 +666,8 @@ Widget AnimatedFloatingButton(
         color: isDark ? Colors.greenAccent : Colors.black,
       ),
       child: AnimatedSize(
-        reverseDuration: Duration(milliseconds: 300),
-        duration: Duration(milliseconds: 300),
+        reverseDuration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         alignment: Alignment.centerLeft,
         curve: Curves.ease,
         child: ValueListenableBuilder<bool>(
@@ -721,7 +722,7 @@ Widget KSearchBar(
     children: [
       Flexible(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: isDark ? Dark.card : Light.card,
             borderRadius: kRadius(100),
@@ -736,14 +737,14 @@ Widget KSearchBar(
                   colorFilter: svgColor(isDark ? Colors.black : Colors.white),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               Flexible(
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.text,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                   decoration: InputDecoration(

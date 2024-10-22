@@ -23,15 +23,15 @@ class New_Book_UI extends StatefulWidget {
 
 class _New_Book_UIState extends State<New_Book_UI> {
   bool isLoading = false;
-  DateTime _selectedDate = DateTime.now();
-  DateTime _selectedTimeStamp = DateTime.now();
-  String _selectedTime =
+  final DateTime _selectedDate = DateTime.now();
+  final DateTime _selectedTimeStamp = DateTime.now();
+  final String _selectedTime =
       DateFormat().add_jm().format(DateTime.now()).toString();
 
-  final _targetAmount = new TextEditingController();
-  final _bookTitle = new TextEditingController(
+  final _targetAmount = TextEditingController();
+  final _bookTitle = TextEditingController(
       text: DateFormat('MMMM, yyyy').format(DateTime.now()));
-  final _bookDescription = new TextEditingController();
+  final _bookDescription = TextEditingController();
   final dbMethod = DatabaseMethods();
 
   String selectedBookType = 'regular';
@@ -72,7 +72,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
         KSnackbar(context, content: 'Book Created');
 
         pageControllerGlobal.value.animateToPage(0,
-            duration: Duration(milliseconds: 300), curve: Curves.ease);
+            duration: const Duration(milliseconds: 300), curve: Curves.ease);
       }
     } catch (e) {
       KSnackbar(context, content: "$e", isDanger: true);
@@ -98,7 +98,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
       isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(15, 15, 15, 100),
+          padding: const EdgeInsets.fromLTRB(15, 15, 15, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -134,7 +134,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               KTextfield.regular(
@@ -150,7 +150,8 @@ class _New_Book_UIState extends State<New_Book_UI> {
               ),
               height10,
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 13, vertical: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 20),
                 decoration: BoxDecoration(
                   color: isDark ? Dark.card : Light.card,
                   borderRadius: kRadius(15),
@@ -164,7 +165,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                           size: 20,
                           color: isDark ? Colors.white : Colors.black,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
@@ -181,7 +182,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                       children: [
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               borderRadius: kRadius(10),
                               color: isDark ? Dark.scaffold : Light.scaffold,
@@ -194,11 +195,11 @@ class _New_Book_UIState extends State<New_Book_UI> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: kRadius(10),
                             color: isDark ? Dark.scaffold : Light.scaffold,
@@ -216,7 +217,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                 ),
               ),
               height20,
-              Text("Book Type"),
+              const Text("Book Type"),
               height10,
               _bookTypeBtn(
                 label: 'Regular Book',
@@ -238,7 +239,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
                       fontSize: 30,
                       hintText: "1 - 10,000",
                       keyboardType: TextInputType.number,
-                      icon: Text(
+                      icon: const Text(
                         "INR",
                         style: TextStyle(
                           fontSize: 30,
@@ -254,10 +255,10 @@ class _New_Book_UIState extends State<New_Book_UI> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: KButton.icon(isDark,
             onPressed: _createBook,
-            icon: Icon(Icons.add_circle_outline),
+            icon: const Icon(Icons.add_circle_outline),
             label: "Create Book"),
       ),
     );
@@ -276,7 +277,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
       },
       child: AnimatedSize(
         alignment: Alignment.topCenter,
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: kRadius(15),
@@ -295,7 +296,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
             child: Row(
               children: [
                 CircleAvatar(

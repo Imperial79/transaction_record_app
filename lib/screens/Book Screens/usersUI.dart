@@ -27,7 +27,7 @@ class UsersUI extends StatefulWidget {
 
 class _UsersUIState extends State<UsersUI> {
   bool isLoading = false;
-  List<dynamic> _allUsers = [];
+  final List<dynamic> _allUsers = [];
   List<dynamic> _usersList = [];
 
   @override
@@ -50,9 +50,9 @@ class _UsersUIState extends State<UsersUI> {
         .get()
         .then((value) {
       setState(() {
-        value.docs.forEach((element) {
+        for (var element in value.docs) {
           _usersList.add(element.data());
-        });
+        }
       });
     });
     setState(() => isLoading = false);
@@ -82,14 +82,14 @@ class _UsersUIState extends State<UsersUI> {
     return KScaffold(
       isLoading: isLoading,
       appBar: AppBar(
-        title: Text('Joined Users'),
+        title: const Text('Joined Users'),
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(15.0),
           child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 600),
-            child: _usersList.length == 0
+            duration: const Duration(milliseconds: 600),
+            child: _usersList.isEmpty
                 ? NoData(context, customText: 'No Users')
                 : ListView.separated(
                     shrinkWrap: true,
@@ -120,7 +120,7 @@ class _UsersUIState extends State<UsersUI> {
             children: [
               Text(
                 user.uid == globalUser.uid ? "You" : user.name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
@@ -141,13 +141,13 @@ class _UsersUIState extends State<UsersUI> {
               backgroundColor: isDark ? Colors.black : Colors.white,
               foregroundColor: isDark ? Dark.lossText : Light.lossText,
             ),
-            child: Text('Remove'),
+            child: const Text('Remove'),
           ),
         ),
         Visibility(
           visible: widget.ownerUid == user.uid,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
               borderRadius: kRadius(6),
               color: isDark ? Dark.primary : Light.primary,

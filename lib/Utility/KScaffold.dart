@@ -46,13 +46,13 @@ class _KScaffoldState extends State<KScaffold> {
                   valueListenable: ConnectionConfig.hasInternet,
                   builder: (context, bool hasInternet, child) => AnimatedSize(
                     alignment: Alignment.topCenter,
-                    duration: Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
                     child: hasInternet
                         ? Container(width: double.infinity)
                         : Container(
                             color: isDark ? Dark.lossCard : Light.lossCard,
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                             width: double.infinity,
                             child: SafeArea(
                               bottom: false,
@@ -60,13 +60,13 @@ class _KScaffoldState extends State<KScaffold> {
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.signal_wifi_off_rounded,
                                     size: 12,
                                     color: Colors.white,
                                   ),
                                   width10,
-                                  Text(
+                                  const Text(
                                     "No Connection",
                                     style: TextStyle(
                                         color: Colors.white,
@@ -94,8 +94,8 @@ class _KScaffoldState extends State<KScaffold> {
 
   AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 200),
-      reverseDuration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
+      reverseDuration: const Duration(milliseconds: 200),
       child: isLoading ?? false
           ? Container(
               height: double.maxFinite,
@@ -105,7 +105,8 @@ class _KScaffoldState extends State<KScaffold> {
                   : Light.card.withOpacity(.8),
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: kRadius(100),
                     color: isDark ? Dark.card : Light.card,
@@ -126,7 +127,7 @@ class _KScaffoldState extends State<KScaffold> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 15),
+                            padding: const EdgeInsets.only(left: 15),
                             child: Text(
                               "Please Wait ...",
                               style: TextStyle(
@@ -140,7 +141,7 @@ class _KScaffoldState extends State<KScaffold> {
                 ),
               ),
             )
-          : SizedBox(),
+          : const SizedBox(),
     );
   }
 }
