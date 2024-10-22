@@ -1,26 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/main.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
-import 'package:transaction_record_app/services/user.dart';
 
 ValueNotifier<PageController> pageControllerGlobal =
     ValueNotifier(PageController(initialPage: 0));
 
 ValueNotifier<int> activeTabGlobal = ValueNotifier(0);
 
-class RootUI extends StatefulWidget {
-  const RootUI({Key? key}) : super(key: key);
+class RootUI extends ConsumerStatefulWidget {
+  const RootUI({super.key});
 
   @override
-  State<RootUI> createState() => _RootUIState();
+  ConsumerState<RootUI> createState() => _RootUIState();
 }
 
-class _RootUIState extends State<RootUI> {
+class _RootUIState extends ConsumerState<RootUI> {
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
   @override
@@ -30,8 +32,8 @@ class _RootUIState extends State<RootUI> {
   }
 
   void _init() async {
-    await Constants.getUserDetailsFromPreference()
-        .then((value) => setState(() {}));
+    // await Constants.getUserDetailsFromPreference()
+    //     .then((value) => setState(() {}));
 
     QActions.init(context);
   }
@@ -50,121 +52,125 @@ class _RootUIState extends State<RootUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      children: [
-                        _changeToPageButton(
-                          context,
-                          index: 0,
-                          label: 'Home',
-                        ),
-                        _changeToPageButton(
-                          context,
-                          index: 1,
-                          label: 'New Book',
-                        ),
-                      ],
+    final user = ref.watch(userProvider);
+    if (user != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          _changeToPageButton(
+                            context,
+                            index: 0,
+                            label: 'Home',
+                          ),
+                          _changeToPageButton(
+                            context,
+                            index: 1,
+                            label: 'New Book',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                // IconButton(
-                //     onPressed: () {
-                //       NavPush(context, MigrateUI());
-                //     },
-                //     icon: Icon(Icons.refresh)),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      if (themeMode.value == 'dark') {
-                        themeMode.value = 'light';
-                      } else if (themeMode.value == 'light') {
-                        themeMode.value = 'system';
-                      } else {
-                        themeMode.value = 'dark';
-                      }
-                    });
-                  },
-                  icon: Icon(
-                    themeMode.value == "dark"
-                        ? Icons.light_mode
-                        : themeMode.value == "light"
-                            ? Icons.auto_awesome
-                            : Icons.dark_mode,
+                  // IconButton(
+                  //     onPressed: () {
+                  //       NavPush(context, MigrateUI());
+                  //     },
+                  //     icon: Icon(Icons.refresh)),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (themeMode.value == 'dark') {
+                          themeMode.value = 'light';
+                        } else if (themeMode.value == 'light') {
+                          themeMode.value = 'system';
+                        } else {
+                          themeMode.value = 'dark';
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      themeMode.value == "dark"
+                          ? Icons.light_mode
+                          : themeMode.value == "light"
+                              ? Icons.auto_awesome
+                              : Icons.dark_mode,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    navPush(context, const NotificationsUI());
-                  },
-                  icon: StreamBuilder<dynamic>(
-                    stream: FirebaseRefs.requestRef
-                        .where('users', arrayContains: globalUser.uid)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 600),
-                        switchInCurve: Curves.easeIn,
-                        switchOutCurve: Curves.easeOut,
-                        child: !snapshot.hasData
-                            ? Transform.scale(
-                                scale: .5,
-                                child: const CircularProgressIndicator(),
-                              )
-                            : snapshot.data!.docs.length == 0
-                                ? const Icon(Icons.notifications)
-                                : CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
-                                    foregroundColor:
-                                        isDark ? Colors.black : Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: FittedBox(
-                                        fit: BoxFit.contain,
-                                        child: Text(
-                                            "${snapshot.data!.docs.length}"),
+                  IconButton(
+                    onPressed: () {
+                      navPush(context, const NotificationsUI());
+                    },
+                    icon: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseRefs.requestRef
+                          .where('users', arrayContains: user.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 600),
+                          switchInCurve: Curves.easeIn,
+                          switchOutCurve: Curves.easeOut,
+                          child: !snapshot.hasData
+                              ? Transform.scale(
+                                  scale: .5,
+                                  child: const CircularProgressIndicator(),
+                                )
+                              : snapshot.data!.docs.isEmpty
+                                  ? const Icon(Icons.notifications)
+                                  : CircleAvatar(
+                                      radius: 12,
+                                      backgroundColor: isDark
+                                          ? Dark.profitText
+                                          : Light.profitText,
+                                      foregroundColor:
+                                          isDark ? Colors.black : Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: FittedBox(
+                                          fit: BoxFit.contain,
+                                          child: Text(
+                                              "${snapshot.data!.docs.length}"),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: ValueListenableBuilder(
-                  valueListenable: pageControllerGlobal,
-                  builder: (context, PageController pageController, child) {
-                    return PageView.builder(
-                      scrollDirection: Axis.horizontal,
-                      controller: pageController,
-                      itemCount: _pages.length,
-                      onPageChanged: _onPageChanged,
-                      itemBuilder: (context, index) {
-                        return PageStorage(
-                          bucket: _pageStorageBucket,
-                          child: _pages[index],
                         );
                       },
-                    );
-                  }),
-            ),
-          ],
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ValueListenableBuilder(
+                    valueListenable: pageControllerGlobal,
+                    builder: (context, PageController pageController, child) {
+                      return PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        controller: pageController,
+                        itemCount: _pages.length,
+                        onPageChanged: _onPageChanged,
+                        itemBuilder: (context, index) {
+                          return PageStorage(
+                            bucket: _pageStorageBucket,
+                            child: _pages[index],
+                          );
+                        },
+                      );
+                    }),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+    return SizedBox();
   }
 
   TextButton _changeToPageButton(

@@ -3,9 +3,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -15,22 +17,21 @@ import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/usersUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
-import 'package:transaction_record_app/services/user.dart';
 import '../../Components/WIdgets.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../Utility/commons.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
 
-class BookUI extends StatefulWidget {
+class BookUI extends ConsumerStatefulWidget {
   final BookModel bookData;
-  const BookUI({Key? key, required this.bookData}) : super(key: key);
+  const BookUI({super.key, required this.bookData});
 
   @override
-  State<BookUI> createState() => _BookUIState(bookData: bookData);
+  ConsumerState<BookUI> createState() => _BookUIState(bookData: bookData);
 }
 
-class _BookUIState extends State<BookUI> {
+class _BookUIState extends ConsumerState<BookUI> {
   final BookModel bookData;
   _BookUIState({required this.bookData});
   String dateTitle = '';
@@ -209,6 +210,7 @@ class _BookUIState extends State<BookUI> {
     _showThings.value = _searchController.text.isEmpty;
     isSearching = _searchController.text.isNotEmpty;
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.read(userProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -370,8 +372,9 @@ class _BookUIState extends State<BookUI> {
                                           bool showBookMenu, Widget? child) {
                                         return showBookMenu
                                             ? BookMenu(
-                                                bookData.bookId,
                                                 context,
+                                                bookId: bookData.bookId,
+                                                uid: user!.uid,
                                               )
                                             : Container();
                                       },
@@ -1056,273 +1059,279 @@ class _BookUIState extends State<BookUI> {
       dateLabel = dateTitle;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Visibility(
-          visible: showDateWidget,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10, top: 5),
-            child: Text(
-              dateLabel,
-              style: TextStyle(
-                fontSize: 14,
-                color: isDark ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500,
+    return Consumer(builder: (context, ref, _) {
+      final user = ref.watch(userProvider)!;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: showDateWidget,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10, top: 5),
+              child: Text(
+                dateLabel,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            transactData.uid != globalUser.uid &&
-                    bookData.users != null &&
-                    bookData.users!.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child:
-                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                      future: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(transactData.uid)
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return CircleAvatar(
-                            radius: 12,
-                            backgroundImage:
-                                NetworkImage(snapshot.data!.data()!['imgUrl']),
-                          );
-                        }
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              transactData.uid != user.uid &&
+                      bookData.users != null &&
+                      bookData.users!.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child:
+                          FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(transactData.uid)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CircleAvatar(
+                              radius: 12,
+                              backgroundImage: NetworkImage(
+                                  snapshot.data!.data()!['imgUrl']),
+                            );
+                          }
 
-                        return const CircleAvatar(
-                          radius: 12,
-                        );
-                      },
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            Flexible(
-              child: GestureDetector(
-                onTap: () {
-                  if (transactData.uid == globalUser.uid) {
-                    navPush(context, EditTransactUI(trData: transactData));
-                  } else {
-                    KSnackbar(
-                      context,
-                      content: "You cannot edit other's transactions",
-                      isDanger: true,
-                    );
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 20),
+                          return const CircleAvatar(
+                            radius: 12,
+                          );
+                        },
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    if (transactData.uid == user.uid) {
+                      navPush(context, EditTransactUI(trData: transactData));
+                    } else {
+                      KSnackbar(
+                        context,
+                        content: "You cannot edit other's transactions",
+                        isDanger: true,
+                      );
+                    }
+                  },
                   child: Container(
-                    padding: const EdgeInsets.all(10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isDark ? Dark.card : Light.card,
-                      borderRadius: kRadius(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(6),
-                                        height: 30,
-                                        width: 30,
-                                        decoration: BoxDecoration(
-                                          color: isIncome
-                                              ? isDark
-                                                  ? Dark.profitText
-                                                  : Light.profitText
-                                              : isDark
-                                                  ? Dark.lossText
-                                                  : Light.lossText,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            isDark
-                                                ? BoxShadow(
-                                                    color: isIncome
-                                                        ? isDark
-                                                            ? Dark.profitCard
-                                                                .withOpacity(.5)
-                                                            : Light.profitCard
-                                                                .withOpacity(.5)
-                                                        : isDark
-                                                            ? Dark.lossCard
-                                                            : Light.lossCard,
-                                                    blurRadius: 30,
-                                                    spreadRadius: 1,
-                                                  )
-                                                : const BoxShadow(),
-                                          ],
-                                        ),
-                                        child: FittedBox(
-                                          child: Icon(
-                                            isIncome
-                                                ? Icons.file_download_outlined
-                                                : Icons.file_upload_outlined,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isDark ? Dark.card : Light.card,
+                        borderRadius: kRadius(20),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(6),
+                                          height: 30,
+                                          width: 30,
+                                          decoration: BoxDecoration(
                                             color: isIncome
                                                 ? isDark
-                                                    ? Colors.black
-                                                    : Colors.white
+                                                    ? Dark.profitText
+                                                    : Light.profitText
                                                 : isDark
-                                                    ? Colors.red.shade900
-                                                    : Colors.white,
+                                                    ? Dark.lossText
+                                                    : Light.lossText,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              isDark
+                                                  ? BoxShadow(
+                                                      color: isIncome
+                                                          ? isDark
+                                                              ? Dark.profitCard
+                                                                  .withOpacity(
+                                                                      .5)
+                                                              : Light.profitCard
+                                                                  .withOpacity(
+                                                                      .5)
+                                                          : isDark
+                                                              ? Dark.lossCard
+                                                              : Light.lossCard,
+                                                      blurRadius: 30,
+                                                      spreadRadius: 1,
+                                                    )
+                                                  : const BoxShadow(),
+                                            ],
+                                          ),
+                                          child: FittedBox(
+                                            child: Icon(
+                                              isIncome
+                                                  ? Icons.file_download_outlined
+                                                  : Icons.file_upload_outlined,
+                                              color: isIncome
+                                                  ? isDark
+                                                      ? Colors.black
+                                                      : Colors.white
+                                                  : isDark
+                                                      ? Colors.red.shade900
+                                                      : Colors.white,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      width10,
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text.rich(
-                                              TextSpan(
-                                                text: kMoneyFormat(
-                                                    transactData.amount),
-                                                style: TextStyle(
-                                                  fontFamily: "Product",
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w800,
-                                                  color: isIncome
+                                        width10,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text.rich(
+                                                TextSpan(
+                                                  text: kMoneyFormat(
+                                                      transactData.amount),
+                                                  style: TextStyle(
+                                                    fontFamily: "Product",
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: isIncome
+                                                        ? isDark
+                                                            ? Dark.profitText
+                                                            : Light.profitText
+                                                        : isDark
+                                                            ? Dark.lossText
+                                                            : Light.lossText,
+                                                  ),
+                                                  children: const [
+                                                    TextSpan(
+                                                      text: " INR",
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5,
+                                                        vertical: 1),
+                                                decoration: BoxDecoration(
+                                                  color: transactData
+                                                              .transactMode ==
+                                                          'CASH'
                                                       ? isDark
                                                           ? Dark.profitText
-                                                          : Light.profitText
+                                                          : Colors.black
                                                       : isDark
-                                                          ? Dark.lossText
-                                                          : Light.lossText,
+                                                          ? const Color(
+                                                              0xFF9DC4FF)
+                                                          : Colors
+                                                              .blue.shade900,
+                                                  borderRadius: kRadius(100),
                                                 ),
-                                                children: const [
-                                                  TextSpan(
-                                                    text: " INR",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
+                                                child: Text(
+                                                  transactData.transactMode,
+                                                  style: TextStyle(
+                                                    letterSpacing: 1,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: isDark
+                                                        ? Colors.black
+                                                        : Colors.white,
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5,
-                                                      vertical: 1),
-                                              decoration: BoxDecoration(
-                                                color: transactData
-                                                            .transactMode ==
-                                                        'CASH'
-                                                    ? isDark
-                                                        ? Dark.profitText
-                                                        : Colors.black
-                                                    : isDark
-                                                        ? const Color(
-                                                            0xFF9DC4FF)
-                                                        : Colors.blue.shade900,
-                                                borderRadius: kRadius(100),
-                                              ),
-                                              child: Text(
-                                                transactData.transactMode,
-                                                style: TextStyle(
-                                                  letterSpacing: 1,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: isDark
-                                                      ? Colors.black
-                                                      : Colors.white,
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  StatsRow(
-                                    color: Colors.amber.shade900,
-                                    content: transactData.source,
-                                    icon: Icons.person,
-                                  ),
-                                  Visibility(
-                                    visible: transactData.description
-                                        .trim()
-                                        .isNotEmpty,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(top: 10),
-                                      padding: const EdgeInsets.all(8),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: isDark
-                                            ? Dark.scaffold
-                                            : Light.scaffold,
-                                        borderRadius: kRadius(10),
-                                      ),
-                                      child: Text(transactData.description),
+                                      ],
                                     ),
-                                  )
-                                ],
+                                    StatsRow(
+                                      color: Colors.amber.shade900,
+                                      content: transactData.source,
+                                      icon: Icons.person,
+                                    ),
+                                    Visibility(
+                                      visible: transactData.description
+                                          .trim()
+                                          .isNotEmpty,
+                                      child: Container(
+                                        margin: const EdgeInsets.only(top: 10),
+                                        padding: const EdgeInsets.all(8),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: isDark
+                                              ? Dark.scaffold
+                                              : Light.scaffold,
+                                          borderRadius: kRadius(10),
+                                        ),
+                                        child: Text(transactData.description),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        height10,
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.schedule_rounded,
-                              size: 15,
-                            ),
-                            width5,
-                            Text(
-                              transactData.time.toString(),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                            ],
+                          ),
+                          height10,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.schedule_rounded,
+                                size: 15,
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              width5,
+                              Text(
+                                transactData.time.toString(),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Visibility(
-              visible: transactData.uid == globalUser.uid &&
-                  bookData.users != null &&
-                  bookData.users!.isNotEmpty,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: CircleAvatar(
-                  radius: 12,
-                  backgroundImage: NetworkImage(globalUser.imgUrl),
+              Visibility(
+                visible: transactData.uid == user.uid &&
+                    bookData.users != null &&
+                    bookData.users!.isNotEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundImage: NetworkImage(user.imgUrl),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget StatsRow({
@@ -1370,7 +1379,11 @@ class _BookUIState extends State<BookUI> {
     );
   }
 
-  Widget BookMenu(String bookId, BuildContext context) {
+  Widget BookMenu(
+    BuildContext context, {
+    required String uid,
+    required String bookId,
+  }) {
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(10),
@@ -1509,6 +1522,7 @@ class _BookUIState extends State<BookUI> {
                     context: context,
                     builder: (context) => _addUserDialog(
                       isDark,
+                      uid: uid,
                       bookId: bookData.bookId,
                       bookName: bookData.bookName,
                     ),
@@ -1543,6 +1557,7 @@ class _BookUIState extends State<BookUI> {
   // bool isSelecting = false;
   Widget _addUserDialog(
     bool isDark, {
+    required String uid,
     required String bookId,
     required String bookName,
   }) {
@@ -1598,9 +1613,8 @@ class _BookUIState extends State<BookUI> {
               ),
               height20,
               FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                future: FirebaseRefs.userRef
-                    .where('uid', isNotEqualTo: globalUser.uid)
-                    .get(),
+                future:
+                    FirebaseRefs.userRef.where('uid', isNotEqualTo: uid).get(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.docs.isEmpty) {
@@ -1611,8 +1625,8 @@ class _BookUIState extends State<BookUI> {
                         itemCount: snapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          KUser userData =
-                              KUser.fromMap(snapshot.data!.docs[index].data());
+                          UserModel userData = UserModel.fromMap(
+                              snapshot.data!.docs[index].data());
                           if (Constants.getSearchString(userData.name)
                                   .contains(searchUser.text) ||
                               Constants.getSearchString(userData.username)
@@ -1647,7 +1661,7 @@ class _BookUIState extends State<BookUI> {
                             'id': "$currentTime",
                             'date': Constants.getDisplayDate(currentTime),
                             'time': Constants.getDisplayTime(currentTime),
-                            'senderId': globalUser.uid,
+                            'senderId': uid,
                             'users': selectedUsers,
                             'bookName': bookName,
                             'bookId': bookId,

@@ -1,25 +1,18 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
-import 'package:transaction_record_app/services/auth.dart';
-import 'package:transaction_record_app/services/user.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import '../models/userModel.dart';
-import '../screens/Home Screens/Home_UI.dart';
 
 const String kAppVersion = "2.5.3";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
-  // static final myUID = globalUser.uid;
 
-  static DocumentReference<Map<String, dynamic>> myRef =
-      _firestore.collection('users').doc(globalUser.uid);
+  // static DocumentReference<Map<String, dynamic>> myRef =
+  //     _firestore.collection('users').doc(globalUser.uid);
   static CollectionReference<Map<String, dynamic>> userRef =
       _firestore.collection('users');
 
@@ -54,23 +47,6 @@ class Constants {
 
   static String getSearchString(String text) {
     return text.trim().toLowerCase();
-  }
-
-  static Future<void> getUserDetailsFromPreference() async {
-    try {
-      final isAuth = await AuthMethods.getCurrentuser();
-      if (globalUser.uid == '' && isAuth != null) {
-        final userBox = await Hive.openBox('USERBOX');
-        final userMap = await userBox.get('userData');
-
-        displayNameGlobal.value = userMap['name'];
-        globalUser = KUser.fromMap(userMap);
-
-        await Hive.close();
-      }
-    } catch (e) {
-      log("Error while fetching data from Hive $e");
-    }
   }
 }
 

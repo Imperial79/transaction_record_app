@@ -1,25 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 
 import '../../Utility/commons.dart';
-import '../../services/user.dart';
 
-class NotificationsUI extends StatefulWidget {
-  const NotificationsUI({Key? key}) : super(key: key);
+class NotificationsUI extends ConsumerStatefulWidget {
+  const NotificationsUI({super.key});
 
   @override
-  State<NotificationsUI> createState() => _NotificationsUIState();
+  ConsumerState<NotificationsUI> createState() => _NotificationsUIState();
 }
 
-class _NotificationsUIState extends State<NotificationsUI> {
+class _NotificationsUIState extends ConsumerState<NotificationsUI> {
   bool isLoading = false;
 
   Future<void> _addToBook({
+    required String uid,
     required String bookId,
     required String bookName,
     required String requestId,
@@ -31,9 +33,9 @@ class _NotificationsUIState extends State<NotificationsUI> {
       await FirebaseRefs.transactBookRef(bookId).get().then((book) async {
         if (book.exists) {
           await FirebaseRefs.transactBookRef(bookId).update({
-            'users': FieldValue.arrayUnion([globalUser.uid])
+            'users': FieldValue.arrayUnion([uid])
           }).then((value) async {
-            await _removeFromRequest(requestId: requestId).then(
+            await _removeFromRequest(uid: uid, requestId: requestId).then(
               (value) => KSnackbar(
                 context,
                 content: "\"$bookName\" Book joined successfully!",
@@ -46,7 +48,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
             content: "Book does not exists anymore!",
             isDanger: true,
           );
-          await _removeFromRequest(requestId: requestId);
+          await _removeFromRequest(uid: uid, requestId: requestId);
         }
       });
       setState(() {
@@ -60,18 +62,19 @@ class _NotificationsUIState extends State<NotificationsUI> {
     }
   }
 
-  Future<void> _removeFromRequest({required requestId}) async {
+  Future<void> _removeFromRequest(
+      {required String uid, required String requestId}) async {
     try {
       setState(() {
         isLoading = true;
       });
       await FirebaseRefs.requestRef.doc(requestId).get().then((value) async {
         if (value.data()!['users'].length == 1 &&
-            value.data()!['users'].contains(globalUser.uid)) {
+            value.data()!['users'].contains(uid)) {
           await FirebaseRefs.requestRef.doc(requestId).delete();
         } else {
           await FirebaseRefs.requestRef.doc(requestId).update({
-            'users': FieldValue.arrayRemove([globalUser.uid]),
+            'users': FieldValue.arrayRemove([uid]),
           }).then(
             (value) => KSnackbar(
               context,
@@ -98,6 +101,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       appBar: AppBar(
@@ -109,7 +113,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
           padding: const EdgeInsets.all(15.0),
           child: StreamBuilder<dynamic>(
             stream: FirebaseRefs.requestRef
-                .where('users', arrayContains: globalUser.uid)
+                .where('users', arrayContains: user!.uid)
                 .snapshots(),
             builder: (context, snapshot) {
               return AnimatedSwitcher(
@@ -128,7 +132,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
                                 itemBuilder: (context, index) {
                                   DocumentSnapshot ds =
                                       snapshot.data.docs[index];
-                                  return _notificationCard(ds);
+                                  return _notificationCard(user.uid, ds);
                                 },
                                 separatorBuilder: (context, index) => height10,
                               ),
@@ -154,7 +158,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
     );
   }
 
-  Widget _notificationCard(requestData) {
+  Widget _notificationCard(String uid, var requestData) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -191,6 +195,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
               ElevatedButton(
                 onPressed: () async {
                   await _addToBook(
+                    uid: uid,
                     bookId: requestData['bookId'],
                     bookName: requestData['bookName'],
                     requestId: requestData['id'],
@@ -202,6 +207,7 @@ class _NotificationsUIState extends State<NotificationsUI> {
               ElevatedButton(
                 onPressed: () async {
                   await _removeFromRequest(
+                    uid: uid,
                     requestId: requestData['id'],
                   );
                 },

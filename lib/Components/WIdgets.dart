@@ -39,7 +39,7 @@ Widget kBackButton(
 Padding kUserTile(
   bool isDark, {
   required List selectedUsers,
-  required KUser userData,
+  required UserModel userData,
   required bool isSelecting,
   void Function()? onTap,
 }) {

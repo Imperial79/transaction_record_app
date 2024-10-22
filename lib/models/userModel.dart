@@ -1,13 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class KUser {
+class UserModel {
   String username = '';
   String email = '';
   String name = '';
   String uid = '';
   String imgUrl = '';
-  KUser({
+  UserModel({
     required this.username,
     required this.email,
     required this.name,
@@ -15,14 +15,14 @@ class KUser {
     required this.imgUrl,
   });
 
-  KUser copyWith({
+  UserModel copyWith({
     String? username,
     String? email,
     String? name,
     String? uid,
     String? imgUrl,
   }) {
-    return KUser(
+    return UserModel(
       username: username ?? this.username,
       email: email ?? this.email,
       name: name ?? this.name,
@@ -41,8 +41,8 @@ class KUser {
     };
   }
 
-  factory KUser.fromMap(Map<dynamic, dynamic> map) {
-    return KUser(
+  factory UserModel.fromMap(Map<dynamic, dynamic> map) {
+    return UserModel(
       username: map['username'] as String,
       email: map['email'] as String,
       name: map['name'] as String,
@@ -53,16 +53,16 @@ class KUser {
 
   String toJson() => json.encode(toMap());
 
-  factory KUser.fromJson(String source) =>
-      KUser.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'KUSer(username: $username, email: $email, name: $name, uid: $uid, imgUrl: $imgUrl)';
+    return 'UserModel(username: $username, email: $email, name: $name, uid: $uid, imgUrl: $imgUrl)';
   }
 
   @override
-  bool operator ==(covariant KUser other) {
+  bool operator ==(covariant UserModel other) {
     if (identical(this, other)) return true;
 
     return other.username == username &&

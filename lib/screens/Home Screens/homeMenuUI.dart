@@ -2,25 +2,49 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
-import 'package:transaction_record_app/services/auth.dart';
-import 'package:transaction_record_app/services/user.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/components.dart';
+import '../loginUI.dart';
 
-class HomeMenuUI extends StatefulWidget {
-  const HomeMenuUI({Key? key}) : super(key: key);
+class HomeMenuUI extends ConsumerStatefulWidget {
+  const HomeMenuUI({super.key});
 
   @override
-  State<HomeMenuUI> createState() => _HomeMenuUIState();
+  ConsumerState<HomeMenuUI> createState() => _HomeMenuUIState();
 }
 
-class _HomeMenuUIState extends State<HomeMenuUI> {
+class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
+  bool isLoading = false;
+
+  _signOut() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final res = await ref.read(authRepository).signOut();
+      if (res) {
+        ref.read(userProvider.notifier).state = null;
+        NavPushReplacement(context, const LoginUI());
+      }
+    } catch (e) {
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
+    final user = ref.watch(userProvider);
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Padding(
@@ -66,7 +90,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                           child: ClipRRect(
                             borderRadius: kRadius(20),
                             child: CachedNetworkImage(
-                              imageUrl: globalUser.imgUrl,
+                              imageUrl: user?.imgUrl ?? "",
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -99,7 +123,7 @@ class _HomeMenuUIState extends State<HomeMenuUI> {
                             isDark ? Colors.red.shade300 : Colors.red.shade900,
                         child: IconButton(
                           onPressed: () {
-                            AuthMethods.signOut(context);
+                            _signOut();
                           },
                           icon: Icon(
                             Icons.logout,

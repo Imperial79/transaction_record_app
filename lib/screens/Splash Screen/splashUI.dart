@@ -1,32 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../Utility/constants.dart';
-
-class SplashUI extends StatefulWidget {
-  const SplashUI({Key? key}) : super(key: key);
+class SplashUI extends ConsumerStatefulWidget {
+  const SplashUI({super.key});
 
   @override
-  State<SplashUI> createState() => _SplashUIState();
+  ConsumerState<SplashUI> createState() => _SplashUIState();
 }
 
-class _SplashUIState extends State<SplashUI> {
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  void _init() async {
-    await Constants.getUserDetailsFromPreference();
-  }
-
+class _SplashUIState extends ConsumerState<SplashUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Lottie.asset("lib/assets/loading/splash_loading.json"),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "T₹ansact",
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 50,
+                  height: 1,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                "Record",
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 50,
+                  height: 1,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                "₹",
+                style: TextStyle(
+                  fontSize: 200,
+                  height: 1,
+                  fontFamily: "",
+                  color: Colors.cyanAccent,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

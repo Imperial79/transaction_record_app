@@ -106,8 +106,8 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
 
 class AppTitle extends StatelessWidget {
   const AppTitle({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

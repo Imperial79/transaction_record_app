@@ -1,4 +1,3 @@
-import 'package:transaction_record_app/models/userModel.dart';
 
 // class UserDetails {
 //   static String username = '';
@@ -8,5 +7,5 @@ import 'package:transaction_record_app/models/userModel.dart';
 //   static String imgUrl = '';
 // }
 
-KUser globalUser =
-    KUser(username: '', email: '', name: '', uid: '', imgUrl: '');
+// UserModel globalUser =
+//     UserModel(username: '', email: '', name: '', uid: '', imgUrl: '');

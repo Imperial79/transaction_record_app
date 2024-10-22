@@ -1,38 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/services/user.dart';
 
+import '../../Repository/auth_repository.dart';
 import '../../Utility/commons.dart';
 
-class AccountUI extends StatefulWidget {
-  const AccountUI({Key? key}) : super(key: key);
+class AccountUI extends ConsumerStatefulWidget {
+  const AccountUI({super.key});
 
   @override
-  State<AccountUI> createState() => _AccountUIState();
+  ConsumerState<AccountUI> createState() => _AccountUIState();
 }
 
-class _AccountUIState extends State<AccountUI> {
+class _AccountUIState extends ConsumerState<AccountUI> {
   //-------------------->
-  final nameController = TextEditingController(text: globalUser.name);
-  final emailController = TextEditingController(text: globalUser.email);
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
 
   //------------------->
 
-  updateAccountDetails() async {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        final user = ref.read(userProvider);
+        if (user != null) {
+          nameController.text = user.name;
+          emailController.text = user.email;
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  updateAccountDetails(String uid) async {
     setState(() => isLoading = true);
     if (nameController.text.isNotEmpty) {
       Map<String, dynamic> accountMap = {
         'name': nameController.text,
       };
 
-      await DatabaseMethods().updateAccountDetails(globalUser.uid, accountMap);
+      await DatabaseMethods().updateAccountDetails(uid, accountMap);
 
       final userBox = await Hive.openBox("USERBOX");
       final userMap = userBox.get("userData");
@@ -41,10 +56,9 @@ class _AccountUIState extends State<AccountUI> {
         userBox.put('userData', userMap);
       }
 
-      setState(() {
-        displayNameGlobal.value = nameController.text;
-        globalUser.name = nameController.text;
-      });
+      ref.read(userProvider.notifier).update(
+            (state) => state!.copyWith(name: nameController.text),
+          );
 
       KSnackbar(context, content: "Name Updated");
       setState(() => isLoading = false);
@@ -59,6 +73,7 @@ class _AccountUIState extends State<AccountUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -87,7 +102,7 @@ class _AccountUIState extends State<AccountUI> {
               Hero(
                 tag: 'profImg',
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(globalUser.imgUrl),
+                  backgroundImage: NetworkImage(user!.imgUrl),
                 ),
               ),
               height10,
@@ -100,7 +115,7 @@ class _AccountUIState extends State<AccountUI> {
                   width5,
                   Flexible(
                     child: Text(
-                      globalUser.username,
+                      user.username,
                       style: TextStyle(
                         fontSize: 20,
                         color: isDark ? Dark.fadeText : Light.fadeText,
@@ -179,7 +194,7 @@ class _AccountUIState extends State<AccountUI> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: MaterialButton(
             onPressed: () {
-              updateAccountDetails();
+              updateAccountDetails(user.uid);
             },
             shape: RoundedRectangleBorder(
               borderRadius: kRadius(12),

@@ -5,7 +5,7 @@ import 'package:transaction_record_app/models/bookModel.dart';
 import '../Utility/newColors.dart';
 
 class MigrateUI extends StatefulWidget {
-  const MigrateUI({Key? key}) : super(key: key);
+  const MigrateUI({super.key});
 
   @override
   State<MigrateUI> createState() => _MigrateUIState();

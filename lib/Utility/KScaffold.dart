@@ -15,14 +15,14 @@ class KScaffold extends StatefulWidget {
   Widget? floatingActionButton;
   bool? isLoading = false;
   KScaffold({
-    Key? key,
+    super.key,
     this.appBar,
     required this.body,
     this.isLoading,
     this.floatingActionButtonAnimator,
     this.floatingActionButtonLocation,
     this.floatingActionButton,
-  }) : super(key: key);
+  });
 
   @override
   State<KScaffold> createState() => _KScaffoldState();

@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -16,19 +18,18 @@ import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Functions/bookFunctions.dart';
 import '../../Utility/commons.dart';
-import '../../services/user.dart';
 import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
 
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
-ValueNotifier<String> displayNameGlobal = ValueNotifier(globalUser.name);
+// ValueNotifier<String> displayNameGlobal = ValueNotifier(user.name);
 
-class Home_UI extends StatefulWidget {
+class Home_UI extends ConsumerStatefulWidget {
   @override
-  _Home_UIState createState() => _Home_UIState();
+  ConsumerState<Home_UI> createState() => _Home_UIState();
 }
 
-class _Home_UIState extends State<Home_UI>
+class _Home_UIState extends ConsumerState<Home_UI>
     with AutomaticKeepAliveClientMixin<Home_UI> {
   DatabaseMethods databaseMethods = DatabaseMethods();
   List? data;
@@ -53,13 +54,29 @@ class _Home_UIState extends State<Home_UI>
     dateTitle = '';
 
     _scrollFunction();
-    _init();
+    // _init();
   }
 
-  void _init() async {
-    await Constants.getUserDetailsFromPreference()
-        .then((value) => setState(() {}));
-  }
+  // Future<void> getUserDetailsFromPreference() async {
+  //   try {
+  //     final isAuth = await ref.read(authRepository).getCurrentuser();
+  //     if (user.uid == '' && isAuth != null) {
+  //       final userBox = await Hive.openBox('USERBOX');
+  //       final userMap = await userBox.get('userData');
+
+  //       displayNameGlobal.value = userMap['name'];
+  //       user = UserModel.fromMap(userMap);
+
+  //       await Hive.close();
+  //     }
+  //   } catch (e) {
+  //     log("Error while fetching data from Hive $e");
+  //   }
+  // }
+
+  // void _init() async {
+  //   await getUserDetailsFromPreference().then((value) => setState(() {}));
+  // }
 
   _scrollFunction() {
     _scrollController.addListener(() {
@@ -80,7 +97,7 @@ class _Home_UIState extends State<Home_UI>
     _scrollController.dispose();
   }
 
-  Widget BookList() {
+  Widget BookList(String uid) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('transactBooks')
@@ -88,9 +105,9 @@ class _Home_UIState extends State<Home_UI>
             Filter.or(
               Filter(
                 'users',
-                arrayContains: globalUser.uid,
+                arrayContains: uid,
               ),
-              Filter('uid', isEqualTo: globalUser.uid),
+              Filter('uid', isEqualTo: uid),
             ),
           )
           .orderBy('createdAt', descending: true)
@@ -197,177 +214,177 @@ class _Home_UIState extends State<Home_UI>
     super.build(context);
     _showAdd.value = _searchController.text.isEmpty;
     isDark = Theme.of(context).brightness == Brightness.dark;
-    return KScaffold(
-      isLoading: isLoading,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            AnimatedSize(
-              reverseDuration: const Duration(milliseconds: 300),
-              duration: const Duration(milliseconds: 300),
-              alignment: Alignment.topCenter,
-              curve: Curves.ease,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _showHomeMenu,
-                builder: (BuildContext context, bool showFullHomeMenu,
-                    Widget? child) {
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 100),
-                    child: showFullHomeMenu ? const HomeMenuUI() : Container(),
-                  );
-                },
+    final user = ref.watch(userProvider);
+    if (user != null) {
+      return KScaffold(
+        isLoading: isLoading,
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              AnimatedSize(
+                reverseDuration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
+                alignment: Alignment.topCenter,
+                curve: Curves.ease,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _showHomeMenu,
+                  builder: (BuildContext context, bool showFullHomeMenu,
+                      Widget? child) {
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      reverseDuration: const Duration(milliseconds: 100),
+                      child:
+                          showFullHomeMenu ? const HomeMenuUI() : Container(),
+                    );
+                  },
+                ),
               ),
-            ),
-            AnimatedSize(
-              reverseDuration: const Duration(milliseconds: 300),
-              duration: const Duration(milliseconds: 300),
-              alignment: Alignment.topCenter,
-              curve: Curves.ease,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _showAdd,
-                builder:
-                    (BuildContext context, bool showFullAppBar, Widget? child) {
-                  return Container(
-                    child: showFullAppBar
-                        ? Column(
-                            children: [
-                              height10,
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        navPush(context, const AccountUI());
-                                      },
-                                      child: Hero(
-                                        tag: 'profImg',
-                                        child: CircleAvatar(
-                                          radius: 12,
-                                          child: ClipRRect(
-                                            borderRadius: kRadius(50),
-                                            child: globalUser.imgUrl == ''
-                                                ? const Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      color: Dark.profitCard,
-                                                      strokeWidth: 1.5,
+              AnimatedSize(
+                reverseDuration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
+                alignment: Alignment.topCenter,
+                curve: Curves.ease,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _showAdd,
+                  builder: (BuildContext context, bool showFullAppBar,
+                      Widget? child) {
+                    return Container(
+                      child: showFullAppBar
+                          ? Column(
+                              children: [
+                                height10,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          navPush(context, const AccountUI());
+                                        },
+                                        child: Hero(
+                                          tag: 'profImg',
+                                          child: CircleAvatar(
+                                            radius: 12,
+                                            child: ClipRRect(
+                                              borderRadius: kRadius(50),
+                                              child: user.imgUrl == ''
+                                                  ? const Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color: Dark.profitCard,
+                                                        strokeWidth: 1.5,
+                                                      ),
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl: user.imgUrl,
+                                                      fit: BoxFit.cover,
                                                     ),
-                                                  )
-                                                : CachedNetworkImage(
-                                                    imageUrl: globalUser.imgUrl,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    width10,
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Hi',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w400,
-                                              color: isDark
-                                                  ? Colors.white
-                                                  : Colors.black,
                                             ),
                                           ),
-                                          width5,
-                                          ValueListenableBuilder(
-                                            valueListenable: displayNameGlobal,
-                                            builder:
-                                                (context, String name, child) {
-                                              return Text(
-                                                globalUser.name.toLowerCase(),
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: isDark
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              );
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _showHomeMenu.value =
-                                              !_showHomeMenu.value;
-                                        });
-                                      },
-                                      borderRadius: kRadius(100),
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: isDark
-                                            ? Dark.card
-                                            : Colors.grey.shade200,
-                                        child: Icon(
-                                          _showHomeMenu.value
-                                              ? Icons.keyboard_arrow_up_rounded
-                                              : Icons
-                                                  .keyboard_arrow_down_rounded,
-                                          size: 20,
-                                          color: isDark
-                                              ? Colors.white
-                                              : Colors.black,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      width10,
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'Hi',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w400,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            width5,
+                                            Text(
+                                              user.name.toLowerCase(),
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w900,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _showHomeMenu.value =
+                                                !_showHomeMenu.value;
+                                          });
+                                        },
+                                        borderRadius: kRadius(100),
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: isDark
+                                              ? Dark.card
+                                              : Colors.grey.shade200,
+                                          child: Icon(
+                                            _showHomeMenu.value
+                                                ? Icons
+                                                    .keyboard_arrow_up_rounded
+                                                : Icons
+                                                    .keyboard_arrow_down_rounded,
+                                            size: 20,
+                                            color: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              height10,
-                            ],
-                          )
-                        : Container(),
-                  );
-                },
+                                height10,
+                              ],
+                            )
+                          : Container(),
+                    );
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                controller: _scrollController,
-                children: [
-                  height10,
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: KSearchBar(
-                      context,
-                      isDark: isDark,
-                      controller: _searchController,
-                      onChanged: (val) {
-                        setState(() {
-                          _showAdd.value = false;
-                        });
-                      },
+              Expanded(
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  controller: _scrollController,
+                  children: [
+                    height10,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: KSearchBar(
+                        context,
+                        isDark: isDark,
+                        controller: _searchController,
+                        onChanged: (val) {
+                          setState(() {
+                            _showAdd.value = false;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  height15,
-                  BookList(),
-                  const SizedBox(
-                    height: 70,
-                  ),
-                ],
+                    height15,
+                    BookList(user.uid),
+                    const SizedBox(
+                      height: 70,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+    return SizedBox();
   }
 
   Widget _bookTile(BookModel bookData) {

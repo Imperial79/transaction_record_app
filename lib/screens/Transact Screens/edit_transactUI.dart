@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
@@ -12,17 +14,16 @@ import '../../Utility/commons.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
-import '../../services/user.dart';
 
-class EditTransactUI extends StatefulWidget {
+class EditTransactUI extends ConsumerStatefulWidget {
   final Transact trData;
-  const EditTransactUI({Key? key, required this.trData}) : super(key: key);
+  const EditTransactUI({super.key, required this.trData});
 
   @override
-  State<EditTransactUI> createState() => _EditTransactUIState();
+  ConsumerState<EditTransactUI> createState() => _EditTransactUIState();
 }
 
-class _EditTransactUIState extends State<EditTransactUI> {
+class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   //  Variables -------------->
 
   DatabaseMethods databaseMethods = DatabaseMethods();
@@ -104,7 +105,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
     }
   }
 
-  updateTransacts() async {
+  updateTransacts(String uid) async {
     if (amountField.text != '') {
       if (widget.trData.date != _selectedDateMap['displayDate'] ||
           widget.trData.time != _selectedTimeMap['displayTime']) {
@@ -113,7 +114,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
       }
 
       Transact updatedTransact = Transact(
-        uid: globalUser.uid,
+        uid: uid,
         transactId: widget.trData.transactId,
         amount: amountField.text,
         source: sourceField.text,
@@ -255,6 +256,7 @@ class _EditTransactUIState extends State<EditTransactUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: _isLoading,
       body: SafeArea(
@@ -599,7 +601,9 @@ class _EditTransactUIState extends State<EditTransactUI> {
                     KButton.icon(
                       isDark,
                       isOutlined: true,
-                      onPressed: updateTransacts,
+                      onPressed: () {
+                        updateTransacts(user!.uid);
+                      },
                       backgroundColor: transactType == "Income"
                           ? isDark
                               ? Dark.primaryAccent
@@ -637,189 +641,6 @@ class _EditTransactUIState extends State<EditTransactUI> {
           ? Icons.file_download_outlined
           : Icons.file_upload_outlined,
       label: widget.trData.type,
-    );
-  }
-
-  Container BottomCard(BuildContext context, {String? date}) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 15),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.white,
-        borderRadius: kRadius(30),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transactMode,
-                  style: TextStyle(
-                    letterSpacing: 10,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: transactMode == 'CASH'
-                        ? isDark
-                            ? Colors.lightGreenAccent
-                            : Colors.lightGreen
-                        : isDark
-                            ? Colors.blue.shade200
-                            : Colors.blue.shade700,
-                  ),
-                ),
-                Text(
-                  date!,
-                  style:
-                      TextStyle(color: isDark ? Colors.white : Dark.scaffold),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  isDark ? Colors.grey.shade900 : Colors.white,
-                  isDark ? Colors.grey.withOpacity(0) : Colors.grey.shade300,
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),
-            child: TextField(
-              controller: amountField,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 30,
-              ),
-              cursorColor: isDark ? Colors.white : Colors.black,
-              decoration: InputDecoration(
-                prefixText: 'INR ',
-                prefixStyle: TextStyle(
-                  color: isDark ? Colors.white : Colors.grey.shade700,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w300,
-                ),
-                border: InputBorder.none,
-                hintText: '0.00',
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: Colors.grey.shade400,
-                  fontSize: 30,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MediaQuery.of(context).viewInsets.bottom != 0
-                    ? Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isDark ? Dark.scaffold : Light.scaffold,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                          },
-                          icon: const Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      )
-                    : const SizedBox(
-                        width: 20,
-                      ),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: transactType == 'Income'
-                            ? isDark
-                                ? Dark.profitCard.withOpacity(0.5)
-                                : Light.profitCard.withOpacity(0.2)
-                            : isDark
-                                ? Colors.redAccent.withOpacity(0.6)
-                                : Colors.red.withOpacity(0.2),
-                        blurRadius: 100,
-                        spreadRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: MaterialButton(
-                    onPressed: () {
-                      updateTransacts();
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: kRadius(20),
-                    ),
-                    elevation: 0,
-                    padding: EdgeInsets.zero,
-                    child: Ink(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 25,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: kRadius(20),
-                        gradient: LinearGradient(
-                          colors: [
-                            transactType == 'Income'
-                                ? Dark.profitText
-                                : Colors.redAccent,
-                            transactType == 'Income'
-                                ? Colors.lightGreenAccent
-                                : const Color.fromARGB(255, 189, 56, 56),
-                          ],
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            transactType == 'Income'
-                                ? Icons.file_download_outlined
-                                : Icons.file_upload_outlined,
-                            color: transactType == 'Income'
-                                ? Colors.black
-                                : Colors.white,
-                          ),
-                          width10,
-                          Text(
-                            'Update $transactType',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: transactType == 'Income'
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

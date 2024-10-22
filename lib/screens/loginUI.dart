@@ -1,30 +1,52 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/services/auth.dart';
+import 'package:transaction_record_app/screens/rootUI.dart';
 
 import '../Utility/commons.dart';
 
-class LoginUI extends StatefulWidget {
-  const LoginUI({Key? key}) : super(key: key);
+class LoginUI extends ConsumerStatefulWidget {
+  const LoginUI({super.key});
 
   @override
-  _LoginUIState createState() => _LoginUIState();
+  ConsumerState<LoginUI> createState() => _LoginUIState();
 }
 
-class _LoginUIState extends State<LoginUI> {
+class _LoginUIState extends ConsumerState<LoginUI> {
   final Uri _privacyPolicyUrl = Uri.parse(
       'https://www.freeprivacypolicy.com/live/d6175538-7c18-42f4-989e-2c6351204f4b');
 
-  final Uri _githubLink =
-      Uri.parse('https://github.com/Imperial79/transaction_record_app');
-
-  bool _isLoading = false;
+  bool isLoading = false;
   String logoPath = 'lib/assets/logo/logo.png';
+
+  _googleSignIn() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final user = await ref.read(authRepository).signIn();
+
+      if (user != null) {
+        ref.read(userProvider.notifier).state = user;
+        navPopUntilPush(context, RootUI());
+      }
+    } catch (e) {
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,167 +56,225 @@ class _LoginUIState extends State<LoginUI> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
+          child: Stack(
             children: [
-              _isLoading
-                  ? _loadingScreen()
-                  : Flexible(
-                      flex: 6,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  logoPath,
-                                  height: 70,
-                                ),
-                                height10,
-                                const Text(
-                                  'Transact Record',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const Text(
-                                  '"Your Personal Money Manager"',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                height20,
-                                Text(
-                                  '#OpenSource',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.7,
-                                  ),
-                                ),
-                                TextLink(
-                                  link: _githubLink,
-                                  color: isDark
-                                      ? Dark.profitText
-                                      : Light.profitText,
-                                  text: '#Github',
-                                )
-                              ],
-                            ),
-                          ),
-                          Row(
+              _backgroundGraphics(),
+              Column(
+                children: [
+                  isLoading
+                      ? _loadingScreen()
+                      : Flexible(
+                          flex: 6,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SvgPicture.asset(
-                                'lib/assets/icons/cloud.svg',
-                                colorFilter: svgColor(
-                                  isDark ? Dark.profitText : Light.profitText,
-                                ),
-                                height: 20,
-                              ),
-                              width10,
                               Expanded(
-                                child: Text(
-                                  'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 12,
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      logoPath,
+                                      height: 70,
+                                    ),
+                                    height10,
+                                    const Text(
+                                      'Transact Record',
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const Text(
+                                      '"Your Personal Money Manager"',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    height20,
+                                    Text(
+                                      '#OpenSource',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.7,
+                                      ),
+                                    ),
+                                    Text(
+                                      '#Github',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.7,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          InkWell(
-                            borderRadius: kRadius(15),
-                            splashColor: Colors.red,
-                            onTap: () async {
-                              setState(() => _isLoading = true);
-                              String res = await AuthMethods.signIn(context);
-                              if (res == 'fail') {
-                                if (mounted) setState(() => _isLoading = false);
-                              }
-                            },
-                            child: Ink(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: kRadius(10),
-                                color: isDark ? Dark.lossCard : Light.lossCard,
-                                // color: Color(0xffda8363),
-                                border: Border.all(color: Colors.red.shade100),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 7, horizontal: 20),
-                              child: Row(
+                              Row(
                                 children: [
-                                  const Text(
-                                    'G',
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                                  SvgPicture.asset(
+                                    'lib/assets/icons/cloud.svg',
+                                    colorFilter: svgColor(
+                                      isDark
+                                          ? Dark.profitText
+                                          : Light.profitText,
                                     ),
+                                    height: 20,
                                   ),
                                   width10,
-                                  const Text(
-                                    "Login with Google",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                  Expanded(
+                                    child: Text(
+                                      'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          const Text(
-                            'By signing in, you agree with our ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextLink(
-                                text: 'Terms and Conditions',
-                                link: Uri.parse(''),
-                                color:
-                                    isDark ? Dark.profitText : Light.profitText,
-                                textAlign: TextAlign.start,
+                              const SizedBox(
+                                height: 30,
                               ),
-                              TextLink(
-                                text: 'Privacy Policy',
-                                link: _privacyPolicyUrl,
-                                color:
-                                    isDark ? Dark.profitText : Light.profitText,
-                                textAlign: TextAlign.end,
+                              InkWell(
+                                borderRadius: kRadius(15),
+                                splashColor: Colors.red,
+                                onTap: () async {
+                                  // setState(() => isLoading = true);
+                                  // String res =
+                                  //     await AuthMethods.signIn(context);
+                                  // if (res == 'fail') {
+                                  //   if (mounted) {
+                                  //     setState(() => isLoading = false);
+                                  //   }
+                                  // }
+                                  _googleSignIn();
+                                },
+                                child: Ink(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: kRadius(10),
+                                    color:
+                                        isDark ? Dark.lossCard : Light.lossCard,
+                                    // color: Color(0xffda8363),
+                                    border:
+                                        Border.all(color: Colors.red.shade100),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 7, horizontal: 20),
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        'G',
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      width10,
+                                      const Text(
+                                        "Login with Google",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Text(
+                                'By signing in, you agree with our ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextLink(
+                                    text: 'Terms and Conditions',
+                                    link: Uri.parse(''),
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  TextLink(
+                                    text: 'Privacy Policy',
+                                    link: _privacyPolicyUrl,
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                ],
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Center _backgroundGraphics() {
+    return Center(
+      child: FittedBox(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "T₹ansact",
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 100,
+                height: 1,
+                color: Colors.white.withOpacity(.1),
+              ),
+            ),
+            Text(
+              "Record",
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 100,
+                height: 1,
+                color: Colors.white.withOpacity(.1),
+              ),
+            ),
+            Text(
+              "₹",
+              style: TextStyle(
+                fontSize: 400,
+                height: 1,
+                fontFamily: "",
+                color: Colors.white.withOpacity(.1),
+              ),
+            ),
+          ],
         ),
       ),
     );

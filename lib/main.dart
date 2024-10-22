@@ -1,10 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/screens/Splash%20Screen/splashUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
-import 'package:transaction_record_app/services/auth.dart';
 import 'package:transaction_record_app/screens/loginUI.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,22 +18,35 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
+  await Hive.openBox('hiveBox');
   ConnectionConfig.listenForConnection();
 
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  _init() async {
+    ref.read(auth);
+  }
+
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
+
+    final user = ref.watch(userProvider);
     return ValueListenableBuilder(
       valueListenable: themeMode,
       builder: (context, theme, child) {
@@ -48,21 +62,11 @@ class _MyAppState extends State<MyApp> {
           theme: KThemeData.light(),
           darkTheme: KThemeData.dark(),
           home: UpgradeAlert(
-            child: FutureBuilder(
-              future: AuthMethods.getCurrentuser(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return const RootUI();
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const SplashUI();
-                } else if (snapshot.connectionState == ConnectionState.none) {
-                  return const SplashUI();
-                } else {
-                  return const LoginUI();
-                }
-              },
-            ),
+            child: ref.watch(auth).isLoading
+                ? const SplashUI()
+                : user != null
+                    ? const RootUI()
+                    : const LoginUI(),
           ),
         );
       },

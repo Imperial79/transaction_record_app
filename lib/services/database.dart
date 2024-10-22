@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:transaction_record_app/services/user.dart';
 
 FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
@@ -47,10 +46,7 @@ class DatabaseMethods {
   Future<String> updateAccountDetails(
       String uid, Map<String, dynamic> accountDetails) async {
     try {
-      await firestore
-          .collection('users')
-          .doc(globalUser.uid)
-          .update(accountDetails);
+      await firestore.collection('users').doc(uid).update(accountDetails);
       return 'Profile updated successfully';
     } catch (e) {
       return e.toString();
@@ -67,10 +63,7 @@ class DatabaseMethods {
 
   //  Update global CURRENT BALANCE
   updateGlobalCurrentBal(String uid, Map<String, dynamic> currentBalMap) async {
-    return await firestore
-        .collection('users')
-        .doc(globalUser.uid)
-        .update(currentBalMap);
+    return await firestore.collection('users').doc(uid).update(currentBalMap);
   }
 
   //  Reset Book Income/Expense
@@ -79,8 +72,9 @@ class DatabaseMethods {
   }
 
   //  Reset Book Income/Expense
-  resetGlobalIncomeExpense(String bookId, uid, map) async {
-    return await firestore.collection('users').doc(globalUser.uid).update(map);
+  resetGlobalIncomeExpense(
+      String bookId, String uid, Map<Object, Object> map) async {
+    return await firestore.collection('users').doc(uid).update(map);
   }
 
   //Delete one book

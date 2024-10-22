@@ -2,9 +2,11 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Functions/transactFunctions.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
@@ -13,20 +15,19 @@ import 'package:transaction_record_app/services/database.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/newColors.dart';
-import '../../services/user.dart';
 
-class New_Transact_UI extends StatefulWidget {
+class New_Transact_UI extends ConsumerStatefulWidget {
   final String bookId;
 
   const New_Transact_UI({
-    Key? key,
+    super.key,
     required this.bookId,
-  }) : super(key: key);
+  });
   @override
-  _New_Transact_UIState createState() => _New_Transact_UIState();
+  ConsumerState<New_Transact_UI> createState() => _New_Transact_UIState();
 }
 
-class _New_Transact_UIState extends State<New_Transact_UI> {
+class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
@@ -69,7 +70,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
     }
   }
 
-  saveTransacts() async {
+  saveTransacts(String uid) async {
     FocusScope.of(context).unfocus();
     try {
       setState(() {
@@ -86,7 +87,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
             amountField.text.replaceAll(' ', '').replaceAll(',', '');
 
         Transact newTransact = Transact(
-          uid: globalUser.uid,
+          uid: uid,
           transactId: transactId,
           amount: uploadableAmount,
           source: sourceField.text,
@@ -145,6 +146,7 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -431,8 +433,9 @@ class _New_Transact_UIState extends State<New_Transact_UI> {
                       ),
                     ),
                     height20,
-                    KButton.icon(isDark,
-                        onPressed: saveTransacts,
+                    KButton.icon(isDark, onPressed: () {
+                      saveTransacts(user!.uid);
+                    },
                         backgroundColor: transactType == "Income"
                             ? isDark
                                 ? Dark.profitCard

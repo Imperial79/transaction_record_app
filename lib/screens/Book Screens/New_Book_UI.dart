@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
@@ -10,18 +11,18 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/services/user.dart';
 
+import '../../Repository/auth_repository.dart';
 import '../../Utility/commons.dart';
 
-class New_Book_UI extends StatefulWidget {
-  const New_Book_UI({Key? key}) : super(key: key);
+class New_Book_UI extends ConsumerStatefulWidget {
+  const New_Book_UI({super.key});
 
   @override
-  State<New_Book_UI> createState() => _New_Book_UIState();
+  ConsumerState<New_Book_UI> createState() => _New_Book_UIState();
 }
 
-class _New_Book_UIState extends State<New_Book_UI> {
+class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   bool isLoading = false;
   final DateTime _selectedDate = DateTime.now();
   final DateTime _selectedTimeStamp = DateTime.now();
@@ -36,7 +37,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
 
   String selectedBookType = 'regular';
 
-  void _createBook() async {
+  void _createBook(String uid) async {
     FocusScope.of(context).unfocus();
     try {
       setState(() {
@@ -55,7 +56,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
           income: 0.0,
           time: displayTime,
           type: selectedBookType,
-          uid: globalUser.uid,
+          uid: uid,
           targetAmount:
               selectedBookType == "due" ? double.parse(_targetAmount.text) : 0,
           createdAt: "$_selectedTimeStamp",
@@ -94,6 +95,7 @@ class _New_Book_UIState extends State<New_Book_UI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -256,10 +258,9 @@ class _New_Book_UIState extends State<New_Book_UI> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: KButton.icon(isDark,
-            onPressed: _createBook,
-            icon: const Icon(Icons.add_circle_outline),
-            label: "Create Book"),
+        child: KButton.icon(isDark, onPressed: () {
+          _createBook(user!.uid);
+        }, icon: const Icon(Icons.add_circle_outline), label: "Create Book"),
       ),
     );
   }

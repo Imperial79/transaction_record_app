@@ -1,31 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/userModel.dart';
-import 'package:transaction_record_app/services/user.dart';
-
+import '../../Repository/auth_repository.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/components.dart';
 
-class UsersUI extends StatefulWidget {
+class UsersUI extends ConsumerStatefulWidget {
   final List<dynamic> users;
   final String ownerUid;
   final String bookId;
   const UsersUI(
-      {Key? key,
+      {super.key,
       required this.users,
       required this.ownerUid,
-      required this.bookId})
-      : super(key: key);
+      required this.bookId});
 
   @override
-  State<UsersUI> createState() => _UsersUIState();
+  ConsumerState<UsersUI> createState() => _UsersUIState();
 }
 
-class _UsersUIState extends State<UsersUI> {
+class _UsersUIState extends ConsumerState<UsersUI> {
   bool isLoading = false;
   final List<dynamic> _allUsers = [];
   List<dynamic> _usersList = [];
@@ -79,6 +78,7 @@ class _UsersUIState extends State<UsersUI> {
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       appBar: AppBar(
@@ -95,8 +95,9 @@ class _UsersUIState extends State<UsersUI> {
                     shrinkWrap: true,
                     itemCount: _usersList.length,
                     itemBuilder: (context, index) {
-                      KUser user = KUser.fromMap(_usersList[index]);
-                      return _usersTile(user);
+                      UserModel otherUsers =
+                          UserModel.fromMap(_usersList[index]);
+                      return _usersTile(user!.uid, otherUsers);
                     },
                     separatorBuilder: (context, index) => height20,
                   ),
@@ -106,7 +107,7 @@ class _UsersUIState extends State<UsersUI> {
     );
   }
 
-  Widget _usersTile(KUser user) {
+  Widget _usersTile(String uid, UserModel user) {
     return Row(
       children: [
         CircleAvatar(
@@ -119,7 +120,7 @@ class _UsersUIState extends State<UsersUI> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user.uid == globalUser.uid ? "You" : user.name,
+                user.uid == uid ? "You" : user.name,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -131,8 +132,7 @@ class _UsersUIState extends State<UsersUI> {
         ),
         width10,
         Visibility(
-          visible:
-              widget.ownerUid == globalUser.uid && widget.ownerUid != user.uid,
+          visible: widget.ownerUid == uid && widget.ownerUid != user.uid,
           child: ElevatedButton(
             onPressed: () {
               _removeUserFromBook(user.uid);
