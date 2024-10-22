@@ -12,7 +12,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import '../models/userModel.dart';
 import '../screens/Home Screens/Home_UI.dart';
 
-const String kAppVersion = "2.5.2";
+const String kAppVersion = "2.5.3";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
