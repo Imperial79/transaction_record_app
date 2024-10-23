@@ -7,7 +7,6 @@ import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/main.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';

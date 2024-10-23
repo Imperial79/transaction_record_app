@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,8 +12,6 @@ import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Utility/newColors.dart';
-
-// ValueNotifier<String> themeMode = ValueNotifier("system");
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

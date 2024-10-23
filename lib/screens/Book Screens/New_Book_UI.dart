@@ -22,6 +22,12 @@ class New_Book_UI extends ConsumerStatefulWidget {
 }
 
 class _New_Book_UIState extends ConsumerState<New_Book_UI> {
+  final Map<String, String> bookTypeMap = {
+    "Regular": "Regular book is used for daily transaction audits.",
+    "Due":
+        "Due book is used for tracking due amount lend to someone or chasing a target amount."
+  };
+
   bool isLoading = false;
   final DateTime _selectedDate = DateTime.now();
   final DateTime _selectedTimeStamp = DateTime.now();
@@ -106,41 +112,32 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
+              KTextfield.title(
+                isDark,
                 controller: _bookTitle,
-                keyboardType: TextInputType.text,
-                textCapitalization: TextCapitalization.words,
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-                cursorWidth: 1,
-                cursorColor: isDark ? Colors.white : Colors.black,
-                decoration: InputDecoration(
-                  focusColor: isDark ? Colors.white : Colors.black,
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: isDark ? Dark.card : Colors.black,
-                      width: 2,
+                hintText: "Book Title",
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_bookTitle.text.isEmpty) {
+                    setState(() {
+                      _bookTitle.text =
+                          DateFormat('MMMM, yyyy').format(DateTime.now());
+                    });
+                  }
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.auto_mode_sharp,
+                      size: 15,
                     ),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: isDark ? Dark.card : Colors.grey.shade300,
-                    ),
-                  ),
-                  hintText: 'Book title',
-                  hintStyle: TextStyle(
-                    fontSize: 40,
-                    color: isDark ? Dark.fadeText : Light.fadeText,
-                    fontWeight: FontWeight.w900,
-                  ),
+                    width5,
+                    Text("Auto Generate"),
+                  ],
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              height15,
               KTextfield.regular(
                 isDark,
                 controller: _bookDescription,
@@ -169,9 +166,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                           size: 20,
                           color: isDark ? Colors.white : Colors.black,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        width10,
                         Text(
                           'Created on',
                           style: TextStyle(
@@ -199,9 +194,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 6,
-                        ),
+                        width5,
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -223,14 +216,15 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
               height20,
               const Text("Book Type"),
               height10,
-              _bookTypeBtn(
-                label: 'Regular Book',
-                identifier: "regular",
-              ),
-              height10,
-              _bookTypeBtn(
-                label: 'Due Book',
-                identifier: "due",
+              Column(
+                children: List.generate(
+                  bookTypeMap.length,
+                  (index) => _bookTypeBtn(
+                    title: bookTypeMap.keys.toList()[index],
+                    subTitle: bookTypeMap.values.toList()[index],
+                    identifier: bookTypeMap.keys.toList()[index].toLowerCase(),
+                  ),
+                ),
               ),
               if (selectedBookType == "due")
                 Column(
@@ -273,10 +267,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   }
 
   Widget _bookTypeBtn({
-    required String label,
+    required String title,
+    required String subTitle,
     required String identifier,
   }) {
-    bool isSelected = selectedBookType == identifier;
+    bool isActive = selectedBookType == identifier;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -287,13 +282,14 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         alignment: Alignment.topCenter,
         duration: const Duration(milliseconds: 200),
         child: Container(
+          margin: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             borderRadius: kRadius(15),
             color: isDark ? Dark.card : Light.card,
             border: Border.fromBorderSide(
               BorderSide(
                 width: 2,
-                color: isSelected
+                color: isActive
                     ? isDark
                         ? Dark.primaryAccent
                         : Light.primaryAccent
@@ -308,7 +304,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: isSelected
+                  backgroundColor: isActive
                       ? isDark
                           ? Dark.primaryAccent
                           : Light.primaryAccent
@@ -323,34 +319,28 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        label,
+                        "$title Book",
                         style: TextStyle(
-                            color: isSelected
-                                ? isDark
-                                    ? Dark.primaryAccent
-                                    : Light.primaryAccent
-                                : isDark
-                                    ? Dark.text
-                                    : Light.text,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16),
+                          color: isActive
+                              ? isDark
+                                  ? Dark.primaryAccent
+                                  : Light.primaryAccent
+                              : isDark
+                                  ? Dark.text
+                                  : Light.text,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
                       ),
-                      if (isSelected && selectedBookType == "due")
+                      if (isActive)
                         Text(
-                          "Due book is used for tracking due amount lend to someone or chasing a target amount.",
+                          subTitle,
                           style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: isDark ? Dark.fadeText : Light.fadeText,
+                            letterSpacing: .6,
+                            color: isDark ? Dark.text : Light.text,
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
-                      if (isSelected && selectedBookType == "regular")
-                        Text(
-                          "Regular book is used for daily transaction audits.",
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: isDark ? Dark.fadeText : Light.fadeText,
-                          ),
-                        )
                     ],
                   ),
                 ),
