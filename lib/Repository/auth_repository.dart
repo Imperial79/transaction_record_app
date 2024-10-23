@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +12,11 @@ import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) => null);
+final homePageProvider = StateProvider<int>((ref) => 0);
+
+final pageControllerProvider = Provider(
+  (ref) => PageController(initialPage: 0, keepPage: true),
+);
 
 final authRepository = Provider(
   (ref) => AuthRepo(),
@@ -17,6 +24,10 @@ final authRepository = Provider(
 
 final auth = FutureProvider(
   (ref) async {
+    var hiveBox = Hive.box("hiveBox");
+
+    String? savedTheme = hiveBox.get("theme");
+
     final res = FirebaseAuth.instance.currentUser;
     if (res != null) {
       final user = await FirebaseFirestore.instance
@@ -27,10 +38,9 @@ final auth = FutureProvider(
         UserModel userdata = UserModel.fromMap(user.data()!);
         ref.read(userProvider.notifier).state = userdata;
       }
-
-      log("Found User ${res.email} - ${res.uid}");
-    } else {
-      log("No User data found");
+    }
+    if (savedTheme != null) {
+      ref.read(themeProvider.notifier).state = savedTheme;
     }
   },
 );

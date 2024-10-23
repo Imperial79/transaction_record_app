@@ -2,12 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
-import 'package:transaction_record_app/screens/rootUI.dart';
 import '../Functions/navigatorFns.dart';
 import '../screens/Transact Screens/new_transactUi.dart';
 import 'commons.dart';
@@ -597,59 +598,63 @@ Widget kDeleteAlertDialog(BuildContext context,
   );
 }
 
-Widget NewBookCard(BuildContext context) => Container(
-      margin: const EdgeInsets.all(15),
-      width: double.infinity,
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        borderRadius: kRadius(20),
-        gradient: const LinearGradient(
-          colors: [
-            Light.profitCard,
-            Colors.black,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'Create your first Transact Book',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              fontSize: 30,
-              letterSpacing: 1,
+Widget NewBookCard(BuildContext context) => Consumer(
+      builder: (context, ref, _) {
+        return Container(
+          margin: const EdgeInsets.all(15),
+          width: double.infinity,
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            borderRadius: kRadius(20),
+            gradient: const LinearGradient(
+              colors: [
+                Light.profitCard,
+                Colors.black,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          height10,
-          const Text(
-            'Track your daily expenses by creating categorised Transact Book',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              color: Colors.white,
-              fontSize: 16,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Create your first Transact Book',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  fontSize: 30,
+                  letterSpacing: 1,
+                ),
+              ),
+              height10,
+              const Text(
+                'Track your daily expenses by creating categorised Transact Book',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              height10,
+              Align(
+                alignment: Alignment.topRight,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.watch(pageControllerProvider).animateToPage(
+                          1,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.ease,
+                        );
+                  },
+                  child: const Text('Create'),
+                ),
+              ),
+            ],
           ),
-          height10,
-          Align(
-            alignment: Alignment.topRight,
-            child: ElevatedButton(
-              onPressed: () {
-                pageControllerGlobal.value.animateToPage(
-                  1,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.ease,
-                );
-              },
-              child: const Text('Create'),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
 
 Widget AnimatedFloatingButton(

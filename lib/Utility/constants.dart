@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:quick_actions/quick_actions.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
-import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 const String kAppVersion = "2.5.3";
@@ -11,8 +8,6 @@ const String kAppVersion = "2.5.3";
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
 
-  // static DocumentReference<Map<String, dynamic>> myRef =
-  //     _firestore.collection('users').doc(globalUser.uid);
   static CollectionReference<Map<String, dynamic>> userRef =
       _firestore.collection('users');
 
@@ -62,24 +57,6 @@ class ConnectionConfig {
           break;
         case InternetStatus.disconnected:
           hasInternet.value = false;
-          break;
-      }
-    });
-  }
-}
-
-class QActions {
-  static const QuickActions _qActions = QuickActions();
-
-  static void init(BuildContext context) {
-    _qActions.initialize((type) {
-      switch (type) {
-        case "add_book_action":
-          navPush(context, const RootUI());
-          pageControllerGlobal.value.animateToPage(1,
-              duration: const Duration(milliseconds: 600), curve: Curves.ease);
-          break;
-        default:
           break;
       }
     });

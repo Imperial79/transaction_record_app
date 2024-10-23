@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names, duplicate_ignore
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +12,7 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/Due_Book_UI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/homeMenuUI.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/HomeMenu.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Functions/bookFunctions.dart';
 import '../../Utility/commons.dart';
@@ -22,7 +20,6 @@ import '../../Utility/components.dart';
 import '../Book Screens/bookUI.dart';
 
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
-// ValueNotifier<String> displayNameGlobal = ValueNotifier(user.name);
 
 class Home_UI extends ConsumerStatefulWidget {
   @override
@@ -54,29 +51,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
     dateTitle = '';
 
     _scrollFunction();
-    // _init();
   }
-
-  // Future<void> getUserDetailsFromPreference() async {
-  //   try {
-  //     final isAuth = await ref.read(authRepository).getCurrentuser();
-  //     if (user.uid == '' && isAuth != null) {
-  //       final userBox = await Hive.openBox('USERBOX');
-  //       final userMap = await userBox.get('userData');
-
-  //       displayNameGlobal.value = userMap['name'];
-  //       user = UserModel.fromMap(userMap);
-
-  //       await Hive.close();
-  //     }
-  //   } catch (e) {
-  //     log("Error while fetching data from Hive $e");
-  //   }
-  // }
-
-  // void _init() async {
-  //   await getUserDetailsFromPreference().then((value) => setState(() {}));
-  // }
 
   _scrollFunction() {
     _scrollController.addListener(() {
@@ -292,7 +267,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                         child: Row(
                                           children: [
                                             Text(
-                                              'Hi',
+                                              'Hi,',
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w400,
@@ -303,10 +278,10 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                             ),
                                             width5,
                                             Text(
-                                              user.name.toLowerCase(),
+                                              user.name.split(" ").first,
                                               style: TextStyle(
                                                 fontSize: 20,
-                                                fontWeight: FontWeight.w900,
+                                                fontWeight: FontWeight.w600,
                                                 color: isDark
                                                     ? Colors.white
                                                     : Colors.black,

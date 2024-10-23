@@ -9,7 +9,6 @@ import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import 'package:transaction_record_app/screens/rootUI.dart';
 import 'package:transaction_record_app/services/database.dart';
 
 import '../../Repository/auth_repository.dart';
@@ -72,8 +71,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
 
         KSnackbar(context, content: 'Book Created');
 
-        pageControllerGlobal.value.animateToPage(0,
-            duration: const Duration(milliseconds: 300), curve: Curves.ease);
+        ref.read(pageControllerProvider).animateToPage(
+              0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
       }
     } catch (e) {
       KSnackbar(context, content: "$e", isDanger: true);
@@ -258,9 +260,14 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: KButton.icon(isDark, onPressed: () {
-          _createBook(user!.uid);
-        }, icon: const Icon(Icons.add_circle_outline), label: "Create Book"),
+        child: KButton.icon(
+          isDark,
+          onPressed: () {
+            _createBook(user!.uid);
+          },
+          icon: const Icon(Icons.add_circle_outline),
+          label: "Create Book",
+        ),
       ),
     );
   }

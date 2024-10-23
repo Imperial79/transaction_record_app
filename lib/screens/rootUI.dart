@@ -1,19 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
+import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/main.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import 'package:transaction_record_app/screens/Notification%20Screen/notificationsUI.dart';
-
-ValueNotifier<PageController> pageControllerGlobal =
-    ValueNotifier(PageController(initialPage: 0));
-
-ValueNotifier<int> activeTabGlobal = ValueNotifier(0);
 
 class RootUI extends ConsumerStatefulWidget {
   const RootUI({super.key});
@@ -25,34 +22,36 @@ class RootUI extends ConsumerStatefulWidget {
 class _RootUIState extends ConsumerState<RootUI> {
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  void _init() async {
-    // await Constants.getUserDetailsFromPreference()
-    //     .then((value) => setState(() {}));
-
-    QActions.init(context);
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      activeTabGlobal.value = index;
-    });
-  }
-
   final List<Widget> _pages = [
     Home_UI(),
     const New_Book_UI(),
   ];
 
+  _changeTheme(String themeMode) async {
+    if (themeMode == 'dark') {
+      ref.read(themeProvider.notifier).state = "light";
+    } else if (themeMode == 'light') {
+      ref.read(themeProvider.notifier).state = "system";
+    } else {
+      ref.read(themeProvider.notifier).state = "dark";
+    }
+
+    var hiveBox = Hive.box("hiveBox");
+
+    hiveBox.put("theme", themeMode);
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
+    final themeMode = ref.watch(themeProvider);
     if (user != null) {
       return Scaffold(
         body: SafeArea(
@@ -87,20 +86,12 @@ class _RootUIState extends ConsumerState<RootUI> {
                   //     icon: Icon(Icons.refresh)),
                   IconButton(
                     onPressed: () {
-                      setState(() {
-                        if (themeMode.value == 'dark') {
-                          themeMode.value = 'light';
-                        } else if (themeMode.value == 'light') {
-                          themeMode.value = 'system';
-                        } else {
-                          themeMode.value = 'dark';
-                        }
-                      });
+                      _changeTheme(themeMode);
                     },
                     icon: Icon(
-                      themeMode.value == "dark"
+                      themeMode == "dark"
                           ? Icons.light_mode
-                          : themeMode.value == "light"
+                          : themeMode == "light"
                               ? Icons.auto_awesome
                               : Icons.dark_mode,
                     ),
@@ -148,54 +139,60 @@ class _RootUIState extends ConsumerState<RootUI> {
                 ],
               ),
               Expanded(
-                child: ValueListenableBuilder(
-                    valueListenable: pageControllerGlobal,
-                    builder: (context, PageController pageController, child) {
-                      return PageView.builder(
-                        scrollDirection: Axis.horizontal,
-                        controller: pageController,
-                        itemCount: _pages.length,
-                        onPageChanged: _onPageChanged,
-                        itemBuilder: (context, index) {
-                          return PageStorage(
-                            bucket: _pageStorageBucket,
-                            child: _pages[index],
-                          );
-                        },
-                      );
-                    }),
+                child: PageView.builder(
+                  scrollDirection: Axis.horizontal,
+                  controller: ref.watch(pageControllerProvider),
+                  itemCount: _pages.length,
+                  onPageChanged: (value) {
+                    ref.read(homePageProvider.notifier).state = value;
+                  },
+                  itemBuilder: (context, index) {
+                    return PageStorage(
+                      bucket: _pageStorageBucket,
+                      child: _pages[index],
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
       );
     }
-    return SizedBox();
+    return Scaffold();
   }
 
-  TextButton _changeToPageButton(
+  Widget _changeToPageButton(
     BuildContext context, {
     required int index,
     required String label,
   }) {
-    bool isActive = activeTabGlobal.value == index;
-    return TextButton(
-      onPressed: () {
-        pageControllerGlobal.value.animateToPage(index,
-            duration: const Duration(milliseconds: 300), curve: Curves.ease);
+    return Consumer(
+      builder: (context, ref, _) {
+        final activePage = ref.watch(homePageProvider);
+        bool isActive = activePage == index;
+        return TextButton(
+          onPressed: () {
+            ref.watch(pageControllerProvider).animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                );
+          },
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 20,
+              color: isActive
+                  ? isDark
+                      ? Colors.white
+                      : Colors.black
+                  : Colors.grey,
+              fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
+            ),
+          ),
+        );
       },
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 20,
-          color: isActive
-              ? isDark
-                  ? Colors.white
-                  : Colors.black
-              : Colors.grey,
-          fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
-        ),
-      ),
     );
   }
 }
