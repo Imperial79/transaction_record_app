@@ -50,7 +50,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return KScaffold(
       body: SafeArea(
@@ -242,6 +242,9 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   }
 
   Center _backgroundGraphics() {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    Color textColor =
+        isDark ? Colors.white.withOpacity(.1) : Colors.black.withOpacity(.05);
     return Center(
       child: FittedBox(
         child: Column(
@@ -253,7 +256,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                 fontWeight: FontWeight.w900,
                 fontSize: 100,
                 height: 1,
-                color: Colors.white.withOpacity(.1),
+                color: textColor,
               ),
             ),
             Text(
@@ -262,7 +265,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                 fontWeight: FontWeight.w900,
                 fontSize: 100,
                 height: 1,
-                color: Colors.white.withOpacity(.1),
+                color: textColor,
               ),
             ),
             Text(
@@ -271,7 +274,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                 fontSize: 400,
                 height: 1,
                 fontFamily: "",
-                color: Colors.white.withOpacity(.1),
+                color: textColor,
               ),
             ),
           ],
@@ -281,6 +284,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   }
 
   Flexible _loadingScreen() {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Flexible(
       flex: 6,
       child: Center(

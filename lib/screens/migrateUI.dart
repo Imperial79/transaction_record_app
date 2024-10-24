@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import '../Utility/newColors.dart';
 
 class MigrateUI extends StatefulWidget {
   const MigrateUI({super.key});
@@ -67,7 +66,6 @@ class _MigrateUIState extends State<MigrateUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       body: SafeArea(
         child: Center(

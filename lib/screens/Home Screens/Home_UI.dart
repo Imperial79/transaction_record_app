@@ -6,12 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/Due_Book_UI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/Savings_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/HomeMenu.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Functions/bookFunctions.dart';
@@ -35,9 +37,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
 
   final _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
+  final showMenuProvider = StateProvider<bool>((ref) => false);
   final ValueNotifier<bool> _showAdd = ValueNotifier<bool>(true);
-  final ValueNotifier<bool> _showHomeMenu = ValueNotifier<bool>(false);
 
   bool isKeyboardOpen = false;
   bool isLoading = false;
@@ -72,7 +73,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
     _scrollController.dispose();
   }
 
-  Widget BookList(String uid) {
+  Widget BookList(bool isDark, {required String uid}) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('transactBooks')
@@ -126,13 +127,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                 snapshot.data!.docs[index].data());
 
                             if (_searchController.text.isEmpty) {
-                              return _bookTile(newBook);
+                              return _bookTile(isDark, book: newBook);
                             } else {
                               if (kCompare(_searchController.text,
                                       newBook.bookName) ||
                                   kCompare(_searchController.text,
                                       newBook.bookDescription)) {
-                                return _bookTile(newBook);
+                                return _bookTile(isDark, book: newBook);
                               }
                               return const SizedBox();
                             }
@@ -188,8 +189,9 @@ class _Home_UIState extends ConsumerState<Home_UI>
   Widget build(BuildContext context) {
     super.build(context);
     _showAdd.value = _searchController.text.isEmpty;
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
+    final showHomeMenu = ref.watch(showMenuProvider);
     if (user != null) {
       return KScaffold(
         isLoading: isLoading,
@@ -202,17 +204,10 @@ class _Home_UIState extends ConsumerState<Home_UI>
                 duration: const Duration(milliseconds: 300),
                 alignment: Alignment.topCenter,
                 curve: Curves.ease,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _showHomeMenu,
-                  builder: (BuildContext context, bool showFullHomeMenu,
-                      Widget? child) {
-                    return AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 500),
-                      reverseDuration: const Duration(milliseconds: 100),
-                      child:
-                          showFullHomeMenu ? const HomeMenuUI() : Container(),
-                    );
-                  },
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  reverseDuration: const Duration(milliseconds: 100),
+                  child: showHomeMenu ? const HomeMenuUI() : Container(),
                 ),
               ),
               AnimatedSize(
@@ -292,19 +287,18 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          setState(() {
-                                            _showHomeMenu.value =
-                                                !_showHomeMenu.value;
-                                          });
+                                          ref
+                                              .read(showMenuProvider.notifier)
+                                              .state = !showHomeMenu;
                                         },
                                         borderRadius: kRadius(100),
                                         child: CircleAvatar(
-                                          radius: 12,
+                                          radius: 20,
                                           backgroundColor: isDark
                                               ? Dark.card
                                               : Colors.grey.shade200,
                                           child: Icon(
-                                            _showHomeMenu.value
+                                            showHomeMenu
                                                 ? Icons
                                                     .keyboard_arrow_up_rounded
                                                 : Icons
@@ -347,7 +341,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                       ),
                     ),
                     height15,
-                    BookList(user.uid),
+                    BookList(isDark, uid: user.uid),
                     const SizedBox(
                       height: 70,
                     ),
@@ -362,13 +356,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
     return SizedBox();
   }
 
-  Widget _bookTile(BookModel bookData) {
+  Widget _bookTile(bool isDark, {required BookModel book}) {
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
-    if (dateTitle == bookData.date) {
+    if (dateTitle == book.date) {
       showDateWidget = false;
     } else {
-      dateTitle = bookData.date;
+      dateTitle = book.date;
       showDateWidget = true;
     }
 
@@ -377,12 +371,11 @@ class _Home_UIState extends ConsumerState<Home_UI>
     Color textColor = Colors.black;
     bool isCompleted = false;
 
-    if (bookData.type == "regular") {
-      isCompleted =
-          bookData.expense != 0 && (bookData.income == bookData.expense);
+    if (book.type == "regular") {
+      isCompleted = book.expense != 0 && (book.income == book.expense);
     } else {
-      isCompleted = bookData.targetAmount != 0 &&
-          (bookData.income == bookData.targetAmount);
+      isCompleted =
+          book.targetAmount != 0 && (book.income == book.targetAmount);
     }
 
     if (isCompleted) {
@@ -392,6 +385,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
       kCardColor = isDark ? Dark.card : Light.card;
       textColor = isDark ? Colors.white : Colors.black;
     }
+
+    bool isSavings = book.type == "savings";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -410,10 +405,12 @@ class _Home_UIState extends ConsumerState<Home_UI>
         ),
         GestureDetector(
           onTap: () {
-            if (bookData.type == "due") {
-              navPush(context, Due_Book_UI(bookData: bookData));
+            if (book.type == "due") {
+              navPush(context, Due_Book_UI(bookData: book));
+            } else if (book.type == "regular") {
+              navPush(context, BookUI(bookData: book));
             } else {
-              navPush(context, BookUI(bookData: bookData));
+              navPush(context, Savings_Book_UI(bookData: book));
             }
           },
           onLongPress: () {
@@ -423,8 +420,9 @@ class _Home_UIState extends ConsumerState<Home_UI>
               elevation: 0,
               builder: (context) {
                 return _deleteModal(
-                  bookId: bookData.bookId,
-                  bookName: bookData.bookName,
+                  isDark,
+                  bookId: book.bookId,
+                  bookName: book.bookName,
                 );
               },
             );
@@ -462,7 +460,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                               children: [
                                 Expanded(
                                   child: Text(
-                                    bookData.bookName,
+                                    book.bookName,
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w500,
@@ -473,8 +471,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                   ),
                                 ),
                                 width10,
-                                bookData.users != null &&
-                                        bookData.users!.isNotEmpty
+                                book.users != null && book.users!.isNotEmpty
                                     ? const CircleAvatar(
                                         radius: 12,
                                         child: Icon(
@@ -486,9 +483,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                               ],
                             ),
                             Visibility(
-                              visible: bookData.bookDescription
-                                  .toString()
-                                  .isNotEmpty,
+                              visible: book.bookDescription.isNotEmpty,
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: Row(
@@ -500,7 +495,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                     ),
                                     width5,
                                     Text(
-                                      bookData.bookDescription,
+                                      book.bookDescription,
                                       style: TextStyle(
                                         color: textColor,
                                       ),
@@ -519,7 +514,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                 ),
                                 width5,
                                 Text(
-                                  '${bookData.date} | ${bookData.time}',
+                                  '${book.date} | ${book.time}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: textColor,
@@ -530,12 +525,26 @@ class _Home_UIState extends ConsumerState<Home_UI>
                           ],
                         ),
                       ),
+                      if (isSavings)
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                              borderRadius: kRadius(7),
+                              color: isDark ? Dark.scaffold : Light.scaffold),
+                          child: Text(
+                            "₹ ${kMoneyFormat(book.income)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
-                  if (!isCompleted)
+                  if (!isCompleted && !isSavings)
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child: bookData.type == "due"
+                      child: book.type == "due"
                           ? Row(
                               children: [
                                 _bookStats(
@@ -544,7 +553,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                   textColor:
                                       isDark ? Colors.white : Colors.black,
                                   amount:
-                                      "₹ ${kMoneyFormat(bookData.targetAmount - bookData.income)}",
+                                      "₹ ${kMoneyFormat(book.targetAmount - book.income)}",
                                   label: 'Due',
                                   cardColor: isDark
                                       ? Dark.completeCard
@@ -558,7 +567,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                   crossAlign: CrossAxisAlignment.end,
                                   label: "Target",
                                   amount:
-                                      "₹ ${kMoneyFormat(bookData.targetAmount)}",
+                                      "₹ ${kMoneyFormat(book.targetAmount)}",
                                   cardColor: isDark
                                       ? const Color(0xFF0B2A43)
                                       : const Color.fromARGB(
@@ -572,58 +581,81 @@ class _Home_UIState extends ConsumerState<Home_UI>
                                 ),
                               ],
                             )
-                          : Row(
-                              children: [
-                                _bookStats(
-                                  index: 0,
-                                  crossAlign: CrossAxisAlignment.start,
-                                  textColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  amount: "₹ ${kMoneyFormat(bookData.income)}",
-                                  label: 'Income',
-                                  cardColor: isDark
-                                      ? const Color(0xFF223B05)
-                                      : const Color(0xFFB5FFB7),
-                                  amountColor: isDark
-                                      ? Colors.lightGreenAccent
-                                      : Colors.lightGreen.shade900,
-                                ),
-                                width5,
-                                _bookStats(
-                                  index: 1,
-                                  crossAlign: CrossAxisAlignment.center,
-                                  amount: "₹ ${kMoneyFormat(bookData.expense)}",
-                                  label: 'Expense',
-                                  cardColor: isDark
-                                      ? Colors.black
-                                      : Colors.grey.shade300,
-                                  textColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  amountColor:
-                                      isDark ? Colors.white : Colors.black,
-                                ),
-                                width5,
-                                _bookStats(
-                                  index: 2,
-                                  crossAlign: CrossAxisAlignment.end,
-                                  label: 'Current',
-                                  amount:
-                                      "₹ ${kMoneyFormat(bookData.income - bookData.expense)}",
-                                  cardColor: isDark
-                                      ? const Color(0xFF0B2A43)
-                                      : const Color.fromARGB(
-                                          255, 197, 226, 250),
-                                  textColor: isDark
-                                      ? Colors.white
-                                      : Colors.blue.shade900,
-                                  amountColor: isDark
-                                      ? Colors.blue.shade100
-                                      : Colors.blue.shade900,
-                                ),
-                              ],
-                            ),
+                          : book.type == "regular"
+                              ? Row(
+                                  children: [
+                                    _bookStats(
+                                      index: 0,
+                                      crossAlign: CrossAxisAlignment.start,
+                                      textColor:
+                                          isDark ? Colors.white : Colors.black,
+                                      amount: "₹ ${kMoneyFormat(book.income)}",
+                                      label: 'Income',
+                                      cardColor: isDark
+                                          ? const Color(0xFF223B05)
+                                          : const Color(0xFFB5FFB7),
+                                      amountColor: isDark
+                                          ? Colors.lightGreenAccent
+                                          : Colors.lightGreen.shade900,
+                                    ),
+                                    width5,
+                                    _bookStats(
+                                      index: 1,
+                                      crossAlign: CrossAxisAlignment.center,
+                                      amount: "₹ ${kMoneyFormat(book.expense)}",
+                                      label: 'Expense',
+                                      cardColor: isDark
+                                          ? Colors.black
+                                          : Colors.grey.shade300,
+                                      textColor:
+                                          isDark ? Colors.white : Colors.black,
+                                      amountColor:
+                                          isDark ? Colors.white : Colors.black,
+                                    ),
+                                    width5,
+                                    _bookStats(
+                                      index: 2,
+                                      crossAlign: CrossAxisAlignment.end,
+                                      label: 'Current',
+                                      amount:
+                                          "₹ ${kMoneyFormat(book.income - book.expense)}",
+                                      cardColor: isDark
+                                          ? const Color(0xFF0B2A43)
+                                          : const Color.fromARGB(
+                                              255, 197, 226, 250),
+                                      textColor: isDark
+                                          ? Colors.white
+                                          : Colors.blue.shade900,
+                                      amountColor: isDark
+                                          ? Colors.blue.shade100
+                                          : Colors.blue.shade900,
+                                    ),
+                                  ],
+                                )
+                              // : data.type == "savings"
+                              //     ? Row(
+                              //         children: [
+                              //           _bookStats(
+                              //             index: 0,
+                              //             crossAlign: CrossAxisAlignment.start,
+                              //             textColor: isDark
+                              //                 ? Colors.white
+                              //                 : Colors.black,
+                              //             amount:
+                              //                 "₹ ${kMoneyFormat(data.income)}",
+                              //             label: 'Accumulated',
+                              //             cardColor: isDark
+                              //                 ? const Color(0xFF223B05)
+                              //                 : const Color(0xFFB5FFB7),
+                              //             amountColor: isDark
+                              //                 ? Colors.lightGreenAccent
+                              //                 : Colors.lightGreen.shade900,
+                              //           ),
+                              //         ],
+                              //       )
+                              : SizedBox(),
                     ),
-                  if (isCompleted)
+                  if (isCompleted && !isSavings)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -633,7 +665,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                           style: TextStyle(fontSize: 15),
                         ),
                         Text(
-                          "INR ${kMoneyFormat(bookData.income)}",
+                          "INR ${kMoneyFormat(book.income)}",
                           style: TextStyle(
                             fontSize: 20,
                             color: isDark
@@ -652,7 +684,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
     );
   }
 
-  Widget _deleteModal({
+  Widget _deleteModal(
+    bool isDark, {
     required String bookName,
     required String bookId,
   }) {
@@ -689,35 +722,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
                     ),
                   ),
                   height20,
-                  GestureDetector(
-                    onTap: () {
+                  KButton.icon(
+                    isDark,
+                    onPressed: () {
                       _deleteBook(bookId: bookId, bookName: bookName);
                     },
-                    child: Card(
-                      elevation: 0,
-                      color: isDark ? Dark.card : Light.card,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.delete,
-                              size: 30,
-                            ),
-                            width10,
-                            const Flexible(
-                              child: Text(
-                                "Delete book",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    icon: Icon(Icons.delete),
+                    label: "Delete \"$bookName\" Book!",
                   ),
                 ],
               ),
@@ -737,18 +748,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
     final amountColor,
     required CrossAxisAlignment crossAlign,
   }) {
-    return Expanded(
+    return Flexible(
       child: Container(
+        width: double.maxFinite,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: index == 0
-              ? const BorderRadius.horizontal(
-                  left: Radius.circular(10),
-                )
-              : index == 1
-                  ? null
-                  : const BorderRadius.horizontal(right: Radius.circular(10)),
+          borderRadius: kRadius(7),
         ),
         child: Column(
           crossAxisAlignment: crossAlign,

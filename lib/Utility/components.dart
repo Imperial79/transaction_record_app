@@ -8,9 +8,9 @@ import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import '../Functions/navigatorFns.dart';
-import '../screens/Transact Screens/new_transactUi.dart';
 import 'commons.dart';
 
 Widget kPill({
@@ -29,6 +29,7 @@ Widget kPill({
 }
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
     margin: const EdgeInsets.only(top: 0),
     width: double.infinity,
@@ -76,12 +77,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             ),
             child: ElevatedButton.icon(
               onPressed: () {
-                navPush(
-                  context,
-                  New_Transact_UI(
-                    bookId: bookId,
-                  ),
-                );
+                navPush(context, New_Book_UI());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark ? Colors.amber.shade100 : Colors.orange,
@@ -151,7 +147,7 @@ class AppTitle extends StatelessWidget {
   }
 }
 
-Widget DummyTransactList() {
+Widget DummyTransactList(bool isDark) {
   return Column(
     children: [
       for (int i = 0; i <= 10; i++)
@@ -239,8 +235,15 @@ Widget DummyTransactList() {
   );
 }
 
-Widget StatsCard({final label, content, isBook, bookId}) {
+Widget StatsCard(
+  BuildContext context, {
+  required String label,
+  required String content,
+  required bool isBook,
+  required String bookId,
+}) {
   bool isExpense = label == 'Expenses';
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     decoration: BoxDecoration(
@@ -285,10 +288,12 @@ Widget StatsCard({final label, content, isBook, bookId}) {
   );
 }
 
-Widget kRenameModal({
+Widget kRenameModal(
+  BuildContext context, {
   required String bookId,
   required String oldBookName,
 }) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   final newBookName = TextEditingController(text: oldBookName);
   return StatefulBuilder(
     builder: (context, setState) {
@@ -405,6 +410,7 @@ Widget ConfirmDeleteModal({
 }) {
   return StatefulBuilder(
     builder: (context, setState) {
+      bool isDark = Theme.of(context).brightness == Brightness.dark;
       return SafeArea(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -514,18 +520,47 @@ Widget BookMenuBtn({
   );
 }
 
-Widget kCard(BuildContext context, {required Widget child}) {
+Widget kCard(
+  BuildContext context, {
+  required List<Widget> children,
+  required IconData icon,
+  required String title,
+}) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
-    padding: const EdgeInsets.all(13),
+    padding: const EdgeInsets.all(15),
     decoration: BoxDecoration(
       color: isDark ? Dark.card : Light.card,
       borderRadius: kRadius(15),
     ),
-    child: child,
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Icon(
+              icon,
+              size: 15,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            width10,
+            Text(
+              title,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        height15,
+        ...children,
+      ],
+    ),
   );
 }
 
 setSystemUIColors(BuildContext context) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
       overlays: [SystemUiOverlay.top]);
   SystemChrome.setSystemUIOverlayStyle(
@@ -663,6 +698,7 @@ Widget AnimatedFloatingButton(
   required Widget icon,
   required String label,
 }) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return InkWell(
     onTap: onTap,
     child: DecoratedBox(
@@ -773,6 +809,7 @@ Widget KSearchBar(
 }
 
 Widget NoData(BuildContext context, {String customText = "No Data"}) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Center(
     child: Text(
       customText,

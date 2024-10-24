@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import '../../Repository/auth_repository.dart';
 import '../../Utility/commons.dart';
-import '../../Utility/components.dart';
 
 class UsersUI extends ConsumerStatefulWidget {
   final List<dynamic> users;
@@ -77,7 +75,7 @@ class _UsersUIState extends ConsumerState<UsersUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -85,29 +83,33 @@ class _UsersUIState extends ConsumerState<UsersUI> {
         title: const Text('Joined Users'),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(15.0),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 600),
-            child: _usersList.isEmpty
-                ? NoData(context, customText: 'No Users')
-                : ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _usersList.length,
-                    itemBuilder: (context, index) {
-                      UserModel otherUsers =
-                          UserModel.fromMap(_usersList[index]);
-                      return _usersTile(user!.uid, otherUsers);
-                    },
-                    separatorBuilder: (context, index) => height20,
-                  ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: _usersList.length,
+            itemBuilder: (context, index) {
+              UserModel userData = UserModel.fromMap(_usersList[index]);
+              return _usersTile(
+                isDark,
+                uid: user!.uid,
+                user: userData,
+              );
+            },
+            separatorBuilder: (context, index) => height20,
           ),
         ),
       ),
     );
   }
 
-  Widget _usersTile(String uid, UserModel user) {
+  Widget _usersTile(
+    bool isDark, {
+    required String uid,
+    required UserModel user,
+  }) {
     return Row(
       children: [
         CircleAvatar(

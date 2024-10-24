@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 
 class SplashUI extends ConsumerStatefulWidget {
   const SplashUI({super.key});
@@ -11,6 +12,7 @@ class SplashUI extends ConsumerStatefulWidget {
 class _SplashUIState extends ConsumerState<SplashUI> {
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -23,7 +25,7 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                   fontWeight: FontWeight.w300,
                   fontSize: 50,
                   height: 1,
-                  color: Colors.white,
+                  color: isDark ? Dark.text : Light.text,
                 ),
               ),
               Text(
@@ -32,7 +34,7 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                   fontWeight: FontWeight.w300,
                   fontSize: 50,
                   height: 1,
-                  color: Colors.white,
+                  color: isDark ? Dark.text : Light.text,
                 ),
               ),
               Text(
@@ -41,7 +43,7 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                   fontSize: 200,
                   height: 1,
                   fontFamily: "",
-                  color: Colors.cyanAccent,
+                  color: isDark ? Colors.cyanAccent : Colors.cyan.shade700,
                 ),
               ),
             ],

@@ -24,10 +24,6 @@ final authRepository = Provider(
 
 final auth = FutureProvider(
   (ref) async {
-    var hiveBox = Hive.box("hiveBox");
-
-    String? savedTheme = hiveBox.get("theme");
-
     final res = FirebaseAuth.instance.currentUser;
     if (res != null) {
       final user = await FirebaseFirestore.instance
@@ -39,6 +35,13 @@ final auth = FutureProvider(
         ref.read(userProvider.notifier).state = userdata;
       }
     }
+  },
+);
+
+final hiveThemeFuture = FutureProvider(
+  (ref) async {
+    var hiveBox = Hive.box("hiveBox");
+    String? savedTheme = hiveBox.get("theme");
     if (savedTheme != null) {
       ref.read(themeProvider.notifier).state = savedTheme;
     }

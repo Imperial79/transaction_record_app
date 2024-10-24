@@ -14,9 +14,9 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/models/userModel.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/usersUI.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/Users_UI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
-import 'package:transaction_record_app/screens/Transact%20Screens/new_transactUi.dart';
+import 'package:transaction_record_app/screens/Transact%20Screens/New_Transact_UI.dart';
 import '../../Components/WIdgets.dart';
 import '../../Functions/navigatorFns.dart';
 import '../../Utility/commons.dart';
@@ -69,7 +69,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     });
   }
 
-  Future<void> distribute() async {
+  Future<void> distribute(bool isDark) async {
     setState(() {
       isLoading = true;
     });
@@ -182,7 +182,11 @@ class _BookUIState extends ConsumerState<BookUI> {
           elevation: 0,
           backgroundColor: isDark ? Dark.card : Light.card,
           builder: (context) {
-            return DistributeModal(balanceSheet, balanceSheetUsers);
+            return DistributeModal(
+              isDark,
+              balanceSheet: balanceSheet,
+              balanceSheetUsers: balanceSheetUsers,
+            );
           },
         );
       });
@@ -209,7 +213,7 @@ class _BookUIState extends ConsumerState<BookUI> {
   Widget build(BuildContext context) {
     _showThings.value = _searchController.text.isEmpty;
     isSearching = _searchController.text.isNotEmpty;
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.read(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -280,7 +284,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                         ),
                                       ),
                                       Flexible(
-                                        child: _SearchBar(),
+                                        child: _SearchBar(isDark),
                                       ),
                                     ],
                                   ),
@@ -372,7 +376,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                           bool showBookMenu, Widget? child) {
                                         return showBookMenu
                                             ? BookMenu(
-                                                context,
+                                                isDark,
                                                 bookId: bookData.bookId,
                                                 uid: user!.uid,
                                               )
@@ -401,8 +405,8 @@ class _BookUIState extends ConsumerState<BookUI> {
                             switchOutCurve: Curves.easeOut,
                             child: snapshot.hasData &&
                                     snapshot.data!.data() != null
-                                ? _header(context, snapshot.data!.data()!)
-                                : _dummyStatsCard(),
+                                ? _header(isDark, data: snapshot.data!.data()!)
+                                : _dummyStatsCard(isDark),
                           );
                         },
                       ),
@@ -420,7 +424,8 @@ class _BookUIState extends ConsumerState<BookUI> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TransactList(
-                            bookData.bookId,
+                            isDark,
+                            bookId: bookData.bookId,
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.07,
@@ -480,6 +485,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                   context,
                   New_Transact_UI(
                     bookId: bookData.bookId,
+                    bookType: bookData.type,
                   ),
                 ).then((value) {
                   setState(() {
@@ -541,7 +547,10 @@ class _BookUIState extends ConsumerState<BookUI> {
   }
 
   Widget DistributeModal(
-      List<dynamic> balanceSheet, Map<String, dynamic> balanceSheetUsers) {
+    bool isDark, {
+    required List<dynamic> balanceSheet,
+    required Map<String, dynamic> balanceSheetUsers,
+  }) {
     return StatefulBuilder(
       builder: (context, setState) => SingleChildScrollView(
         padding: const EdgeInsets.all(15),
@@ -684,70 +693,77 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Column _header(BuildContext context, Map<String, dynamic> ds) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'INR ',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: isDark ? Colors.white : Colors.black,
-                        fontFamily: 'Product',
-                        fontWeight: FontWeight.w300,
+  Widget _header(
+    bool isDark, {
+    required Map<String, dynamic> data,
+  }) {
+    return Builder(builder: (context) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'INR ',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: isDark ? Colors.white : Colors.black,
+                          fontFamily: 'Product',
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: kMoneyFormat(ds['income'] - ds['expense']),
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: isDark ? Colors.white : Colors.black,
-                        fontFamily: 'Product',
-                        fontWeight: FontWeight.w900,
+                      TextSpan(
+                        text: kMoneyFormat(data['income'] - data['expense']),
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: isDark ? Colors.white : Colors.black,
+                          fontFamily: 'Product',
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            _filterButton(context),
-          ],
-        ),
-        height15,
-        Row(
-          children: [
-            Expanded(
-              child: StatsCard(
-                label: 'Income',
-                content: ds['income'].toString(),
-                isBook: true,
-                bookId: ds['bookId'],
+              _filterButton(isDark),
+            ],
+          ),
+          height15,
+          Row(
+            children: [
+              Expanded(
+                child: StatsCard(
+                  context,
+                  label: 'Income',
+                  content: data['income'].toString(),
+                  isBook: true,
+                  bookId: data['bookId'],
+                ),
               ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: StatsCard(
-                label: 'Expenses',
-                content: ds['expense'].toString(),
-                isBook: true,
-                bookId: ds['bookId'],
+              const SizedBox(
+                width: 10,
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+              Expanded(
+                child: StatsCard(
+                  context,
+                  label: 'Expenses',
+                  content: data['expense'].toString(),
+                  isBook: true,
+                  bookId: data['bookId'],
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
-  Row _dummyStatsCard() {
+  Widget _dummyStatsCard(bool isDark) {
     return Row(
       children: [
         Expanded(
@@ -767,7 +783,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Container _filterButton(BuildContext context) {
+  Container _filterButton(bool isDark) {
     return Container(
       height: 40,
       width: 40,
@@ -805,7 +821,7 @@ class _BookUIState extends ConsumerState<BookUI> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               builder: (context) {
-                return FilterBottomSheet(setState);
+                return FilterBottomSheet(isDark, setState);
               },
             ).then((value) {
               setState(() {});
@@ -830,7 +846,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Widget TransactList(String bookId) {
+  Widget TransactList(bool isDark, {required String bookId}) {
     dateTitle = '';
     return ValueListenableBuilder(
       valueListenable: bookListCounter,
@@ -864,7 +880,10 @@ class _BookUIState extends ConsumerState<BookUI> {
 
                             if (_selectedSortType == 'All') {
                               if (_searchController.text.isEmpty) {
-                                return TransactTile(transact);
+                                return TransactTile(
+                                  isDark,
+                                  data: transact,
+                                );
                               } else if (transact.amount.contains(searchKey) ||
                                   transact.description
                                       .toLowerCase()
@@ -872,12 +891,12 @@ class _BookUIState extends ConsumerState<BookUI> {
                                   transact.source
                                       .toLowerCase()
                                       .contains(searchKey)) {
-                                return TransactTile(transact);
+                                return TransactTile(isDark, data: transact);
                               }
                             } else if (transact.type.toLowerCase() ==
                                 _selectedSortType.toLowerCase()) {
                               if (searchKey.isEmpty) {
-                                return TransactTile(transact);
+                                return TransactTile(isDark, data: transact);
                               } else if (transact.amount.contains(searchKey) ||
                                   transact.description
                                       .toLowerCase()
@@ -885,7 +904,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                   transact.source
                                       .toLowerCase()
                                       .contains(searchKey)) {
-                                return TransactTile(transact);
+                                return TransactTile(isDark, data: transact);
                               }
                             }
                             return const SizedBox.shrink();
@@ -898,7 +917,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
-                  : DummyTransactList(),
+                  : DummyTransactList(isDark),
             );
           },
         );
@@ -906,7 +925,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Container _SearchBar() {
+  Container _SearchBar(bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
@@ -951,7 +970,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Widget DummyTransactList() {
+  Widget DummyTransactList(bool isDark) {
     return Column(
       children: [
         for (int i = 0; i <= 5; i++)
@@ -1039,17 +1058,17 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Widget TransactTile(Transact transactData) {
-    bool isIncome = transactData.type == 'Income';
+  Widget TransactTile(bool isDark, {required Transact data}) {
+    bool isIncome = data.type == 'Income';
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == transactData.date) {
+    if (dateTitle == data.date) {
       showDateWidget = false;
     } else {
-      dateTitle = transactData.date;
+      dateTitle = data.date;
       showDateWidget = true;
     }
-    String ts = DateFormat("yMMMMd").parse(transactData.date).toString();
+    String ts = DateFormat("yMMMMd").parse(data.date).toString();
 
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
@@ -1081,7 +1100,7 @@ class _BookUIState extends ConsumerState<BookUI> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              transactData.uid != user.uid &&
+              data.uid != user.uid &&
                       bookData.users != null &&
                       bookData.users!.isNotEmpty
                   ? Padding(
@@ -1090,7 +1109,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                           FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                         future: FirebaseFirestore.instance
                             .collection('users')
-                            .doc(transactData.uid)
+                            .doc(data.uid)
                             .get(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
@@ -1111,8 +1130,8 @@ class _BookUIState extends ConsumerState<BookUI> {
               Flexible(
                 child: GestureDetector(
                   onTap: () {
-                    if (transactData.uid == user.uid) {
-                      navPush(context, EditTransactUI(trData: transactData));
+                    if (data.uid == user.uid) {
+                      navPush(context, EditTransactUI(trData: data));
                     } else {
                       KSnackbar(
                         context,
@@ -1202,8 +1221,8 @@ class _BookUIState extends ConsumerState<BookUI> {
                                             children: [
                                               Text.rich(
                                                 TextSpan(
-                                                  text: kMoneyFormat(
-                                                      transactData.amount),
+                                                  text:
+                                                      kMoneyFormat(data.amount),
                                                   style: TextStyle(
                                                     fontFamily: "Product",
                                                     fontSize: 20,
@@ -1234,8 +1253,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                                         horizontal: 5,
                                                         vertical: 1),
                                                 decoration: BoxDecoration(
-                                                  color: transactData
-                                                              .transactMode ==
+                                                  color: data.transactMode ==
                                                           'CASH'
                                                       ? isDark
                                                           ? Dark.profitText
@@ -1248,7 +1266,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                                   borderRadius: kRadius(100),
                                                 ),
                                                 child: Text(
-                                                  transactData.transactMode,
+                                                  data.transactMode,
                                                   style: TextStyle(
                                                     letterSpacing: 1,
                                                     fontSize: 10,
@@ -1266,13 +1284,12 @@ class _BookUIState extends ConsumerState<BookUI> {
                                     ),
                                     StatsRow(
                                       color: Colors.amber.shade900,
-                                      content: transactData.source,
+                                      content: data.source,
                                       icon: Icons.person,
                                     ),
                                     Visibility(
-                                      visible: transactData.description
-                                          .trim()
-                                          .isNotEmpty,
+                                      visible:
+                                          data.description.trim().isNotEmpty,
                                       child: Container(
                                         margin: const EdgeInsets.only(top: 10),
                                         padding: const EdgeInsets.all(8),
@@ -1283,7 +1300,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                                               : Light.scaffold,
                                           borderRadius: kRadius(10),
                                         ),
-                                        child: Text(transactData.description),
+                                        child: Text(data.description),
                                       ),
                                     )
                                   ],
@@ -1301,7 +1318,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                               ),
                               width5,
                               Text(
-                                transactData.time.toString(),
+                                data.time.toString(),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
@@ -1316,7 +1333,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                 ),
               ),
               Visibility(
-                visible: transactData.uid == user.uid &&
+                visible: data.uid == user.uid &&
                     bookData.users != null &&
                     bookData.users!.isNotEmpty,
                 child: Padding(
@@ -1380,7 +1397,7 @@ class _BookUIState extends ConsumerState<BookUI> {
   }
 
   Widget BookMenu(
-    BuildContext context, {
+    bool isDark, {
     required String uid,
     required String bookId,
   }) {
@@ -1443,6 +1460,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                     isScrollControlled: true,
                     builder: (context) {
                       return kRenameModal(
+                        context,
                         bookId: bookData.bookId,
                         oldBookName: bookData.bookName,
                       );
@@ -1537,7 +1555,7 @@ class _BookUIState extends ConsumerState<BookUI> {
               ),
               BookMenuBtn(
                 onPressed: () {
-                  distribute();
+                  distribute(isDark);
                 },
                 labelSize: 12,
                 label: 'Distribute',
@@ -1690,7 +1708,7 @@ class _BookUIState extends ConsumerState<BookUI> {
     );
   }
 
-  Widget FilterBottomSheet(StateSetter setState) {
+  Widget FilterBottomSheet(bool isDark, StateSetter setState) {
     return StatefulBuilder(
       builder: (context, setState) {
         return SingleChildScrollView(
@@ -1759,6 +1777,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           FilterBtns(
+                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.all_inbox,
@@ -1768,6 +1787,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                             color: isDark ? Colors.white : Colors.black,
                           ),
                           FilterBtns(
+                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.file_download_outlined,
@@ -1777,6 +1797,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                             color: isDark ? Dark.profitCard : Light.profitCard,
                           ),
                           FilterBtns(
+                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.file_upload_outlined,
@@ -1809,10 +1830,11 @@ class _BookUIState extends ConsumerState<BookUI> {
     setState(() => _isLoading = false);
   }
 
-  GestureDetector FilterBtns({
-    label,
-    icon,
-    color,
+  GestureDetector FilterBtns(
+    bool isDark, {
+    required String label,
+    required Widget icon,
+    required Color color,
     required StateSetter setState,
   }) {
     bool isSelected = _selectedSortType == label;

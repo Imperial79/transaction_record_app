@@ -17,7 +17,7 @@ import '../../models/transactModel.dart';
 import '../../models/userModel.dart';
 import '../../services/database.dart';
 import '../Transact Screens/edit_transactUI.dart';
-import '../Transact Screens/new_transactUi.dart';
+import '../Transact Screens/New_Transact_UI.dart';
 
 class Due_Book_UI extends ConsumerStatefulWidget {
   final BookModel bookData;
@@ -117,7 +117,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     bool isCompleted = bookData.targetAmount != 0 &&
         (bookData.income == bookData.targetAmount);
 
@@ -297,7 +297,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                 },
               ),
               height20,
-              TransactList(bookData.bookId),
+              TransactList(isDark, bookId: bookData.bookId),
             ],
           ),
         ),
@@ -307,6 +307,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
           navPush(
             context,
             New_Transact_UI(
+              bookType: bookData.type,
               bookId: bookData.bookId,
             ),
           );
@@ -435,7 +436,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
     );
   }
 
-  Widget TransactList(String bookId) {
+  Widget TransactList(bool isDark, {required String bookId}) {
     dateTitle = '';
     return ValueListenableBuilder(
       valueListenable: bookListCounter,
@@ -469,7 +470,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
 
                             if (_selectedSortType == 'All') {
                               if (_searchController.text.isEmpty) {
-                                return _transactTile(transact);
+                                return _transactTile(isDark, data: transact);
                               } else if (transact.amount.contains(searchKey) ||
                                   transact.description
                                       .toLowerCase()
@@ -477,12 +478,12 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                   transact.source
                                       .toLowerCase()
                                       .contains(searchKey)) {
-                                return _transactTile(transact);
+                                return _transactTile(isDark, data: transact);
                               }
                             } else if (transact.type.toLowerCase() ==
                                 _selectedSortType.toLowerCase()) {
                               if (searchKey.isEmpty) {
-                                return _transactTile(transact);
+                                return _transactTile(isDark, data: transact);
                               } else if (transact.amount.contains(searchKey) ||
                                   transact.description
                                       .toLowerCase()
@@ -490,7 +491,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                   transact.source
                                       .toLowerCase()
                                       .contains(searchKey)) {
-                                return _transactTile(transact);
+                                return _transactTile(isDark, data: transact);
                               }
                             }
                             return const SizedBox.shrink();
@@ -503,7 +504,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
-                  : DummyTransactList(),
+                  : DummyTransactList(isDark),
             );
           },
         );
@@ -511,17 +512,17 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
     );
   }
 
-  Widget _transactTile(Transact transactData) {
-    bool isIncome = transactData.type == 'Income';
+  Widget _transactTile(bool isDark, {required Transact data}) {
+    bool isIncome = data.type == 'Income';
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == transactData.date) {
+    if (dateTitle == data.date) {
       showDateWidget = false;
     } else {
-      dateTitle = transactData.date;
+      dateTitle = data.date;
       showDateWidget = true;
     }
-    String ts = DateFormat("yMMMMd").parse(transactData.date).toString();
+    String ts = DateFormat("yMMMMd").parse(data.date).toString();
 
     if (dateTitle == todayDate) {
       dateLabel = 'Today';
@@ -553,7 +554,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              transactData.uid != user.uid &&
+              data.uid != user.uid &&
                       bookData.users != null &&
                       bookData.users!.isNotEmpty
                   ? Padding(
@@ -562,7 +563,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                           FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                         future: FirebaseFirestore.instance
                             .collection('users')
-                            .doc(transactData.uid)
+                            .doc(data.uid)
                             .get(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
@@ -583,8 +584,8 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
               Flexible(
                 child: GestureDetector(
                   onTap: () {
-                    if (transactData.uid == user.uid) {
-                      navPush(context, EditTransactUI(trData: transactData));
+                    if (data.uid == user.uid) {
+                      navPush(context, EditTransactUI(trData: data));
                     } else {
                       KSnackbar(
                         context,
@@ -676,7 +677,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                                 TextSpan(
                                                   text: oCcy.format(
                                                       double.parse(
-                                                          transactData.amount)),
+                                                          data.amount)),
                                                   style: TextStyle(
                                                     fontFamily: "Product",
                                                     fontSize: 20,
@@ -707,8 +708,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                                         horizontal: 5,
                                                         vertical: 1),
                                                 decoration: BoxDecoration(
-                                                  color: transactData
-                                                              .transactMode ==
+                                                  color: data.transactMode ==
                                                           'CASH'
                                                       ? isDark
                                                           ? Dark.profitText
@@ -721,7 +721,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                                   borderRadius: kRadius(100),
                                                 ),
                                                 child: Text(
-                                                  transactData.transactMode,
+                                                  data.transactMode,
                                                   style: TextStyle(
                                                     letterSpacing: 1,
                                                     fontSize: 10,
@@ -739,13 +739,12 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                     ),
                                     StatsRow(
                                       color: Colors.amber.shade900,
-                                      content: transactData.source,
+                                      content: data.source,
                                       icon: Icons.person,
                                     ),
                                     Visibility(
-                                      visible: transactData.description
-                                          .trim()
-                                          .isNotEmpty,
+                                      visible:
+                                          data.description.trim().isNotEmpty,
                                       child: Container(
                                         margin: const EdgeInsets.only(top: 10),
                                         padding: const EdgeInsets.all(8),
@@ -756,7 +755,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                               : Light.scaffold,
                                           borderRadius: kRadius(10),
                                         ),
-                                        child: Text(transactData.description),
+                                        child: Text(data.description),
                                       ),
                                     )
                                   ],
@@ -774,7 +773,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                               ),
                               width5,
                               Text(
-                                transactData.time.toString(),
+                                data.time.toString(),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
@@ -789,7 +788,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                 ),
               ),
               Visibility(
-                visible: transactData.uid == user.uid &&
+                visible: data.uid == user.uid &&
                     bookData.users != null &&
                     bookData.users!.isNotEmpty,
                 child: Padding(

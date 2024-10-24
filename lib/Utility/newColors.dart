@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'commons.dart';
 
-bool isDark = false;
+// bool isDark = false;
+
+ColorScheme kColor(BuildContext context) =>
+    ColorScheme.fromSeed(seedColor: Light.primary);
 ColorFilter svgColor(Color color) => ColorFilter.mode(
       color,
       BlendMode.srcIn,
@@ -10,35 +13,35 @@ ColorFilter svgColor(Color color) => ColorFilter.mode(
 
 class Light {
   static const Color scaffold = Colors.white;
-  static final Color modal = Colors.grey.shade300;
-  static final Color card = Colors.grey.shade200;
+  static const Color modal = Color(0xFFE0E0E0);
+  static const Color card = Color(0xFFEEEEEE);
   static const Color text = Colors.black;
-  static final Color primaryAccent = Colors.lightGreen.shade900;
-  static final Color profitText = Colors.lightGreen.shade700;
-  static final Color lossText = Colors.red.shade900;
+  static const Color primaryAccent = Color(0xFFDCEDC8);
+  static const Color profitText = Color(0xFF689F38);
+  static const Color lossText = Color(0xFFB71C1C);
   static const Color profitCard = Color(0xff98d3cb);
   static const Color onProfitCard = text;
   static const Color completeCard = Color(0xFFB5FFB7);
-  static final Color onCompleteCard = Colors.lightGreen.shade900;
+  static const Color onCompleteCard = Color(0xFF33691E);
   static const Color lossCard = Color(0xffca705f);
-  static const Color onLossCard = primary;
-  static const Color primary = Colors.black;
+  static const Color onLossCard = Colors.black;
+  static const Color primary = Color(0xFF33691E);
   static const Color fadeText = Colors.grey;
 }
 
 class Dark {
   static const Color scaffold = Colors.black;
-  static final Color modal = Colors.grey.shade700;
-  static final Color card = Colors.grey.shade900;
+  static const Color modal = Color(0xFF616161);
+  static const Color card = Color(0xFF212121);
   static const Color text = Colors.white;
-  static final Color primaryAccent = Colors.lightGreen.shade200;
-  static final Color profitText = Colors.lightGreen.shade200;
-  static final Color lossText = Colors.red.shade100;
+  static const Color primaryAccent = Color(0xFFC5E1A5);
+  static const Color profitText = Color(0xFFC5E1A5);
+  static const Color lossText = Color(0xFFFFCDD2);
   static const Color profitCard = Color(0xFF80CBC1);
   static const Color onProfitCard = Colors.black;
   static const Color completeCard = Color(0xFF223B05);
   static const Color onCompleteCard = Colors.lightGreenAccent;
-  static final Color lossCard = Colors.redAccent.shade200;
+  static const Color lossCard = Color(0xFFFF5252);
   static const Color onLossCard = text;
   static const Color primary = Color(0xff98d3cb);
   static const Color fadeText = Colors.grey;

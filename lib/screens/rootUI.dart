@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
-import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
@@ -26,20 +25,6 @@ class _RootUIState extends ConsumerState<RootUI> {
     const New_Book_UI(),
   ];
 
-  _changeTheme(String themeMode) async {
-    if (themeMode == 'dark') {
-      ref.read(themeProvider.notifier).state = "light";
-    } else if (themeMode == 'light') {
-      ref.read(themeProvider.notifier).state = "system";
-    } else {
-      ref.read(themeProvider.notifier).state = "dark";
-    }
-
-    var hiveBox = Hive.box("hiveBox");
-
-    hiveBox.put("theme", themeMode);
-  }
-
   @override
   void dispose() {
     Hive.close();
@@ -48,9 +33,9 @@ class _RootUIState extends ConsumerState<RootUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
-    final themeMode = ref.watch(themeProvider);
+
     if (user != null) {
       return Scaffold(
         body: SafeArea(
@@ -65,12 +50,12 @@ class _RootUIState extends ConsumerState<RootUI> {
                       child: Row(
                         children: [
                           _changeToPageButton(
-                            context,
+                            isDark,
                             index: 0,
                             label: 'Home',
                           ),
                           _changeToPageButton(
-                            context,
+                            isDark,
                             index: 1,
                             label: 'New Book',
                           ),
@@ -83,18 +68,7 @@ class _RootUIState extends ConsumerState<RootUI> {
                   //       NavPush(context, MigrateUI());
                   //     },
                   //     icon: Icon(Icons.refresh)),
-                  IconButton(
-                    onPressed: () {
-                      _changeTheme(themeMode);
-                    },
-                    icon: Icon(
-                      themeMode == "dark"
-                          ? Icons.light_mode
-                          : themeMode == "light"
-                              ? Icons.auto_awesome
-                              : Icons.dark_mode,
-                    ),
-                  ),
+
                   IconButton(
                     onPressed: () {
                       navPush(context, const NotificationsUI());
@@ -162,7 +136,7 @@ class _RootUIState extends ConsumerState<RootUI> {
   }
 
   Widget _changeToPageButton(
-    BuildContext context, {
+    bool isDark, {
     required int index,
     required String label,
   }) {

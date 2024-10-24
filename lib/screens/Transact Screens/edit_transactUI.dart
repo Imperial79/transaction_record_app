@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
@@ -145,7 +144,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     }
   }
 
-  Widget AlertBox(BuildContext context) {
+  Widget AlertBox(bool isDark) {
     return StatefulBuilder(
       builder: (context, StateSetter setState) {
         return AlertDialog(
@@ -255,7 +254,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: _isLoading,
@@ -320,91 +319,68 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     height10,
                     kCard(
                       context,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                size: 20,
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                              width10,
-                              Text(
-                                'Created on',
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () async {
-                                    _selectedDateMap = await selectDate(
-                                        context,
-                                        setState,
-                                        DateTime.parse(widget.trData.ts));
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: kRadius(10),
-                                      color:
-                                          isDark ? Dark.scaffold : Colors.white,
-                                    ),
-                                    child: Text(
-                                      _selectedDateMap['displayDate'],
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ),
-                              InkWell(
+                      icon: Icons.schedule,
+                      title: "Created On",
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
                                 onTap: () async {
-                                  _selectedTimeMap = await selectTime(
-                                    context,
-                                    setState,
-                                    TimeOfDay.fromDateTime(
-                                      DateTime.parse(
-                                        _selectedDateMap['tsDate'],
-                                      ),
-                                    ),
-                                  );
+                                  _selectedDateMap = await selectDate(
+                                      context,
+                                      setState,
+                                      DateTime.parse(widget.trData.ts));
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
                                     color:
-                                        isDark ? Dark.scaffold : Light.scaffold,
+                                        isDark ? Dark.scaffold : Colors.white,
                                   ),
                                   child: Text(
-                                    _selectedTimeMap['displayTime'],
-                                    style: const TextStyle(
+                                    _selectedDateMap['displayDate'],
+                                    style: TextStyle(
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                            width5,
+                            InkWell(
+                              onTap: () async {
+                                _selectedTimeMap = await selectTime(
+                                  context,
+                                  setState,
+                                  TimeOfDay.fromDateTime(
+                                    DateTime.parse(
+                                      _selectedDateMap['tsDate'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: kRadius(10),
+                                  color:
+                                      isDark ? Dark.scaffold : Light.scaffold,
+                                ),
+                                child: Text(
+                                  _selectedTimeMap['displayTime'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     height10,
                     KTextfield.regular(
@@ -482,7 +458,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            return AlertBox(context);
+                            return AlertBox(isDark);
                           },
                         );
                       },
@@ -644,7 +620,8 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     );
   }
 
-  Widget _typeBtn({final label, icon}) {
+  Widget _typeBtn({required String label, required IconData icon}) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return MaterialButton(
       onPressed: () {},
       shape: RoundedRectangleBorder(

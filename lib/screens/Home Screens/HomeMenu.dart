@@ -45,6 +45,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     final user = ref.watch(userProvider);
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Padding(
@@ -81,6 +82,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       HomeMenuBtn(
+                        isDark,
                         label: 'Account',
                         borderColor: isDark ? Dark.fadeText : Light.fadeText,
                         child: GestureDetector(
@@ -118,6 +120,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
                       //       : Colors.amber.shade200,
                       // ),
                       HomeMenuBtn(
+                        isDark,
                         label: 'Logout',
                         borderColor:
                             isDark ? Colors.red.shade300 : Colors.red.shade900,
@@ -146,10 +149,12 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
   }
 
   Widget HomeMenuBtn(
-      {final label,
-      required Widget child,
-      Color? btnColor,
-      Color? borderColor}) {
+    bool isDark, {
+    required String label,
+    required Widget child,
+    Color? btnColor,
+    Color? borderColor,
+  }) {
     return Expanded(
       child: Column(
         mainAxisSize: MainAxisSize.min,

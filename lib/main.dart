@@ -31,6 +31,11 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  final Map _themeMap = {
+    "Light": ThemeMode.light,
+    "Dark": ThemeMode.dark,
+    "System": ThemeMode.system,
+  };
   @override
   void initState() {
     super.initState();
@@ -38,6 +43,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   _init() async {
+    ref.read(hiveThemeFuture);
     ref.read(auth);
   }
 
@@ -47,15 +53,12 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     final user = ref.watch(userProvider);
     final themeMode = ref.watch(themeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
-      themeMode: themeMode == "light"
-          ? ThemeMode.light
-          : themeMode == "dark"
-              ? ThemeMode.dark
-              : ThemeMode.system,
+      themeMode: _themeMap[themeMode],
       theme: KThemeData.light(),
       darkTheme: KThemeData.dark(),
       home: UpgradeAlert(

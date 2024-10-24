@@ -32,6 +32,7 @@ class _KScaffoldState extends State<KScaffold> {
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Stack(
         alignment: Alignment.center,
@@ -93,6 +94,7 @@ class _KScaffoldState extends State<KScaffold> {
   }
 
   AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 200),

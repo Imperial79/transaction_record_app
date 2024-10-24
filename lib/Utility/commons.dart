@@ -1,4 +1,8 @@
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
+import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 
 const String appLogoPath = 'lib/assets/logo/logo.png';
 
@@ -24,3 +28,54 @@ Widget get width20 => kHeight(kSpace20);
 
 // Border radius utility
 BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
+
+void KSnackbar(
+  BuildContext context, {
+  required String content,
+  bool isDanger = false,
+  bool showIcon = true,
+  SnackBarAction? action,
+}) {
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
+  DelightToastBar.removeAll();
+  DelightToastBar(
+    position: DelightSnackbarPosition.top,
+    autoDismiss: true,
+    snackbarDuration: const Duration(seconds: 3),
+    builder: (context) => ToastCard(
+      shadowColor: Colors.transparent,
+      color: isDanger
+          ? isDark
+              ? Dark.lossCard
+              : Light.lossCard
+          : isDark
+              ? Dark.profitCard
+              : Light.profitCard,
+      leading: Icon(
+        isDanger ? Icons.dangerous : Icons.verified,
+        size: 28,
+        color: isDanger
+            ? isDark
+                ? Dark.onLossCard
+                : Light.onLossCard
+            : isDark
+                ? Dark.onProfitCard
+                : Light.onProfitCard,
+      ),
+      title: Text(
+        content,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
+          color: isDanger
+              ? isDark
+                  ? Dark.onLossCard
+                  : Light.onLossCard
+              : isDark
+                  ? Dark.onProfitCard
+                  : Light.onProfitCard,
+        ),
+      ),
+    ),
+  ).show(context);
+}

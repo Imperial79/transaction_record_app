@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -25,7 +26,8 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   final Map<String, String> bookTypeMap = {
     "Regular": "Regular book is used for daily transaction audits.",
     "Due":
-        "Due book is used for tracking due amount lend to someone or chasing a target amount."
+        "Due book is used for tracking due amount lend to someone or chasing a target amount.",
+    "Savings": "Savings book is used for tracking collected/saved amount."
   };
 
   bool isLoading = false;
@@ -102,7 +104,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -127,6 +129,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                   }
                 },
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.auto_mode_sharp,
@@ -150,81 +153,64 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                 ),
               ),
               height10,
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 13, vertical: 20),
-                decoration: BoxDecoration(
-                  color: isDark ? Dark.card : Light.card,
-                  borderRadius: kRadius(15),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.schedule,
-                          size: 20,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        width10,
-                        Text(
-                          'Created on',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    height10,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: kRadius(10),
-                              color: isDark ? Dark.scaffold : Light.scaffold,
-                            ),
-                            child: Text(
-                              DateFormat.yMMMMd().format(_selectedDate),
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                        width5,
-                        Container(
+              kCard(
+                context,
+                icon: Icons.schedule,
+                title: "Created On",
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: kRadius(10),
                             color: isDark ? Dark.scaffold : Light.scaffold,
                           ),
                           child: Text(
-                            _selectedTime,
+                            DateFormat.yMMMMd().format(_selectedDate),
                             style: TextStyle(
                               color: isDark ? Colors.white : Colors.black,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      width5,
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: kRadius(10),
+                          color: isDark ? Dark.scaffold : Light.scaffold,
+                        ),
+                        child: Text(
+                          _selectedTime,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               height20,
               const Text("Book Type"),
               height10,
-              Column(
-                children: List.generate(
-                  bookTypeMap.length,
-                  (index) => _bookTypeBtn(
+              MasonryGridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                itemCount: bookTypeMap.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return _bookTypeBtn(
+                    isDark,
                     title: bookTypeMap.keys.toList()[index],
                     subTitle: bookTypeMap.values.toList()[index],
                     identifier: bookTypeMap.keys.toList()[index].toLowerCase(),
-                  ),
-                ),
+                  );
+                },
               ),
               if (selectedBookType == "due")
                 Column(
@@ -266,7 +252,8 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
     );
   }
 
-  Widget _bookTypeBtn({
+  Widget _bookTypeBtn(
+    bool isDark, {
     required String title,
     required String subTitle,
     required String identifier,
@@ -278,75 +265,67 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           selectedBookType = identifier;
         });
       },
-      child: AnimatedSize(
-        alignment: Alignment.topCenter,
-        duration: const Duration(milliseconds: 200),
-        child: Container(
-          margin: EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            borderRadius: kRadius(15),
-            color: isDark ? Dark.card : Light.card,
-            border: Border.fromBorderSide(
-              BorderSide(
-                width: 2,
-                color: isActive
-                    ? isDark
-                        ? Dark.primaryAccent
-                        : Light.primaryAccent
-                    : isDark
-                        ? Dark.card
-                        : Light.card,
-              ),
+      child: AnimatedContainer(
+        curve: Curves.ease,
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          borderRadius: kRadius(15),
+          color: isDark ? Dark.card : Light.card,
+          border: Border.fromBorderSide(
+            BorderSide(
+              width: 2,
+              color: isActive
+                  ? isDark
+                      ? Dark.primaryAccent
+                      : Light.profitText
+                  : isDark
+                      ? Dark.card
+                      : Light.card,
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-            child: Row(
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Column(
+          children: [
+            Row(
               children: [
                 CircleAvatar(
                   backgroundColor: isActive
                       ? isDark
                           ? Dark.primaryAccent
-                          : Light.primaryAccent
+                          : Light.profitText
                       : isDark
-                          ? Dark.text
+                          ? Dark.fadeText
                           : Light.text,
                   radius: 5,
                 ),
-                width20,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "$title Book",
-                        style: TextStyle(
-                          color: isActive
-                              ? isDark
-                                  ? Dark.primaryAccent
-                                  : Light.primaryAccent
-                              : isDark
-                                  ? Dark.text
-                                  : Light.text,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (isActive)
-                        Text(
-                          subTitle,
-                          style: TextStyle(
-                            letterSpacing: .6,
-                            color: isDark ? Dark.text : Light.text,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                    ],
+                width10,
+                Text(
+                  "$title Book",
+                  style: TextStyle(
+                    color: isActive
+                        ? isDark
+                            ? Dark.primaryAccent
+                            : Light.profitText
+                        : isDark
+                            ? Dark.text
+                            : Light.text,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
                   ),
                 ),
               ],
             ),
-          ),
+            height10,
+            Text(
+              subTitle,
+              style: TextStyle(
+                letterSpacing: .6,
+                color: isDark ? Dark.text : Light.text,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
         ),
       ),
     );

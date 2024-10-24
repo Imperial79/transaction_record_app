@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
@@ -100,7 +99,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
 
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -111,7 +110,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: StreamBuilder<dynamic>(
+          child: StreamBuilder(
             stream: FirebaseRefs.requestRef
                 .where('users', arrayContains: user!.uid)
                 .snapshots(),
@@ -119,7 +118,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 600),
                 child: snapshot.hasData
-                    ? snapshot.data.docs.length == 0
+                    ? snapshot.data!.docs.isEmpty
                         ? NoData(context, customText: 'No Notifications Yet')
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,11 +127,15 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                               height10,
                               ListView.separated(
                                 shrinkWrap: true,
-                                itemCount: snapshot.data.docs.length,
+                                itemCount: snapshot.data!.docs.length,
                                 itemBuilder: (context, index) {
-                                  DocumentSnapshot ds =
-                                      snapshot.data.docs[index];
-                                  return _notificationCard(user.uid, ds);
+                                  Map<String, dynamic> data =
+                                      snapshot.data!.docs[index].data();
+                                  return _notificationCard(
+                                    isDark,
+                                    uid: user.uid,
+                                    data: data,
+                                  );
                                 },
                                 separatorBuilder: (context, index) => height10,
                               ),
@@ -158,7 +161,11 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
     );
   }
 
-  Widget _notificationCard(String uid, var requestData) {
+  Widget _notificationCard(
+    bool isDark, {
+    required String uid,
+    required Map<String, dynamic> data,
+  }) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -169,7 +176,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FutureBuilder<dynamic>(
-            future: FirebaseRefs.userRef.doc(requestData['senderId']).get(),
+            future: FirebaseRefs.userRef.doc(data['senderId']).get(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.data() != null) {
@@ -184,7 +191,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
           ),
           height10,
           Text(
-            'Join my book "${requestData['bookName']}" so that we can share the expense details!',
+            'Join my book "${data['bookName']}" so that we can share the expense details!',
             style: const TextStyle(
               fontSize: 15,
             ),
@@ -196,9 +203,9 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                 onPressed: () async {
                   await _addToBook(
                     uid: uid,
-                    bookId: requestData['bookId'],
-                    bookName: requestData['bookName'],
-                    requestId: requestData['id'],
+                    bookId: data['bookId'],
+                    bookName: data['bookName'],
+                    requestId: data['id'],
                   );
                 },
                 child: const Text('Accept'),
@@ -208,7 +215,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                 onPressed: () async {
                   await _removeFromRequest(
                     uid: uid,
-                    requestId: requestData['id'],
+                    requestId: data['id'],
                   );
                 },
                 style: ElevatedButton.styleFrom(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:transaction_record_app/Components/WIdgets.dart';
+import 'package:transaction_record_app/Repository/system_repository.dart';
 
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -72,8 +73,9 @@ class _AccountUIState extends ConsumerState<AccountUI> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
+
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -184,6 +186,17 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                   ),
                 ),
               ),
+              height20,
+              kLabel("System Theme"),
+              Row(
+                children: [
+                  _themeBtn(isDark, "Light"),
+                  width10,
+                  _themeBtn(isDark, "Dark"),
+                  width10,
+                  _themeBtn(isDark, "System"),
+                ],
+              ),
             ],
           ),
         ),
@@ -233,6 +246,42 @@ class _AccountUIState extends ConsumerState<AccountUI> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _themeBtn(bool isDark, String theme) {
+    Color inactiveColor = isDark ? Dark.card : Light.card;
+    Color inactiveBorderColor = isDark ? Dark.card : Light.card;
+    Color activeColor =
+        isDark ? Dark.primaryAccent.withOpacity(.3) : Light.primaryAccent;
+    Color activeBorderColor = isDark ? Dark.primaryAccent : Light.primary;
+    return Expanded(
+      child: Consumer(
+        builder: (context, ref, _) {
+          final selectedTheme = ref.watch(themeProvider);
+          bool isActive = selectedTheme == theme;
+
+          return MaterialButton(
+            onPressed: () async {
+              ref.read(themeProvider.notifier).state = theme;
+              var hiveBox = Hive.box("hiveBox");
+
+              await hiveBox.put("theme", theme);
+            },
+            elevation: 0,
+            highlightElevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: kRadius(7),
+              side: BorderSide(
+                color: isActive ? activeBorderColor : inactiveBorderColor,
+              ),
+            ),
+            padding: EdgeInsets.all(15),
+            color: isActive ? activeColor : inactiveColor,
+            child: Text(theme),
+          );
+        },
       ),
     );
   }

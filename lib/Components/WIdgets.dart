@@ -8,7 +8,7 @@ Widget kBackButton(
   context, {
   bool isSearching = false,
 }) {
-  isDark = Theme.of(context).brightness == Brightness.dark;
+  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return IconButton(
     color: isDark ? Dark.profitText : Light.profitText,
     onPressed: () {
