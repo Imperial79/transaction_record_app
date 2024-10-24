@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-const String kAppVersion = "2.5.4";
+const String kAppVersion = "2.5.5";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
