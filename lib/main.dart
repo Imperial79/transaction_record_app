@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/system_repository.dart';
-import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/screens/Splash%20Screen/splashUI.dart';
 import 'package:transaction_record_app/screens/rootUI.dart';
@@ -18,7 +17,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
   await Hive.openBox('hiveBox');
-  ConnectionConfig.listenForConnection();
 
   runApp(ProviderScope(child: const MyApp()));
 }

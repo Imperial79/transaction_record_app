@@ -88,21 +88,15 @@ class _RootUIState extends ConsumerState<RootUI> {
                                   child: const CircularProgressIndicator(),
                                 )
                               : snapshot.data!.docs.isEmpty
-                                  ? const Icon(Icons.notifications)
-                                  : CircleAvatar(
-                                      radius: 12,
-                                      backgroundColor: isDark
-                                          ? Dark.profitText
-                                          : Light.profitText,
-                                      foregroundColor:
-                                          isDark ? Colors.black : Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: FittedBox(
-                                          fit: BoxFit.contain,
-                                          child: Text(
-                                              "${snapshot.data!.docs.length}"),
-                                        ),
+                                  ? const Icon(Icons.notifications_none_rounded)
+                                  : Badge(
+                                      label:
+                                          Text("${snapshot.data!.docs.length}"),
+                                      child: Icon(
+                                        Icons.notifications_active,
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
                                       ),
                                     ),
                         );

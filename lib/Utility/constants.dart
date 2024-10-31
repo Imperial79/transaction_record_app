@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-const String kAppVersion = "2.5.5";
+const String kAppVersion = "2.6.0";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
@@ -42,24 +40,6 @@ class Constants {
 
   static String getSearchString(String text) {
     return text.trim().toLowerCase();
-  }
-}
-
-class ConnectionConfig {
-  static final InternetConnection _connection = InternetConnection();
-  static ValueNotifier<bool> hasInternet = ValueNotifier(true);
-
-  static void listenForConnection() {
-    _connection.onStatusChange.listen((status) {
-      switch (status) {
-        case InternetStatus.connected:
-          hasInternet.value = true;
-          break;
-        case InternetStatus.disconnected:
-          hasInternet.value = false;
-          break;
-      }
-    });
   }
 }
 

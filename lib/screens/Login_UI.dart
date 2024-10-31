@@ -1,8 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
@@ -73,38 +73,27 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      logoPath,
-                                      height: 70,
-                                    ),
-                                    height10,
                                     const Text(
                                       'Transact Record',
                                       style: TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 40,
                                         fontWeight: FontWeight.w500,
+                                        fontFamily: "Serif",
                                       ),
                                     ),
-                                    const Text(
-                                      '"Your Personal Money Manager"',
+                                    Text(
+                                      'Your Personal Money Manager',
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.w400,
+                                        color: isDark
+                                            ? Dark.primary
+                                            : Light.primary,
                                       ),
                                     ),
                                     height20,
                                     Text(
-                                      '#OpenSource',
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.7,
-                                      ),
-                                    ),
-                                    Text(
-                                      '#Github',
+                                      '#FOSS',
                                       style: TextStyle(
                                         color: isDark
                                             ? Dark.profitText
@@ -118,22 +107,19 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                               ),
                               Row(
                                 children: [
-                                  SvgPicture.asset(
-                                    'lib/assets/icons/cloud.svg',
-                                    colorFilter: svgColor(
-                                      isDark
-                                          ? Dark.profitText
-                                          : Light.profitText,
-                                    ),
-                                    height: 20,
+                                  Icon(
+                                    Icons.cloud,
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
                                   ),
                                   width10,
                                   Expanded(
                                     child: Text(
                                       'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
                                         color: isDark
                                             ? Dark.profitText
                                             : Light.profitText,
@@ -142,21 +128,11 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(
-                                height: 30,
-                              ),
+                              height20,
                               InkWell(
                                 borderRadius: kRadius(15),
                                 splashColor: Colors.red,
                                 onTap: () async {
-                                  // setState(() => isLoading = true);
-                                  // String res =
-                                  //     await AuthMethods.signIn(context);
-                                  // if (res == 'fail') {
-                                  //   if (mounted) {
-                                  //     setState(() => isLoading = false);
-                                  //   }
-                                  // }
                                   _googleSignIn();
                                 },
                                 child: Ink(
@@ -165,7 +141,6 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                     borderRadius: kRadius(10),
                                     color:
                                         isDark ? Dark.lossCard : Light.lossCard,
-                                    // color: Color(0xffda8363),
                                     border:
                                         Border.all(color: Colors.red.shade100),
                                   ),
@@ -194,40 +169,39 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              const Text(
-                                'By signing in, you agree with our ',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                              height15,
+                              Text.rich(
+                                style: TextStyle(fontSize: 16),
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            "By signing in, you agree with our "),
+                                    TextSpan(
+                                      text: "Terms & Conditions ",
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    TextSpan(text: "and "),
+                                    TextSpan(
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () async {
+                                          await launchTheUrl(_privacyPolicyUrl);
+                                        },
+                                      text: "Privacy Policy.",
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Dark.profitText
+                                            : Light.profitText,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextLink(
-                                    text: 'Terms and Conditions',
-                                    link: Uri.parse(''),
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
-                                    textAlign: TextAlign.start,
-                                  ),
-                                  TextLink(
-                                    text: 'Privacy Policy',
-                                    link: _privacyPolicyUrl,
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
-                                    textAlign: TextAlign.end,
-                                  ),
-                                ],
                               ),
                             ],
                           ),
@@ -251,29 +225,11 @@ class _LoginUIState extends ConsumerState<LoginUI> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "T₹ansact",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 100,
-                height: 1,
-                color: textColor,
-              ),
-            ),
-            Text(
-              "Record",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 100,
-                height: 1,
-                color: textColor,
-              ),
-            ),
-            Text(
               "₹",
               style: TextStyle(
                 fontSize: 400,
                 height: 1,
-                fontFamily: "",
+                fontFamily: "Serif",
                 color: textColor,
               ),
             ),

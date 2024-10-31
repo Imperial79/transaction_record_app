@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'commons.dart';
 
-// bool isDark = false;
+// Function to get ColorScheme based on theme
+ColorScheme kColor(BuildContext context) => Theme.of(context).colorScheme;
 
-ColorScheme kColor(BuildContext context) =>
-    ColorScheme.fromSeed(seedColor: Light.primary);
 ColorFilter svgColor(Color color) => ColorFilter.mode(
       color,
       BlendMode.srcIn,
@@ -47,47 +45,52 @@ class Dark {
   static const Color fadeText = Colors.grey;
 }
 
-// --------- CUSTOM THEMEDATA --------------
-
 class KThemeData {
   static ThemeData light() => ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
         scaffoldBackgroundColor: Light.scaffold,
         brightness: Brightness.light,
-        colorSchemeSeed: Light.profitCard,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Light.primary,
+          brightness: Brightness.light,
+          primary: Light.primary,
+          secondary: Light.profitCard,
+          onPrimary: Colors.white,
+          surface: Light.card,
+        ),
         cardTheme: CardTheme(
           elevation: 0,
           color: Light.card,
-          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: kRadius(20),
           ),
         ),
-        primaryColorLight: Light.profitCard,
-        primaryColorDark: Dark.profitCard,
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            visualDensity: VisualDensity.compact,
-          ),
-        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: Light.primary,
-              foregroundColor: Colors.white),
+            elevation: 0,
+            backgroundColor: Light.primary,
+            foregroundColor: Colors.white,
+          ),
         ),
       );
+
   static ThemeData dark() => ThemeData(
         fontFamily: 'Product',
         useMaterial3: true,
         scaffoldBackgroundColor: Dark.scaffold,
         brightness: Brightness.dark,
-        cardColor: Dark.card,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Dark.primary,
+          brightness: Brightness.dark,
+          primary: Dark.primary,
+          secondary: Dark.profitCard,
+          onPrimary: Colors.black,
+          surface: Dark.card,
+        ),
         cardTheme: CardTheme(
           elevation: 0,
           color: Dark.card,
-          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: kRadius(20),
           ),
@@ -95,18 +98,13 @@ class KThemeData {
         textTheme: const TextTheme(
           labelLarge: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white),
-          bodySmall: TextStyle(color: Colors.white),
-          displayLarge: TextStyle(color: Colors.white),
-          displayMedium: TextStyle(color: Colors.white),
-          displaySmall: TextStyle(color: Colors.white),
         ),
-        colorSchemeSeed: Dark.profitCard,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: Dark.primary,
-              foregroundColor: Colors.black),
+            elevation: 0,
+            backgroundColor: Dark.primary,
+            foregroundColor: Colors.black,
+          ),
         ),
       );
 }

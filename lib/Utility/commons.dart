@@ -6,25 +6,21 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 
 const String appLogoPath = 'lib/assets/logo/logo.png';
 
-// Define common space constants
-const double kSpace5 = 5.0;
-const double kSpace10 = 10.0;
-const double kSpace15 = 15.0;
-const double kSpace20 = 20.0;
-
 // Helper widgets for vertical and horizontal spacing
-Widget kWidth(double height) => SizedBox(height: height);
-Widget kHeight(double width) => SizedBox(width: width);
+Widget kWidth(double width) => SizedBox(width: width);
+Widget kHeight(double height) => SizedBox(height: height);
 
 // Shortcuts for specific spacings
-Widget get height5 => kWidth(kSpace5);
-Widget get height10 => kWidth(kSpace10);
-Widget get height15 => kWidth(kSpace15);
-Widget get height20 => kWidth(kSpace20);
-Widget get width5 => kHeight(kSpace5);
-Widget get width10 => kHeight(kSpace10);
-Widget get width15 => kHeight(kSpace15);
-Widget get width20 => kHeight(kSpace20);
+const SizedBox height5 = SizedBox(height: 5);
+const SizedBox height10 = SizedBox(height: 10);
+const SizedBox height15 = SizedBox(height: 15);
+const SizedBox height20 = SizedBox(height: 20);
+const SizedBox height50 = SizedBox(height: 50);
+
+const SizedBox width5 = SizedBox(width: 5);
+const SizedBox width10 = SizedBox(width: 10);
+const SizedBox width15 = SizedBox(width: 15);
+const SizedBox width20 = SizedBox(width: 20);
 
 // Border radius utility
 BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
@@ -37,7 +33,6 @@ void KSnackbar(
   SnackBarAction? action,
 }) {
   bool isDark = Theme.of(context).brightness == Brightness.dark;
-  DelightToastBar.removeAll();
   DelightToastBar(
     position: DelightSnackbarPosition.top,
     autoDismiss: true,
