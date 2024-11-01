@@ -74,7 +74,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Text(
-                                      'Transact Record',
+                                      'Transact',
                                       style: TextStyle(
                                         fontSize: 40,
                                         fontWeight: FontWeight.w500,
@@ -171,7 +171,11 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                               ),
                               height15,
                               Text.rich(
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      isDark ? Dark.fadeText : Light.fadeText,
+                                ),
                                 TextSpan(
                                   children: [
                                     TextSpan(

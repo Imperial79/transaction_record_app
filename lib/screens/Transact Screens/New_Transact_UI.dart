@@ -102,7 +102,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           source: sourceField.text,
           transactMode: transactMode,
           description: descriptionField.text,
-          type: "Income",
+          type: bookType == "savings" ? "Income" : transactType,
           date: _selectedDateMap['displayDate'],
           time: _selectedTimeMap['displayTime'],
           bookId: bookId,
