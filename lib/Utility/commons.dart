@@ -74,3 +74,18 @@ void KSnackbar(
     ),
   ).show(context);
 }
+
+Widget kNoData(
+  bool isDark, {
+  required String title,
+}) {
+  return Center(
+    child: Text(
+      title,
+      style: TextStyle(
+          fontSize: 25,
+          fontFamily: "Serif",
+          color: isDark ? Dark.fadeText : Light.fadeText),
+    ),
+  );
+}

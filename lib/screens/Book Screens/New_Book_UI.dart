@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
+import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
@@ -70,20 +70,20 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           users: [],
         );
 
-        await FirebaseFirestore.instance
-            .collection('transactBooks')
-            .doc("$_selectedTimeStamp")
-            .set(
-              newBook.toMap(),
-            );
+        final res = await ref
+            .read(bookRepository)
+            .createBook(bookId: "$_selectedTimeStamp", data: newBook.toMap());
+        if (res) {
+          KSnackbar(context, content: 'Book Created');
 
-        KSnackbar(context, content: 'Book Created');
-
-        ref.read(pageControllerProvider).animateToPage(
-              0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.ease,
-            );
+          await ref.read(pageControllerProvider).animateToPage(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.ease,
+              );
+        } else {
+          KSnackbar(context, content: "Something went wrong!", isDanger: true);
+        }
       }
     } catch (e) {
       KSnackbar(context, content: "$e", isDanger: true);

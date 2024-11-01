@@ -147,93 +147,93 @@ class AppTitle extends StatelessWidget {
   }
 }
 
-Widget DummyTransactList(bool isDark) {
-  return Column(
-    children: [
-      for (int i = 0; i <= 10; i++)
-        Container(
-          margin: const EdgeInsets.only(bottom: 20),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF333333) : Light.card,
-              borderRadius: kRadius(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Container(
-                                width: 200,
-                                height: 20,
-                                color: Colors.grey.withOpacity(0.5),
-                              ),
-                              const Spacer(),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            width: 200,
-                            height: 20,
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                          Container(
-                            width: 200,
-                            height: 20,
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.5),
-                    borderRadius: kRadius(100),
-                  ),
-                  child: const SizedBox(
-                    width: 200,
-                    height: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-    ],
-  );
-}
+// Widget DummyTransactList(bool isDark) {
+//   return Column(
+//     children: [
+//       for (int i = 0; i <= 10; i++)
+//         Container(
+//           margin: const EdgeInsets.only(bottom: 20),
+//           child: Container(
+//             padding: const EdgeInsets.all(10),
+//             width: double.infinity,
+//             decoration: BoxDecoration(
+//               color: isDark ? const Color(0xFF333333) : Light.card,
+//               borderRadius: kRadius(20),
+//             ),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                             crossAxisAlignment: CrossAxisAlignment.center,
+//                             children: [
+//                               Container(
+//                                 padding: const EdgeInsets.all(10),
+//                                 height: 40,
+//                                 width: 40,
+//                                 decoration: BoxDecoration(
+//                                   color: Colors.grey.withOpacity(0.5),
+//                                   shape: BoxShape.circle,
+//                                 ),
+//                               ),
+//                               const SizedBox(
+//                                 width: 10,
+//                               ),
+//                               Container(
+//                                 width: 200,
+//                                 height: 20,
+//                                 color: Colors.grey.withOpacity(0.5),
+//                               ),
+//                               const Spacer(),
+//                             ],
+//                           ),
+//                           const SizedBox(
+//                             height: 10,
+//                           ),
+//                           Container(
+//                             width: 200,
+//                             height: 20,
+//                             color: Colors.grey.withOpacity(0.5),
+//                           ),
+//                           Container(
+//                             width: 200,
+//                             height: 20,
+//                             color: Colors.grey.withOpacity(0.5),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(
+//                   height: 20,
+//                 ),
+//                 Container(
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//                   decoration: BoxDecoration(
+//                     color: Colors.grey.withOpacity(0.5),
+//                     borderRadius: kRadius(100),
+//                   ),
+//                   child: const SizedBox(
+//                     width: 200,
+//                     height: 20,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//     ],
+//   );
+// }
 
 Widget StatsCard(
   BuildContext context, {

@@ -504,7 +504,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
-                  : DummyTransactList(isDark),
+                  : SizedBox(),
             );
           },
         );

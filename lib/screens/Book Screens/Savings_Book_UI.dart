@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import '../../Functions/navigatorFns.dart';
@@ -200,7 +199,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                             color: isDark ? Dark.fadeText : Light.fadeText,
                           ),
                         )
-                  : DummyTransactList(isDark),
+                  : SizedBox(),
             );
           },
         );
