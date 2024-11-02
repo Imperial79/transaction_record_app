@@ -8,13 +8,13 @@ final transactListStream =
     StreamProvider.family<List<Transact>, String>((ref, data) {
   final body = jsonDecode(data);
   String bookId = body["bookId"];
-  int bookCount = body["bookCount"];
+  int count = body["count"];
   return FirebaseFirestore.instance
       .collection('transactBooks')
       .doc(bookId)
       .collection('transacts')
       .orderBy('ts', descending: true)
-      .limit(bookCount)
+      .limit(count)
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => Transact.fromMap(doc.data())).toList());

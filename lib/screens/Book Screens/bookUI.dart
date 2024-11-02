@@ -8,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:redacted/redacted.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
@@ -45,15 +44,12 @@ class _BookUIState extends ConsumerState<BookUI> {
 
   final ValueNotifier<bool> _showThings = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
-  // final ValueNotifier<int> bookListCounter = ValueNotifier<int>(20);
 
-  int bookCount = 20;
-  bool _isLoading = false;
+  int count = 5;
   final searchKey = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
 
-  // int bookListCounter = 5;
   int searchingBookListCounter = 50;
   bool isSearching = false;
 
@@ -71,7 +67,7 @@ class _BookUIState extends ConsumerState<BookUI> {
       }
 
       if (_scrollController.position.atEdge) {
-        bookCount += 5;
+        count += 5;
       }
     });
   }
@@ -181,9 +177,6 @@ class _BookUIState extends ConsumerState<BookUI> {
           }
         }
 
-        // balanceSheet.forEach((element) {
-        //   print(object)
-        // });
         showModalBottomSheet(
           context: context,
           elevation: 0,
@@ -224,10 +217,22 @@ class _BookUIState extends ConsumerState<BookUI> {
     final user = ref.read(userProvider);
     final transactList = ref.watch(transactListStream(jsonEncode({
       "bookId": widget.bookData.bookId,
-      "bookCount": bookCount,
+      "count": count,
     })));
+    double income = 0;
+    double expense = 0;
+    transactList.whenData(
+      (transacts) {
+        for (var element in transacts) {
+          if (element.type == "Income") {
+            income += double.parse(element.amount);
+          } else {
+            expense += double.parse(element.amount);
+          }
+        }
+      },
+    );
 
-    // log("$bookList");
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -389,35 +394,10 @@ class _BookUIState extends ConsumerState<BookUI> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                children: [
-                  StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    stream: FirebaseRefs.transactBookRef(bookData.bookId)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 600),
-                        switchInCurve: Curves.easeIn,
-                        switchOutCurve: Curves.easeOut,
-                        child: snapshot.data != null
-                            ? _header(isDark, data: snapshot.data!.data()!)
-                                .redacted(
-                                context: context,
-                                redact: !snapshot.hasData,
-                              )
-                            : SizedBox(),
-                      );
-                    },
-                  ),
-                  height10,
-                ],
-              ),
-            ),
+            _incomeExpenseTracker(isDark, income, expense),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 100),
+                padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
                 controller: _scrollController,
                 physics: const BouncingScrollPhysics(),
                 child: Column(
@@ -429,6 +409,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                         if (transacts.isNotEmpty) {
                           return ListView.builder(
                             itemCount: transacts.length,
+                            physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               if (kCompare(searchKey.text,
@@ -463,72 +444,122 @@ class _BookUIState extends ConsumerState<BookUI> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: isKeyboardOpen(context) || _isLoading
-          ? const SizedBox.shrink()
-          : InkWell(
-              onTap: () {
-                navPush(
-                  context,
-                  New_Transact_UI(
-                    bookId: bookData.bookId,
-                    bookType: bookData.type,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          navPush(
+            context,
+            New_Transact_UI(
+              bookId: bookData.bookId,
+              bookType: bookData.type,
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _incomeExpenseTracker(bool isDark, double income, double expense) {
+    double finalAmount = income - expense;
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text.rich(
+                  style: TextStyle(
+                    fontFamily: "Product",
+                    fontSize: 25,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
-                ).then((value) {
-                  setState(() {
-                    // fetchBookTransacts();
-                  });
-                });
-              },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: kRadius(20),
-                  color: isDark ? Dark.profitCard : Colors.black,
-                ),
-                child: AnimatedSize(
-                  reverseDuration: const Duration(milliseconds: 300),
-                  duration: const Duration(milliseconds: 300),
-                  alignment: Alignment.centerLeft,
-                  curve: Curves.ease,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _showThings,
-                    builder: (
-                      BuildContext context,
-                      bool showFullAddBtn,
-                      Widget? child,
-                    ) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: showFullAddBtn ? 15 : 12,
-                          vertical: 12,
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'INR ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w300,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              color: isDark ? Colors.black : Colors.white,
-                              size: 30,
-                            ),
-                            if (showFullAddBtn) const SizedBox(width: 10),
-                            if (showFullAddBtn)
-                              Text(
-                                'Transact',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15,
-                                  color: isDark ? Colors.black : Colors.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                          ],
+                      ),
+                      TextSpan(
+                        text: kMoneyFormat(finalAmount),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
+              _filterButton(isDark),
+            ],
+          ),
+          height15,
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: kRadius(15),
+                    color: (isDark ? Dark.profitCard : Light.profitText)
+                        .withOpacity(.2),
+                    border: Border.all(
+                      color: isDark ? Dark.profitCard : Light.profitText,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.trending_up,
+                      ),
+                      width10,
+                      Expanded(
+                        child: Text(
+                          "INR ${kMoneyFormat(income)}",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              width10,
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: kRadius(15),
+                    color: (isDark ? Dark.lossCard : Light.lossCard)
+                        .withOpacity(.2),
+                    border: Border.all(
+                      color: isDark ? Dark.lossCard : Light.lossCard,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.trending_down_rounded,
+                      ),
+                      width10,
+                      Expanded(
+                        child: Text(
+                          "INR ${kMoneyFormat(expense)}",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -677,76 +708,6 @@ class _BookUIState extends ConsumerState<BookUI> {
         ),
       ),
     );
-  }
-
-  Widget _header(
-    bool isDark, {
-    required Map<String, dynamic> data,
-  }) {
-    return Builder(builder: (context) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'INR ',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Product',
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      TextSpan(
-                        text: kMoneyFormat(data['income'] - data['expense']),
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Product',
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              _filterButton(isDark),
-            ],
-          ),
-          height15,
-          Row(
-            children: [
-              Expanded(
-                child: StatsCard(
-                  context,
-                  label: 'Income',
-                  content: data['income'].toString(),
-                  isBook: true,
-                  bookId: data['bookId'],
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: StatsCard(
-                  context,
-                  label: 'Expenses',
-                  content: data['expense'].toString(),
-                  isBook: true,
-                  bookId: data['bookId'],
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    });
   }
 
   Container _filterButton(bool isDark) {
@@ -1287,7 +1248,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                       return ConfirmDeleteModal(
                         onDelete: () async {
                           setState(() {
-                            _isLoading = true;
+                            isLoading = true;
                           });
                           await BookMethods.deleteBook(
                             context,
@@ -1295,7 +1256,7 @@ class _BookUIState extends ConsumerState<BookUI> {
                             bookId: bookData.bookId,
                           );
                           setState(() {
-                            _isLoading = false;
+                            isLoading = false;
                           });
                           Navigator.pop(context);
                         },
@@ -1627,11 +1588,11 @@ class _BookUIState extends ConsumerState<BookUI> {
   }
 
   _clearAllTransacts() async {
-    setState(() => _isLoading = true);
+    setState(() => isLoading = true);
     await DatabaseMethods().deleteAllTransacts(bookData.bookId);
     await DatabaseMethods()
         .updateBookTransactions(bookData.bookId, {"income": 0, "expense": 0});
-    setState(() => _isLoading = false);
+    setState(() => isLoading = false);
   }
 
   GestureDetector FilterBtns(

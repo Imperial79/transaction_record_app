@@ -193,13 +193,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                   ),
                 ],
               ),
-              height20,
-              const Text("Book Type"),
-              height10,
+              kLabel("Book Type"),
               MasonryGridView.count(
                 crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
+                mainAxisSpacing: 15,
+                crossAxisSpacing: 15,
                 itemCount: bookTypeMap.length,
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
@@ -310,7 +308,8 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                         : isDark
                             ? Dark.text
                             : Light.text,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: .8,
                     fontSize: 16,
                   ),
                 ),
@@ -320,8 +319,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             Text(
               subTitle,
               style: TextStyle(
-                letterSpacing: .6,
-                color: isDark ? Dark.text : Light.text,
+                letterSpacing: 1,
+                fontSize: 13,
+                color: isDark ? Dark.fadeText : Light.text,
                 fontWeight: FontWeight.w300,
               ),
             ),

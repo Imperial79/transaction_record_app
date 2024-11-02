@@ -237,6 +237,7 @@ class _BookTileState extends State<BookTile> {
                                       ? Dark.onCompleteCard
                                       : Light.onCompleteCard,
                                 ),
+                                width5,
                                 _bookStats(
                                   index: 2,
                                   crossAlign: CrossAxisAlignment.end,
@@ -309,27 +310,6 @@ class _BookTileState extends State<BookTile> {
                                     ),
                                   ],
                                 )
-                              // : data.type == "savings"
-                              //     ? Row(
-                              //         children: [
-                              //           _bookStats(
-                              //             index: 0,
-                              //             crossAlign: CrossAxisAlignment.start,
-                              //             textColor: isDark
-                              //                 ? Colors.white
-                              //                 : Colors.black,
-                              //             amount:
-                              //                 "₹ ${kMoneyFormat(data.income)}",
-                              //             label: 'Accumulated',
-                              //             cardColor: isDark
-                              //                 ? const Color(0xFF223B05)
-                              //                 : const Color(0xFFB5FFB7),
-                              //             amountColor: isDark
-                              //                 ? Colors.lightGreenAccent
-                              //                 : Colors.lightGreen.shade900,
-                              //           ),
-                              //         ],
-                              //       )
                               : SizedBox(),
                     ),
                   if (isCompleted && !isSavings)
@@ -422,7 +402,7 @@ class _BookTileState extends State<BookTile> {
     required Color cardColor,
     String label = "label",
     required Color textColor,
-    final amountColor,
+    required Color amountColor,
     required CrossAxisAlignment crossAlign,
   }) {
     return Flexible(

@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
@@ -771,12 +770,7 @@ Widget KSearchBar(
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: isDark ? Dark.primary : Light.primary,
-                child: SvgPicture.asset(
-                  "lib/assets/icons/search.svg",
-                  height: 20,
-                  colorFilter: svgColor(isDark ? Colors.black : Colors.white),
-                ),
+                child: Icon(Icons.search),
               ),
               const SizedBox(
                 width: 15,
