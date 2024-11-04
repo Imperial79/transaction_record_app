@@ -8,7 +8,7 @@ import '../../../Utility/constants.dart';
 import '../../../Utility/newColors.dart';
 import '../Due_Book_UI.dart';
 import '../Savings_Book_UI.dart';
-import '../bookUI.dart';
+import '../Regular_Book_UI.dart';
 
 class BookTile extends StatefulWidget {
   final BookModel book;
@@ -62,7 +62,7 @@ class _BookTileState extends State<BookTile> {
         Visibility(
           visible: widget.showDate,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
             child: Text(
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
@@ -81,7 +81,7 @@ class _BookTileState extends State<BookTile> {
             if (widget.book.type == "due") {
               navPush(context, Due_Book_UI(bookData: widget.book));
             } else if (widget.book.type == "regular") {
-              navPush(context, BookUI(bookData: widget.book));
+              navPush(context, Regular_Book_UI(bookData: widget.book));
             } else {
               navPush(context, Savings_Book_UI(bookData: widget.book));
             }

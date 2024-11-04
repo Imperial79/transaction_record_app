@@ -1,11 +1,21 @@
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import 'package:transaction_record_app/models/transactModel.dart';
 
-final transactListProvider = StateProvider<List<Transact>>(
+import '../models/transactModel.dart';
+
+final transactListProvider = StateProvider.autoDispose<List<Transact>>(
   (ref) => [],
+);
+final bookListProvider = StateProvider<List<BookModel>>(
+  (ref) => [],
+);
+
+final bookCountProvider = StateProvider<int>(
+  (ref) => 5,
 );
 
 final transactListStream =
@@ -24,6 +34,31 @@ final transactListStream =
     List<Transact> data =
         snapshot.docs.map((doc) => Transact.fromMap(doc.data())).toList();
     ref.read(transactListProvider.notifier).state = data;
+    return data;
+  });
+});
+
+final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
+  String uid = ref.read(userProvider)!.uid;
+  int bookCount = ref.read(bookCountProvider);
+  return FirebaseFirestore.instance
+      .collection('transactBooks')
+      .where(
+        Filter.or(
+          Filter(
+            'users',
+            arrayContains: uid,
+          ),
+          Filter('uid', isEqualTo: uid),
+        ),
+      )
+      .orderBy('createdAt', descending: true)
+      .limit(bookCount)
+      .snapshots()
+      .map((snapshot) {
+    List<BookModel> data =
+        snapshot.docs.map((doc) => BookModel.fromMap(doc.data())).toList();
+    ref.read(bookListProvider.notifier).state = data;
     return data;
   });
 });

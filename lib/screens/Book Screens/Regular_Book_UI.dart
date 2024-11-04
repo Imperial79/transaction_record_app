@@ -24,15 +24,16 @@ import '../../Utility/commons.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
 
-class BookUI extends ConsumerStatefulWidget {
+class Regular_Book_UI extends ConsumerStatefulWidget {
   final BookModel bookData;
-  const BookUI({super.key, required this.bookData});
+  const Regular_Book_UI({super.key, required this.bookData});
 
   @override
-  ConsumerState<BookUI> createState() => _BookUIState(bookData: bookData);
+  ConsumerState<Regular_Book_UI> createState() =>
+      _BookUIState(bookData: bookData);
 }
 
-class _BookUIState extends ConsumerState<BookUI> {
+class _BookUIState extends ConsumerState<Regular_Book_UI> {
   final BookModel bookData;
   _BookUIState({required this.bookData});
   String dateTitle = '';

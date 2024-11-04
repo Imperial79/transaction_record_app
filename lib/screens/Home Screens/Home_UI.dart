@@ -1,21 +1,23 @@
+// ignore_for_file: unused_result
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Functions/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
-import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Repository/book_repository.dart';
+import 'package:transaction_record_app/Utility/CustomLoading.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/components/Regular_Book_Tile.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/components/Book_Tile.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/HomeMenu.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Functions/bookFunctions.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/components.dart';
+import '../../models/bookModel.dart';
 
 final ValueNotifier<bool> showAdd = ValueNotifier<bool>(true);
 
@@ -45,12 +47,11 @@ class _Home_UIState extends ConsumerState<Home_UI>
   @override
   void initState() {
     super.initState();
-    dateTitle = '';
 
-    _scrollFunction();
+    _scrollFunction(ref);
   }
 
-  _scrollFunction() {
+  _scrollFunction(WidgetRef ref) {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -59,6 +60,10 @@ class _Home_UIState extends ConsumerState<Home_UI>
       } else {
         _showAdd.value = true;
         showAdd.value = true;
+      }
+      if (_scrollController.position.atEdge) {
+        ref.read(bookCountProvider.notifier).state += 5;
+        ref.refresh(bookListStream.future);
       }
     });
   }
@@ -111,7 +116,6 @@ class _Home_UIState extends ConsumerState<Home_UI>
       return KScaffold(
         isLoading: isLoading,
         body: SafeArea(
-          bottom: false,
           child: Column(
             children: [
               AnimatedSize(
@@ -135,100 +139,86 @@ class _Home_UIState extends ConsumerState<Home_UI>
                   builder: (BuildContext context, bool showFullAppBar,
                       Widget? child) {
                     return Container(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       child: showFullAppBar
-                          ? Column(
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                height10,
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
+                                GestureDetector(
+                                  onTap: () {
+                                    navPush(context, const AccountUI());
+                                  },
+                                  child: Hero(
+                                    tag: 'profImg',
+                                    child: CircleAvatar(
+                                      radius: 12,
+                                      child: ClipRRect(
+                                        borderRadius: kRadius(50),
+                                        child: user.imgUrl == ''
+                                            ? const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Dark.profitCard,
+                                                  strokeWidth: 1.5,
+                                                ),
+                                              )
+                                            : CachedNetworkImage(
+                                                imageUrl: user.imgUrl,
+                                                fit: BoxFit.cover,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                width10,
+                                Expanded(
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          navPush(context, const AccountUI());
-                                        },
-                                        child: Hero(
-                                          tag: 'profImg',
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            child: ClipRRect(
-                                              borderRadius: kRadius(50),
-                                              child: user.imgUrl == ''
-                                                  ? const Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        color: Dark.profitCard,
-                                                        strokeWidth: 1.5,
-                                                      ),
-                                                    )
-                                                  : CachedNetworkImage(
-                                                      imageUrl: user.imgUrl,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                            ),
-                                          ),
+                                      Text(
+                                        'Hi,',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
-                                      width10,
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Hi,',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w400,
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            width5,
-                                            Text(
-                                              user.name.split(" ").first,
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600,
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          ref
-                                              .read(showMenuProvider.notifier)
-                                              .state = !showHomeMenu;
-                                        },
-                                        borderRadius: kRadius(100),
-                                        child: CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: isDark
-                                              ? Dark.card
-                                              : Colors.grey.shade200,
-                                          child: Icon(
-                                            showHomeMenu
-                                                ? Icons
-                                                    .keyboard_arrow_up_rounded
-                                                : Icons
-                                                    .keyboard_arrow_down_rounded,
-                                            size: 20,
-                                            color: isDark
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
+                                      width5,
+                                      Text(
+                                        user.name.split(" ").first,
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                height10,
+                                InkWell(
+                                  onTap: () {
+                                    ref.read(showMenuProvider.notifier).state =
+                                        !showHomeMenu;
+                                  },
+                                  borderRadius: kRadius(100),
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: isDark
+                                        ? Dark.card
+                                        : Colors.grey.shade200,
+                                    child: Icon(
+                                      showHomeMenu
+                                          ? Icons.keyboard_arrow_up_rounded
+                                          : Icons.keyboard_arrow_down_rounded,
+                                      size: 20,
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                ),
                               ],
                             )
                           : Container(),
@@ -237,14 +227,12 @@ class _Home_UIState extends ConsumerState<Home_UI>
                 ),
               ),
               Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(10),
                   controller: _scrollController,
-                  children: [
-                    height10,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: KSearchBar(
+                  child: Column(
+                    children: [
+                      KSearchBar(
                         context,
                         isDark: isDark,
                         controller: searchKey,
@@ -254,10 +242,10 @@ class _Home_UIState extends ConsumerState<Home_UI>
                           });
                         },
                       ),
-                    ),
-                    height15,
-                    _booksList(isDark, uid: user.uid),
-                  ],
+                      height10,
+                      _booksList(isDark, uid: user.uid),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -269,91 +257,42 @@ class _Home_UIState extends ConsumerState<Home_UI>
   }
 
   Widget _booksList(bool isDark, {required String uid}) {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('transactBooks')
-          .where(
-            Filter.or(
-              Filter(
-                'users',
-                arrayContains: uid,
-              ),
-              Filter('uid', isEqualTo: uid),
-            ),
-          )
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        dateTitle = '';
-        return (snapshot.hasData)
-            ? (snapshot.data!.docs.isEmpty)
-                ? NewBookCard(context)
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        searchKey.text.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'RECENT BOOKS',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    letterSpacing: 7,
-                                    color:
-                                        isDark ? Dark.fadeText : Light.fadeText,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                'Searching for "${searchKey.text}"',
-                                style: TextStyle(
-                                  color:
-                                      isDark ? Dark.fadeText : Light.fadeText,
-                                ),
-                              ),
-                        height10,
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: snapshot.data!.docs.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            BookModel book = BookModel.fromMap(
-                                snapshot.data!.docs[index].data());
-                            if (dateTitle == book.date) {
-                              showDateWidget = false;
-                            } else {
-                              dateTitle = book.date;
-                              showDateWidget = true;
-                            }
-                            if (kCompare(searchKey.text, book.bookName)) {
-                              return BookTile(
-                                book: book,
-                                title: dateTitle,
-                                showDate: showDateWidget,
-                                onDelete: (bookId, bookName) {
-                                  _deleteBook(
-                                    bookName: bookName,
-                                    bookId: bookId,
-                                  );
-                                },
-                              );
-                            }
+    return Consumer(
+      builder: (context, ref, child) {
+        final asyncData = ref.watch(bookListStream);
+        final bookList = ref.watch(bookListProvider);
 
-                            return SizedBox();
-                          },
-                        ),
-                      ],
-                    ),
-                  )
-            : const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 50),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.5,
-                  ),
-                ),
-              );
+        return Column(
+          children: [
+            ListView.builder(
+              itemCount: bookList.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                BookModel book = bookList[index];
+                if (dateTitle == book.date) {
+                  showDateWidget = false;
+                } else {
+                  dateTitle = book.date;
+                  showDateWidget = true;
+                }
+                return BookTile(
+                  book: book,
+                  title: dateTitle,
+                  showDate: showDateWidget,
+                  onDelete: (id, name) {
+                    _deleteBook(bookName: name, bookId: id);
+                  },
+                );
+              },
+            ),
+            height15,
+            if (asyncData.isLoading)
+              Center(
+                child: CustomLoading(),
+              )
+          ],
+        );
       },
     );
   }
