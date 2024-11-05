@@ -77,53 +77,6 @@ class DatabaseMethods {
     return await firestore.collection('users').doc(uid).update(map);
   }
 
-  //Delete one book
-  _deleteBook(bookId) async {
-    await firestore
-        .collection('transactBooks')
-        .where('bookId', isEqualTo: bookId)
-        .limit(1)
-        .get()
-        .then(
-      (snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs) {
-          ds.reference.delete();
-        }
-      },
-    );
-  }
-
-  Future<String> deleteBookWithCollections(String bookId) async {
-    try {
-      await firestore
-          .collection('transactBooks')
-          .doc(bookId)
-          .collection('transacts')
-          .limit(1)
-          .get()
-          .then((value) async {
-        if (value.docs.isEmpty) {
-          _deleteBook(bookId);
-        } else {
-          await firestore
-              .collection('transactBooks')
-              .doc(bookId)
-              .collection('transacts')
-              .get()
-              .then((snapshot) {
-            for (DocumentSnapshot ds in snapshot.docs) {
-              ds.reference.delete();
-              _deleteBook(bookId);
-            }
-          });
-        }
-      });
-      return 'success';
-    } catch (e) {
-      return 'fail';
-    }
-  }
-
   //Delete one transact
   deleteTransact(bookId, transactId) async {
     await firestore

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-const String kAppVersion = "2.6.2";
+const String kAppVersion = "2.6.3";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;

@@ -8,7 +8,6 @@ import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/Home_UI.dart';
 import '../Functions/navigatorFns.dart';
 import 'commons.dart';
 
@@ -696,6 +695,7 @@ Widget AnimatedFloatingButton(
   void Function()? onTap,
   required Widget icon,
   required String label,
+  required bool showFullBtn,
 }) {
   bool isDark = Theme.of(context).brightness == Brightness.dark;
   return InkWell(
@@ -710,42 +710,33 @@ Widget AnimatedFloatingButton(
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.centerLeft,
         curve: Curves.ease,
-        child: ValueListenableBuilder<bool>(
-          valueListenable: showAdd,
-          builder: (
-            BuildContext context,
-            bool showFullAddBtn,
-            Widget? child,
-          ) {
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: showFullAddBtn ? 12 : 10,
-                vertical: 10,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: showFullBtn ? 12 : 10,
+            vertical: 10,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.add_circle_outline,
+                color: isDark ? Colors.black : Colors.white,
+                size: 30,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.add_circle_outline,
+              if (showFullBtn) const SizedBox(width: 10),
+              if (showFullBtn)
+                Text(
+                  'Create Book',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
                     color: isDark ? Colors.black : Colors.white,
-                    size: 30,
                   ),
-                  if (showFullAddBtn) const SizedBox(width: 10),
-                  if (showFullAddBtn)
-                    Text(
-                      'Create Book',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: isDark ? Colors.black : Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                ],
-              ),
-            );
-          },
+                  textAlign: TextAlign.center,
+                ),
+            ],
+          ),
         ),
       ),
     ),

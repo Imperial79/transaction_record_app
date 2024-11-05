@@ -6,7 +6,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
@@ -56,20 +55,25 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        _showThings.value = false;
-      } else {
-        _showThings.value = true;
-      }
+    _scrollController.addListener(scrollListener);
+  }
 
-      if (_scrollController.position.atEdge) {
+  scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      _showThings.value = false;
+    } else {
+      _showThings.value = true;
+    }
+    if (_scrollController.position.atEdge) {
+      bool isBottom = _scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent;
+      if (isBottom) {
         setState(() {
           count += 5;
         });
       }
-    });
+    }
   }
 
   Future<void> distribute(bool isDark) async {
@@ -196,11 +200,39 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     });
   }
 
+  _deleteBook({
+    required String bookName,
+    required String bookId,
+  }) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final res = await ref.read(bookRepository).deleteBook(bookId: bookId);
+      if (res) {
+        KSnackbar(context, content: "\"$bookName\" Book Deleted!");
+      }
+    } catch (e) {
+      KSnackbar(
+        context,
+        content:
+            "Unable to delete book! Check your connection or try again later.",
+        isDanger: true,
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   ///------------------------------->
 
   @override
   void dispose() {
     super.dispose();
+    _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
     searchKey.dispose();
   }
@@ -424,7 +456,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                       physics: const BouncingScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 100),
                       itemBuilder: (context, index) {
                         Transact transact =
                             Transact.fromMap(snapshot.data!.docs[index].data());
@@ -849,7 +881,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           children: [
             if (showDateWidget)
               Padding(
-                padding: const EdgeInsets.only(bottom: 15.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 child: Center(
                   child: Text(
                     dateLabel,
@@ -881,7 +913,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                               return CircleAvatar(
                                 radius: 12,
                                 backgroundImage: NetworkImage(
-                                    snapshot.data!.data()!['imgUrl']),
+                                  snapshot.data!.data()!['imgUrl'],
+                                ),
                               );
                             }
 
@@ -906,7 +939,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                       }
                     },
                     child: Container(
-                      margin: const EdgeInsets.only(bottom: 10),
+                      margin: const EdgeInsets.only(top: 10),
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         width: double.maxFinite,
@@ -1243,18 +1276,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     builder: (context) {
                       return ConfirmDeleteModal(
                         onDelete: () async {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          await BookMethods.deleteBook(
-                            context,
-                            bookName: bookData.bookName,
-                            bookId: bookData.bookId,
-                          );
-                          setState(() {
-                            isLoading = false;
-                          });
                           Navigator.pop(context);
+                          _deleteBook(
+                            bookId: bookData.bookId,
+                            bookName: bookData.bookName,
+                          );
                         },
                         label: 'Really want to delete this Book?',
                         content: 'This action cannot be undone !',

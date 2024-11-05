@@ -47,7 +47,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
     final user = ref.watch(userProvider);
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0),
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Column(
@@ -57,7 +57,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
               padding: const EdgeInsets.only(top: 5, left: 5, bottom: 5),
               child: Center(
                 child: Text(
-                  'SETTINGS',
+                  'MORE',
                   style: TextStyle(
                     letterSpacing: 7,
                     fontWeight: FontWeight.w500,

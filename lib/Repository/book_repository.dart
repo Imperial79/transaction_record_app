@@ -1,15 +1,10 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 
-import '../models/transactModel.dart';
-
-final transactListProvider = StateProvider.autoDispose<List<Transact>>(
-  (ref) => [],
-);
 final bookListProvider = StateProvider<List<BookModel>>(
   (ref) => [],
 );
@@ -17,26 +12,6 @@ final bookListProvider = StateProvider<List<BookModel>>(
 final bookCountProvider = StateProvider<int>(
   (ref) => 5,
 );
-
-final transactListStream =
-    StreamProvider.family<List<Transact>, String>((ref, data) {
-  final body = jsonDecode(data);
-  String bookId = body["bookId"];
-  int count = body["count"];
-  return FirebaseFirestore.instance
-      .collection('transactBooks')
-      .doc(bookId)
-      .collection('transacts')
-      .orderBy('ts', descending: true)
-      .limit(count)
-      .snapshots()
-      .map((snapshot) {
-    List<Transact> data =
-        snapshot.docs.map((doc) => Transact.fromMap(doc.data())).toList();
-    ref.read(transactListProvider.notifier).state = data;
-    return data;
-  });
-});
 
 final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
   String uid = ref.read(userProvider)!.uid;
@@ -90,6 +65,39 @@ class BookRepository {
 
       return true;
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteBook({required String bookId}) async {
+    try {
+      // Reference to the book document
+      DocumentReference bookDocRef =
+          FirebaseFirestore.instance.collection('transactBooks').doc(bookId);
+
+      // Reference to the nested transacts collection
+      CollectionReference transactsCollectionRef =
+          bookDocRef.collection('transacts');
+
+      // Function to delete all documents in a collection
+      Future<void> deleteAllDocumentsInCollection(
+          CollectionReference collectionRef) async {
+        // Get all documents in the collection
+        final querySnapshot = await collectionRef.get();
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); // Delete each document
+        }
+      }
+
+      // Delete all documents in the transacts collection
+      await deleteAllDocumentsInCollection(transactsCollectionRef);
+
+      // Now delete the book document itself
+      await bookDocRef.delete();
+      log("Book and its transacts deleted successfully.");
+      return true;
+    } catch (e) {
+      log("Error deleting book and transacts: $e");
       rethrow;
     }
   }

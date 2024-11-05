@@ -225,10 +225,10 @@ class _BookTileState extends State<BookTile> {
                                 _bookStats(
                                   index: 0,
                                   crossAlign: CrossAxisAlignment.start,
-                                  textColor:
+                                  labelColor:
                                       isDark ? Colors.white : Colors.black,
-                                  amount:
-                                      "₹ ${kMoneyFormat(widget.book.targetAmount - widget.book.income)}",
+                                  amount: widget.book.targetAmount -
+                                      widget.book.income,
                                   label: 'Due',
                                   cardColor: isDark
                                       ? Dark.completeCard
@@ -242,13 +242,12 @@ class _BookTileState extends State<BookTile> {
                                   index: 2,
                                   crossAlign: CrossAxisAlignment.end,
                                   label: "Target",
-                                  amount:
-                                      "₹ ${kMoneyFormat(widget.book.targetAmount)}",
+                                  amount: widget.book.targetAmount,
                                   cardColor: isDark
                                       ? const Color(0xFF0B2A43)
                                       : const Color.fromARGB(
                                           255, 197, 226, 250),
-                                  textColor: isDark
+                                  labelColor: isDark
                                       ? Colors.white
                                       : Colors.blue.shade900,
                                   amountColor: isDark
@@ -263,10 +262,9 @@ class _BookTileState extends State<BookTile> {
                                     _bookStats(
                                       index: 0,
                                       crossAlign: CrossAxisAlignment.start,
-                                      textColor:
+                                      labelColor:
                                           isDark ? Colors.white : Colors.black,
-                                      amount:
-                                          "₹ ${kMoneyFormat(widget.book.income)}",
+                                      amount: widget.book.income,
                                       label: 'Income',
                                       cardColor: isDark
                                           ? const Color(0xFF223B05)
@@ -279,13 +277,12 @@ class _BookTileState extends State<BookTile> {
                                     _bookStats(
                                       index: 1,
                                       crossAlign: CrossAxisAlignment.center,
-                                      amount:
-                                          "₹ ${kMoneyFormat(widget.book.expense)}",
+                                      amount: widget.book.expense,
                                       label: 'Expense',
                                       cardColor: isDark
                                           ? Colors.black
                                           : Colors.grey.shade300,
-                                      textColor:
+                                      labelColor:
                                           isDark ? Colors.white : Colors.black,
                                       amountColor:
                                           isDark ? Colors.white : Colors.black,
@@ -295,13 +292,13 @@ class _BookTileState extends State<BookTile> {
                                       index: 2,
                                       crossAlign: CrossAxisAlignment.end,
                                       label: 'Current',
-                                      amount:
-                                          "₹ ${kMoneyFormat(widget.book.income - widget.book.expense)}",
+                                      amount: widget.book.income -
+                                          widget.book.expense,
                                       cardColor: isDark
                                           ? const Color(0xFF0B2A43)
                                           : const Color.fromARGB(
                                               255, 197, 226, 250),
-                                      textColor: isDark
+                                      labelColor: isDark
                                           ? Colors.white
                                           : Colors.blue.shade900,
                                       amountColor: isDark
@@ -353,7 +350,7 @@ class _BookTileState extends State<BookTile> {
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
-              color: isDark ? Dark.modal : Light.modal,
+              color: isDark ? Dark.scaffold : Light.scaffold,
               borderRadius: kRadius(20),
             ),
             child: SingleChildScrollView(
@@ -382,6 +379,7 @@ class _BookTileState extends State<BookTile> {
                   KButton.icon(
                     isDark,
                     onPressed: () {
+                      Navigator.pop(context);
                       widget.onDelete!(bookId, bookName);
                     },
                     icon: Icon(Icons.delete),
@@ -398,13 +396,24 @@ class _BookTileState extends State<BookTile> {
 
   Widget _bookStats({
     required int index,
-    String amount = "0",
+    double amount = 0,
     required Color cardColor,
     String label = "label",
-    required Color textColor,
+    required Color labelColor,
     required Color amountColor,
     required CrossAxisAlignment crossAlign,
   }) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    if (amount < 0) {
+      if (isDark) {
+        amountColor = Dark.lossText;
+        cardColor = Dark.lossCard.withOpacity(.2);
+      } else {
+        labelColor = Light.lossText;
+        amountColor = Light.lossText;
+        cardColor = Light.lossCard.withOpacity(.2);
+      }
+    }
     return Flexible(
       child: Container(
         width: double.maxFinite,
@@ -419,14 +428,14 @@ class _BookTileState extends State<BookTile> {
             Text(
               label,
               style: TextStyle(
-                color: textColor,
+                color: labelColor,
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
               ),
             ),
             height5,
             Text(
-              amount,
+              "₹${kMoneyFormat(amount)}",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
