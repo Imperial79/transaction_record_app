@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
+import 'package:transaction_record_app/Utility/CustomLoading.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -39,10 +40,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
 
-  final ValueNotifier<bool> _showThings = ValueNotifier<bool>(true);
-  final ValueNotifier<bool> _showBookMenu = ValueNotifier<bool>(false);
+  final transactCountProvider = StateProvider.autoDispose<int>((ref) => 10);
+  final showElementsProvider = StateProvider.autoDispose<bool>((ref) => true);
+  final showMenuProvider = StateProvider.autoDispose<bool>((ref) => false);
 
-  int count = 5;
   final searchKey = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
@@ -61,19 +62,28 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   scrollListener() {
     if (_scrollController.position.userScrollDirection ==
         ScrollDirection.reverse) {
-      _showThings.value = false;
+      ref.read(showElementsProvider.notifier).state = false;
     } else {
-      _showThings.value = true;
+      ref.read(showElementsProvider.notifier).state = true;
     }
     if (_scrollController.position.atEdge) {
       bool isBottom = _scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent;
       if (isBottom) {
-        setState(() {
-          count += 5;
-        });
+        _loadMore();
       }
     }
+  }
+
+  _loadMore() async {
+    setState(() {
+      isFetching = true;
+    });
+    await Future.delayed(Duration(seconds: 2));
+    ref.read(transactCountProvider.notifier).state += 5;
+    setState(() {
+      isFetching = false;
+    });
   }
 
   Future<void> distribute(bool isDark) async {
@@ -240,14 +250,15 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   //------------------------------------>
 
   bool isLoading = false;
+  bool isFetching = false;
 
   @override
   Widget build(BuildContext context) {
-    _showThings.value = searchKey.text.isEmpty;
     isSearching = searchKey.text.isNotEmpty;
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final user = ref.read(userProvider);
-
+    final user = ref.watch(userProvider);
+    final showElements = ref.watch(showElementsProvider);
+    final showMenu = ref.watch(showMenuProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -301,117 +312,102 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
               duration: const Duration(milliseconds: 300),
               alignment: Alignment.topCenter,
               curve: Curves.ease,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _showThings,
-                builder:
-                    (BuildContext context, bool showFullAppBar, Widget? child) {
-                  return Container(
-                    child: showFullAppBar
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        bookData.bookName,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                      ),
+              child: Container(
+                child: showElements
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    bookData.bookName,
+                                    style: const TextStyle(
+                                      fontSize: 15,
                                     ),
-                                    width10,
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _showBookMenu.value =
-                                              !_showBookMenu.value;
-                                        });
-                                      },
-                                      borderRadius: kRadius(100),
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: isDark
-                                            ? Dark.card
-                                            : Colors.grey.shade200,
-                                        child: FittedBox(
-                                          child: Icon(
-                                            _showBookMenu.value
-                                                ? Icons
-                                                    .keyboard_arrow_up_rounded
-                                                : Icons
-                                                    .keyboard_arrow_down_rounded,
-                                            size: 20,
-                                            color: isDark
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    width10,
-                                    InkWell(
-                                      borderRadius: kRadius(100),
-                                      onTap: () {
-                                        navPush(
-                                            context,
-                                            UsersUI(
-                                              users: bookData.users!,
-                                              ownerUid: bookData.uid,
-                                              bookId: bookData.bookId,
-                                            ));
-                                      },
-                                      child: const FittedBox(
-                                        child: CircleAvatar(
-                                          radius: 12,
-                                          child: Icon(
-                                            Icons.groups_2,
-                                            size: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                              height10,
-                              AnimatedSize(
-                                reverseDuration:
-                                    const Duration(milliseconds: 300),
-                                duration: const Duration(milliseconds: 300),
-                                alignment: Alignment.topCenter,
-                                curve: Curves.ease,
-                                child: ValueListenableBuilder<bool>(
-                                  valueListenable: _showBookMenu,
-                                  builder: (BuildContext context,
-                                      bool showBookMenu, Widget? child) {
-                                    return showBookMenu
-                                        ? BookMenu(
-                                            isDark,
-                                            bookId: bookData.bookId,
-                                            uid: user!.uid,
-                                          )
-                                        : Container();
+                                width10,
+                                InkWell(
+                                  onTap: () {
+                                    ref.read(showMenuProvider.notifier).state =
+                                        !showMenu;
                                   },
+                                  borderRadius: kRadius(100),
+                                  child: CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: isDark
+                                        ? Dark.card
+                                        : Colors.grey.shade200,
+                                    child: FittedBox(
+                                      child: Icon(
+                                        showMenu
+                                            ? Icons.keyboard_arrow_up_rounded
+                                            : Icons.keyboard_arrow_down_rounded,
+                                        size: 20,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          )
-                        : Container(),
-                  );
-                },
+                                width10,
+                                InkWell(
+                                  borderRadius: kRadius(100),
+                                  onTap: () {
+                                    navPush(
+                                        context,
+                                        UsersUI(
+                                          users: bookData.users!,
+                                          ownerUid: bookData.uid,
+                                          bookId: bookData.bookId,
+                                        ));
+                                  },
+                                  child: const FittedBox(
+                                    child: CircleAvatar(
+                                      radius: 12,
+                                      child: Icon(
+                                        Icons.groups_2,
+                                        size: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          height10,
+                          AnimatedSize(
+                            reverseDuration: const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
+                            alignment: Alignment.topCenter,
+                            curve: Curves.ease,
+                            child: showMenu
+                                ? BookMenu(
+                                    isDark,
+                                    bookId: bookData.bookId,
+                                    uid: user!.uid,
+                                  )
+                                : Container(),
+                          ),
+                        ],
+                      )
+                    : Container(),
               ),
             ),
             _incomeExpenseTracker(isDark),
-            Flexible(
-              child: TransactList(isDark, bookId: widget.bookData.bookId),
+            Expanded(
+              child: SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: 100),
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  child: TransactList(isDark, bookId: widget.bookData.bookId)),
             ),
           ],
         ),
@@ -434,48 +430,56 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   Widget TransactList(bool isDark, {required String bookId}) {
     dateTitle = '';
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: firestore
-          .collection('transactBooks')
-          .doc(bookId)
-          .collection('transacts')
-          .orderBy('ts', descending: true)
-          .limit(count)
-          .snapshots(),
-      builder: (context, snapshot) {
-        dateTitle = '';
+    return Consumer(builder: (context, ref, _) {
+      final count = ref.watch(transactCountProvider);
+      return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: firestore
+            .collection('transactBooks')
+            .doc(bookId)
+            .collection('transacts')
+            .orderBy('ts', descending: true)
+            .limit(count)
+            .snapshots(),
+        builder: (context, snapshot) {
+          dateTitle = '';
 
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          child: snapshot.hasData
-              ? snapshot.data!.docs.isNotEmpty
-                  ? ListView.builder(
-                      controller: _scrollController,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: snapshot.data!.docs.length,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 100),
-                      itemBuilder: (context, index) {
-                        Transact transact =
-                            Transact.fromMap(snapshot.data!.docs[index].data());
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            child: snapshot.hasData
+                ? snapshot.data!.docs.isNotEmpty
+                    ? Column(
+                        children: [
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data!.docs.length,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+                            itemBuilder: (context, index) {
+                              Transact transact = Transact.fromMap(
+                                  snapshot.data!.docs[index].data());
 
-                        if (kCompare(searchKey.text, transact.amount) ||
-                            kCompare(searchKey.text, transact.description)) {
-                          return TransactTile(isDark, data: transact);
-                        }
-                        return const SizedBox();
-                      },
-                    )
-                  : kNoData(
-                      isDark,
-                      title: 'No Transacts',
-                    )
-              : const SizedBox(),
-        );
-      },
-    );
+                              if (kCompare(searchKey.text, transact.amount) ||
+                                  kCompare(
+                                      searchKey.text, transact.description)) {
+                                return TransactTile(isDark, data: transact);
+                              }
+                              return const SizedBox();
+                            },
+                          ),
+                          if (isFetching) const CustomLoading()
+                        ],
+                      )
+                    : kNoData(
+                        isDark,
+                        title: 'No Transacts',
+                      )
+                : const SizedBox(),
+          );
+        },
+      );
+    });
   }
 
   Widget _incomeExpenseTracker(bool isDark) {
@@ -483,7 +487,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
       final bookData = ref.watch(bookdataStream(widget.bookData.bookId));
       return bookData.when(
           data: (book) => Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: Column(
                   children: [
                     Row(
@@ -881,17 +885,28 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           children: [
             if (showDateWidget)
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Center(
-                  child: Text(
-                    dateLabel,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: "Serif",
-                      color: isDark ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.w500,
+                padding: const EdgeInsets.only(top: 15.0, left: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      dateLabel.split(" ").first.trim(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                    Text(
+                      dateLabel,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Dark.fadeText : Light.fadeText,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             Row(
@@ -945,7 +960,6 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         width: double.maxFinite,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            // color: isDark ? Dark.card : Light.card,
                             color: (isIncome
                                     ? isDark
                                         ? Dark.profitText

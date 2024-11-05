@@ -62,14 +62,14 @@ class _BookTileState extends State<BookTile> {
         Visibility(
           visible: widget.showDate,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+            padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
             child: Text(
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 13,
                 letterSpacing: 2,
                 wordSpacing: 5,
-                color: isDark ? Dark.fadeText : Light.fadeText,
+                color: isDark ? Dark.text : Light.text,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Serif',
               ),
@@ -101,7 +101,7 @@ class _BookTileState extends State<BookTile> {
             );
           },
           child: Card(
-            margin: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(top: 10),
             shape: RoundedRectangleBorder(
               borderRadius: kRadius(10),
             ),

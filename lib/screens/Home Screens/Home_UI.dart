@@ -11,7 +11,7 @@ import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/components/Book_Tile.dart';
+import 'package:transaction_record_app/screens/Book%20Screens/Book%20Widgets/Book_Tile.dart';
 import 'package:transaction_record_app/screens/Home%20Screens/HomeMenu.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Utility/commons.dart';

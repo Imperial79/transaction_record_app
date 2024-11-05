@@ -13,12 +13,12 @@ class KScaffold extends StatefulWidget {
   FloatingActionButtonLocation? floatingActionButtonLocation;
   FloatingActionButtonAnimator? floatingActionButtonAnimator;
   Widget? floatingActionButton;
-  bool? isLoading = false;
+  bool isLoading;
   KScaffold({
     super.key,
     this.appBar,
     required this.body,
-    this.isLoading,
+    this.isLoading = false,
     this.floatingActionButtonAnimator,
     this.floatingActionButtonLocation,
     this.floatingActionButton,
@@ -49,12 +49,12 @@ class _KScaffoldState extends State<KScaffold> {
     );
   }
 
-  AnimatedSwitcher FullScreenLoading({bool? isLoading = false}) {
+  AnimatedSwitcher FullScreenLoading({required bool isLoading}) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 200),
-      child: isLoading ?? false
+      child: isLoading
           ? Container(
               height: double.maxFinite,
               width: double.maxFinite,
