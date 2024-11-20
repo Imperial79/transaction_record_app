@@ -4,12 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/firebase_options.dart';
-import 'package:transaction_record_app/screens/Splash%20Screen/splashUI.dart';
-import 'package:transaction_record_app/screens/rootUI.dart';
-import 'package:transaction_record_app/screens/Login_UI.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:upgrader/upgrader.dart';
+import 'Route_Helper/go_router_setup.dart';
 import 'Utility/newColors.dart';
 
 void main() async {
@@ -42,30 +39,32 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   _init() async {
     ref.read(hiveThemeFuture);
-    ref.read(auth);
+    // ref.read(authFuture);
   }
 
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
 
-    final user = ref.watch(userProvider);
+    // final user = ref.watch(userProvider);
+    final goRouter = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Transact Record',
       color: Colors.white,
       themeMode: _themeMap[themeMode],
       theme: KThemeData.light(),
       darkTheme: KThemeData.dark(),
-      home: UpgradeAlert(
-        child: ref.watch(auth).isLoading
-            ? const SplashUI()
-            : user != null
-                ? const RootUI()
-                : const LoginUI(),
-      ),
+      routerConfig: goRouter,
+      // home: UpgradeAlert(
+      //   child: ref.watch(authFuture).isLoading
+      //       ? const SplashUI()
+      //       : user != null
+      //           ? const RootUI()
+      //           : const LoginUI(),
+      // ),
     );
   }
 }

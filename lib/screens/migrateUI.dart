@@ -4,7 +4,8 @@ import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 
 class MigrateUI extends StatefulWidget {
-  const MigrateUI({super.key});
+  final String id;
+  const MigrateUI({super.key, required this.id});
 
   @override
   State<MigrateUI> createState() => _MigrateUIState();
@@ -68,13 +69,16 @@ class _MigrateUIState extends State<MigrateUI> {
   Widget build(BuildContext context) {
     return KScaffold(
       body: SafeArea(
+        // child: Center(
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       // fetch();
+        //     },
+        //     child: const Text('migrate'),
+        //   ),
+        // ),
         child: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              fetch();
-            },
-            child: const Text('migrate'),
-          ),
+          child: Text(widget.id),
         ),
         // child: Column(
         //   crossAxisAlignment: CrossAxisAlignment.center,

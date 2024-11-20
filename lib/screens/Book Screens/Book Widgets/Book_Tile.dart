@@ -67,11 +67,8 @@ class _BookTileState extends State<BookTile> {
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
                 fontSize: 13,
-                letterSpacing: 2,
-                wordSpacing: 5,
                 color: isDark ? Dark.text : Light.text,
                 fontWeight: FontWeight.w500,
-                fontFamily: 'Serif',
               ),
             ),
           ),

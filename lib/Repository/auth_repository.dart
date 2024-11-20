@@ -21,8 +21,16 @@ final pageControllerProvider = Provider(
 final authRepository = Provider(
   (ref) => AuthRepo(),
 );
+final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
+  return FirebaseAuth.instance;
+});
 
-final auth = FutureProvider(
+final authStateProvider = StreamProvider<User?>((ref) {
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  return firebaseAuth.authStateChanges();
+});
+
+final authFuture = FutureProvider(
   (ref) async {
     final res = FirebaseAuth.instance.currentUser;
     if (res != null) {
@@ -151,6 +159,7 @@ class AuthRepo {
 
       await Hive.deleteBoxFromDisk('USERBOX');
       await Hive.close();
+
       await GoogleSignIn().signOut();
 
       await auth.signOut();
