@@ -62,10 +62,12 @@ class KTextfield {
     int maxLines = 2,
     int minLines = 1,
     double fontSize = 40,
+    int? maxLength = 15,
     String? hintText,
     TextInputType keyboardType = TextInputType.text,
     TextCapitalization textCapitalization = TextCapitalization.words,
     List<TextInputFormatter>? inputFormatters,
+    void Function(String val)? onChanged,
   }) {
     return TextField(
       controller: controller,
@@ -73,16 +75,17 @@ class KTextfield {
       textCapitalization: textCapitalization,
       style: _titleTextStyle(isDark, fontSize),
       cursorWidth: 1,
-      maxLength: 15,
+      maxLength: maxLength,
       minLines: minLines,
       maxLines: maxLines,
       cursorColor: isDark ? Colors.white : Colors.black,
       decoration: _buildInputDecoration(
         isDark: isDark,
         hintText: hintText,
-        underlineBorder: true,
+        underlineBorder: false,
         fontSize: fontSize,
-      ),
+      ).copyWith(counterText: ""),
+      onChanged: onChanged,
     );
   }
 

@@ -11,6 +11,7 @@ import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:wave_divider/wave_divider.dart';
 
 import '../../Repository/auth_repository.dart';
 import '../../Utility/commons.dart';
@@ -114,10 +115,28 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              KTextfield.title(
-                isDark,
-                controller: _bookTitle,
-                hintText: "Book Title",
+              Row(
+                children: [
+                  Flexible(
+                    child: KTextfield.title(
+                      isDark,
+                      controller: _bookTitle,
+                      maxLength: 20,
+                      hintText: "Book Title",
+                      onChanged: (val) {
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  Text.rich(TextSpan(children: [
+                    TextSpan(text: "${_bookTitle.text.length}\n"),
+                    TextSpan(text: "20"),
+                  ])),
+                ],
+              ),
+              WaveDivider(
+                padding: EdgeInsets.only(bottom: 20),
+                color: isDark ? Dark.fadeText : Light.fadeText,
               ),
               TextButton(
                 onPressed: () {

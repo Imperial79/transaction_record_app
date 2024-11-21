@@ -6,6 +6,7 @@ import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:upgrader/upgrader.dart';
 import 'Route_Helper/go_router_setup.dart';
 import 'Utility/newColors.dart';
 
@@ -34,37 +35,30 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    _init();
+    _getThemeDataFromHive();
   }
 
-  _init() async {
+  _getThemeDataFromHive() async {
     ref.read(hiveThemeFuture);
-    // ref.read(authFuture);
   }
 
   @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
 
-    // final user = ref.watch(userProvider);
     final goRouter = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeProvider);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Transact Record',
-      color: Colors.white,
-      themeMode: _themeMap[themeMode],
-      theme: KThemeData.light(),
-      darkTheme: KThemeData.dark(),
-      routerConfig: goRouter,
-      // home: UpgradeAlert(
-      //   child: ref.watch(authFuture).isLoading
-      //       ? const SplashUI()
-      //       : user != null
-      //           ? const RootUI()
-      //           : const LoginUI(),
-      // ),
+    return UpgradeAlert(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Transact Record',
+        color: Colors.white,
+        themeMode: _themeMap[themeMode],
+        theme: KThemeData.light(),
+        darkTheme: KThemeData.dark(),
+        routerConfig: goRouter,
+      ),
     );
   }
 }

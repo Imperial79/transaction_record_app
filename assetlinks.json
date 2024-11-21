@@ -1,0 +1,11 @@
+[
+    {
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.imperial.transactRecord",
+        "sha256_cert_fingerprints":
+          ["19:48:EB:CE:BB:02:F5:2A:D0:70:10:27:E6:0A:0A:FA:42:18:66:92:54:1B:F0:9A:E1:03:79:86:6D:EB:55:C5"]
+      }
+    }
+  ]

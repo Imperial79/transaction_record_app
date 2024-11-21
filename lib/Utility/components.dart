@@ -755,7 +755,9 @@ Widget KSearchBar(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: isDark ? Dark.card : Light.card,
+            border: Border.all(
+              color: isDark ? Dark.card : Light.card,
+            ),
             borderRadius: kRadius(100),
           ),
           child: Row(
@@ -763,9 +765,7 @@ Widget KSearchBar(
               CircleAvatar(
                 child: Icon(Icons.search),
               ),
-              const SizedBox(
-                width: 15,
-              ),
+              width15,
               Flexible(
                 child: TextField(
                   controller: controller,
