@@ -1,0 +1,14 @@
+[
+	{
+		"relation": ["delegate_permission/common.handle_all_urls"],
+		"target": {
+			"namespace": "android_app",
+			"package_name": "com.imperial.transactRecord",
+			"sha256_cert_fingerprints": [
+				"19:48:EB:CE:BB:02:F5:2A:D0:70:10:27:E6:0A:0A:FA:42:18:66:92:54:1B:F0:9A:E1:03:79:86:6D:EB:55:C5",
+				"2A:3C:5F:13:9D:68:2F:5A:11:EE:7D:67:0C:1C:4E:71:23:E2:E5:1C:E6:B6:7C:0C:F0:01:3C:BA:0E:39:47:DF",
+        "BF:11:B4:6F:82:6E:4C:69:1F:51:44:C6:84:04:E5:CD:C9:F9:AB:23:E5:A4:37:49:A5:A9:91:47:0D:79:EB:3F"
+			]
+		}
+	}
+]
