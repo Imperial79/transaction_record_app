@@ -3,7 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/CustomLoading.dart';

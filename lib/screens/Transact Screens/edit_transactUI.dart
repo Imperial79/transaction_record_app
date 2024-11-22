@@ -8,7 +8,7 @@ import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import '../../Functions/transactFunctions.dart';
+import '../../Helper/transactFunctions.dart';
 import '../../Utility/commons.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';

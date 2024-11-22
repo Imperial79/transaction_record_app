@@ -7,7 +7,7 @@ import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:upgrader/upgrader.dart';
-import 'Route_Helper/go_router_setup.dart';
+import 'Helper/Route_Helper/go_router_setup.dart';
 import 'Utility/newColors.dart';
 
 void main() async {

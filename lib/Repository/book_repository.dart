@@ -69,6 +69,22 @@ class BookRepository {
     }
   }
 
+  Future<bool> updateBook({
+    required String bookId,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('transactBooks')
+          .doc(bookId)
+          .update(data);
+
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<bool> deleteBook({required String bookId}) async {
     try {
       // Reference to the book document

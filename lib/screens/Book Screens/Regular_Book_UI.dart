@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:transaction_record_app/Components/User_Selector_Card.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/CustomLoading.dart';
@@ -14,28 +17,28 @@ import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
-import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/Users_UI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/edit_transactUI.dart';
 import 'package:transaction_record_app/screens/Transact%20Screens/New_Transact_UI.dart';
-import '../../Components/WIdgets.dart';
-import '../../Functions/navigatorFns.dart';
+import '../../Helper/navigatorFns.dart';
 import '../../Utility/commons.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
 
 class Regular_Book_UI extends ConsumerStatefulWidget {
-  final BookModel bookData;
-  const Regular_Book_UI({super.key, required this.bookData});
+  final String bookId;
+  final String bookType;
+  const Regular_Book_UI({
+    super.key,
+    required this.bookId,
+    required this.bookType,
+  });
 
   @override
-  ConsumerState<Regular_Book_UI> createState() =>
-      _BookUIState(bookData: bookData);
+  ConsumerState<Regular_Book_UI> createState() => _BookUIState();
 }
 
 class _BookUIState extends ConsumerState<Regular_Book_UI> {
-  final BookModel bookData;
-  _BookUIState({required this.bookData});
   String dateTitle = '';
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
@@ -47,6 +50,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   final searchKey = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
+  final newBookName = TextEditingController();
 
   int searchingBookListCounter = 50;
   bool isSearching = false;
@@ -90,9 +94,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     setState(() {
       isLoading = true;
     });
-    await FirebaseRefs.transactBookRef(bookData.bookId)
-        .get()
-        .then((value) async {
+    await FirebaseRefs.transactBookRef(widget.bookId).get().then((value) async {
       List<dynamic> groupMembers = [];
 
       groupMembers.addAll(value.data()!['users']);
@@ -103,7 +105,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
       };
       double totalExpense = value.data()!['expense'];
 
-      await FirebaseRefs.transactsRef(bookData.bookId)
+      await FirebaseRefs.transactsRef(widget.bookId)
           .get()
           .then((snapshot) async {
         for (var element in snapshot.docs) {
@@ -256,9 +258,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   Widget build(BuildContext context) {
     isSearching = searchKey.text.isNotEmpty;
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final user = ref.watch(userProvider);
-    final showElements = ref.watch(showElementsProvider);
-    final showMenu = ref.watch(showMenuProvider);
+
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -275,7 +275,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   child: IconButton(
                     color: isDark ? Dark.profitText : Light.profitText,
                     onPressed: () {
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
+                      context.go("/root");
                     },
                     icon: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -307,107 +308,20 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                 ),
               ],
             ),
-            AnimatedSize(
-              reverseDuration: const Duration(milliseconds: 300),
-              duration: const Duration(milliseconds: 300),
-              alignment: Alignment.topCenter,
-              curve: Curves.ease,
-              child: Container(
-                child: showElements
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    bookData.bookName,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                                width10,
-                                InkWell(
-                                  onTap: () {
-                                    ref.read(showMenuProvider.notifier).state =
-                                        !showMenu;
-                                  },
-                                  borderRadius: kRadius(100),
-                                  child: CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: isDark
-                                        ? Dark.card
-                                        : Colors.grey.shade200,
-                                    child: FittedBox(
-                                      child: Icon(
-                                        showMenu
-                                            ? Icons.keyboard_arrow_up_rounded
-                                            : Icons.keyboard_arrow_down_rounded,
-                                        size: 20,
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                width10,
-                                InkWell(
-                                  borderRadius: kRadius(100),
-                                  onTap: () {
-                                    navPush(
-                                        context,
-                                        UsersUI(
-                                          users: bookData.users!,
-                                          ownerUid: bookData.uid,
-                                          bookId: bookData.bookId,
-                                        ));
-                                  },
-                                  child: const FittedBox(
-                                    child: CircleAvatar(
-                                      radius: 12,
-                                      child: Icon(
-                                        Icons.groups_2,
-                                        size: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          height10,
-                          AnimatedSize(
-                            reverseDuration: const Duration(milliseconds: 300),
-                            duration: const Duration(milliseconds: 300),
-                            alignment: Alignment.topCenter,
-                            curve: Curves.ease,
-                            child: showMenu
-                                ? BookMenu(
-                                    isDark,
-                                    bookId: bookData.bookId,
-                                    uid: user!.uid,
-                                  )
-                                : Container(),
-                          ),
-                        ],
-                      )
-                    : Container(),
-              ),
-            ),
+            Text(widget.bookId),
             _incomeExpenseTracker(isDark),
             Expanded(
               child: SingleChildScrollView(
-                  padding: EdgeInsets.only(bottom: 100),
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  child: TransactList(isDark, bookId: widget.bookData.bookId)),
+                padding: EdgeInsets.only(bottom: 100),
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                child: TransactList(
+                  isDark,
+                  bookId: widget.bookId,
+                ),
+              ),
             ),
           ],
         ),
@@ -418,8 +332,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           navPush(
             context,
             New_Transact_UI(
-              bookId: bookData.bookId,
-              bookType: bookData.type,
+              bookId: widget.bookId,
+              bookType: widget.bookType,
             ),
           );
         },
@@ -432,6 +346,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     dateTitle = '';
     return Consumer(builder: (context, ref, _) {
       final count = ref.watch(transactCountProvider);
+      final bookData = ref.watch(bookdataStream(widget.bookId));
       return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: firestore
             .collection('transactBooks')
@@ -463,7 +378,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                               if (kCompare(searchKey.text, transact.amount) ||
                                   kCompare(
                                       searchKey.text, transact.description)) {
-                                return TransactTile(isDark, data: transact);
+                                return TransactTile(
+                                  isDark,
+                                  data: transact,
+                                  users: bookData.value?.users,
+                                );
                               }
                               return const SizedBox();
                             },
@@ -484,12 +403,116 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   Widget _incomeExpenseTracker(bool isDark) {
     return Consumer(builder: (context, ref, _) {
-      final bookData = ref.watch(bookdataStream(widget.bookData.bookId));
+      final bookData = ref.watch(bookdataStream(widget.bookId));
+      final user = ref.watch(userProvider);
+      final showElements = ref.watch(showElementsProvider);
+      final showMenu = ref.watch(showMenuProvider);
       return bookData.when(
           data: (book) => Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: Column(
                   children: [
+                    AnimatedSize(
+                      reverseDuration: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
+                      alignment: Alignment.topCenter,
+                      curve: Curves.ease,
+                      child: Container(
+                        child: showElements
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            book.bookName,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                        width10,
+                                        InkWell(
+                                          onTap: () {
+                                            ref
+                                                .read(showMenuProvider.notifier)
+                                                .state = !showMenu;
+                                          },
+                                          borderRadius: kRadius(100),
+                                          child: CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor: isDark
+                                                ? Dark.card
+                                                : Colors.grey.shade200,
+                                            child: FittedBox(
+                                              child: Icon(
+                                                showMenu
+                                                    ? Icons
+                                                        .keyboard_arrow_up_rounded
+                                                    : Icons
+                                                        .keyboard_arrow_down_rounded,
+                                                size: 20,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        width10,
+                                        InkWell(
+                                          borderRadius: kRadius(100),
+                                          onTap: () {
+                                            navPush(
+                                                context,
+                                                UsersUI(
+                                                  users: book.users!,
+                                                  ownerUid: book.uid,
+                                                  bookId: book.bookId,
+                                                ));
+                                          },
+                                          child: const FittedBox(
+                                            child: CircleAvatar(
+                                              radius: 12,
+                                              child: Icon(
+                                                Icons.groups_2,
+                                                size: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  height10,
+                                  AnimatedSize(
+                                    reverseDuration:
+                                        const Duration(milliseconds: 300),
+                                    duration: const Duration(milliseconds: 300),
+                                    alignment: Alignment.topCenter,
+                                    curve: Curves.ease,
+                                    child: showMenu
+                                        ? BookMenu(
+                                            isDark,
+                                            bookData: book,
+                                            uid: user!.uid,
+                                          )
+                                        : Container(),
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                      ),
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -856,7 +879,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Widget TransactTile(bool isDark, {required Transact data}) {
+  Widget TransactTile(
+    bool isDark, {
+    required Transact data,
+    required List? users,
+  }) {
     bool isIncome = data.type == 'Income';
     String dateLabel = '';
     var todayDate = DateFormat.yMMMMd().format(DateTime.now());
@@ -912,34 +939,31 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                data.uid != user.uid &&
-                        bookData.users != null &&
-                        bookData.users!.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: FutureBuilder<
-                            DocumentSnapshot<Map<String, dynamic>>>(
-                          future: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(data.uid)
-                              .get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return CircleAvatar(
-                                radius: 12,
-                                backgroundImage: NetworkImage(
-                                  snapshot.data!.data()!['imgUrl'],
-                                ),
-                              );
-                            }
+                if (data.uid != user.uid && users != null && users.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child:
+                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(data.uid)
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return CircleAvatar(
+                            radius: 12,
+                            backgroundImage: NetworkImage(
+                              snapshot.data!.data()!['imgUrl'],
+                            ),
+                          );
+                        }
 
-                            return const CircleAvatar(
-                              radius: 12,
-                            );
-                          },
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                        return const CircleAvatar(
+                          radius: 12,
+                        );
+                      },
+                    ),
+                  ),
                 Flexible(
                   child: GestureDetector(
                     onTap: () {
@@ -1140,9 +1164,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   ),
                 ),
                 Visibility(
-                  visible: data.uid == user.uid &&
-                      bookData.users != null &&
-                      bookData.users!.isNotEmpty,
+                  visible:
+                      data.uid == user.uid && users != null && users.isNotEmpty,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: CircleAvatar(
@@ -1206,8 +1229,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   Widget BookMenu(
     bool isDark, {
+    required BookModel bookData,
     required String uid,
-    required String bookId,
   }) {
     return Container(
       padding: const EdgeInsets.all(10),
@@ -1271,6 +1294,12 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         context,
                         bookId: bookData.bookId,
                         oldBookName: bookData.bookName,
+                        onUpdate: () {
+                          Navigator.pop(context);
+                          ref.read(bookRepository).updateBook(
+                              bookId: bookData.bookId,
+                              data: {'bookName': newBookName.text.trim()});
+                        },
                       );
                     },
                   );
@@ -1318,7 +1347,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     builder: (context) {
                       return ConfirmDeleteModal(
                         onDelete: () {
-                          _clearAllTransacts();
+                          _clearAllTransacts(bookData.bookId);
                           Navigator.pop(context);
                         },
                         label: 'Really want to clear all Transacts?',
@@ -1342,8 +1371,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     builder: (context) => _addUserDialog(
                       isDark,
                       uid: uid,
-                      bookId: bookData.bookId,
-                      bookName: bookData.bookName,
+                      bookData: bookData,
                     ),
                   );
                 },
@@ -1365,10 +1393,131 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                 btnColor: isDark ? Dark.profitText : const Color(0xFF27576D),
                 textColor: isDark ? Colors.black : Colors.white,
               ),
+              BookMenuBtn(
+                onPressed: () {
+                  Share.share(
+                      'check out my transact book "${bookData.bookName}" ${Uri.parse("$kAppLink/book/${bookData.type}/${bookData.bookId}")}');
+                },
+                labelSize: 12,
+                label: 'Share',
+                iconSize: 15,
+                icon: Icons.share,
+                btnColor: kColor(context).primary,
+                textColor: !isDark ? Dark.text : Light.text,
+              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget kRenameModal(
+    BuildContext context, {
+    required String bookId,
+    required String oldBookName,
+    required void Function()? onUpdate,
+  }) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            margin: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            decoration: BoxDecoration(
+              color: isDark ? Dark.card : Light.card,
+              borderRadius: kRadius(20),
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundColor:
+                        isDark ? Colors.blue.shade100 : Colors.blueAccent,
+                    child: Text(
+                      'Aa',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: isDark ? Colors.blue.shade800 : Colors.white,
+                      ),
+                    ),
+                  ),
+                  height10,
+                  Text(
+                    'Rename Book',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    'Change the book name',
+                    style: TextStyle(
+                      color: isDark ? Colors.blue.shade300 : Colors.blueAccent,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  height20,
+                  TextField(
+                    controller: newBookName,
+                    keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.words,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    cursorWidth: 1,
+                    cursorColor: isDark ? Colors.white : Colors.black,
+                    decoration: InputDecoration(
+                      focusColor: isDark ? Colors.white : Colors.black,
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark ? Dark.scaffold : Colors.black,
+                          width: 2,
+                        ),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark ? Dark.scaffold : Colors.grey.shade300,
+                        ),
+                      ),
+                      hintText: 'Book title',
+                      hintStyle: TextStyle(
+                        fontSize: 30,
+                        color: isDark ? Dark.scaffold : Colors.grey.shade400,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        newBookName.text = value;
+                      });
+                    },
+                  ),
+                  height20,
+                  ElevatedButton.icon(
+                    onPressed: onUpdate,
+                    icon: const Icon(Icons.file_upload_outlined),
+                    label: const Text('Update'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1377,136 +1526,12 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   Widget _addUserDialog(
     bool isDark, {
     required String uid,
-    required String bookId,
-    required String bookName,
+    required BookModel bookData,
   }) {
-    final searchUser = TextEditingController();
-    selectedUsers = [];
-    bool isSelecting = false;
-
-    void onSelect(setState, String uid) {
-      setState(() {
-        if (!selectedUsers.contains(uid)) {
-          selectedUsers.add(uid);
-        } else {
-          selectedUsers.remove(uid);
-        }
-      });
-
-      if (selectedUsers.isEmpty) {
-        setState(() {
-          isSelecting = false;
-        });
-      } else {
-        setState(() {
-          isSelecting = true;
-        });
-      }
-    }
-
     return StatefulBuilder(
-      builder: (context, setState) => Dialog(
-        elevation: 0,
-        insetPadding: const EdgeInsets.all(15),
-        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              KSearchBar(
-                context,
-                isDark: isDark,
-                controller: searchUser,
-                onChanged: (_) {
-                  setState(() {});
-                },
-              ),
-              Visibility(
-                visible: isSelecting,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text('Selected ${selectedUsers.length} user(s)'),
-                ),
-              ),
-              height20,
-              FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                future:
-                    FirebaseRefs.userRef.where('uid', isNotEqualTo: uid).get(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isEmpty) {
-                      return const Text('No Users');
-                    }
-                    return Flexible(
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          UserModel userData = UserModel.fromMap(
-                              snapshot.data!.docs[index].data());
-                          if (Constants.getSearchString(userData.name)
-                                  .contains(searchUser.text) ||
-                              Constants.getSearchString(userData.username)
-                                  .contains(searchUser.text)) {
-                            return kUserTile(
-                              isDark,
-                              userData: userData,
-                              isSelecting: isSelecting,
-                              selectedUsers: selectedUsers,
-                              onTap: () {
-                                onSelect(setState, userData.uid);
-                              },
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    );
-                  }
-                  return const LinearProgressIndicator();
-                },
-              ),
-              selectedUsers.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          int currentTime =
-                              DateTime.now().millisecondsSinceEpoch;
-
-                          Map<String, dynamic> requestMap = {
-                            'id': "$currentTime",
-                            'date': Constants.getDisplayDate(currentTime),
-                            'time': Constants.getDisplayTime(currentTime),
-                            'senderId': uid,
-                            'users': selectedUsers,
-                            'bookName': bookName,
-                            'bookId': bookId,
-                          };
-
-                          await FirebaseRefs.requestRef
-                              .doc("$currentTime")
-                              .set(requestMap)
-                              .then(
-                                (value) => KSnackbar(
-                                  context,
-                                  content:
-                                      "Request to join book has been sent to ${selectedUsers.length} user(s)",
-                                ),
-                              );
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Send Request'),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ],
-          ),
-        ),
-      ),
-    );
+        builder: (context, setState) => UserSelectorDialog(
+              bookData: bookData,
+            ));
   }
 
   Widget FilterBottomSheet(bool isDark, StateSetter setState) {
@@ -1623,11 +1648,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  _clearAllTransacts() async {
+  _clearAllTransacts(String bookId) async {
     setState(() => isLoading = true);
-    await DatabaseMethods().deleteAllTransacts(bookData.bookId);
+    await DatabaseMethods().deleteAllTransacts(bookId);
     await DatabaseMethods()
-        .updateBookTransactions(bookData.bookId, {"income": 0, "expense": 0});
+        .updateBookTransactions(bookId, {"income": 0, "expense": 0});
     setState(() => isLoading = false);
   }
 

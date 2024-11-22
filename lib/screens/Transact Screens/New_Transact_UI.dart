@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Functions/transactFunctions.dart';
+import 'package:transaction_record_app/Helper/transactFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';

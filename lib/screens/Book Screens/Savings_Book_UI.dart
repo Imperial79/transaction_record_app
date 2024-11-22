@@ -6,7 +6,7 @@ import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import '../../Functions/navigatorFns.dart';
+import '../../Helper/navigatorFns.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';

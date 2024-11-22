@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';

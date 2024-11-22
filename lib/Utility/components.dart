@@ -3,12 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Functions/bookFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
-import '../Functions/navigatorFns.dart';
+import '../Helper/navigatorFns.dart';
 import 'commons.dart';
 
 Widget kPill({
@@ -286,121 +285,6 @@ Widget StatsCard(
   );
 }
 
-Widget kRenameModal(
-  BuildContext context, {
-  required String bookId,
-  required String oldBookName,
-}) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
-  final newBookName = TextEditingController(text: oldBookName);
-  return StatefulBuilder(
-    builder: (context, setState) {
-      return SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-          margin: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          decoration: BoxDecoration(
-            color: isDark ? Dark.card : Light.card,
-            borderRadius: kRadius(20),
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundColor:
-                      isDark ? Colors.blue.shade100 : Colors.blueAccent,
-                  child: Text(
-                    'Aa',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.blue.shade800 : Colors.white,
-                    ),
-                  ),
-                ),
-                height10,
-                Text(
-                  'Rename Book',
-                  style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  'Change the book name',
-                  style: TextStyle(
-                    color: isDark ? Colors.blue.shade300 : Colors.blueAccent,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                height20,
-                TextField(
-                  controller: newBookName,
-                  keyboardType: TextInputType.text,
-                  textCapitalization: TextCapitalization.words,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                  cursorWidth: 1,
-                  cursorColor: isDark ? Colors.white : Colors.black,
-                  decoration: InputDecoration(
-                    focusColor: isDark ? Colors.white : Colors.black,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isDark ? Dark.scaffold : Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isDark ? Dark.scaffold : Colors.grey.shade300,
-                      ),
-                    ),
-                    hintText: 'Book title',
-                    hintStyle: TextStyle(
-                      fontSize: 30,
-                      color: isDark ? Dark.scaffold : Colors.grey.shade400,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      newBookName.text = value;
-                    });
-                  },
-                ),
-                height20,
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    await BookMethods.editBookName(
-                      context,
-                      newBookName: newBookName.text,
-                      bookId: bookId,
-                    );
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.file_upload_outlined),
-                  label: const Text('Update'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
-
 Widget ConfirmDeleteModal({
   required String label,
   required String content,
@@ -434,7 +318,7 @@ Widget ConfirmDeleteModal({
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                height10,
                 Text(
                   label,
                   style: TextStyle(
@@ -451,9 +335,7 @@ Widget ConfirmDeleteModal({
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                height20,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

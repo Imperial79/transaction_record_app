@@ -2,19 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Components/User_Selector_Card.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
-import '../../Functions/navigatorFns.dart';
+import '../../Helper/navigatorFns.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';
 import '../../models/transactModel.dart';
-import '../../models/userModel.dart';
 import '../../services/database.dart';
 import '../Transact Screens/edit_transactUI.dart';
 import '../Transact Screens/New_Transact_UI.dart';
@@ -327,112 +326,8 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
     required String bookId,
     required String bookName,
   }) {
-    final searchUser = TextEditingController();
-    selectedUsers = [];
-    bool isSelecting = false;
-
-    void onSelect(setState, String uid) {
-      setState(() {
-        if (!selectedUsers.contains(uid)) {
-          selectedUsers.add(uid);
-        } else {
-          selectedUsers.remove(uid);
-        }
-      });
-
-      if (selectedUsers.isEmpty) {
-        setState(() {
-          isSelecting = false;
-        });
-      } else {
-        setState(() {
-          isSelecting = true;
-        });
-      }
-    }
-
     return StatefulBuilder(
-      builder: (context, setState) => Dialog(
-        elevation: 0,
-        insetPadding: const EdgeInsets.all(15),
-        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              KSearchBar(
-                context,
-                isDark: isDark,
-                controller: searchUser,
-                onChanged: (_) {
-                  setState(() {});
-                },
-              ),
-              Visibility(
-                visible: isSelecting,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text('Selected ${selectedUsers.length} user(s)'),
-                ),
-              ),
-              height20,
-              FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                future:
-                    FirebaseRefs.userRef.where('uid', isNotEqualTo: uid).get(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isEmpty) {
-                      return const Text('No Users');
-                    }
-                    return Flexible(
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          UserModel userData = UserModel.fromMap(
-                              snapshot.data!.docs[index].data());
-
-                          if (kCompare(searchUser.text, userData.name) ||
-                              kCompare(searchUser.text, userData.username)) {
-                            return kUserTile(
-                              isDark,
-                              userData: userData,
-                              isSelecting: isSelecting,
-                              selectedUsers: selectedUsers,
-                              onTap: () {
-                                onSelect(setState, userData.uid);
-                              },
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    );
-                  }
-                  return const LinearProgressIndicator();
-                },
-              ),
-              selectedUsers.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          await _addUsers(
-                            uid: uid,
-                            bookId: bookData.bookId,
-                            bookName: bookData.bookName,
-                          );
-                        },
-                        child: const Text('Send Request'),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ],
-          ),
-        ),
-      ),
+      builder: (context, setState) => UserSelectorDialog(bookData: bookData),
     );
   }
 

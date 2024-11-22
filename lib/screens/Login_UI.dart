@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
@@ -36,7 +36,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
       if (user != null) {
         ref.read(userProvider.notifier).state = user;
         // navPopUntilPush(context, RootUI());
-        context.pushReplacement('/home');
+        context.pushReplacement('/root');
       }
     } catch (e) {
       KSnackbar(context, content: "Something went wrong!", isDanger: true);

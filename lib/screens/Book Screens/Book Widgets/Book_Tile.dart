@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Functions/navigatorFns.dart';
+import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import '../../../Utility/KButton.dart';
 import '../../../Utility/commons.dart';
@@ -8,7 +9,6 @@ import '../../../Utility/constants.dart';
 import '../../../Utility/newColors.dart';
 import '../Due_Book_UI.dart';
 import '../Savings_Book_UI.dart';
-import '../Regular_Book_UI.dart';
 
 class BookTile extends StatefulWidget {
   final BookModel book;
@@ -78,7 +78,7 @@ class _BookTileState extends State<BookTile> {
             if (widget.book.type == "due") {
               navPush(context, Due_Book_UI(bookData: widget.book));
             } else if (widget.book.type == "regular") {
-              navPush(context, Regular_Book_UI(bookData: widget.book));
+              context.push("/book/regular/${widget.book.bookId}");
             } else {
               navPush(context, Savings_Book_UI(bookData: widget.book));
             }
