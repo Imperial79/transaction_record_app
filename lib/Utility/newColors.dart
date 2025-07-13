@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'commons.dart';
 
+extension ColorUtils on Color {
+  Color lighten([double opacity = .15]) {
+    return kOpacity(this, opacity);
+  }
+
+  Color darken([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(this);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
+  }
+}
+
+Color kOpacity(Color color, double opacity) =>
+    color.withAlpha((opacity * 255).round());
+
 // Function to get ColorScheme based on theme
 ColorScheme kColor(BuildContext context) => Theme.of(context).colorScheme;
 
-ColorFilter svgColor(Color color) => ColorFilter.mode(
-      color,
-      BlendMode.srcIn,
-    );
+ColorFilter svgColor(Color color) => ColorFilter.mode(color, BlendMode.srcIn);
 
 class Light {
   static const Color scaffold = Colors.white;
@@ -47,64 +60,60 @@ class Dark {
 
 class KThemeData {
   static ThemeData light() => ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        scaffoldBackgroundColor: Light.scaffold,
-        brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Light.primary,
-          brightness: Brightness.light,
-          primary: Light.primary,
-          secondary: Light.profitCard,
-          onPrimary: Colors.white,
-          surface: Light.card,
-        ),
-        cardTheme: CardTheme(
-          elevation: 0,
-          color: Light.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: kRadius(20),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: Light.primary,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      );
+    fontFamily: 'Product',
+    useMaterial3: true,
+    scaffoldBackgroundColor: Light.scaffold,
+    brightness: Brightness.light,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Light.primary,
+      brightness: Brightness.light,
+      primary: Light.primary,
+      secondary: Light.profitCard,
+      onPrimary: Colors.white,
+      surface: Light.card,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Light.card,
+      shape: RoundedRectangleBorder(borderRadius: kRadius(20)),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Light.primary,
+        foregroundColor: Colors.white,
+      ),
+    ),
+  );
 
   static ThemeData dark() => ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        scaffoldBackgroundColor: Dark.scaffold,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Dark.primary,
-          brightness: Brightness.dark,
-          primary: Dark.primary,
-          secondary: Dark.profitCard,
-          onPrimary: Colors.black,
-          surface: Dark.card,
-        ),
-        cardTheme: CardTheme(
-          elevation: 0,
-          color: Dark.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: kRadius(20),
-          ),
-        ),
-        textTheme: const TextTheme(
-          labelLarge: TextStyle(color: Colors.white),
-          bodyLarge: TextStyle(color: Colors.white),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: Dark.primary,
-            foregroundColor: Colors.black,
-          ),
-        ),
-      );
+    fontFamily: 'Product',
+    useMaterial3: true,
+    scaffoldBackgroundColor: Dark.scaffold,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Dark.primary,
+      brightness: Brightness.dark,
+      primary: Dark.primary,
+      secondary: Dark.profitCard,
+      onPrimary: Colors.black,
+      surface: Dark.card,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Dark.card,
+      shape: RoundedRectangleBorder(borderRadius: kRadius(20)),
+    ),
+    textTheme: const TextTheme(
+      labelLarge: TextStyle(color: Colors.white),
+      bodyLarge: TextStyle(color: Colors.white),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Dark.primary,
+        foregroundColor: Colors.black,
+      ),
+    ),
+  );
 }

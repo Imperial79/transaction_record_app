@@ -17,10 +17,7 @@ Widget kPill({
 }) {
   return Container(
     padding: padding,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: kRadius(100),
-    ),
+    decoration: BoxDecoration(color: color, borderRadius: kRadius(100)),
     child: child,
   );
 }
@@ -46,9 +43,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             fontSize: 20,
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         const Text(
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
@@ -57,9 +52,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             fontSize: 15,
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Align(
           alignment: Alignment.topRight,
           child: Container(
@@ -86,9 +79,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
               ),
               label: Text(
                 'Create',
-                style: TextStyle(
-                  color: isDark ? Colors.black : Colors.white,
-                ),
+                style: TextStyle(color: isDark ? Colors.black : Colors.white),
               ),
             ),
           ),
@@ -99,9 +90,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
 }
 
 class AppTitle extends StatelessWidget {
-  const AppTitle({
-    super.key,
-  });
+  const AppTitle({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +126,7 @@ class AppTitle extends StatelessWidget {
               fontWeight: FontWeight.w500,
               fontSize: 15,
             ),
-          )
+          ),
         ],
       ),
     );
@@ -176,7 +165,7 @@ class AppTitle extends StatelessWidget {
 //                                 height: 40,
 //                                 width: 40,
 //                                 decoration: BoxDecoration(
-//                                   color: Colors.grey.withOpacity(0.5),
+//                                   color: Colors.grey.lighten(0.5),
 //                                   shape: BoxShape.circle,
 //                                 ),
 //                               ),
@@ -186,7 +175,7 @@ class AppTitle extends StatelessWidget {
 //                               Container(
 //                                 width: 200,
 //                                 height: 20,
-//                                 color: Colors.grey.withOpacity(0.5),
+//                                 color: Colors.grey.lighten(0.5),
 //                               ),
 //                               const Spacer(),
 //                             ],
@@ -197,12 +186,12 @@ class AppTitle extends StatelessWidget {
 //                           Container(
 //                             width: 200,
 //                             height: 20,
-//                             color: Colors.grey.withOpacity(0.5),
+//                             color: Colors.grey.lighten(0.5),
 //                           ),
 //                           Container(
 //                             width: 200,
 //                             height: 20,
-//                             color: Colors.grey.withOpacity(0.5),
+//                             color: Colors.grey.lighten(0.5),
 //                           ),
 //                         ],
 //                       ),
@@ -216,7 +205,7 @@ class AppTitle extends StatelessWidget {
 //                   padding:
 //                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 //                   decoration: BoxDecoration(
-//                     color: Colors.grey.withOpacity(0.5),
+//                     color: Colors.grey.lighten(0.5),
 //                     borderRadius: kRadius(100),
 //                   ),
 //                   child: const SizedBox(
@@ -247,11 +236,12 @@ Widget StatsCard(
       borderRadius: kRadius(15),
       color: isExpense ? const Color(0xffca705f) : Dark.profitCard,
       border: Border.all(
-        color: isExpense
-            ? isDark
-                ? Colors.red.shade100
-                : Colors.red.shade900
-            : isDark
+        color:
+            isExpense
+                ? isDark
+                    ? Colors.red.shade100
+                    : Colors.red.shade900
+                : isDark
                 ? Colors.white
                 : Colors.teal.shade700,
       ),
@@ -387,16 +377,8 @@ Widget BookMenuBtn({
       foregroundColor: textColor,
       elevation: 0,
     ),
-    icon: Icon(
-      icon,
-      size: iconSize,
-    ),
-    label: Text(
-      label,
-      style: TextStyle(
-        fontSize: labelSize,
-      ),
-    ),
+    icon: Icon(icon, size: iconSize),
+    label: Text(label, style: TextStyle(fontSize: labelSize)),
   );
 }
 
@@ -417,11 +399,7 @@ Widget kCard(
       children: [
         Row(
           children: [
-            Icon(
-              icon,
-              size: 15,
-              color: isDark ? Colors.white : Colors.black,
-            ),
+            Icon(icon, size: 15, color: isDark ? Colors.white : Colors.black),
             width10,
             Text(
               title,
@@ -439,10 +417,12 @@ Widget kCard(
   );
 }
 
-setSystemUIColors(BuildContext context) {
+void setSystemUIColors(BuildContext context) {
   bool isDark = Theme.of(context).brightness == Brightness.dark;
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-      overlays: [SystemUiOverlay.top]);
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+    overlays: [SystemUiOverlay.top],
+  );
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
@@ -459,25 +439,18 @@ bool isKeyboardOpen(BuildContext context) {
   return MediaQuery.of(context).viewInsets.bottom != 0;
 }
 
-Widget kDeleteAlertDialog(BuildContext context,
-    {final label, content, onPress}) {
+Widget kDeleteAlertDialog(
+  BuildContext context, {
+  final label,
+  content,
+  onPress,
+}) {
   return StatefulBuilder(
     builder: (context, StateSetter setState) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: kRadius(12),
-        ),
-        icon: const Icon(
-          Icons.delete,
-          color: Colors.red,
-          size: 30,
-        ),
-        title: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+        icon: const Icon(Icons.delete, color: Colors.red, size: 30),
+        title: Text(label, style: const TextStyle(color: Colors.black)),
         content: Text(
           content,
           style: const TextStyle(
@@ -491,21 +464,14 @@ Widget kDeleteAlertDialog(BuildContext context,
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text(
-              'Cancel',
-            ),
+            child: const Text('Cancel'),
           ),
           MaterialButton(
             onPressed: onPress,
             color: Colors.red,
-            shape: RoundedRectangleBorder(
-              borderRadius: kRadius(5),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: kRadius(5)),
             elevation: 0,
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
       );
@@ -514,63 +480,62 @@ Widget kDeleteAlertDialog(BuildContext context,
 }
 
 Widget NewBookCard(BuildContext context) => Consumer(
-      builder: (context, ref, _) {
-        return Container(
-          margin: const EdgeInsets.all(15),
-          width: double.infinity,
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            borderRadius: kRadius(20),
-            gradient: const LinearGradient(
-              colors: [
-                Light.profitCard,
-                Colors.black,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+  builder: (context, ref, _) {
+    return Container(
+      margin: const EdgeInsets.all(15),
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        borderRadius: kRadius(20),
+        gradient: const LinearGradient(
+          colors: [Light.profitCard, Colors.black],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Create your first Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 30,
+              letterSpacing: 1,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Create your first Transact Book',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  fontSize: 30,
-                  letterSpacing: 1,
-                ),
-              ),
-              height10,
-              const Text(
-                'Track your daily expenses by creating categorised Transact Book',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              height10,
-              Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.watch(pageControllerProvider).animateToPage(
-                          1,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                        );
-                  },
-                  child: const Text('Create'),
-                ),
-              ),
-            ],
+          height10,
+          const Text(
+            'Track your daily expenses by creating categorised Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
-        );
-      },
+          height10,
+          Align(
+            alignment: Alignment.topRight,
+            child: ElevatedButton(
+              onPressed: () {
+                ref
+                    .watch(pageControllerProvider)
+                    .animateToPage(
+                      1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+              },
+              child: const Text('Create'),
+            ),
+          ),
+        ],
+      ),
     );
+  },
+);
 
 Widget AnimatedFloatingButton(
   BuildContext context, {
@@ -637,24 +602,18 @@ Widget KSearchBar(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(
-              color: isDark ? Dark.card : Light.card,
-            ),
+            border: Border.all(color: isDark ? Dark.card : Light.card),
             borderRadius: kRadius(100),
           ),
           child: Row(
             children: [
-              CircleAvatar(
-                child: Icon(Icons.search),
-              ),
+              CircleAvatar(child: Icon(Icons.search)),
               width15,
               Flexible(
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.text,
-                  style: const TextStyle(
-                    fontSize: 15,
-                  ),
+                  style: const TextStyle(fontSize: 15),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Search by name or amount',

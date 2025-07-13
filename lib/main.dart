@@ -15,7 +15,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
   await Hive.openBox('hiveBox');
-
   runApp(ProviderScope(child: const MyApp()));
 }
 
@@ -38,7 +37,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     _getThemeDataFromHive();
   }
 
-  _getThemeDataFromHive() async {
+  Future<void> _getThemeDataFromHive() async {
     ref.read(hiveThemeFuture);
   }
 

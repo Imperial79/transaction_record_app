@@ -25,7 +25,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   bool isLoading = false;
   String logoPath = 'lib/assets/logo/logo.png';
 
-  _googleSignIn() async {
+  Future<void> _googleSignIn() async {
     try {
       setState(() {
         isLoading = true;

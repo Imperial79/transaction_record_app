@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-const String kAppVersion = "2.7.3";
+const String kAppVersion = "2.7.4";
 const String kAppLink = "https://transact-record.web.app";
 
 class FirebaseRefs {

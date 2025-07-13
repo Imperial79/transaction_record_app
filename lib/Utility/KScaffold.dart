@@ -54,30 +54,31 @@ class _KScaffoldState extends State<KScaffold> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 200),
-      child: isLoading
-          ? Container(
-              height: double.maxFinite,
-              width: double.maxFinite,
-              color: isDark
-                  ? Colors.black.withOpacity(.8)
-                  : Light.card.withOpacity(.8),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomLoading(),
-                    height15,
-                    Text(
-                      "Please Wait ...",
-                      style: TextStyle(
+      child:
+          isLoading
+              ? Container(
+                height: double.maxFinite,
+                width: double.maxFinite,
+                color:
+                    isDark ? Colors.black.lighten(.8) : Light.card.lighten(.8),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomLoading(),
+                      height15,
+                      Text(
+                        "Please Wait ...",
+                        style: TextStyle(
                           fontSize: 20,
-                          color: isDark ? Colors.white : Colors.black),
-                    ),
-                  ],
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          : const SizedBox(),
+              )
+              : const SizedBox(),
     );
   }
 }

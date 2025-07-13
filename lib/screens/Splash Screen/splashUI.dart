@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Utility/CustomLoading.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 
 class SplashUI extends ConsumerStatefulWidget {
   const SplashUI({super.key});
@@ -29,9 +30,10 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                         style: TextStyle(
                           fontFamily: "Serif",
                           fontSize: 500,
-                          color: isDark
-                              ? Colors.white.withOpacity(.1)
-                              : Colors.black.withOpacity(.05),
+                          color:
+                              isDark
+                                  ? Colors.white.lighten(.1)
+                                  : Colors.black.lighten(.05),
                         ),
                       ),
                       Container(
@@ -47,7 +49,10 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                         child: Text(
                           "Transact",
                           style: TextStyle(
-                              fontFamily: "Serif", fontSize: 80, height: 1),
+                            fontFamily: "Serif",
+                            fontSize: 80,
+                            height: 1,
+                          ),
                         ),
                       ),
                     ],

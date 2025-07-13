@@ -4,12 +4,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 Future<void> navPush(BuildContext context, screen) async {
   await Navigator.push(
-      context, MaterialPageRoute(builder: (context) => screen));
+    context,
+    MaterialPageRoute(builder: (context) => screen),
+  );
 }
 
 Future<void> NavPushReplacement(BuildContext context, screen) {
   return Navigator.pushReplacement(
-      context, MaterialPageRoute(builder: (context) => screen));
+    context,
+    MaterialPageRoute(builder: (context) => screen),
+  );
 }
 
 Future<void> navPopUntilPush(BuildContext context, Widget screen) {
@@ -17,7 +21,7 @@ Future<void> navPopUntilPush(BuildContext context, Widget screen) {
   return navPush(context, screen);
 }
 
-launchTheUrl(Uri url) async {
+Future<void> launchTheUrl(Uri url) async {
   if (await canLaunchUrl(url)) {
     await launchUrl(url, mode: LaunchMode.externalApplication);
   } else {

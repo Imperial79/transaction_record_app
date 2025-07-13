@@ -15,12 +15,13 @@ class BookTile extends StatefulWidget {
   final String title;
   final bool showDate;
   final void Function(String, String)? onDelete;
-  const BookTile(
-      {super.key,
-      required this.book,
-      required this.title,
-      this.onDelete,
-      required this.showDate});
+  const BookTile({
+    super.key,
+    required this.book,
+    required this.title,
+    this.onDelete,
+    required this.showDate,
+  });
 
   @override
   State<BookTile> createState() => _BookTileState();
@@ -40,10 +41,12 @@ class _BookTileState extends State<BookTile> {
     bool isCompleted = false;
 
     if (widget.book.type == "regular") {
-      isCompleted = widget.book.expense != 0 &&
+      isCompleted =
+          widget.book.expense != 0 &&
           (widget.book.income == widget.book.expense);
     } else {
-      isCompleted = widget.book.targetAmount != 0 &&
+      isCompleted =
+          widget.book.targetAmount != 0 &&
           (widget.book.income == widget.book.targetAmount);
     }
 
@@ -99,9 +102,7 @@ class _BookTileState extends State<BookTile> {
           },
           child: Card(
             margin: const EdgeInsets.only(top: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: kRadius(10),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: kRadius(10)),
             color: kCardColor,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -145,12 +146,9 @@ class _BookTileState extends State<BookTile> {
                                 widget.book.users != null &&
                                         widget.book.users!.isNotEmpty
                                     ? const CircleAvatar(
-                                        radius: 12,
-                                        child: Icon(
-                                          Icons.groups_2,
-                                          size: 12,
-                                        ),
-                                      )
+                                      radius: 12,
+                                      child: Icon(Icons.groups_2, size: 12),
+                                    )
                                     : const SizedBox(),
                               ],
                             ),
@@ -168,9 +166,7 @@ class _BookTileState extends State<BookTile> {
                                     width5,
                                     Text(
                                       widget.book.bookDescription,
-                                      style: TextStyle(
-                                        color: textColor,
-                                      ),
+                                      style: TextStyle(color: textColor),
                                     ),
                                   ],
                                 ),
@@ -199,16 +195,17 @@ class _BookTileState extends State<BookTile> {
                       ),
                       if (isSavings)
                         Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
-                              borderRadius: kRadius(7),
-                              color: isDark ? Dark.scaffold : Light.scaffold),
+                            borderRadius: kRadius(7),
+                            color: isDark ? Dark.scaffold : Light.scaffold,
+                          ),
                           child: Text(
                             "₹ ${kMoneyFormat(widget.book.income)}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
                     ],
@@ -216,94 +213,116 @@ class _BookTileState extends State<BookTile> {
                   if (!isCompleted && !isSavings)
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child: widget.book.type == "due"
-                          ? Row(
-                              children: [
-                                _bookStats(
-                                  index: 0,
-                                  crossAlign: CrossAxisAlignment.start,
-                                  labelColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  amount: widget.book.targetAmount -
-                                      widget.book.income,
-                                  label: 'Due',
-                                  cardColor: isDark
-                                      ? Dark.completeCard
-                                      : Light.completeCard,
-                                  amountColor: isDark
-                                      ? Dark.onCompleteCard
-                                      : Light.onCompleteCard,
-                                ),
-                                width5,
-                                _bookStats(
-                                  index: 2,
-                                  crossAlign: CrossAxisAlignment.end,
-                                  label: "Target",
-                                  amount: widget.book.targetAmount,
-                                  cardColor: isDark
-                                      ? const Color(0xFF0B2A43)
-                                      : const Color.fromARGB(
-                                          255, 197, 226, 250),
-                                  labelColor: isDark
-                                      ? Colors.white
-                                      : Colors.blue.shade900,
-                                  amountColor: isDark
-                                      ? Colors.blue.shade100
-                                      : Colors.blue.shade900,
-                                ),
-                              ],
-                            )
-                          : widget.book.type == "regular"
+                      child:
+                          widget.book.type == "due"
                               ? Row(
-                                  children: [
-                                    _bookStats(
-                                      index: 0,
-                                      crossAlign: CrossAxisAlignment.start,
-                                      labelColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      amount: widget.book.income,
-                                      label: 'Income',
-                                      cardColor: isDark
-                                          ? const Color(0xFF223B05)
-                                          : const Color(0xFFB5FFB7),
-                                      amountColor: isDark
-                                          ? Colors.lightGreenAccent
-                                          : Colors.lightGreen.shade900,
-                                    ),
-                                    width5,
-                                    _bookStats(
-                                      index: 1,
-                                      crossAlign: CrossAxisAlignment.center,
-                                      amount: widget.book.expense,
-                                      label: 'Expense',
-                                      cardColor: isDark
-                                          ? Colors.black
-                                          : Colors.grey.shade300,
-                                      labelColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      amountColor:
-                                          isDark ? Colors.white : Colors.black,
-                                    ),
-                                    width5,
-                                    _bookStats(
-                                      index: 2,
-                                      crossAlign: CrossAxisAlignment.end,
-                                      label: 'Current',
-                                      amount: widget.book.income -
-                                          widget.book.expense,
-                                      cardColor: isDark
-                                          ? const Color(0xFF0B2A43)
-                                          : const Color.fromARGB(
-                                              255, 197, 226, 250),
-                                      labelColor: isDark
-                                          ? Colors.white
-                                          : Colors.blue.shade900,
-                                      amountColor: isDark
-                                          ? Colors.blue.shade100
-                                          : Colors.blue.shade900,
-                                    ),
-                                  ],
-                                )
+                                children: [
+                                  _bookStats(
+                                    index: 0,
+                                    crossAlign: CrossAxisAlignment.start,
+                                    labelColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amount:
+                                        widget.book.targetAmount -
+                                        widget.book.income,
+                                    label: 'Due',
+                                    cardColor:
+                                        isDark
+                                            ? Dark.completeCard
+                                            : Light.completeCard,
+                                    amountColor:
+                                        isDark
+                                            ? Dark.onCompleteCard
+                                            : Light.onCompleteCard,
+                                  ),
+                                  width5,
+                                  _bookStats(
+                                    index: 2,
+                                    crossAlign: CrossAxisAlignment.end,
+                                    label: "Target",
+                                    amount: widget.book.targetAmount,
+                                    cardColor:
+                                        isDark
+                                            ? const Color(0xFF0B2A43)
+                                            : const Color.fromARGB(
+                                              255,
+                                              197,
+                                              226,
+                                              250,
+                                            ),
+                                    labelColor:
+                                        isDark
+                                            ? Colors.white
+                                            : Colors.blue.shade900,
+                                    amountColor:
+                                        isDark
+                                            ? Colors.blue.shade100
+                                            : Colors.blue.shade900,
+                                  ),
+                                ],
+                              )
+                              : widget.book.type == "regular"
+                              ? Row(
+                                children: [
+                                  _bookStats(
+                                    index: 0,
+                                    crossAlign: CrossAxisAlignment.start,
+                                    labelColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amount: widget.book.income,
+                                    label: 'Income',
+                                    cardColor:
+                                        isDark
+                                            ? const Color(0xFF223B05)
+                                            : const Color(0xFFB5FFB7),
+                                    amountColor:
+                                        isDark
+                                            ? Colors.lightGreenAccent
+                                            : Colors.lightGreen.shade900,
+                                  ),
+                                  width5,
+                                  _bookStats(
+                                    index: 1,
+                                    crossAlign: CrossAxisAlignment.center,
+                                    amount: widget.book.expense,
+                                    label: 'Expense',
+                                    cardColor:
+                                        isDark
+                                            ? Colors.black
+                                            : Colors.grey.shade300,
+                                    labelColor:
+                                        isDark ? Colors.white : Colors.black,
+                                    amountColor:
+                                        isDark ? Colors.white : Colors.black,
+                                  ),
+                                  width5,
+                                  _bookStats(
+                                    index: 2,
+                                    crossAlign: CrossAxisAlignment.end,
+                                    label: 'Current',
+                                    amount:
+                                        widget.book.income -
+                                        widget.book.expense,
+                                    cardColor:
+                                        isDark
+                                            ? const Color(0xFF0B2A43)
+                                            : const Color.fromARGB(
+                                              255,
+                                              197,
+                                              226,
+                                              250,
+                                            ),
+                                    labelColor:
+                                        isDark
+                                            ? Colors.white
+                                            : Colors.blue.shade900,
+                                    amountColor:
+                                        isDark
+                                            ? Colors.blue.shade100
+                                            : Colors.blue.shade900,
+                                  ),
+                                ],
+                              )
                               : SizedBox(),
                     ),
                   if (isCompleted && !isSavings)
@@ -311,17 +330,15 @@ class _BookTileState extends State<BookTile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         height10,
-                        const Text(
-                          "Final Sum",
-                          style: TextStyle(fontSize: 15),
-                        ),
+                        const Text("Final Sum", style: TextStyle(fontSize: 15)),
                         Text(
                           "INR ${kMoneyFormat(widget.book.income)}",
                           style: TextStyle(
                             fontSize: 20,
-                            color: isDark
-                                ? Dark.onCompleteCard
-                                : Light.onCompleteCard,
+                            color:
+                                isDark
+                                    ? Dark.onCompleteCard
+                                    : Light.onCompleteCard,
                           ),
                         ),
                       ],
@@ -404,21 +421,18 @@ class _BookTileState extends State<BookTile> {
     if (amount < 0) {
       if (isDark) {
         amountColor = Dark.lossText;
-        cardColor = Dark.lossCard.withOpacity(.2);
+        cardColor = Dark.lossCard.lighten(.2);
       } else {
         labelColor = Light.lossText;
         amountColor = Light.lossText;
-        cardColor = Light.lossCard.withOpacity(.2);
+        cardColor = Light.lossCard.lighten(.2);
       }
     }
     return Flexible(
       child: Container(
         width: double.maxFinite,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: kRadius(7),
-        ),
+        decoration: BoxDecoration(color: cardColor, borderRadius: kRadius(7)),
         child: Column(
           crossAxisAlignment: crossAlign,
           children: [

@@ -29,24 +29,20 @@ class _AccountUIState extends ConsumerState<AccountUI> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        final user = ref.read(userProvider);
-        if (user != null) {
-          nameController.text = user.name;
-          emailController.text = user.email;
-          setState(() {});
-        }
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final user = ref.read(userProvider);
+      if (user != null) {
+        nameController.text = user.name;
+        emailController.text = user.email;
+        setState(() {});
+      }
+    });
   }
 
-  updateAccountDetails(String uid) async {
+  Future<void> updateAccountDetails(String uid) async {
     setState(() => isLoading = true);
     if (nameController.text.isNotEmpty) {
-      Map<String, dynamic> accountMap = {
-        'name': nameController.text,
-      };
+      Map<String, dynamic> accountMap = {'name': nameController.text};
 
       await DatabaseMethods().updateAccountDetails(uid, accountMap);
 
@@ -57,9 +53,9 @@ class _AccountUIState extends ConsumerState<AccountUI> {
         userBox.put('userData', userMap);
       }
 
-      ref.read(userProvider.notifier).update(
-            (state) => state!.copyWith(name: nameController.text),
-          );
+      ref
+          .read(userProvider.notifier)
+          .update((state) => state!.copyWith(name: nameController.text));
 
       KSnackbar(context, content: "Name Updated");
       setState(() => isLoading = false);
@@ -88,16 +84,8 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Account',
-                    style: TextStyle(
-                      fontSize: 25,
-                    ),
-                  ),
-                  Text(
-                    "v$kAppVersion",
-                    style: TextStyle(),
-                  ),
+                  Text('Account', style: TextStyle(fontSize: 25)),
+                  Text("v$kAppVersion", style: TextStyle()),
                 ],
               ),
               height20,
@@ -168,15 +156,10 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                 decoration: InputDecoration(
                   focusColor: Colors.black,
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      width: 2,
-                    ),
+                    borderSide: BorderSide(color: Colors.black, width: 2),
                   ),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
                   hintText: 'Email',
                   hintStyle: TextStyle(
@@ -209,16 +192,11 @@ class _AccountUIState extends ConsumerState<AccountUI> {
             onPressed: () {
               updateAccountDetails(user.uid);
             },
-            shape: RoundedRectangleBorder(
-              borderRadius: kRadius(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
             elevation: 0,
             padding: EdgeInsets.zero,
             child: Ink(
-              padding: const EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 25,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
               decoration: BoxDecoration(
                 borderRadius: kRadius(12),
                 color: isDark ? Dark.primary : Light.primary,
@@ -230,9 +208,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                     Icons.file_upload_outlined,
                     color: isDark ? Colors.black : Colors.white,
                   ),
-                  const SizedBox(
-                    width: 5,
-                  ),
+                  const SizedBox(width: 5),
                   Text(
                     'Update',
                     style: TextStyle(
@@ -254,7 +230,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
     Color inactiveColor = isDark ? Dark.card : Light.card;
     Color inactiveBorderColor = isDark ? Dark.card : Light.card;
     Color activeColor =
-        isDark ? Dark.primaryAccent.withOpacity(.3) : Light.primaryAccent;
+        isDark ? Dark.primaryAccent.lighten(.3) : Light.primaryAccent;
     Color activeBorderColor = isDark ? Dark.primaryAccent : Light.primary;
     return Expanded(
       child: Consumer(

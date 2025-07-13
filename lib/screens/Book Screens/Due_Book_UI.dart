@@ -45,45 +45,45 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
   bool isLoading = false;
   bool isSearching = false;
 
-  Future<void> _addUsers({
-    required String uid,
-    required String bookName,
-    required String bookId,
-  }) async {
-    try {
-      Navigator.pop(context);
-      setState(() {
-        isLoading = true;
-      });
-      int currentTime = DateTime.now().millisecondsSinceEpoch;
+  // Future<void> _addUsers({
+  //   required String uid,
+  //   required String bookName,
+  //   required String bookId,
+  // }) async {
+  //   try {
+  //     Navigator.pop(context);
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-      Map<String, dynamic> requestMap = {
-        'id': "$currentTime",
-        'date': Constants.getDisplayDate(currentTime),
-        'time': Constants.getDisplayTime(currentTime),
-        'senderId': uid,
-        'users': selectedUsers,
-        'bookName': bookName,
-        'bookId': bookId,
-      };
+  //     Map<String, dynamic> requestMap = {
+  //       'id': "$currentTime",
+  //       'date': Constants.getDisplayDate(currentTime),
+  //       'time': Constants.getDisplayTime(currentTime),
+  //       'senderId': uid,
+  //       'users': selectedUsers,
+  //       'bookName': bookName,
+  //       'bookId': bookId,
+  //     };
 
-      await FirebaseRefs.requestRef.doc("$currentTime").set(requestMap).then(
-            (value) => KSnackbar(
-              context,
-              content:
-                  "Request to join book has been sent to ${selectedUsers.length} user(s)",
-            ),
-          );
-    } catch (e) {
-      KSnackbar(context, content: "Something went wrong!", isDanger: true);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  //     await FirebaseRefs.requestRef.doc("$currentTime").set(requestMap).then(
+  //           (value) => KSnackbar(
+  //             context,
+  //             content:
+  //                 "Request to join book has been sent to ${selectedUsers.length} user(s)",
+  //           ),
+  //         );
+  //   } catch (e) {
+  //     KSnackbar(context, content: "Something went wrong!", isDanger: true);
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
-  _setNewTarget() async {
+  void _setNewTarget() async {
     Navigator.pop(context);
     try {
       setState(() {
@@ -93,12 +93,13 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
       await FirebaseFirestore.instance
           .collection("transactBooks")
           .doc(bookData.bookId)
-          .update({
-        "targetAmount": double.parse(_newTargetAmount.text),
-      });
+          .update({"targetAmount": double.parse(_newTargetAmount.text)});
 
-      KSnackbar(context,
-          content: "New target set successfully!", isDanger: false);
+      KSnackbar(
+        context,
+        content: "New target set successfully!",
+        isDanger: false,
+      );
     } catch (e) {
       KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
@@ -158,8 +159,9 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                       ),
                     ),
                     IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_outline)),
+                      onPressed: () {},
+                      icon: const Icon(Icons.delete_outline),
+                    ),
                   ],
                 ),
               ),
@@ -176,23 +178,52 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                         Row(
                           children: [
                             Expanded(
+                              child: Text(
+                                data.bookName,
+                              ),
+                            ),
+                            Text(
+                              DateFormat(
+                                "dd MMM, yyyy",
+                              ).format(DateTime.parse(data.bookId)),
+                            ),
+                          ],
+                        ),
+                        height10,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(!isCompleted
-                                      ? "Due Amount"
-                                      : "Final Sum"),
+                                  Text(
+                                    !isCompleted ? "Due" : "Final Sum",
+                                  ),
                                   Text(
                                     !isCompleted
                                         ? "INR ${kMoneyFormat(data.targetAmount - data.income)}"
                                         : "INR ${kMoneyFormat(data.income)}",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
                                       color: isCompleted
                                           ? isDark
                                               ? Dark.profitText
                                               : Light.profitText
                                           : null,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Paid",
+                                  ),
+                                  Text(
+                                    "INR ${kMoneyFormat(data.income - data.expense)}",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: isDark
+                                          ? Dark.profitText
+                                          : Light.profitText,
                                     ),
                                   ),
                                 ],
@@ -219,9 +250,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                           isDark ? Colors.black : Colors.white,
                                       prefix: const Text(
                                         "INR",
-                                        style: TextStyle(
-                                          fontSize: 30,
-                                        ),
+                                        style: TextStyle(fontSize: 30),
                                       ),
                                     ),
                                     actions: [
@@ -229,27 +258,25 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                         isDark,
                                         onPressed: _setNewTarget,
                                         label: "Set Target",
-                                      )
+                                      ),
                                     ],
                                   ),
                                 );
                               },
                               label: "Edit",
-                            )
+                            ),
                           ],
                         ),
-                        height20,
-                        Text(
-                          data.bookName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          DateFormat("dd MMM, yyyy").format(
-                            DateTime.parse(data.bookId),
-                          ),
-                        ),
+                        // height20,
+                        // Text(
+                        //   data.bookName,
+                        //   style: const TextStyle(fontSize: 20),
+                        // ),
+                        // Text(
+                        //   DateFormat(
+                        //     "dd MMM, yyyy",
+                        //   ).format(DateTime.parse(data.bookId)),
+                        // ),
                         if (!isCompleted)
                           Padding(
                             padding: const EdgeInsets.only(top: 20.0),
@@ -266,11 +293,10 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            const Text(
-                                              "Completed",
-                                            ),
+                                            const Text("Completed"),
                                             Text(
-                                                "${(double.parse("${(data.income - data.expense) / data.targetAmount}") * 100).toStringAsFixed(1)}%")
+                                              "${(double.parse("${(data.income - data.expense) / data.targetAmount}") * 100).toStringAsFixed(1)}%",
+                                            ),
                                           ],
                                         ),
                                         height5,
@@ -305,10 +331,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
         onPressed: () {
           navPush(
             context,
-            New_Transact_UI(
-              bookType: bookData.type,
-              bookId: bookData.bookId,
-            ),
+            New_Transact_UI(bookType: bookData.type, bookId: bookData.bookId),
           );
         },
         elevation: 0,
@@ -359,33 +382,39 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             Transact transact = Transact.fromMap(
-                                snapshot.data!.docs[index].data());
+                              snapshot.data!.docs[index].data(),
+                            );
                             final searchKey = Constants.getSearchString(
-                                _searchController.text);
+                              _searchController.text,
+                            );
 
                             if (_selectedSortType == 'All') {
                               if (_searchController.text.isEmpty) {
                                 return _transactTile(isDark, data: transact);
-                              } else if (transact.amount.contains(searchKey) ||
-                                  transact.description
-                                      .toLowerCase()
-                                      .contains(searchKey) ||
-                                  transact.source
-                                      .toLowerCase()
-                                      .contains(searchKey)) {
+                              } else if (transact.amount.contains(
+                                    searchKey,
+                                  ) ||
+                                  transact.description.toLowerCase().contains(
+                                        searchKey,
+                                      ) ||
+                                  transact.source.toLowerCase().contains(
+                                        searchKey,
+                                      )) {
                                 return _transactTile(isDark, data: transact);
                               }
                             } else if (transact.type.toLowerCase() ==
                                 _selectedSortType.toLowerCase()) {
                               if (searchKey.isEmpty) {
                                 return _transactTile(isDark, data: transact);
-                              } else if (transact.amount.contains(searchKey) ||
-                                  transact.description
-                                      .toLowerCase()
-                                      .contains(searchKey) ||
-                                  transact.source
-                                      .toLowerCase()
-                                      .contains(searchKey)) {
+                              } else if (transact.amount.contains(
+                                    searchKey,
+                                  ) ||
+                                  transact.description.toLowerCase().contains(
+                                        searchKey,
+                                      ) ||
+                                  transact.source.toLowerCase().contains(
+                                        searchKey,
+                                      )) {
                                 return _transactTile(isDark, data: transact);
                               }
                             }
@@ -427,278 +456,290 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
       dateLabel = dateTitle;
     }
 
-    return Consumer(builder: (context, ref, _) {
-      final user = ref.watch(userProvider)!;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Visibility(
-            visible: showDateWidget,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10, top: 5),
-              child: Text(
-                dateLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDark ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w500,
+    return Consumer(
+      builder: (context, ref, _) {
+        final user = ref.watch(userProvider)!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Visibility(
+              visible: showDateWidget,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10, top: 5),
+                child: Text(
+                  dateLabel,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              data.uid != user.uid &&
-                      bookData.users != null &&
-                      bookData.users!.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child:
-                          FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        future: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(data.uid)
-                            .get(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return CircleAvatar(
-                              radius: 12,
-                              backgroundImage: NetworkImage(
-                                  snapshot.data!.data()!['imgUrl']),
-                            );
-                          }
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                data.uid != user.uid &&
+                        bookData.users != null &&
+                        bookData.users!.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: FutureBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(data.uid)
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return CircleAvatar(
+                                radius: 12,
+                                backgroundImage: NetworkImage(
+                                  snapshot.data!.data()!['imgUrl'],
+                                ),
+                              );
+                            }
 
-                          return const CircleAvatar(
-                            radius: 12,
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    if (data.uid == user.uid) {
-                      navPush(context, EditTransactUI(trData: data));
-                    } else {
-                      KSnackbar(
-                        context,
-                        content: "You cannot edit other's transactions",
-                        isDanger: true,
-                      );
-                    }
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20),
+                            return const CircleAvatar(radius: 12);
+                          },
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (data.uid == user.uid) {
+                        navPush(context, EditTransactUI(trData: data));
+                      } else {
+                        KSnackbar(
+                          context,
+                          content: "You cannot edit other's transactions",
+                          isDanger: true,
+                        );
+                      }
+                    },
                     child: Container(
-                      padding: const EdgeInsets.all(10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isDark ? Dark.card : Light.card,
-                        borderRadius: kRadius(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(6),
-                                          height: 30,
-                                          width: 30,
-                                          decoration: BoxDecoration(
-                                            color: isIncome
-                                                ? isDark
-                                                    ? Dark.profitText
-                                                    : Light.profitText
-                                                : isDark
-                                                    ? Dark.lossText
-                                                    : Light.lossText,
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              isDark
-                                                  ? BoxShadow(
-                                                      color: isIncome
-                                                          ? isDark
-                                                              ? Dark.profitCard
-                                                                  .withOpacity(
-                                                                      .5)
-                                                              : Light.profitCard
-                                                                  .withOpacity(
-                                                                      .5)
-                                                          : isDark
-                                                              ? Dark.lossCard
-                                                              : Light.lossCard,
-                                                      blurRadius: 30,
-                                                      spreadRadius: 1,
-                                                    )
-                                                  : const BoxShadow(),
-                                            ],
-                                          ),
-                                          child: FittedBox(
-                                            child: Icon(
-                                              isIncome
-                                                  ? Icons.file_download_outlined
-                                                  : Icons.file_upload_outlined,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: isDark ? Dark.card : Light.card,
+                          borderRadius: kRadius(20),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            height: 30,
+                                            width: 30,
+                                            decoration: BoxDecoration(
                                               color: isIncome
                                                   ? isDark
-                                                      ? Colors.black
-                                                      : Colors.white
+                                                      ? Dark.profitText
+                                                      : Light.profitText
                                                   : isDark
-                                                      ? Colors.red.shade900
-                                                      : Colors.white,
+                                                      ? Dark.lossText
+                                                      : Light.lossText,
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                isDark
+                                                    ? BoxShadow(
+                                                        color: isIncome
+                                                            ? isDark
+                                                                ? Dark
+                                                                    .profitCard
+                                                                    .lighten(
+                                                                    .5,
+                                                                  )
+                                                                : Light
+                                                                    .profitCard
+                                                                    .lighten(
+                                                                    .5,
+                                                                  )
+                                                            : isDark
+                                                                ? Dark.lossCard
+                                                                : Light
+                                                                    .lossCard,
+                                                        blurRadius: 30,
+                                                        spreadRadius: 1,
+                                                      )
+                                                    : const BoxShadow(),
+                                              ],
+                                            ),
+                                            child: FittedBox(
+                                              child: Icon(
+                                                isIncome
+                                                    ? Icons
+                                                        .file_download_outlined
+                                                    : Icons
+                                                        .file_upload_outlined,
+                                                color: isIncome
+                                                    ? isDark
+                                                        ? Colors.black
+                                                        : Colors.white
+                                                    : isDark
+                                                        ? Colors.red.shade900
+                                                        : Colors.white,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        width10,
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text.rich(
-                                                TextSpan(
-                                                  text: oCcy.format(
-                                                      double.parse(
-                                                          data.amount)),
-                                                  style: TextStyle(
-                                                    fontFamily: "Product",
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w800,
-                                                    color: isIncome
+                                          width10,
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text.rich(
+                                                  TextSpan(
+                                                    text: oCcy.format(
+                                                      double.parse(data.amount),
+                                                    ),
+                                                    style: TextStyle(
+                                                      fontFamily: "Product",
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      color: isIncome
+                                                          ? isDark
+                                                              ? Dark.profitText
+                                                              : Light.profitText
+                                                          : isDark
+                                                              ? Dark.lossText
+                                                              : Light.lossText,
+                                                    ),
+                                                    children: const [
+                                                      TextSpan(
+                                                        text: " INR",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 5,
+                                                    vertical: 1,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: data.transactMode ==
+                                                            'CASH'
                                                         ? isDark
                                                             ? Dark.profitText
-                                                            : Light.profitText
+                                                            : Colors.black
                                                         : isDark
-                                                            ? Dark.lossText
-                                                            : Light.lossText,
+                                                            ? const Color(
+                                                                0xFF9DC4FF,
+                                                              )
+                                                            : Colors
+                                                                .blue.shade900,
+                                                    borderRadius: kRadius(100),
                                                   ),
-                                                  children: const [
-                                                    TextSpan(
-                                                      text: " INR",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
+                                                  child: Text(
+                                                    data.transactMode,
+                                                    style: TextStyle(
+                                                      letterSpacing: 1,
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      color: isDark
+                                                          ? Colors.black
+                                                          : Colors.white,
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5,
-                                                        vertical: 1),
-                                                decoration: BoxDecoration(
-                                                  color: data.transactMode ==
-                                                          'CASH'
-                                                      ? isDark
-                                                          ? Dark.profitText
-                                                          : Colors.black
-                                                      : isDark
-                                                          ? const Color(
-                                                              0xFF9DC4FF)
-                                                          : Colors
-                                                              .blue.shade900,
-                                                  borderRadius: kRadius(100),
-                                                ),
-                                                child: Text(
-                                                  data.transactMode,
-                                                  style: TextStyle(
-                                                    letterSpacing: 1,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: isDark
-                                                        ? Colors.black
-                                                        : Colors.white,
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    StatsRow(
-                                      color: Colors.amber.shade900,
-                                      content: data.source,
-                                      icon: Icons.person,
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          data.description.trim().isNotEmpty,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.all(8),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Dark.scaffold
-                                              : Light.scaffold,
-                                          borderRadius: kRadius(10),
-                                        ),
-                                        child: Text(data.description),
+                                        ],
                                       ),
-                                    )
-                                  ],
+                                      StatsRow(
+                                        color: Colors.amber.shade900,
+                                        content: data.source,
+                                        icon: Icons.person,
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            data.description.trim().isNotEmpty,
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 10,
+                                          ),
+                                          padding: const EdgeInsets.all(8),
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: isDark
+                                                ? Dark.scaffold
+                                                : Light.scaffold,
+                                            borderRadius: kRadius(10),
+                                          ),
+                                          child: Text(data.description),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          height10,
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.schedule_rounded,
-                                size: 15,
-                              ),
-                              width5,
-                              Text(
-                                data.time.toString(),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
+                              ],
+                            ),
+                            height10,
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.schedule_rounded, size: 15),
+                                width5,
+                                Text(
+                                  data.time.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: data.uid == user.uid &&
-                    bookData.users != null &&
-                    bookData.users!.isNotEmpty,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  child: CircleAvatar(
-                    radius: 12,
-                    backgroundImage: NetworkImage(user.imgUrl),
+                Visibility(
+                  visible: data.uid == user.uid &&
+                      bookData.users != null &&
+                      bookData.users!.isNotEmpty,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundImage: NetworkImage(user.imgUrl),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      );
-    });
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget StatsRow({
@@ -720,10 +761,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
               child: FittedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(5),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                  ),
+                  child: Icon(icon, color: Colors.white),
                 ),
               ),
             ),

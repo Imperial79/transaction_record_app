@@ -32,10 +32,7 @@ class New_Transact_UI extends ConsumerStatefulWidget {
 class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   final String bookType;
   final String bookId;
-  _New_Transact_UIState(
-    this.bookType,
-    this.bookId,
-  );
+  _New_Transact_UIState(this.bookType, this.bookId);
 
   DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController amountField = TextEditingController();
@@ -62,7 +59,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   };
   bool isLoading = false;
 
-  handleNewNoteTransaction(String uploadableAmount) {
+  void handleNewNoteTransaction(String uploadableAmount) {
     //  calculating the Income and Expense for new transact
     if (transactType == 'Income') {
       //  UPDATING INSIDE BOOK
@@ -79,7 +76,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
     }
   }
 
-  saveTransacts(String uid) async {
+  Future<void> saveTransacts(String uid) async {
     FocusScope.of(context).unfocus();
     try {
       setState(() {
@@ -89,11 +86,14 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
             _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
           _selectedTimeStamp = convertTimeToTS(
-              _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
+            _selectedDateMap['tsDate'],
+            _selectedTimeMap['tsTime'],
+          );
         }
         transactId = _selectedTimeStamp;
-        final uploadableAmount =
-            amountField.text.replaceAll(' ', '').replaceAll(',', '');
+        final uploadableAmount = amountField.text
+            .replaceAll(' ', '')
+            .replaceAll(',', '');
 
         Transact newTransact = Transact(
           uid: uid,
@@ -132,11 +132,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         Navigator.pop(context);
       }
     } catch (e) {
-      KSnackbar(
-        context,
-        content: "Unable to create Transact!",
-        isDanger: true,
-      );
+      KSnackbar(context, content: "Unable to create Transact!", isDanger: true);
     } finally {
       setState(() {
         isLoading = false;
@@ -198,7 +194,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                           label: 'Expense',
                         ),
                       ],
-                    )
+                    ),
                 ],
               ),
               height15,
@@ -213,85 +209,92 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                       KTextfield.regular(
                         isDark,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         controller: descriptionField,
                         maxLines: 4,
                         minLines: 1,
                         hintText: 'Add description (Optional)',
-                        icon: Icon(
-                          Icons.short_text_rounded,
-                        ),
+                        icon: Icon(Icons.short_text_rounded),
                       ),
                       height10,
-                      kCard(context,
-                          icon: Icons.schedule,
-                          title: "Created On",
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      _selectedDateMap = await selectDate(
-                                          context, setState, DateTime.now());
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: kRadius(10),
-                                        color: isDark
-                                            ? Dark.scaffold
-                                            : Light.scaffold,
-                                      ),
-                                      child: Text(
-                                        _selectedDateMap['displayDate'],
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                width5,
-                                InkWell(
+                      kCard(
+                        context,
+                        icon: Icons.schedule,
+                        title: "Created On",
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
                                   onTap: () async {
-                                    _selectedTimeMap = await selectTime(
-                                        context, setState, TimeOfDay.now());
+                                    _selectedDateMap = await selectDate(
+                                      context,
+                                      setState,
+                                      DateTime.now(),
+                                    );
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       borderRadius: kRadius(10),
-                                      color: isDark
-                                          ? Dark.scaffold
-                                          : Light.scaffold,
+                                      color:
+                                          isDark
+                                              ? Dark.scaffold
+                                              : Light.scaffold,
                                     ),
                                     child: Text(
-                                      _selectedTimeMap['displayTime'],
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black,
+                                      _selectedDateMap['displayDate'],
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ]),
+                              ),
+                              width5,
+                              InkWell(
+                                onTap: () async {
+                                  _selectedTimeMap = await selectTime(
+                                    context,
+                                    setState,
+                                    TimeOfDay.now(),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: kRadius(10),
+                                    color:
+                                        isDark ? Dark.scaffold : Light.scaffold,
+                                  ),
+                                  child: Text(
+                                    _selectedTimeMap['displayTime'],
+                                    style: TextStyle(
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       height10,
                       KTextfield.regular(
                         isDark,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         controller: sourceField,
                         maxLines: 4,
                         minLines: 1,
                         hintText: 'Add Source (Optional)',
-                        icon: const Icon(
-                          Icons.person,
-                        ),
+                        icon: const Icon(Icons.person),
                       ),
                       height10,
                       Row(
@@ -302,9 +305,10 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             child: Text(
                               'CASH',
                               style: TextStyle(
-                                color: transactMode == 'ONLINE'
-                                    ? Colors.grey
-                                    : isDark
+                                color:
+                                    transactMode == 'ONLINE'
+                                        ? Colors.grey
+                                        : isDark
                                         ? Colors.lightGreenAccent
                                         : Colors.lightGreen,
                                 fontWeight: FontWeight.w600,
@@ -318,11 +322,12 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             text: TextSpan(
                               style: TextStyle(
                                 fontFamily: 'Product',
-                                color: transactMode == 'ONLINE'
-                                    ? isDark
-                                        ? Colors.blue.shade200
-                                        : Colors.blue.shade700
-                                    : Colors.grey,
+                                color:
+                                    transactMode == 'ONLINE'
+                                        ? isDark
+                                            ? Colors.blue.shade200
+                                            : Colors.blue.shade700
+                                        : Colors.grey,
                               ),
                               children: const [
                                 TextSpan(
@@ -354,11 +359,12 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                 letterSpacing: 1,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
-                                color: transactMode == 'CASH'
-                                    ? isDark
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen
-                                    : isDark
+                                color:
+                                    transactMode == 'CASH'
+                                        ? isDark
+                                            ? Colors.lightGreenAccent
+                                            : Colors.lightGreen
+                                        : isDark
                                         ? Colors.blue.shade200
                                         : Colors.blue.shade700,
                               ),
@@ -377,7 +383,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             colors: [
                               isDark ? Dark.scaffold : Light.scaffold,
                               isDark
-                                  ? Colors.grey.withOpacity(0)
+                                  ? Colors.grey.lighten(0)
                                   : Colors.grey.shade300,
                             ],
                             begin: Alignment.centerLeft,
@@ -399,16 +405,19 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                               child: Text(
                                 "INR",
                                 style: TextStyle(
-                                  color: isDark
-                                      ? Colors.white
-                                      : Colors.grey.shade700,
+                                  color:
+                                      isDark
+                                          ? Colors.white
+                                          : Colors.grey.shade700,
                                   fontSize: 30,
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),
                             ),
-                            prefixIconConstraints:
-                                const BoxConstraints(minHeight: 0, minWidth: 0),
+                            prefixIconConstraints: const BoxConstraints(
+                              minHeight: 0,
+                              minWidth: 0,
+                            ),
                             border: InputBorder.none,
                             hintText: '0.00',
                             hintStyle: TextStyle(
@@ -435,22 +444,24 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                           onPressed: () {
                             saveTransacts(user!.uid);
                           },
-                          backgroundColor: transactType == "Income"
-                              ? isDark
-                                  ? Dark.primaryAccent
-                                  : Light.primaryAccent
-                              : isDark
+                          backgroundColor:
+                              transactType == "Income"
+                                  ? isDark
+                                      ? Dark.primaryAccent
+                                      : Light.primaryAccent
+                                  : isDark
                                   ? Dark.lossCard
                                   : Light.lossCard,
                           icon: Icon(
                             transactType == 'Income'
                                 ? Icons.file_download_outlined
                                 : Icons.file_upload_outlined,
-                            color: transactType == "Income"
-                                ? isDark
-                                    ? Dark.primaryAccent
-                                    : Light.primaryAccent
-                                : isDark
+                            color:
+                                transactType == "Income"
+                                    ? isDark
+                                        ? Dark.primaryAccent
+                                        : Light.primaryAccent
+                                    : isDark
                                     ? Dark.lossCard
                                     : Light.lossCard,
                           ),
@@ -485,7 +496,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
-              .withOpacity(0.2),
+              .lighten(0.2),
           borderRadius: kRadius(50),
         ),
         child: AnimatedAlign(
@@ -494,24 +505,26 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
-            backgroundColor: transactMode == 'ONLINE'
-                ? Colors.blue.shade700
-                : Colors.lightGreen,
+            backgroundColor:
+                transactMode == 'ONLINE'
+                    ? Colors.blue.shade700
+                    : Colors.lightGreen,
             radius: 20,
-            child: transactMode == 'ONLINE'
-                ? const Icon(
-                    Icons.webhook_sharp,
-                    color: Colors.white,
-                    size: 20,
-                  )
-                : const Text(
-                    '₹',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
+            child:
+                transactMode == 'ONLINE'
+                    ? const Icon(
+                      Icons.webhook_sharp,
+                      color: Colors.white,
+                      size: 20,
+                    )
+                    : const Text(
+                      '₹',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
           ),
         ),
       ),
@@ -531,27 +544,29 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         elevation: 0,
-        backgroundColor: isIncome
-            ? isSelected
-                ? Dark.profitCard
-                : isDark
+        backgroundColor:
+            isIncome
+                ? isSelected
+                    ? Dark.profitCard
+                    : isDark
                     ? Dark.card
                     : Light.card
-            : isSelected
+                : isSelected
                 ? isDark
                     ? Colors.redAccent
                     : Colors.black
                 : isDark
-                    ? Dark.card
-                    : Light.card,
+                ? Dark.card
+                : Light.card,
       ),
       icon: Icon(
         icon,
-        color: isIncome
-            ? isSelected
-                ? Colors.black
-                : Colors.grey
-            : isSelected
+        color:
+            isIncome
+                ? isSelected
+                    ? Colors.black
+                    : Colors.grey
+                : isSelected
                 ? Colors.white
                 : Colors.grey,
         size: 20,
@@ -561,15 +576,16 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         style: TextStyle(
           fontWeight: FontWeight.w500,
           // fontSize: 12,
-          color: isIncome
-              ? isSelected
-                  ? Colors.black
-                  : Colors.grey
-              : isSelected
+          color:
+              isIncome
+                  ? isSelected
+                      ? Colors.black
+                      : Colors.grey
+                  : isSelected
                   ? Colors.white
                   : isDark
-                      ? Colors.grey
-                      : Colors.black,
+                  ? Colors.grey
+                  : Colors.black,
         ),
       ),
     );

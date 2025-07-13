@@ -46,9 +46,10 @@ class _Home_UIState extends ConsumerState<Home_UI>
     _scrollController.addListener(scrollListener);
   }
 
-  scrollListener() {
+  void scrollListener() {
     if (_scrollController.position.atEdge) {
-      bool isBottom = _scrollController.position.pixels ==
+      bool isBottom =
+          _scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent;
       if (isBottom) {
         ref.read(bookCountProvider.notifier).state += 5;
@@ -57,7 +58,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
     }
   }
 
-  _deleteBook({
+  Future<void> _deleteBook({
     required String bookName,
     required String bookId,
   }) async {
@@ -247,10 +248,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
               },
             ),
             kHeight(30),
-            if (asyncData.isLoading)
-              Center(
-                child: const CustomLoading(),
-              ),
+            if (asyncData.isLoading) Center(child: const CustomLoading()),
           ],
         );
       },

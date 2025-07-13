@@ -22,8 +22,11 @@ class DatabaseMethods {
   }
 
   //  UPDATE TRANSACTS
-  updateTransacts(
-      String bookId, transactId, Map<String, dynamic> transactMap) async {
+  Future<void> updateTransacts(
+    String bookId,
+    transactId,
+    Map<String, dynamic> transactMap,
+  ) async {
     await firestore
         .collection('transactBooks')
         .doc(bookId)
@@ -33,7 +36,7 @@ class DatabaseMethods {
   }
 
   //Uploading transactions to database QUERY
-  uploadTransacts(transactMap, bookId, transactId) async {
+  Future<void> uploadTransacts(transactMap, bookId, transactId) async {
     await firestore
         .collection("transactBooks")
         .doc(bookId)
@@ -44,7 +47,9 @@ class DatabaseMethods {
 
   //  UPDATE account details
   Future<String> updateAccountDetails(
-      String uid, Map<String, dynamic> accountDetails) async {
+    String uid,
+    Map<String, dynamic> accountDetails,
+  ) async {
     try {
       await firestore.collection('users').doc(uid).update(accountDetails);
       return 'Profile updated successfully';
@@ -54,7 +59,10 @@ class DatabaseMethods {
   }
 
   //  Update BOOK transactions
-  updateBookTransactions(String bookId, Map<String, dynamic> newMap) async {
+  Future<void> updateBookTransactions(
+    String bookId,
+    Map<String, dynamic> newMap,
+  ) async {
     return await firestore
         .collection('transactBooks')
         .doc(bookId)
@@ -62,23 +70,29 @@ class DatabaseMethods {
   }
 
   //  Update global CURRENT BALANCE
-  updateGlobalCurrentBal(String uid, Map<String, dynamic> currentBalMap) async {
+  Future<void> updateGlobalCurrentBal(
+    String uid,
+    Map<String, dynamic> currentBalMap,
+  ) async {
     return await firestore.collection('users').doc(uid).update(currentBalMap);
   }
 
   //  Reset Book Income/Expense
-  resetBookIncomeExpense(String bookId, uid, map) async {
+  Future<void> resetBookIncomeExpense(String bookId, uid, map) async {
     return await firestore.collection('transactBooks').doc(bookId).update(map);
   }
 
   //  Reset Book Income/Expense
-  resetGlobalIncomeExpense(
-      String bookId, String uid, Map<Object, Object> map) async {
+  Future<void> resetGlobalIncomeExpense(
+    String bookId,
+    String uid,
+    Map<Object, Object> map,
+  ) async {
     return await firestore.collection('users').doc(uid).update(map);
   }
 
   //Delete one transact
-  deleteTransact(bookId, transactId) async {
+  Future<void> deleteTransact(bookId, transactId) async {
     await firestore
         .collection('transactBooks')
         .doc(bookId)
@@ -86,28 +100,24 @@ class DatabaseMethods {
         .where('transactId', isEqualTo: transactId)
         .limit(1)
         .get()
-        .then(
-      (snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs) {
-          ds.reference.delete();
-        }
-      },
-    );
+        .then((snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.delete();
+          }
+        });
   }
 
   //  clear all transacts
-  deleteAllTransacts(String bookId) async {
+  Future<void> deleteAllTransacts(String bookId) async {
     await firestore
         .collection('transactBooks')
         .doc(bookId)
         .collection('transacts')
         .get()
-        .then(
-      (snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs) {
-          ds.reference.delete();
-        }
-      },
-    );
+        .then((snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.delete();
+          }
+        });
   }
 }

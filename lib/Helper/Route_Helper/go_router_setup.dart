@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,17 +11,16 @@ import 'package:transaction_record_app/screens/rootUI.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
-    final authState = ref.watch(authFuture); // Authentication state
-    final user = ref.watch(userProvider); // User data
+    final authState = ref.watch(authFuture);
+    final user = ref.watch(userProvider);
 
     return GoRouter(
-      initialLocation: '/root', // Set the initial route to root
+      initialLocation: '/root',
       redirect: (context, state) {
-        // Show splash screen while auth is loading
         if (authState.isLoading) {
           return '/splash';
         }
-        // Redirect logic based on authentication state
+
         if (user == null && state.fullPath != '/login') return '/login';
         if (user != null && state.fullPath == '/login') return '/home';
 
@@ -42,7 +40,6 @@ final goRouterProvider = Provider<GoRouter>(
           path: '/root',
           builder: (context, state) => const RootUI(),
         ),
-        // Book page route with deep link handling
         GoRoute(
           path: '/book/:type/:bookId',
           builder: (context, state) {

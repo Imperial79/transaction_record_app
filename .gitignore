@@ -22,6 +22,7 @@
 
 # Keystore is not being uploaded in git 
 android/key.properties
+android/app/key.jks
 upload-keystore.jks
 lib/key.jks
 lib/key.properties
@@ -50,3 +51,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+/android/app/.cxx
+
+*.env

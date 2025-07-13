@@ -18,7 +18,7 @@ class _CustomLoadingState extends State<CustomLoading> {
     startLoading();
   }
 
-  startLoading() async {
+  Future<void> startLoading() async {
     timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
         if (currentIndex == 2) {

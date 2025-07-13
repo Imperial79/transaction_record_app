@@ -22,7 +22,7 @@ class HomeMenuUI extends ConsumerStatefulWidget {
 class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
   bool isLoading = false;
 
-  _signOut() async {
+  Future<void> _signOut() async {
     try {
       setState(() {
         isLoading = true;
@@ -116,9 +116,10 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
                     color: isDark ? Colors.white : Colors.red.shade900,
                   ),
                 ),
-                btnColor: isDark
-                    ? Colors.red.shade900
-                    : const Color.fromARGB(255, 255, 208, 205),
+                btnColor:
+                    isDark
+                        ? Colors.red.shade900
+                        : const Color.fromARGB(255, 255, 208, 205),
               ),
             ],
           ),

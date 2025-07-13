@@ -65,7 +65,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     setState(() {});
   }
 
-  handleEditedNoteTransaction() {
+  void handleEditedNoteTransaction() {
     //  calculating the Income and Expense for edited transact
     if (transactType == 'Income') {
       //  If newType is INCOME
@@ -78,12 +78,14 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
       //--------------------------------------------
 
       if (oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'income': FieldValue.increment((0.0 - oldAmount) + newAmount)});
+        databaseMethods.updateBookTransactions(widget.trData.bookId, {
+          'income': FieldValue.increment((0.0 - oldAmount) + newAmount),
+        });
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'expense': FieldValue.increment((0.0 - oldAmount) + newAmount)});
+        databaseMethods.updateBookTransactions(widget.trData.bookId, {
+          'expense': FieldValue.increment((0.0 - oldAmount) + newAmount),
+        });
       }
     } else {
       //  If newType is Expense ---------------->
@@ -94,22 +96,26 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
       //--------------------------------------------
       if (oldType == 'Income') {
-        databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'income': FieldValue.increment((0.0 - oldAmount) + newAmount)});
+        databaseMethods.updateBookTransactions(widget.trData.bookId, {
+          'income': FieldValue.increment((0.0 - oldAmount) + newAmount),
+        });
       } else {
         //  if oldType was expense ----------->
-        databaseMethods.updateBookTransactions(widget.trData.bookId,
-            {'expense': FieldValue.increment((0.0 - oldAmount) + newAmount)});
+        databaseMethods.updateBookTransactions(widget.trData.bookId, {
+          'expense': FieldValue.increment((0.0 - oldAmount) + newAmount),
+        });
       }
     }
   }
 
-  updateTransacts(String uid) async {
+  Future<void> updateTransacts(String uid) async {
     if (amountField.text != '') {
       if (widget.trData.date != _selectedDateMap['displayDate'] ||
           widget.trData.time != _selectedTimeMap['displayTime']) {
         _selectedTimeStamp = convertTimeToTS(
-            _selectedDateMap['tsDate'], _selectedTimeMap['tsTime']);
+          _selectedDateMap['tsDate'],
+          _selectedTimeMap['tsTime'],
+        );
       }
 
       Transact updatedTransact = Transact(
@@ -151,16 +157,10 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           // shape: RoundedRectangleBorder(
           //   borderRadius: kRadius(12),
           // ),
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.red,
-            size: 30,
-          ),
+          icon: const Icon(Icons.delete, color: Colors.red, size: 30),
           title: Text(
             'Delete Transact ?',
-            style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
-            ),
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
           ),
           content: const Text(
             'Do you really want to delete this Transact ? This cannot be undone!',
@@ -175,9 +175,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             MaterialButton(
               onPressed: () {
@@ -185,9 +183,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                 _deleteTransact();
               },
               color: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: kRadius(5),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: kRadius(5)),
               elevation: 0,
               child: const Text(
                 'Delete',
@@ -200,17 +196,20 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     );
   }
 
-  _deleteTransact() async {
+  Future<void> _deleteTransact() async {
     try {
       setState(() {
         _isLoading = true;
       });
-      await DatabaseMethods()
-          .deleteTransact(widget.trData.bookId, widget.trData.transactId);
+      await DatabaseMethods().deleteTransact(
+        widget.trData.bookId,
+        widget.trData.transactId,
+      );
       if (transactType == 'Income') {
         Map<String, dynamic> updatedMap = {
-          'income':
-              FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
+          'income': FieldValue.increment(
+            0.0 - double.parse(widget.trData.amount),
+          ),
         };
         await DatabaseMethods().updateBookTransactions(
           widget.trData.bookId,
@@ -218,8 +217,9 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
         );
       } else {
         Map<String, dynamic> updatedMap = {
-          'expense':
-              FieldValue.increment(0.0 - double.parse(widget.trData.amount)),
+          'expense': FieldValue.increment(
+            0.0 - double.parse(widget.trData.amount),
+          ),
         };
         await DatabaseMethods().updateBookTransactions(
           widget.trData.bookId,
@@ -263,8 +263,10 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 10,
+              ),
               child: Row(
                 children: [
                   Container(
@@ -302,7 +304,9 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     KTextfield.regular(
                       isDark,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       controller: descriptionField,
                       maxLines: 4,
                       minLines: 1,
@@ -328,9 +332,10 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                               child: InkWell(
                                 onTap: () async {
                                   _selectedDateMap = await selectDate(
-                                      context,
-                                      setState,
-                                      DateTime.parse(widget.trData.ts));
+                                    context,
+                                    setState,
+                                    DateTime.parse(widget.trData.ts),
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
@@ -357,9 +362,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                                   context,
                                   setState,
                                   TimeOfDay.fromDateTime(
-                                    DateTime.parse(
-                                      _selectedDateMap['tsDate'],
-                                    ),
+                                    DateTime.parse(_selectedDateMap['tsDate']),
                                   ),
                                 );
                               },
@@ -386,7 +389,9 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     KTextfield.regular(
                       isDark,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       controller: sourceField,
                       maxLines: 4,
                       minLines: 1,
@@ -410,9 +415,10 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           child: Text(
                             'CASH',
                             style: TextStyle(
-                              color: transactMode == 'ONLINE'
-                                  ? Colors.grey
-                                  : isDark
+                              color:
+                                  transactMode == 'ONLINE'
+                                      ? Colors.grey
+                                      : isDark
                                       ? Colors.lightGreenAccent
                                       : Colors.lightGreen,
                               fontWeight: FontWeight.w600,
@@ -426,11 +432,12 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           text: TextSpan(
                             style: TextStyle(
                               fontFamily: 'Product',
-                              color: transactMode == 'ONLINE'
-                                  ? isDark
-                                      ? Colors.blue.shade200
-                                      : Colors.blue.shade700
-                                  : Colors.grey,
+                              color:
+                                  transactMode == 'ONLINE'
+                                      ? isDark
+                                          ? Colors.blue.shade200
+                                          : Colors.blue.shade700
+                                      : Colors.grey,
                             ),
                             children: const [
                               TextSpan(
@@ -462,9 +469,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           },
                         );
                       },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: kRadius(10),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: kRadius(10)),
                       elevation: 0,
                       padding: EdgeInsets.zero,
                       child: Ink(
@@ -475,21 +480,13 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         decoration: BoxDecoration(
                           borderRadius: kRadius(10),
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.red,
-                              Colors.red.shade900,
-                            ],
+                            colors: [Colors.red, Colors.red.shade900],
                           ),
                         ),
                         child: const Row(
                           children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
+                            Icon(Icons.delete, color: Colors.white),
+                            SizedBox(width: 5),
                             Text(
                               'Delete Transact',
                               style: TextStyle(
@@ -511,18 +508,17 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         letterSpacing: 5,
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
-                        color: transactMode == 'CASH'
-                            ? isDark
-                                ? Colors.lightGreenAccent
-                                : Colors.lightGreen
-                            : isDark
+                        color:
+                            transactMode == 'CASH'
+                                ? isDark
+                                    ? Colors.lightGreenAccent
+                                    : Colors.lightGreen
+                                : isDark
                                 ? Colors.blue.shade200
                                 : Colors.blue.shade700,
                       ),
                     ),
-                    Text(
-                      DateFormat('dd MMMM, yyyy').format(DateTime.now()),
-                    ),
+                    Text(DateFormat('dd MMMM, yyyy').format(DateTime.now())),
                     height10,
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -531,7 +527,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           colors: [
                             isDark ? Dark.scaffold : Light.scaffold,
                             isDark
-                                ? Colors.grey.withOpacity(0)
+                                ? Colors.grey.lighten(0)
                                 : Colors.grey.shade300,
                           ],
                           begin: Alignment.centerLeft,
@@ -553,16 +549,19 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                             child: Text(
                               "INR",
                               style: TextStyle(
-                                color: isDark
-                                    ? Colors.white
-                                    : Colors.grey.shade700,
+                                color:
+                                    isDark
+                                        ? Colors.white
+                                        : Colors.grey.shade700,
                                 fontSize: 30,
                                 fontWeight: FontWeight.w300,
                               ),
                             ),
                           ),
-                          prefixIconConstraints:
-                              const BoxConstraints(minHeight: 0, minWidth: 0),
+                          prefixIconConstraints: const BoxConstraints(
+                            minHeight: 0,
+                            minWidth: 0,
+                          ),
                           border: InputBorder.none,
                           hintText: '0.00',
                           hintStyle: TextStyle(
@@ -580,22 +579,24 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                       onPressed: () {
                         updateTransacts(user!.uid);
                       },
-                      backgroundColor: transactType == "Income"
-                          ? isDark
-                              ? Dark.primaryAccent
-                              : Light.primaryAccent
-                          : isDark
+                      backgroundColor:
+                          transactType == "Income"
+                              ? isDark
+                                  ? Dark.primaryAccent
+                                  : Light.primaryAccent
+                              : isDark
                               ? Dark.lossCard
                               : Light.lossCard,
                       icon: Icon(
                         transactType == 'Income'
                             ? Icons.file_download_outlined
                             : Icons.file_upload_outlined,
-                        color: transactType == "Income"
-                            ? isDark
-                                ? Dark.primaryAccent
-                                : Light.primaryAccent
-                            : isDark
+                        color:
+                            transactType == "Income"
+                                ? isDark
+                                    ? Dark.primaryAccent
+                                    : Light.primaryAccent
+                                : isDark
                                 ? Dark.lossCard
                                 : Light.lossCard,
                       ),
@@ -613,9 +614,10 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   Widget _modeIndicatorPill(String mode) {
     return _typeBtn(
-      icon: mode == 'Income'
-          ? Icons.file_download_outlined
-          : Icons.file_upload_outlined,
+      icon:
+          mode == 'Income'
+              ? Icons.file_download_outlined
+              : Icons.file_upload_outlined,
       label: widget.trData.type,
     );
   }
@@ -624,14 +626,13 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return MaterialButton(
       onPressed: () {},
-      shape: RoundedRectangleBorder(
-        borderRadius: kRadius(50),
-      ),
-      color: label == 'Expense'
-          ? isDark
-              ? Dark.lossCard
-              : Light.lossCard
-          : isDark
+      shape: RoundedRectangleBorder(borderRadius: kRadius(50)),
+      color:
+          label == 'Expense'
+              ? isDark
+                  ? Dark.lossCard
+                  : Light.lossCard
+              : isDark
               ? Dark.profitCard
               : Light.profitCard,
       elevation: 0,
@@ -644,9 +645,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
             size: 20,
             color: label == 'Expense' ? Colors.white : Colors.black,
           ),
-          const SizedBox(
-            width: 7,
-          ),
+          const SizedBox(width: 7),
           Text(
             label,
             style: TextStyle(
@@ -677,7 +676,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
         width: 300,
         decoration: BoxDecoration(
           color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
-              .withOpacity(0.2),
+              .lighten(0.2),
           borderRadius: kRadius(50),
         ),
         child: AnimatedAlign(
@@ -686,24 +685,26 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
-            backgroundColor: transactMode == 'ONLINE'
-                ? Colors.blue.shade700
-                : Colors.lightGreen,
+            backgroundColor:
+                transactMode == 'ONLINE'
+                    ? Colors.blue.shade700
+                    : Colors.lightGreen,
             radius: 20,
-            child: transactMode == 'ONLINE'
-                ? const Icon(
-                    Icons.webhook_sharp,
-                    color: Colors.white,
-                    size: 20,
-                  )
-                : const Text(
-                    '₹',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
+            child:
+                transactMode == 'ONLINE'
+                    ? const Icon(
+                      Icons.webhook_sharp,
+                      color: Colors.white,
+                      size: 20,
+                    )
+                    : const Text(
+                      '₹',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
           ),
         ),
       ),

@@ -28,7 +28,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
     "Regular": "Regular book is used for daily transaction audits.",
     "Due":
         "Due book is used for tracking due amount lend to someone or chasing a target amount.",
-    "Savings": "Savings book is used for tracking collected/saved amount."
+    "Savings": "Savings book is used for tracking collected/saved amount.",
   };
 
   bool isLoading = false;
@@ -39,7 +39,8 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
 
   final _targetAmount = TextEditingController();
   final _bookTitle = TextEditingController(
-      text: DateFormat('MMMM, yyyy').format(DateTime.now()));
+    text: DateFormat('MMMM, yyyy').format(DateTime.now()),
+  );
   final _bookDescription = TextEditingController();
   final dbMethod = DatabaseMethods();
 
@@ -77,7 +78,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         if (res) {
           KSnackbar(context, content: 'Book Created');
 
-          await ref.read(pageControllerProvider).animateToPage(
+          await ref
+              .read(pageControllerProvider)
+              .animateToPage(
                 0,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
@@ -128,10 +131,14 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                       },
                     ),
                   ),
-                  Text.rich(TextSpan(children: [
-                    TextSpan(text: "${_bookTitle.text.length}\n"),
-                    TextSpan(text: "20"),
-                  ])),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: "${_bookTitle.text.length}\n"),
+                        TextSpan(text: "20"),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               WaveDivider(
@@ -140,20 +147,16 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
               ),
               TextButton(
                 onPressed: () {
-                  if (_bookTitle.text.isEmpty) {
-                    setState(() {
-                      _bookTitle.text =
-                          DateFormat('MMMM, yyyy').format(DateTime.now());
-                    });
-                  }
+                  setState(() {
+                    _bookTitle.text = DateFormat(
+                      'MMMM, yyyy',
+                    ).format(DateTime.now());
+                  });
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.auto_mode_sharp,
-                      size: 15,
-                    ),
+                    Icon(Icons.auto_mode_sharp, size: 15),
                     width5,
                     Text("Auto Generate"),
                   ],
@@ -291,11 +294,12 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           border: Border.fromBorderSide(
             BorderSide(
               width: 2,
-              color: isActive
-                  ? isDark
-                      ? Dark.primaryAccent
-                      : Light.profitText
-                  : isDark
+              color:
+                  isActive
+                      ? isDark
+                          ? Dark.primaryAccent
+                          : Light.profitText
+                      : isDark
                       ? Dark.card
                       : Light.card,
             ),
@@ -307,11 +311,12 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: isActive
-                      ? isDark
-                          ? Dark.primaryAccent
-                          : Light.profitText
-                      : isDark
+                  backgroundColor:
+                      isActive
+                          ? isDark
+                              ? Dark.primaryAccent
+                              : Light.profitText
+                          : isDark
                           ? Dark.fadeText
                           : Light.text,
                   radius: 5,
@@ -320,11 +325,12 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                 Text(
                   "$title Book",
                   style: TextStyle(
-                    color: isActive
-                        ? isDark
-                            ? Dark.primaryAccent
-                            : Light.profitText
-                        : isDark
+                    color:
+                        isActive
+                            ? isDark
+                                ? Dark.primaryAccent
+                                : Light.profitText
+                            : isDark
                             ? Dark.text
                             : Light.text,
                     fontWeight: FontWeight.w400,
