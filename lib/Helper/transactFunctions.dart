@@ -76,7 +76,7 @@ Future<Map<String, dynamic>> selectTime(
   return timeMap;
 }
 
-String convertTimeToTS(date, time) {
+String convertTimeToTS(dynamic date, dynamic time) {
   var nowNanoSec = DateTime.now().toString().split('.').last;
   String selectedTimeStamp =
       '${date.toString().split(' ').first} ${time.toString().split(' ').first}:00.$nowNanoSec';

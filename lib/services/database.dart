@@ -36,7 +36,11 @@ class DatabaseMethods {
   }
 
   //Uploading transactions to database QUERY
-  Future<void> uploadTransacts(transactMap, bookId, transactId) async {
+  Future<void> uploadTransacts(
+    Map<String, dynamic> transactMap,
+    String bookId,
+    String transactId,
+  ) async {
     await firestore
         .collection("transactBooks")
         .doc(bookId)
@@ -92,7 +96,7 @@ class DatabaseMethods {
   }
 
   //Delete one transact
-  Future<void> deleteTransact(bookId, transactId) async {
+  Future<void> deleteTransact(String bookId, String transactId) async {
     await firestore
         .collection('transactBooks')
         .doc(bookId)
@@ -101,10 +105,10 @@ class DatabaseMethods {
         .limit(1)
         .get()
         .then((snapshot) {
-          for (DocumentSnapshot ds in snapshot.docs) {
-            ds.reference.delete();
-          }
-        });
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
   }
 
   //  clear all transacts
@@ -115,9 +119,9 @@ class DatabaseMethods {
         .collection('transacts')
         .get()
         .then((snapshot) {
-          for (DocumentSnapshot ds in snapshot.docs) {
-            ds.reference.delete();
-          }
-        });
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
   }
 }

@@ -223,7 +223,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   Center _backgroundGraphics() {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     Color textColor =
-        isDark ? Colors.white.withOpacity(.1) : Colors.black.withOpacity(.05);
+        isDark ? Colors.white.lighten(.1) : Colors.black.lighten(.05);
     return Center(
       child: FittedBox(
         child: Column(
@@ -275,10 +275,15 @@ class _LoginUIState extends ConsumerState<LoginUI> {
     );
   }
 
-  Widget TextLink({final text, Color? color, Uri? link, TextAlign? textAlign}) {
+  Widget TextLink({
+    required String text,
+    required Uri link,
+    Color? color,
+    TextAlign? textAlign,
+  }) {
     return TextButton(
       onPressed: () {
-        launchTheUrl(link!);
+        launchTheUrl(link);
       },
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(5),
