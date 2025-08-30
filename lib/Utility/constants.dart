@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/models/Profiles.dart';
 
 const String kAppVersion = "2.7.4";
 const String kAppLink = "https://transact-record.web.app";
+
+/// Always Change to PROD when creating release version.
+const Profiles ENV_PROFILE = Profiles.dev; // PROD | DEV
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;

@@ -7,7 +7,10 @@ import 'package:go_router/go_router.dart';
 import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/models/Profiles.dart';
+import 'package:transaction_record_app/models/userModel.dart';
 
 import '../Utility/commons.dart';
 
@@ -30,8 +33,12 @@ class _LoginUIState extends ConsumerState<LoginUI> {
       setState(() {
         isLoading = true;
       });
-
-      final user = await ref.read(authRepository).signIn();
+      UserModel? user;
+      if (ENV_PROFILE == Profiles.prod) {
+        user = await ref.read(authRepository).signIn();
+      } else {
+        user = await ref.read(authRepository).signIn_Test();
+      }
 
       if (user != null) {
         ref.read(userProvider.notifier).state = user;
@@ -62,155 +69,150 @@ class _LoginUIState extends ConsumerState<LoginUI> {
               _backgroundGraphics(),
               Column(
                 children: [
-                  isLoading
-                      ? _loadingScreen()
-                      : Flexible(
-                          flex: 6,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Transact',
-                                      style: TextStyle(
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "Serif",
-                                      ),
-                                    ),
-                                    Text(
-                                      'Your Personal Money Manager',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400,
-                                        color: isDark
-                                            ? Dark.primary
-                                            : Light.primary,
-                                      ),
-                                    ),
-                                    height20,
-                                    Text(
-                                      '#FOSS',
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.7,
-                                      ),
-                                    ),
-                                  ],
+                  if (isLoading)
+                    _loadingScreen()
+                  else
+                    Flexible(
+                      flex: 6,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Transact',
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Serif",
+                                  ),
                                 ),
+                                Text(
+                                  'Your Personal Money Manager',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color:
+                                        isDark ? Dark.primary : Light.primary,
+                                  ),
+                                ),
+                                height20,
+                                Text(
+                                  '#FOSS',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.7,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.cloud,
+                                color:
+                                    isDark ? Dark.profitText : Light.profitText,
                               ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.cloud,
+                              width10,
+                              Expanded(
+                                child: Text(
+                                  'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
                                     color: isDark
                                         ? Dark.profitText
                                         : Light.profitText,
                                   ),
-                                  width10,
-                                  Expanded(
-                                    child: Text(
-                                      'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              height20,
-                              InkWell(
-                                borderRadius: kRadius(15),
-                                splashColor: Colors.red,
-                                onTap: () async {
-                                  _googleSignIn();
-                                },
-                                child: Ink(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: kRadius(10),
-                                    color:
-                                        isDark ? Dark.lossCard : Light.lossCard,
-                                    border:
-                                        Border.all(color: Colors.red.shade100),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 7, horizontal: 20),
-                                  child: Row(
-                                    children: [
-                                      const Text(
-                                        'G',
-                                        style: TextStyle(
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      width10,
-                                      const Text(
-                                        "Login with Google",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              height15,
-                              Text.rich(
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color:
-                                      isDark ? Dark.fadeText : Light.fadeText,
-                                ),
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            "By signing in, you agree with our "),
-                                    TextSpan(
-                                      text: "Terms & Conditions ",
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    TextSpan(text: "and "),
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () async {
-                                          await launchTheUrl(_privacyPolicyUrl);
-                                        },
-                                      text: "Privacy Policy.",
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
+                          height20,
+                          InkWell(
+                            borderRadius: kRadius(15),
+                            splashColor: Colors.red,
+                            onTap: () async {
+                              _googleSignIn();
+                            },
+                            child: Ink(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: kRadius(10),
+                                color: isDark ? Dark.lossCard : Light.lossCard,
+                                border: Border.all(color: Colors.red.shade100),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 7, horizontal: 20),
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    'G',
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  width10,
+                                  const Text(
+                                    "Login with Google",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          height15,
+                          Text.rich(
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: isDark ? Dark.fadeText : Light.fadeText,
+                            ),
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: "By signing in, you agree with our "),
+                                TextSpan(
+                                  text: "Terms & Conditions ",
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                TextSpan(text: "and "),
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      await launchTheUrl(_privacyPolicyUrl);
+                                    },
+                                  text: "Privacy Policy.",
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Dark.profitText
+                                        : Light.profitText,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ],

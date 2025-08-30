@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/models/userModel.dart';
@@ -98,9 +99,6 @@ class AuthRepo {
 
   Future<UserModel?> signIn() async {
     try {
-      // await Hive.openBox('USERBOX');
-      // final userBox = Hive.box('USERBOX');
-
       User? gUserData = await _googleSignIn();
       UserModel? finalUser;
       if (gUserData != null) {
@@ -149,6 +147,35 @@ class AuthRepo {
       // await Hive.close();
       rethrow;
       // return null;
+    }
+  }
+
+  Future<UserModel?> signIn_Test() async {
+    try {
+      UserModel? finalUser;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(dotenv.get("TEST_UID"))
+          .get()
+          .then(
+        (user) async {
+          final dbUser = user.data();
+
+          if (dbUser != null) {
+            finalUser = UserModel(
+              username: dbUser['username'],
+              email: dbUser['email'],
+              name: dbUser['name'],
+              uid: dbUser['uid'],
+              imgUrl: dbUser['imgUrl'],
+            );
+          }
+        },
+      );
+      return finalUser;
+    } catch (e) {
+      log("$e");
+      rethrow;
     }
   }
 

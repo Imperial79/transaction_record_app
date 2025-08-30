@@ -10,6 +10,7 @@
 analyzer:
   errors:
     camel_case_types: ignore
+    constant_identifier_names: ignore
     depend_on_referenced_packages: ignore
     file_names: ignore
     hash_and_equals: ignore
