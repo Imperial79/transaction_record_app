@@ -78,9 +78,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         if (res) {
           KSnackbar(context, content: 'Book Created');
 
-          await ref
-              .read(pageControllerProvider)
-              .animateToPage(
+          await ref.read(pageControllerProvider).animateToPage(
                 0,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
@@ -122,7 +120,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                 children: [
                   Flexible(
                     child: KTextfield.title(
-                      isDark,
+                      context,
                       controller: _bookTitle,
                       maxLength: 20,
                       hintText: "Book Title",
@@ -164,7 +162,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
               ),
               height15,
               KTextfield.regular(
-                isDark,
+                context,
                 controller: _bookDescription,
                 hintText: 'Add description',
                 maxLines: 10,
@@ -238,7 +236,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                   children: [
                     kLabel("Target / Due Amount"),
                     KTextfield.regular(
-                      isDark,
+                      context,
                       controller: _targetAmount,
                       fontSize: 30,
                       hintText: "1 - 10,000",
@@ -261,7 +259,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: KButton.icon(
-          isDark,
+          context,
           onPressed: () {
             _createBook(user!.uid);
           },
@@ -294,12 +292,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           border: Border.fromBorderSide(
             BorderSide(
               width: 2,
-              color:
-                  isActive
-                      ? isDark
-                          ? Dark.primaryAccent
-                          : Light.profitText
-                      : isDark
+              color: isActive
+                  ? isDark
+                      ? Dark.primaryAccent
+                      : Light.profitText
+                  : isDark
                       ? Dark.card
                       : Light.card,
             ),
@@ -311,12 +308,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      isActive
-                          ? isDark
-                              ? Dark.primaryAccent
-                              : Light.profitText
-                          : isDark
+                  backgroundColor: isActive
+                      ? isDark
+                          ? Dark.primaryAccent
+                          : Light.profitText
+                      : isDark
                           ? Dark.fadeText
                           : Light.text,
                   radius: 5,
@@ -325,12 +321,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                 Text(
                   "$title Book",
                   style: TextStyle(
-                    color:
-                        isActive
-                            ? isDark
-                                ? Dark.primaryAccent
-                                : Light.profitText
-                            : isDark
+                    color: isActive
+                        ? isDark
+                            ? Dark.primaryAccent
+                            : Light.profitText
+                        : isDark
                             ? Dark.text
                             : Light.text,
                     fontWeight: FontWeight.w400,

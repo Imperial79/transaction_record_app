@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 
 final transactListProvider = StateProvider.autoDispose<List<Transact>>(

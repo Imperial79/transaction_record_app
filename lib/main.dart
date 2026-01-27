@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/Utility/components.dart';
@@ -15,34 +14,19 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
   await Hive.openBox('hiveBox');
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(ProviderScope(
+    child: const MyApp(),
+    retry: (retryCount, error) {
+      return null;
+    },
+  ));
 }
 
-class MyApp extends ConsumerStatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends ConsumerState<MyApp> {
-  final Map _themeMap = {
-    "Light": ThemeMode.light,
-    "Dark": ThemeMode.dark,
-    "System": ThemeMode.system,
-  };
-  @override
-  void initState() {
-    super.initState();
-    _getThemeDataFromHive();
-  }
-
-  Future<void> _getThemeDataFromHive() async {
-    ref.read(hiveThemeFuture);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     setSystemUIColors(context);
 
     final goRouter = ref.watch(goRouterProvider);
@@ -53,10 +37,12 @@ class _MyAppState extends ConsumerState<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Transact Record',
         color: Colors.white,
-        themeMode: _themeMap[themeMode],
+        themeMode: themeMode,
         theme: KThemeData.light(),
         darkTheme: KThemeData.dark(),
         routerConfig: goRouter,
+        themeAnimationDuration: const Duration(milliseconds: 500),
+        themeAnimationCurve: Curves.easeInOut,
       ),
     );
   }

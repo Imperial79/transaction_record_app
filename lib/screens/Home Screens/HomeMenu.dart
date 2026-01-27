@@ -49,11 +49,10 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     final user = ref.watch(userProvider);
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         borderRadius: kRadius(20),
-        color: isDark ? Dark.card : Light.card,
+        color: context.cardColor,
       ),
       padding: const EdgeInsets.all(15),
       margin: const EdgeInsets.only(bottom: 10),
@@ -66,9 +65,8 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               HomeMenuBtn(
-                isDark,
                 label: 'Account',
-                borderColor: isDark ? Dark.fadeText : Light.fadeText,
+                borderColor: context.fadeTextColor,
                 child: GestureDetector(
                   onTap: () {
                     navPush(context, const AccountUI());
@@ -83,43 +81,24 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
                 ),
                 btnColor: const Color.fromARGB(255, 210, 235, 255),
               ),
-              // HomeMenuBtn(
-              //   label: 'Switch',
-              //   borderColor:
-              //       isDark ? Colors.black : Colors.amber.shade900,
-              //   child: IconButton(
-              //     onPressed: () async {
-              //       await AuthMethods.signOut(context);
-
-              //       await AuthMethods.signInWithgoogle(context);
-              //     },
-              //     icon: Icon(
-              //       Icons.switch_account_rounded,
-              //       color:
-              //           isDark ? Colors.black : Colors.amber.shade900,
-              //     ),
-              //   ),
-              //   btnColor: isDark
-              //       ? Colors.yellow.shade900
-              //       : Colors.amber.shade200,
-              // ),
               HomeMenuBtn(
-                isDark,
                 label: 'Logout',
-                borderColor: isDark ? Colors.red.shade300 : Colors.red.shade900,
+                borderColor: context.isDarkMode
+                    ? Colors.red.shade300
+                    : Colors.red.shade900,
                 child: IconButton(
                   onPressed: () {
                     _signOut();
                   },
                   icon: Icon(
                     Icons.logout,
-                    color: isDark ? Colors.white : Colors.red.shade900,
+                    color:
+                        context.isDarkMode ? Colors.white : Colors.red.shade900,
                   ),
                 ),
-                btnColor:
-                    isDark
-                        ? Colors.red.shade900
-                        : const Color.fromARGB(255, 255, 208, 205),
+                btnColor: context.isDarkMode
+                    ? Colors.red.shade900
+                    : const Color.fromARGB(255, 255, 208, 205),
               ),
             ],
           ),
@@ -128,8 +107,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
     );
   }
 
-  Widget HomeMenuBtn(
-    bool isDark, {
+  Widget HomeMenuBtn({
     required String label,
     required Widget child,
     Color? btnColor,
@@ -154,7 +132,7 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white : Colors.black,
+              color: context.colorScheme.onSurface,
               fontSize: 12,
             ),
             textAlign: TextAlign.center,

@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
@@ -48,8 +49,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
 
   void scrollListener() {
     if (_scrollController.position.atEdge) {
-      bool isBottom =
-          _scrollController.position.pixels ==
+      bool isBottom = _scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent;
       if (isBottom) {
         ref.read(bookCountProvider.notifier).state += 5;
@@ -95,7 +95,6 @@ class _Home_UIState extends ConsumerState<Home_UI>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     final showHomeMenu = ref.watch(showMenuProvider);
     if (user != null) {
@@ -147,7 +146,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w400,
-                              color: isDark ? Colors.white : Colors.black,
+                              color: context.colorScheme.onSurface,
                             ),
                           ),
                           width5,
@@ -156,7 +155,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : Colors.black,
+                              color: context.colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -170,14 +169,15 @@ class _Home_UIState extends ConsumerState<Home_UI>
                       borderRadius: kRadius(100),
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundColor:
-                            isDark ? Dark.card : Colors.grey.shade200,
+                        backgroundColor: context.isDarkMode
+                            ? Dark.card
+                            : Colors.grey.shade200,
                         child: Icon(
                           showHomeMenu
                               ? Icons.keyboard_arrow_up_rounded
                               : Icons.keyboard_arrow_down_rounded,
                           size: 20,
-                          color: isDark ? Colors.white : Colors.black,
+                          color: context.colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -192,14 +192,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
                       children: [
                         KSearchBar(
                           context,
-                          isDark: isDark,
                           controller: searchKey,
                           onChanged: (val) {
                             setState(() {});
                           },
                         ),
                         height10,
-                        _booksList(isDark, uid: user.uid),
+                        _booksList(context.isDarkMode, uid: user.uid),
                       ],
                     ),
                   ),

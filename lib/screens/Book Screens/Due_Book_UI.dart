@@ -117,7 +117,6 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     bool isCompleted = bookData.targetAmount != 0 &&
         (bookData.income == bookData.targetAmount);
 
@@ -133,7 +132,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: kRadius(10),
-                  color: isDark ? Dark.card : Light.card,
+                  color: context.cardColor,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,7 +144,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                         showDialog(
                           context: context,
                           builder: (context) => _addUserDialog(
-                            isDark,
+                            context.isDarkMode,
                             uid: user!.uid,
                             bookId: bookData.bookId,
                             bookName: bookData.bookName,
@@ -154,12 +153,36 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                       },
                       icon: Icon(
                         Icons.person_add,
-                        color:
-                            isDark ? Colors.blueAccent : Colors.blue.shade700,
+                        color: context.isDarkMode
+                            ? Colors.blueAccent
+                            : Colors.blue.shade700,
                       ),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => kAlertDialog(
+                            context,
+                            title: 'Delete Book?',
+                            subTitle:
+                                'Are you sure you want to delete "${bookData.bookName}" book?',
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  // TODO: Implement deleteBook method
+                                },
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.delete_outline),
                     ),
                   ],
@@ -208,9 +231,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
                                       color: isCompleted
-                                          ? isDark
-                                              ? Dark.profitText
-                                              : Light.profitText
+                                          ? context.profitColor
                                           : null,
                                     ),
                                   ),
@@ -221,33 +242,30 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                     "INR ${kMoneyFormat(data.income - data.expense)}",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: isDark
-                                          ? Dark.profitText
-                                          : Light.profitText,
+                                      color: context.profitColor,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             KButton.text(
-                              isDark,
+                              context,
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => kAlertDialog(
-                                    isDark,
+                                    context,
                                     title: "Target Amount",
                                     subTitle: "Set target value",
                                     content: KTextfield.regular(
-                                      isDark,
+                                      context,
                                       controller: _newTargetAmount,
                                       hintText: "0.00",
                                       fontSize: 30,
                                       maxLines: 1,
                                       minLines: 1,
                                       keyboardType: TextInputType.number,
-                                      fieldColor:
-                                          isDark ? Colors.black : Colors.white,
+                                      fieldColor: context.cardColor,
                                       prefix: const Text(
                                         "INR",
                                         style: TextStyle(fontSize: 30),
@@ -255,7 +273,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                     ),
                                     actions: [
                                       KButton.regular(
-                                        isDark,
+                                        context,
                                         onPressed: _setNewTarget,
                                         label: "Set Target",
                                       ),
@@ -322,7 +340,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                 },
               ),
               height20,
-              TransactList(isDark, bookId: bookData.bookId),
+              TransactList(context.isDarkMode, bookId: bookData.bookId),
             ],
           ),
         ),
@@ -425,7 +443,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                           'No Transacts',
                           style: TextStyle(
                             fontSize: 30,
-                            color: isDark ? Dark.fadeText : Light.fadeText,
+                            color: context.fadeTextColor,
                           ),
                         )
                   : SizedBox(),
@@ -470,7 +488,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                   dateLabel,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? Colors.white : Colors.black,
+                    color: context.colorScheme.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -524,7 +542,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                         padding: const EdgeInsets.all(10),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: isDark ? Dark.card : Light.card,
+                          color: context.cardColor,
                           borderRadius: kRadius(20),
                         ),
                         child: Column(
@@ -616,12 +634,8 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                                       fontWeight:
                                                           FontWeight.w800,
                                                       color: isIncome
-                                                          ? isDark
-                                                              ? Dark.profitText
-                                                              : Light.profitText
-                                                          : isDark
-                                                              ? Dark.lossText
-                                                              : Light.lossText,
+                                                          ? context.profitColor
+                                                          : context.lossColor,
                                                     ),
                                                     children: const [
                                                       TextSpan(
@@ -662,7 +676,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w900,
-                                                      color: isDark
+                                                      color: context.isDarkMode
                                                           ? Colors.black
                                                           : Colors.white,
                                                     ),
@@ -688,9 +702,7 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                                           padding: const EdgeInsets.all(8),
                                           width: double.infinity,
                                           decoration: BoxDecoration(
-                                            color: isDark
-                                                ? Dark.scaffold
-                                                : Light.scaffold,
+                                            color: context.scaffoldColor,
                                             borderRadius: kRadius(10),
                                           ),
                                           child: Text(data.description),

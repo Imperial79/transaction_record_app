@@ -13,7 +13,6 @@ class SplashUI extends ConsumerStatefulWidget {
 class _SplashUIState extends ConsumerState<SplashUI> {
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -30,10 +29,9 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                         style: TextStyle(
                           fontFamily: "Serif",
                           fontSize: 500,
-                          color:
-                              isDark
-                                  ? Colors.white.lighten(.1)
-                                  : Colors.black.lighten(.05),
+                          color: context.isDarkMode
+                              ? Colors.white.lighten(.1)
+                              : Colors.black.lighten(.05),
                         ),
                       ),
                       Container(
@@ -42,7 +40,9 @@ class _SplashUIState extends ConsumerState<SplashUI> {
                           border: Border(
                             bottom: BorderSide(
                               width: 2,
-                              color: isDark ? Colors.white : Colors.black,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),

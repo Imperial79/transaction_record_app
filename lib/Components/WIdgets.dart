@@ -4,25 +4,23 @@ import '../Utility/commons.dart';
 import '../Utility/newColors.dart';
 
 Widget kBackButton(BuildContext context, {bool isSearching = false}) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return IconButton(
-    color: isDark ? Dark.profitText : Light.profitText,
     onPressed: () {
       Navigator.pop(context);
     },
     icon: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.arrow_back, color: isDark ? Dark.profitCard : Colors.black),
+        Icon(Icons.arrow_back, color: context.colorScheme.onSurface),
         !isSearching ? width10 : const SizedBox(),
         !isSearching
             ? Text(
-              'Return',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-            )
+                'Return',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: context.colorScheme.onSurface,
+                ),
+              )
             : const SizedBox(),
       ],
     ),
@@ -42,7 +40,7 @@ Widget kLabel(
 }
 
 Widget kAlertDialog(
-  bool isDark, {
+  BuildContext context, {
   required String title,
   required String subTitle,
   Widget? content,
@@ -50,7 +48,7 @@ Widget kAlertDialog(
 }) {
   return Dialog(
     elevation: 0,
-    backgroundColor: isDark ? Dark.card : Light.card,
+    backgroundColor: context.cardColor,
     child: Padding(
       padding: const EdgeInsets.all(15.0),
       child: Column(

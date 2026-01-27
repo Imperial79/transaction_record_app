@@ -1,1 +1,0 @@
-enum Profiles { prod, dev }

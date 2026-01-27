@@ -160,7 +160,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           icon: const Icon(Icons.delete, color: Colors.red, size: 30),
           title: Text(
             'Delete Transact ?',
-            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            style: TextStyle(color: context.colorScheme.onSurface),
           ),
           content: const Text(
             'Do you really want to delete this Transact ? This cannot be undone!',
@@ -254,7 +254,6 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: _isLoading,
@@ -274,7 +273,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     width: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDark ? Dark.card : Light.card,
+                      color: context.cardColor,
                     ),
                     child: IconButton(
                       onPressed: () {
@@ -283,7 +282,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                       icon: Icon(
                         Icons.close,
                         size: 20,
-                        color: isDark ? Colors.white : Colors.black,
+                        color: context.colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -302,7 +301,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     KTextfield.regular(
-                      isDark,
+                      context,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 10,
@@ -341,14 +340,12 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
-                                    color:
-                                        isDark ? Dark.scaffold : Colors.white,
+                                    color: context.scaffoldColor,
                                   ),
                                   child: Text(
                                     _selectedDateMap['displayDate'],
                                     style: TextStyle(
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
+                                      color: context.colorScheme.onSurface,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -370,8 +367,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   borderRadius: kRadius(10),
-                                  color:
-                                      isDark ? Dark.scaffold : Light.scaffold,
+                                  color: context.scaffoldColor,
                                 ),
                                 child: Text(
                                   _selectedTimeMap['displayTime'],
@@ -387,7 +383,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     ),
                     height10,
                     KTextfield.regular(
-                      isDark,
+                      context,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 10,
@@ -415,10 +411,9 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           child: Text(
                             'CASH',
                             style: TextStyle(
-                              color:
-                                  transactMode == 'ONLINE'
-                                      ? Colors.grey
-                                      : isDark
+                              color: transactMode == 'ONLINE'
+                                  ? Colors.grey
+                                  : context.isDarkMode
                                       ? Colors.lightGreenAccent
                                       : Colors.lightGreen,
                               fontWeight: FontWeight.w600,
@@ -432,12 +427,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           text: TextSpan(
                             style: TextStyle(
                               fontFamily: 'Product',
-                              color:
-                                  transactMode == 'ONLINE'
-                                      ? isDark
-                                          ? Colors.blue.shade200
-                                          : Colors.blue.shade700
-                                      : Colors.grey,
+                              color: transactMode == 'ONLINE'
+                                  ? context.isDarkMode
+                                      ? Colors.blue.shade200
+                                      : Colors.blue.shade700
+                                  : Colors.grey,
                             ),
                             children: const [
                               TextSpan(
@@ -465,7 +459,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            return AlertBox(isDark);
+                            return AlertBox(context.isDarkMode);
                           },
                         );
                       },
@@ -508,12 +502,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         letterSpacing: 5,
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
-                        color:
-                            transactMode == 'CASH'
-                                ? isDark
-                                    ? Colors.lightGreenAccent
-                                    : Colors.lightGreen
-                                : isDark
+                        color: transactMode == 'CASH'
+                            ? context.isDarkMode
+                                ? Colors.lightGreenAccent
+                                : Colors.lightGreen
+                            : context.isDarkMode
                                 ? Colors.blue.shade200
                                 : Colors.blue.shade700,
                       ),
@@ -525,8 +518,8 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            isDark ? Dark.scaffold : Light.scaffold,
-                            isDark
+                            context.scaffoldColor,
+                            context.isDarkMode
                                 ? Colors.grey.lighten(0)
                                 : Colors.grey.shade300,
                           ],
@@ -539,20 +532,19 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         keyboardType: TextInputType.number,
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : Colors.black,
+                          color: context.colorScheme.onSurface,
                           fontSize: 30,
                         ),
-                        cursorColor: isDark ? Colors.white : Colors.black,
+                        cursorColor: context.colorScheme.onSurface,
                         decoration: InputDecoration(
                           prefixIcon: Padding(
                             padding: const EdgeInsets.only(right: 10.0),
                             child: Text(
                               "INR",
                               style: TextStyle(
-                                color:
-                                    isDark
-                                        ? Colors.white
-                                        : Colors.grey.shade700,
+                                color: context.isDarkMode
+                                    ? Colors.white
+                                    : Colors.grey.shade700,
                                 fontSize: 30,
                                 fontWeight: FontWeight.w300,
                               ),
@@ -574,31 +566,21 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                     ),
                     height20,
                     KButton.icon(
-                      isDark,
+                      context,
                       isOutlined: true,
                       onPressed: () {
                         updateTransacts(user!.uid);
                       },
-                      backgroundColor:
-                          transactType == "Income"
-                              ? isDark
-                                  ? Dark.primaryAccent
-                                  : Light.primaryAccent
-                              : isDark
-                              ? Dark.lossCard
-                              : Light.lossCard,
+                      backgroundColor: transactType == "Income"
+                          ? context.profitCardColor
+                          : context.lossCardColor,
                       icon: Icon(
                         transactType == 'Income'
                             ? Icons.file_download_outlined
                             : Icons.file_upload_outlined,
-                        color:
-                            transactType == "Income"
-                                ? isDark
-                                    ? Dark.primaryAccent
-                                    : Light.primaryAccent
-                                : isDark
-                                ? Dark.lossCard
-                                : Light.lossCard,
+                        color: transactType == "Income"
+                            ? context.profitColor
+                            : context.lossColor,
                       ),
                       label: "Update transact",
                     ),
@@ -614,27 +596,19 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   Widget _modeIndicatorPill(String mode) {
     return _typeBtn(
-      icon:
-          mode == 'Income'
-              ? Icons.file_download_outlined
-              : Icons.file_upload_outlined,
+      icon: mode == 'Income'
+          ? Icons.file_download_outlined
+          : Icons.file_upload_outlined,
       label: widget.trData.type,
     );
   }
 
   Widget _typeBtn({required String label, required IconData icon}) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return MaterialButton(
       onPressed: () {},
       shape: RoundedRectangleBorder(borderRadius: kRadius(50)),
       color:
-          label == 'Expense'
-              ? isDark
-                  ? Dark.lossCard
-                  : Light.lossCard
-              : isDark
-              ? Dark.profitCard
-              : Light.profitCard,
+          label == 'Expense' ? context.lossCardColor : context.profitCardColor,
       elevation: 0,
       highlightElevation: 0,
       child: Row(
@@ -685,26 +659,24 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
-            backgroundColor:
-                transactMode == 'ONLINE'
-                    ? Colors.blue.shade700
-                    : Colors.lightGreen,
+            backgroundColor: transactMode == 'ONLINE'
+                ? Colors.blue.shade700
+                : Colors.lightGreen,
             radius: 20,
-            child:
-                transactMode == 'ONLINE'
-                    ? const Icon(
-                      Icons.webhook_sharp,
-                      color: Colors.white,
-                      size: 20,
-                    )
-                    : const Text(
-                      '₹',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                      ),
+            child: transactMode == 'ONLINE'
+                ? const Icon(
+                    Icons.webhook_sharp,
+                    color: Colors.white,
+                    size: 20,
+                  )
+                : const Text(
+                    '₹',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
                     ),
+                  ),
           ),
         ),
       ),

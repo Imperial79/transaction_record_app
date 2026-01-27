@@ -50,35 +50,32 @@ class _KScaffoldState extends State<KScaffold> {
   }
 
   AnimatedSwitcher FullScreenLoading({required bool isLoading}) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 200),
-      child:
-          isLoading
-              ? Container(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                color:
-                    isDark ? Colors.black.lighten(.8) : Light.card.lighten(.8),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomLoading(),
-                      height15,
-                      Text(
-                        "Please Wait ...",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
+      child: isLoading
+          ? Container(
+              height: double.maxFinite,
+              width: double.maxFinite,
+              color: context.scaffoldColor.withAlpha(200),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomLoading(),
+                    height15,
+                    Text(
+                      "Please Wait ...",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: context.colorScheme.onSurface,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
-              : const SizedBox(),
+              ),
+            )
+          : const SizedBox(),
     );
   }
 }

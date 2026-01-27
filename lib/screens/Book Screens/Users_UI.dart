@@ -75,7 +75,6 @@ class _UsersUIState extends ConsumerState<UsersUI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -93,7 +92,6 @@ class _UsersUIState extends ConsumerState<UsersUI> {
             itemBuilder: (context, index) {
               UserModel userData = UserModel.fromMap(_usersList[index]);
               return _usersTile(
-                isDark,
                 uid: user!.uid,
                 user: userData,
               );
@@ -105,8 +103,7 @@ class _UsersUIState extends ConsumerState<UsersUI> {
     );
   }
 
-  Widget _usersTile(
-    bool isDark, {
+  Widget _usersTile({
     required String uid,
     required UserModel user,
   }) {
@@ -140,8 +137,8 @@ class _UsersUIState extends ConsumerState<UsersUI> {
               _removeUserFromBook(user.uid);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? Colors.black : Colors.white,
-              foregroundColor: isDark ? Dark.lossText : Light.lossText,
+              backgroundColor: context.scaffoldColor,
+              foregroundColor: context.lossColor,
             ),
             child: const Text('Remove'),
           ),
@@ -152,12 +149,12 @@ class _UsersUIState extends ConsumerState<UsersUI> {
             padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
               borderRadius: kRadius(6),
-              color: isDark ? Dark.primary : Light.primary,
+              color: context.primaryColor,
             ),
             child: Text(
               'Admin',
               style: TextStyle(
-                color: isDark ? Colors.black : Colors.white,
+                color: context.isDarkMode ? Colors.black : Colors.white,
                 fontWeight: FontWeight.w500,
               ),
             ),

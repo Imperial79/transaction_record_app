@@ -23,32 +23,34 @@ Widget kPill({
 }
 
 Widget FirstTransactCard(BuildContext context, String bookId) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
     margin: const EdgeInsets.only(top: 0),
     width: double.infinity,
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: isDark ? Colors.amber : Colors.amber.shade100,
+      color: context.isDarkMode
+          ? context.primaryColor.withAlpha(40)
+          : context.primaryColor.withAlpha(30),
       borderRadius: kRadius(30),
+      border: Border.all(color: context.primaryColor.withAlpha(50)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Create your first Transact',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            color: Colors.black,
+            color: context.isDarkMode ? Colors.white : Colors.black,
             fontSize: 20,
           ),
         ),
         const SizedBox(height: 10),
-        const Text(
+        Text(
           'Track your daily expenses by creating Transacts.',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: context.isDarkMode ? Colors.white70 : Colors.black87,
             fontSize: 15,
           ),
         ),
@@ -59,7 +61,8 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: isDark ? Colors.amberAccent : Colors.orange,
+                  color:
+                      context.isDarkMode ? Colors.amberAccent : Colors.orange,
                   blurRadius: 100,
                   spreadRadius: 10,
                 ),
@@ -70,16 +73,17 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                 navPush(context, New_Book_UI());
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.amber.shade100 : Colors.orange,
+                backgroundColor: context.primaryColor,
                 elevation: 0,
               ),
               icon: Icon(
                 Icons.bolt,
-                color: isDark ? Colors.black : Colors.white,
+                color: context.isDarkMode ? Colors.black : Colors.white,
               ),
               label: Text(
                 'Create',
-                style: TextStyle(color: isDark ? Colors.black : Colors.white),
+                style: TextStyle(
+                    color: context.isDarkMode ? Colors.black : Colors.white),
               ),
             ),
           ),
@@ -229,21 +233,14 @@ Widget StatsCard(
   required String bookId,
 }) {
   bool isExpense = label == 'Expenses';
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     decoration: BoxDecoration(
       borderRadius: kRadius(15),
-      color: isExpense ? const Color(0xffca705f) : Dark.profitCard,
+      color: isExpense ? context.lossCardColor : context.profitCardColor,
       border: Border.all(
         color:
-            isExpense
-                ? isDark
-                    ? Colors.red.shade100
-                    : Colors.red.shade900
-                : isDark
-                ? Colors.white
-                : Colors.teal.shade700,
+            (isExpense ? context.lossColor : context.profitColor).withAlpha(50),
       ),
     ),
     child: Column(
@@ -262,7 +259,7 @@ Widget StatsCard(
               child: Text(
                 '${kMoneyFormat(content)} INR',
                 style: TextStyle(
-                  color: isExpense ? Colors.white : Colors.black,
+                  color: isExpense ? context.lossColor : context.profitColor,
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                 ),
@@ -282,13 +279,12 @@ Widget ConfirmDeleteModal({
 }) {
   return StatefulBuilder(
     builder: (context, setState) {
-      bool isDark = Theme.of(context).brightness == Brightness.dark;
       return SafeArea(
         child: Container(
           padding: const EdgeInsets.all(20),
           margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
-            color: isDark ? Dark.card : Light.card,
+            color: context.cardColor,
             borderRadius: kRadius(20),
           ),
           child: SingleChildScrollView(
@@ -297,14 +293,13 @@ Widget ConfirmDeleteModal({
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      isDark ? Colors.red.shade100 : Colors.redAccent,
+                  backgroundColor: context.lossCardColor,
                   child: Text(
                     '!',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.red.shade800 : Colors.white,
+                      color: context.lossColor,
                     ),
                   ),
                 ),
@@ -312,7 +307,7 @@ Widget ConfirmDeleteModal({
                 Text(
                   label,
                   style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black,
+                    color: context.colorScheme.onSurface,
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -320,7 +315,7 @@ Widget ConfirmDeleteModal({
                 Text(
                   content,
                   style: TextStyle(
-                    color: isDark ? Colors.red.shade300 : Colors.redAccent,
+                    color: context.lossColor,
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -334,19 +329,20 @@ Widget ConfirmDeleteModal({
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? Colors.black : Light.lossCard,
-                        foregroundColor:
-                            isDark ? Colors.red.shade300 : Colors.white,
+                        backgroundColor: context.isDarkMode
+                            ? Colors.black
+                            : Colors.grey.shade200,
+                        foregroundColor: context.isDarkMode
+                            ? Colors.white70
+                            : Colors.black87,
                       ),
                       child: const Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: onDelete,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isDark ? Colors.black : Light.profitText,
-                        foregroundColor:
-                            isDark ? Dark.profitText : Colors.white,
+                        backgroundColor: context.lossColor,
+                        foregroundColor: Colors.white,
                       ),
                       child: const Text('Yes'),
                     ),
@@ -388,23 +384,22 @@ Widget kCard(
   required IconData icon,
   required String title,
 }) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Container(
     padding: const EdgeInsets.all(15),
     decoration: BoxDecoration(
-      color: isDark ? Dark.card : Light.card,
+      color: context.cardColor,
       borderRadius: kRadius(15),
     ),
     child: Column(
       children: [
         Row(
           children: [
-            Icon(icon, size: 15, color: isDark ? Colors.white : Colors.black),
+            Icon(icon, size: 15, color: context.colorScheme.onSurface),
             width10,
             Text(
               title,
               style: TextStyle(
-                color: isDark ? Colors.white : Colors.black,
+                color: context.colorScheme.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -418,7 +413,6 @@ Widget kCard(
 }
 
 void setSystemUIColors(BuildContext context) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.edgeToEdge,
     overlays: [SystemUiOverlay.top],
@@ -426,11 +420,13 @@ void setSystemUIColors(BuildContext context) {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
-      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness:
+          context.isDarkMode ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness:
+          context.isDarkMode ? Brightness.light : Brightness.dark,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarIconBrightness:
-          isDark ? Brightness.light : Brightness.dark,
+          context.isDarkMode ? Brightness.light : Brightness.dark,
     ),
   );
 }
@@ -480,62 +476,60 @@ Widget kDeleteAlertDialog(
 }
 
 Widget NewBookCard(BuildContext context) => Consumer(
-  builder: (context, ref, _) {
-    return Container(
-      margin: const EdgeInsets.all(15),
-      width: double.infinity,
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        borderRadius: kRadius(20),
-        gradient: const LinearGradient(
-          colors: [Light.profitCard, Colors.black],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'Create your first Transact Book',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              fontSize: 30,
-              letterSpacing: 1,
+      builder: (context, ref, _) {
+        return Container(
+          margin: const EdgeInsets.all(15),
+          width: double.infinity,
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            borderRadius: kRadius(20),
+            gradient: const LinearGradient(
+              colors: [Light.profitCard, Colors.black],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          height10,
-          const Text(
-            'Track your daily expenses by creating categorised Transact Book',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              color: Colors.white,
-              fontSize: 16,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Create your first Transact Book',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  fontSize: 30,
+                  letterSpacing: 1,
+                ),
+              ),
+              height10,
+              const Text(
+                'Track your daily expenses by creating categorised Transact Book',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              height10,
+              Align(
+                alignment: Alignment.topRight,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.watch(pageControllerProvider).animateToPage(
+                          1,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.ease,
+                        );
+                  },
+                  child: const Text('Create'),
+                ),
+              ),
+            ],
           ),
-          height10,
-          Align(
-            alignment: Alignment.topRight,
-            child: ElevatedButton(
-              onPressed: () {
-                ref
-                    .watch(pageControllerProvider)
-                    .animateToPage(
-                      1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.ease,
-                    );
-              },
-              child: const Text('Create'),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
-  },
-);
 
 Widget AnimatedFloatingButton(
   BuildContext context, {
@@ -544,13 +538,12 @@ Widget AnimatedFloatingButton(
   required String label,
   required bool showFullBtn,
 }) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return InkWell(
     onTap: onTap,
     child: DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: kRadius(20),
-        color: isDark ? Colors.greenAccent : Colors.black,
+        color: context.primaryColor,
       ),
       child: AnimatedSize(
         reverseDuration: const Duration(milliseconds: 300),
@@ -568,7 +561,7 @@ Widget AnimatedFloatingButton(
             children: [
               Icon(
                 Icons.add_circle_outline,
-                color: isDark ? Colors.black : Colors.white,
+                color: context.isDarkMode ? Colors.black : Colors.white,
                 size: 30,
               ),
               if (showFullBtn) const SizedBox(width: 10),
@@ -578,7 +571,7 @@ Widget AnimatedFloatingButton(
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
-                    color: isDark ? Colors.black : Colors.white,
+                    color: context.isDarkMode ? Colors.black : Colors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -592,7 +585,6 @@ Widget AnimatedFloatingButton(
 
 Widget KSearchBar(
   BuildContext context, {
-  required bool isDark,
   TextEditingController? controller,
   void Function(String)? onChanged,
 }) {
@@ -602,7 +594,9 @@ Widget KSearchBar(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: isDark ? Dark.card : Light.card),
+            color: context.cardColor,
+            border: Border.all(
+                color: context.isDarkMode ? Colors.white12 : Colors.black12),
             borderRadius: kRadius(100),
           ),
           child: Row(
@@ -619,7 +613,7 @@ Widget KSearchBar(
                     hintText: 'Search by name or amount',
                     hintStyle: TextStyle(
                       fontWeight: FontWeight.w400,
-                      color: isDark ? Dark.fadeText : Light.fadeText,
+                      color: context.fadeTextColor,
                       fontSize: 17,
                     ),
                   ),
@@ -635,13 +629,12 @@ Widget KSearchBar(
 }
 
 Widget NoData(BuildContext context, {String customText = "No Data"}) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   return Center(
     child: Text(
       customText,
       style: TextStyle(
         fontSize: 30,
-        color: isDark ? Dark.fadeText : Light.fadeText,
+        color: context.fadeTextColor,
       ),
     ),
   );

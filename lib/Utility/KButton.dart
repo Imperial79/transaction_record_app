@@ -5,14 +5,14 @@ import 'newColors.dart';
 
 class KButton {
   static ElevatedButton regular(
-    bool isDark, {
+    BuildContext context, {
     void Function()? onPressed,
     String label = "label",
   }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isDark ? Dark.profitCard : Colors.black,
+        backgroundColor: context.primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         shape: RoundedRectangleBorder(borderRadius: kRadius(100)),
       ),
@@ -20,21 +20,21 @@ class KButton {
         label,
         style: TextStyle(
           fontSize: 15,
-          color: isDark ? Colors.black : Colors.white,
+          color: context.isDarkMode ? Colors.black : Colors.white,
         ),
       ),
     );
   }
 
   static ElevatedButton full(
-    bool isDark, {
+    BuildContext context, {
     void Function()? onPressed,
     String label = "label",
   }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isDark ? Dark.profitCard : Colors.black,
+        backgroundColor: context.primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         shape: RoundedRectangleBorder(borderRadius: kRadius(15)),
       ),
@@ -44,7 +44,7 @@ class KButton {
           label,
           style: TextStyle(
             fontSize: 20,
-            color: isDark ? Colors.black : Colors.white,
+            color: context.isDarkMode ? Colors.black : Colors.white,
           ),
         ),
       ),
@@ -52,7 +52,7 @@ class KButton {
   }
 
   static ElevatedButton icon(
-    bool isDark, {
+    BuildContext context, {
     required void Function()? onPressed,
     required Widget icon,
     String label = "label",
@@ -63,15 +63,13 @@ class KButton {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            !isOutlined
-                ? backgroundColor ?? (isDark ? Dark.profitCard : Colors.black)
-                : Colors.transparent,
+        backgroundColor: !isOutlined
+            ? backgroundColor ?? context.primaryColor
+            : Colors.transparent,
         side: BorderSide(
-          color:
-              isOutlined
-                  ? backgroundColor ?? (isDark ? Dark.profitCard : Colors.black)
-                  : Colors.transparent,
+          color: isOutlined
+              ? backgroundColor ?? context.primaryColor
+              : Colors.transparent,
         ),
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         shape: RoundedRectangleBorder(borderRadius: kRadius(15)),
@@ -86,11 +84,10 @@ class KButton {
               label,
               style: TextStyle(
                 fontSize: 20,
-                color:
-                    !isOutlined
-                        ? textColor ?? (isDark ? Colors.black : Colors.white)
-                        : backgroundColor ??
-                            (isDark ? Dark.profitCard : Colors.black),
+                color: !isOutlined
+                    ? textColor ??
+                        (context.isDarkMode ? Colors.black : Colors.white)
+                    : backgroundColor ?? context.primaryColor,
               ),
             ),
           ],
@@ -100,7 +97,7 @@ class KButton {
   }
 
   static InkWell text(
-    bool isDark, {
+    BuildContext context, {
     void Function()? onTap,
     String label = "label",
     double fontSize = 17,
@@ -111,7 +108,7 @@ class KButton {
       child: Text(
         label,
         style: TextStyle(
-          color: isDark ? Dark.profitText : Light.profitText,
+          color: context.profitColor,
           fontSize: fontSize,
         ),
       ),

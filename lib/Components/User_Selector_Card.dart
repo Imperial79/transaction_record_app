@@ -51,12 +51,11 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.all(15),
-      backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
+      backgroundColor: context.scaffoldColor,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -65,7 +64,6 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
           children: [
             KSearchBar(
               context,
-              isDark: isDark,
               controller: searchKey,
               onChanged: (_) {
                 setState(() {});
@@ -79,10 +77,9 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
               ),
             ),
             FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              future:
-                  FirebaseRefs.userRef
-                      .where('uid', isNotEqualTo: user!.uid)
-                      .get(),
+              future: FirebaseRefs.userRef
+                  .where('uid', isNotEqualTo: user!.uid)
+                  .get(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data!.docs.isEmpty) {
@@ -104,7 +101,7 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
                               userData.username,
                             ).contains(searchKey.text)) {
                           return _userTile(
-                            isDark,
+                            context.isDarkMode,
                             userData: userData,
                             isSelecting: isSelecting,
                             selectedUsers: selectedUsers,
@@ -123,36 +120,36 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
             ),
             selectedUsers.isNotEmpty
                 ? Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      int currentTime = DateTime.now().millisecondsSinceEpoch;
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-                      Map<String, dynamic> requestMap = {
-                        'id': "$currentTime",
-                        'date': Constants.getDisplayDate(currentTime),
-                        'time': Constants.getDisplayTime(currentTime),
-                        'senderId': user.uid,
-                        'users': selectedUsers,
-                        'bookName': widget.bookData.bookName,
-                        'bookId': widget.bookData.bookId,
-                      };
+                        Map<String, dynamic> requestMap = {
+                          'id': "$currentTime",
+                          'date': Constants.getDisplayDate(currentTime),
+                          'time': Constants.getDisplayTime(currentTime),
+                          'senderId': user.uid,
+                          'users': selectedUsers,
+                          'bookName': widget.bookData.bookName,
+                          'bookId': widget.bookData.bookId,
+                        };
 
-                      await FirebaseRefs.requestRef
-                          .doc("$currentTime")
-                          .set(requestMap)
-                          .then(
-                            (value) => KSnackbar(
-                              context,
-                              content:
-                                  "Request to join book has been sent to ${selectedUsers.length} user(s)",
-                            ),
-                          );
-                      Navigator.pop(context);
-                    },
-                    child: Text('Send Request [${selectedUsers.length}]'),
-                  ),
-                )
+                        await FirebaseRefs.requestRef
+                            .doc("$currentTime")
+                            .set(requestMap)
+                            .then(
+                              (value) => KSnackbar(
+                                context,
+                                content:
+                                    "Request to join book has been sent to ${selectedUsers.length} user(s)",
+                              ),
+                            );
+                        Navigator.pop(context);
+                      },
+                      child: Text('Send Request [${selectedUsers.length}]'),
+                    ),
+                  )
                 : const SizedBox.shrink(),
           ],
         ),
@@ -175,12 +172,11 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: kRadius(15),
-            color:
-                selectedUsers.contains(userData.uid)
-                    ? isDark
-                        ? Dark.primary.lighten(.2)
-                        : Light.profitCard
-                    : Colors.transparent,
+            color: selectedUsers.contains(userData.uid)
+                ? isDark
+                    ? Dark.primary.lighten(.2)
+                    : Light.profitCard
+                : Colors.transparent,
           ),
           padding: const EdgeInsets.all(10),
           child: Row(
@@ -188,8 +184,8 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
               selectedUsers.contains(userData.uid)
                   ? const CircleAvatar(child: Icon(Icons.done))
                   : CircleAvatar(
-                    backgroundImage: NetworkImage(userData.imgUrl),
-                  ),
+                      backgroundImage: NetworkImage(userData.imgUrl),
+                    ),
               width20,
               Expanded(
                 child: Column(
@@ -205,7 +201,8 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
                       "@${userData.username}",
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark ? Dark.fadeText : Light.fadeText,
+                        color:
+                            context.isDarkMode ? Dark.fadeText : Light.fadeText,
                       ),
                     ),
                   ],

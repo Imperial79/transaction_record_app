@@ -7,9 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
-import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/models/Profiles.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 
 import '../Utility/commons.dart';
@@ -34,11 +32,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
         isLoading = true;
       });
       UserModel? user;
-      if (ENV_PROFILE == Profiles.prod) {
-        user = await ref.read(authRepository).signIn();
-      } else {
-        user = await ref.read(authRepository).signIn_Test();
-      }
+      user = await ref.read(authRepository).signIn();
 
       if (user != null) {
         ref.read(userProvider.notifier).state = user;
@@ -58,8 +52,6 @@ class _LoginUIState extends ConsumerState<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     return KScaffold(
       body: SafeArea(
         child: Padding(
@@ -95,17 +87,14 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w400,
-                                    color:
-                                        isDark ? Dark.primary : Light.primary,
+                                    color: context.primaryColor,
                                   ),
                                 ),
                                 height20,
                                 Text(
                                   '#FOSS',
                                   style: TextStyle(
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
+                                    color: context.profitColor,
                                     fontWeight: FontWeight.w600,
                                     height: 1.7,
                                   ),
@@ -117,8 +106,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                             children: [
                               Icon(
                                 Icons.cloud,
-                                color:
-                                    isDark ? Dark.profitText : Light.profitText,
+                                color: context.profitColor,
                               ),
                               width10,
                               Expanded(
@@ -127,9 +115,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 15,
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
+                                    color: context.profitColor,
                                   ),
                                 ),
                               ),
@@ -138,36 +124,40 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                           height20,
                           InkWell(
                             borderRadius: kRadius(15),
-                            splashColor: Colors.red,
                             onTap: () async {
                               _googleSignIn();
                             },
                             child: Ink(
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                borderRadius: kRadius(10),
-                                color: isDark ? Dark.lossCard : Light.lossCard,
-                                border: Border.all(color: Colors.red.shade100),
+                                borderRadius: kRadius(12),
+                                color: context.primaryColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: context.primaryColor.withAlpha(50),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 7, horizontal: 20),
+                                  vertical: 12, horizontal: 20),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    'G',
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
+                                  const Icon(
+                                    Icons.login,
+                                    color: Colors.white,
                                   ),
-                                  width10,
-                                  const Text(
-                                    "Login with Google",
+                                  width15,
+                                  Text(
+                                    "Continue with Google",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: context.isDarkMode
+                                          ? Colors.black
+                                          : Colors.white,
                                     ),
                                   ),
                                 ],
@@ -178,22 +168,20 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                           Text.rich(
                             style: TextStyle(
                               fontSize: 16,
-                              color: isDark ? Dark.fadeText : Light.fadeText,
+                              color: context.fadeTextColor,
                             ),
                             TextSpan(
                               children: [
-                                TextSpan(
+                                const TextSpan(
                                     text: "By signing in, you agree with our "),
                                 TextSpan(
                                   text: "Terms & Conditions ",
                                   style: TextStyle(
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
+                                    color: context.profitColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                TextSpan(text: "and "),
+                                const TextSpan(text: "and "),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () async {
@@ -201,9 +189,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                                     },
                                   text: "Privacy Policy.",
                                   style: TextStyle(
-                                    color: isDark
-                                        ? Dark.profitText
-                                        : Light.profitText,
+                                    color: context.profitColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -223,9 +209,9 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   }
 
   Center _backgroundGraphics() {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-    Color textColor =
-        isDark ? Colors.white.lighten(.1) : Colors.black.lighten(.05);
+    Color textColor = context.isDarkMode
+        ? Colors.white.withAlpha(20)
+        : Colors.black.withAlpha(10);
     return Center(
       child: FittedBox(
         child: Column(
@@ -247,7 +233,6 @@ class _LoginUIState extends ConsumerState<LoginUI> {
   }
 
   Flexible _loadingScreen() {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Flexible(
       flex: 6,
       child: Center(
@@ -257,7 +242,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
             Transform.scale(
               scale: 0.5,
               child: CircularProgressIndicator(
-                color: isDark ? Dark.profitCard : Light.profitCard,
+                color: context.profitCardColor,
               ),
             ),
             const SizedBox(
@@ -267,7 +252,7 @@ class _LoginUIState extends ConsumerState<LoginUI> {
               'Fetching Your Transacts',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: isDark ? Colors.white : Colors.black,
+                color: context.colorScheme.onSurface,
                 fontSize: 20,
               ),
             ),

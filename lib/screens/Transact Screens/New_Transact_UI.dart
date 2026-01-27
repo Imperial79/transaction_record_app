@@ -91,9 +91,8 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           );
         }
         transactId = _selectedTimeStamp;
-        final uploadableAmount = amountField.text
-            .replaceAll(' ', '')
-            .replaceAll(',', '');
+        final uploadableAmount =
+            amountField.text.replaceAll(' ', '').replaceAll(',', '');
 
         Transact newTransact = Transact(
           uid: uid,
@@ -150,7 +149,6 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
@@ -167,7 +165,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                     width: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDark ? Dark.card : Light.card,
+                      color: context.cardColor,
                     ),
                     child: IconButton(
                       onPressed: () {
@@ -176,7 +174,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                       icon: Icon(
                         Icons.close,
                         size: 20,
-                        color: isDark ? Colors.white : Colors.black,
+                        color: context.colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -207,7 +205,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       KTextfield.regular(
-                        isDark,
+                        context,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
@@ -239,10 +237,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       borderRadius: kRadius(10),
-                                      color:
-                                          isDark
-                                              ? Dark.scaffold
-                                              : Light.scaffold,
+                                      color: context.scaffoldColor,
                                     ),
                                     child: Text(
                                       _selectedDateMap['displayDate'],
@@ -266,14 +261,12 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: kRadius(10),
-                                    color:
-                                        isDark ? Dark.scaffold : Light.scaffold,
+                                    color: context.scaffoldColor,
                                   ),
                                   child: Text(
                                     _selectedTimeMap['displayTime'],
                                     style: TextStyle(
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
+                                      color: context.colorScheme.onSurface,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -285,7 +278,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                       ),
                       height10,
                       KTextfield.regular(
-                        isDark,
+                        context,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
@@ -305,10 +298,9 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             child: Text(
                               'CASH',
                               style: TextStyle(
-                                color:
-                                    transactMode == 'ONLINE'
-                                        ? Colors.grey
-                                        : isDark
+                                color: transactMode == 'ONLINE'
+                                    ? Colors.grey
+                                    : context.isDarkMode
                                         ? Colors.lightGreenAccent
                                         : Colors.lightGreen,
                                 fontWeight: FontWeight.w600,
@@ -322,12 +314,11 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             text: TextSpan(
                               style: TextStyle(
                                 fontFamily: 'Product',
-                                color:
-                                    transactMode == 'ONLINE'
-                                        ? isDark
-                                            ? Colors.blue.shade200
-                                            : Colors.blue.shade700
-                                        : Colors.grey,
+                                color: transactMode == 'ONLINE'
+                                    ? context.isDarkMode
+                                        ? Colors.blue.shade200
+                                        : Colors.blue.shade700
+                                    : Colors.grey,
                               ),
                               children: const [
                                 TextSpan(
@@ -359,12 +350,11 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                 letterSpacing: 1,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
-                                color:
-                                    transactMode == 'CASH'
-                                        ? isDark
-                                            ? Colors.lightGreenAccent
-                                            : Colors.lightGreen
-                                        : isDark
+                                color: transactMode == 'CASH'
+                                    ? context.isDarkMode
+                                        ? Colors.lightGreenAccent
+                                        : Colors.lightGreen
+                                    : context.isDarkMode
                                         ? Colors.blue.shade200
                                         : Colors.blue.shade700,
                               ),
@@ -381,8 +371,8 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              isDark ? Dark.scaffold : Light.scaffold,
-                              isDark
+                              context.scaffoldColor,
+                              context.isDarkMode
                                   ? Colors.grey.lighten(0)
                                   : Colors.grey.shade300,
                             ],
@@ -395,20 +385,19 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                           keyboardType: TextInputType.number,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : Colors.black,
+                            color: context.colorScheme.onSurface,
                             fontSize: 30,
                           ),
-                          cursorColor: isDark ? Colors.white : Colors.black,
+                          cursorColor: context.colorScheme.onSurface,
                           decoration: InputDecoration(
                             prefixIcon: Padding(
                               padding: const EdgeInsets.only(right: 10.0),
                               child: Text(
                                 "INR",
                                 style: TextStyle(
-                                  color:
-                                      isDark
-                                          ? Colors.white
-                                          : Colors.grey.shade700,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : Colors.grey.shade700,
                                   fontSize: 30,
                                   fontWeight: FontWeight.w300,
                                 ),
@@ -422,7 +411,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                             hintText: '0.00',
                             hintStyle: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Dark.fadeText : Light.fadeText,
+                              color: context.fadeTextColor,
                               fontSize: 30,
                             ),
                           ),
@@ -431,7 +420,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                       height20,
                       if (bookType == "savings")
                         KButton.full(
-                          isDark,
+                          context,
                           label: "Save",
                           onPressed: () {
                             saveTransacts(user!.uid);
@@ -439,31 +428,21 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                         )
                       else
                         KButton.icon(
-                          isDark,
+                          context,
                           isOutlined: true,
                           onPressed: () {
                             saveTransacts(user!.uid);
                           },
-                          backgroundColor:
-                              transactType == "Income"
-                                  ? isDark
-                                      ? Dark.primaryAccent
-                                      : Light.primaryAccent
-                                  : isDark
-                                  ? Dark.lossCard
-                                  : Light.lossCard,
+                          backgroundColor: transactType == "Income"
+                              ? context.profitCardColor
+                              : context.lossCardColor,
                           icon: Icon(
                             transactType == 'Income'
                                 ? Icons.file_download_outlined
                                 : Icons.file_upload_outlined,
-                            color:
-                                transactType == "Income"
-                                    ? isDark
-                                        ? Dark.primaryAccent
-                                        : Light.primaryAccent
-                                    : isDark
-                                    ? Dark.lossCard
-                                    : Light.lossCard,
+                            color: transactType == "Income"
+                                ? context.profitColor
+                                : context.lossColor,
                           ),
                           label: "Add transact",
                         ),
@@ -505,26 +484,24 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           alignment:
               transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
           child: CircleAvatar(
-            backgroundColor:
-                transactMode == 'ONLINE'
-                    ? Colors.blue.shade700
-                    : Colors.lightGreen,
+            backgroundColor: transactMode == 'ONLINE'
+                ? Colors.blue.shade700
+                : Colors.lightGreen,
             radius: 20,
-            child:
-                transactMode == 'ONLINE'
-                    ? const Icon(
-                      Icons.webhook_sharp,
-                      color: Colors.white,
-                      size: 20,
-                    )
-                    : const Text(
-                      '₹',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                      ),
+            child: transactMode == 'ONLINE'
+                ? const Icon(
+                    Icons.webhook_sharp,
+                    color: Colors.white,
+                    size: 20,
+                  )
+                : const Text(
+                    '₹',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
                     ),
+                  ),
           ),
         ),
       ),
@@ -534,7 +511,6 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   Widget _typeBtn({required String label, required IconData icon}) {
     bool isIncome = label == 'Income';
     bool isSelected = transactType == label;
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return ElevatedButton.icon(
       onPressed: () {
         setState(() {
@@ -544,29 +520,23 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         elevation: 0,
-        backgroundColor:
-            isIncome
-                ? isSelected
-                    ? Dark.profitCard
-                    : isDark
-                    ? Dark.card
-                    : Light.card
-                : isSelected
-                ? isDark
+        backgroundColor: isIncome
+            ? isSelected
+                ? context.profitCardColor
+                : context.cardColor
+            : isSelected
+                ? context.isDarkMode
                     ? Colors.redAccent
                     : Colors.black
-                : isDark
-                ? Dark.card
-                : Light.card,
+                : context.cardColor,
       ),
       icon: Icon(
         icon,
-        color:
-            isIncome
-                ? isSelected
-                    ? Colors.black
-                    : Colors.grey
-                : isSelected
+        color: isIncome
+            ? isSelected
+                ? Colors.black
+                : Colors.grey
+            : isSelected
                 ? Colors.white
                 : Colors.grey,
         size: 20,
@@ -576,16 +546,15 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         style: TextStyle(
           fontWeight: FontWeight.w500,
           // fontSize: 12,
-          color:
-              isIncome
-                  ? isSelected
-                      ? Colors.black
-                      : Colors.grey
-                  : isSelected
+          color: isIncome
+              ? isSelected
+                  ? Colors.black
+                  : Colors.grey
+              : isSelected
                   ? Colors.white
-                  : isDark
-                  ? Colors.grey
-                  : Colors.black,
+                  : context.isDarkMode
+                      ? Colors.grey
+                      : Colors.black,
         ),
       ),
     );

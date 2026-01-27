@@ -1,9 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Repository/system_repository.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,16 +42,6 @@ final authFuture = FutureProvider(
         UserModel userdata = UserModel.fromMap(user.data()!);
         ref.read(userProvider.notifier).state = userdata;
       }
-    }
-  },
-);
-
-final hiveThemeFuture = FutureProvider(
-  (ref) async {
-    var hiveBox = Hive.box("hiveBox");
-    String? savedTheme = hiveBox.get("theme");
-    if (savedTheme != null) {
-      ref.read(themeProvider.notifier).state = savedTheme;
     }
   },
 );
@@ -147,35 +136,6 @@ class AuthRepo {
       // await Hive.close();
       rethrow;
       // return null;
-    }
-  }
-
-  Future<UserModel?> signIn_Test() async {
-    try {
-      UserModel? finalUser;
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(dotenv.get("TEST_UID"))
-          .get()
-          .then(
-        (user) async {
-          final dbUser = user.data();
-
-          if (dbUser != null) {
-            finalUser = UserModel(
-              username: dbUser['username'],
-              email: dbUser['email'],
-              name: dbUser['name'],
-              uid: dbUser['uid'],
-              imgUrl: dbUser['imgUrl'],
-            );
-          }
-        },
-      );
-      return finalUser;
-    } catch (e) {
-      log("$e");
-      rethrow;
     }
   }
 

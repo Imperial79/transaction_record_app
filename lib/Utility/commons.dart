@@ -32,43 +32,24 @@ void KSnackbar(
   bool showIcon = true,
   SnackBarAction? action,
 }) {
-  bool isDark = Theme.of(context).brightness == Brightness.dark;
   DelightToastBar(
     position: DelightSnackbarPosition.top,
     autoDismiss: true,
     snackbarDuration: const Duration(seconds: 3),
     builder: (context) => ToastCard(
       shadowColor: Colors.transparent,
-      color: isDanger
-          ? isDark
-              ? Dark.lossCard
-              : Light.lossCard
-          : isDark
-              ? Dark.profitCard
-              : Light.profitCard,
+      color: isDanger ? context.lossCardColor : context.profitCardColor,
       leading: Icon(
         isDanger ? Icons.dangerous : Icons.verified,
         size: 28,
-        color: isDanger
-            ? isDark
-                ? Dark.onLossCard
-                : Light.onLossCard
-            : isDark
-                ? Dark.onProfitCard
-                : Light.onProfitCard,
+        color: isDanger ? context.lossColor : context.profitColor,
       ),
       title: Text(
         content,
         style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 15,
-          color: isDanger
-              ? isDark
-                  ? Dark.onLossCard
-                  : Light.onLossCard
-              : isDark
-                  ? Dark.onProfitCard
-                  : Light.onProfitCard,
+          color: isDanger ? context.lossColor : context.profitColor,
         ),
       ),
     ),
@@ -76,16 +57,14 @@ void KSnackbar(
 }
 
 Widget kNoData(
-  bool isDark, {
+  BuildContext context, {
   required String title,
 }) {
   return Center(
     child: Text(
       title,
       style: TextStyle(
-          fontSize: 25,
-          fontFamily: "Serif",
-          color: isDark ? Dark.fadeText : Light.fadeText),
+          fontSize: 25, fontFamily: "Serif", color: context.fadeTextColor),
     ),
   );
 }

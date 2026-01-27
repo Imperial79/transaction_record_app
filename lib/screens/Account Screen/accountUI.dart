@@ -69,7 +69,6 @@ class _AccountUIState extends ConsumerState<AccountUI> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
 
     return KScaffold(
@@ -100,7 +99,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                 children: [
                   Icon(
                     Icons.tag,
-                    color: isDark ? Dark.fadeText : Light.fadeText,
+                    color: context.fadeTextColor,
                   ),
                   width5,
                   Flexible(
@@ -108,7 +107,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                       user.username,
                       style: TextStyle(
                         fontSize: 20,
-                        color: isDark ? Dark.fadeText : Light.fadeText,
+                        color: context.fadeTextColor,
                       ),
                     ),
                   ),
@@ -121,24 +120,25 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                   fontWeight: FontWeight.w900,
                 ),
                 cursorWidth: 1,
-                cursorColor: isDark ? Colors.white : Colors.black,
+                cursorColor: context.colorScheme.onSurface,
                 decoration: InputDecoration(
-                  focusColor: isDark ? Colors.white : Colors.black,
+                  focusColor: context.primaryColor,
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: isDark ? Colors.white : Colors.black,
+                      color: context.primaryColor,
                       width: 2,
                     ),
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: isDark ? Colors.grey : Colors.grey.shade300,
+                      color:
+                          context.isDarkMode ? Colors.white24 : Colors.black12,
                     ),
                   ),
                   hintText: 'Name',
                   hintStyle: TextStyle(
                     fontSize: 25,
-                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                    color: context.fadeTextColor,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -152,19 +152,23 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                   fontWeight: FontWeight.w600,
                 ),
                 cursorWidth: 1,
-                cursorColor: Colors.black,
+                cursorColor: context.colorScheme.onSurface,
                 decoration: InputDecoration(
-                  focusColor: Colors.black,
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 2),
+                  focusColor: context.primaryColor,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: context.primaryColor, width: 2),
                   ),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(
+                        color: context.isDarkMode
+                            ? Colors.white12
+                            : Colors.black12),
                   ),
                   hintText: 'Email',
                   hintStyle: TextStyle(
                     fontSize: 20,
-                    color: Colors.grey.shade400,
+                    color: context.fadeTextColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -173,11 +177,11 @@ class _AccountUIState extends ConsumerState<AccountUI> {
               kLabel("System Theme"),
               Row(
                 children: [
-                  _themeBtn(isDark, "Light"),
+                  _themeBtn("Light"),
                   width10,
-                  _themeBtn(isDark, "Dark"),
+                  _themeBtn("Dark"),
                   width10,
-                  _themeBtn(isDark, "System"),
+                  _themeBtn("System"),
                 ],
               ),
             ],
@@ -199,21 +203,21 @@ class _AccountUIState extends ConsumerState<AccountUI> {
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
               decoration: BoxDecoration(
                 borderRadius: kRadius(12),
-                color: isDark ? Dark.primary : Light.primary,
+                color: context.primaryColor,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.file_upload_outlined,
-                    color: isDark ? Colors.black : Colors.white,
+                    color: context.isDarkMode ? Colors.black : Colors.white,
                   ),
                   const SizedBox(width: 5),
                   Text(
                     'Update',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.black : Colors.white,
+                      color: context.isDarkMode ? Colors.black : Colors.white,
                       fontSize: 18,
                     ),
                   ),
@@ -226,36 +230,43 @@ class _AccountUIState extends ConsumerState<AccountUI> {
     );
   }
 
-  Widget _themeBtn(bool isDark, String theme) {
-    Color inactiveColor = isDark ? Dark.card : Light.card;
-    Color inactiveBorderColor = isDark ? Dark.card : Light.card;
-    Color activeColor =
-        isDark ? Dark.primaryAccent.lighten(.3) : Light.primaryAccent;
-    Color activeBorderColor = isDark ? Dark.primaryAccent : Light.primary;
+  Widget _themeBtn(String theme) {
     return Expanded(
       child: Consumer(
         builder: (context, ref, _) {
-          final selectedTheme = ref.watch(themeProvider);
-          bool isActive = selectedTheme == theme;
+          ref.watch(themeProvider);
+          final notifier = ref.read(themeProvider.notifier);
+          final bool isActive = notifier.themeString == theme;
+
+          Color inactiveColor = context.isDarkMode ? Dark.card : Light.card;
+          Color inactiveBorderColor =
+              context.isDarkMode ? Colors.white12 : Colors.black12;
+          Color activeColor =
+              context.primaryColor.withAlpha(context.isDarkMode ? 40 : 30);
+          Color activeBorderColor = context.primaryColor;
 
           return MaterialButton(
-            onPressed: () async {
-              ref.read(themeProvider.notifier).state = theme;
-              var hiveBox = Hive.box("hiveBox");
-
-              await hiveBox.put("theme", theme);
+            onPressed: () {
+              notifier.setTheme(theme);
             },
             elevation: 0,
             highlightElevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: kRadius(7),
+              borderRadius: kRadius(12),
               side: BorderSide(
                 color: isActive ? activeBorderColor : inactiveBorderColor,
+                width: isActive ? 2 : 1,
               ),
             ),
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(16),
             color: isActive ? activeColor : inactiveColor,
-            child: Text(theme),
+            child: Text(
+              theme,
+              style: TextStyle(
+                color: isActive ? activeBorderColor : context.fadeTextColor,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
           );
         },
       ),

@@ -41,21 +41,19 @@ class _BookTileState extends State<BookTile> {
     bool isCompleted = false;
 
     if (widget.book.type == "regular") {
-      isCompleted =
-          widget.book.expense != 0 &&
+      isCompleted = widget.book.expense != 0 &&
           (widget.book.income == widget.book.expense);
     } else {
-      isCompleted =
-          widget.book.targetAmount != 0 &&
+      isCompleted = widget.book.targetAmount != 0 &&
           (widget.book.income == widget.book.targetAmount);
     }
 
     if (isCompleted) {
-      kCardColor = isDark ? Dark.completeCard : Light.completeCard;
-      textColor = isDark ? Colors.white : Colors.black;
+      kCardColor = context.isDarkMode ? Dark.completeCard : Light.completeCard;
+      textColor = context.colorScheme.onSurface;
     } else {
-      kCardColor = isDark ? Dark.card : Light.card;
-      textColor = isDark ? Colors.white : Colors.black;
+      kCardColor = context.cardColor;
+      textColor = context.colorScheme.onSurface;
     }
 
     bool isSavings = widget.book.type == "savings";
@@ -70,7 +68,7 @@ class _BookTileState extends State<BookTile> {
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
                 fontSize: 13,
-                color: isDark ? Dark.text : Light.text,
+                color: context.fadeTextColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -115,8 +113,9 @@ class _BookTileState extends State<BookTile> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color:
-                            isDark ? Dark.onCompleteCard : Light.onCompleteCard,
+                        color: context.isDarkMode
+                            ? Dark.onCompleteCard
+                            : Light.onCompleteCard,
                       ),
                     ),
                   Row(
@@ -146,9 +145,9 @@ class _BookTileState extends State<BookTile> {
                                 widget.book.users != null &&
                                         widget.book.users!.isNotEmpty
                                     ? const CircleAvatar(
-                                      radius: 12,
-                                      child: Icon(Icons.groups_2, size: 12),
-                                    )
+                                        radius: 12,
+                                        child: Icon(Icons.groups_2, size: 12),
+                                      )
                                     : const SizedBox(),
                               ],
                             ),
@@ -201,7 +200,7 @@ class _BookTileState extends State<BookTile> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: kRadius(7),
-                            color: isDark ? Dark.scaffold : Light.scaffold,
+                            color: context.scaffoldColor,
                           ),
                           child: Text(
                             "₹ ${kMoneyFormat(widget.book.income)}",
@@ -213,116 +212,97 @@ class _BookTileState extends State<BookTile> {
                   if (!isCompleted && !isSavings)
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child:
-                          widget.book.type == "due"
+                      child: widget.book.type == "due"
+                          ? Row(
+                              children: [
+                                _bookStats(
+                                  index: 0,
+                                  crossAlign: CrossAxisAlignment.start,
+                                  labelColor: context.colorScheme.onSurface,
+                                  amount: widget.book.targetAmount -
+                                      widget.book.income,
+                                  label: 'Due',
+                                  cardColor: context.isDarkMode
+                                      ? Dark.completeCard
+                                      : Light.completeCard,
+                                  amountColor: context.isDarkMode
+                                      ? Dark.onCompleteCard
+                                      : Light.onCompleteCard,
+                                ),
+                                width5,
+                                _bookStats(
+                                  index: 2,
+                                  crossAlign: CrossAxisAlignment.end,
+                                  label: "Target",
+                                  amount: widget.book.targetAmount,
+                                  cardColor: isDark
+                                      ? const Color(0xFF0B2A43)
+                                      : const Color.fromARGB(
+                                          255,
+                                          197,
+                                          226,
+                                          250,
+                                        ),
+                                  labelColor: isDark
+                                      ? Colors.white
+                                      : Colors.blue.shade900,
+                                  amountColor: isDark
+                                      ? Colors.blue.shade100
+                                      : Colors.blue.shade900,
+                                ),
+                              ],
+                            )
+                          : widget.book.type == "regular"
                               ? Row(
-                                children: [
-                                  _bookStats(
-                                    index: 0,
-                                    crossAlign: CrossAxisAlignment.start,
-                                    labelColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amount:
-                                        widget.book.targetAmount -
-                                        widget.book.income,
-                                    label: 'Due',
-                                    cardColor:
-                                        isDark
-                                            ? Dark.completeCard
-                                            : Light.completeCard,
-                                    amountColor:
-                                        isDark
-                                            ? Dark.onCompleteCard
-                                            : Light.onCompleteCard,
-                                  ),
-                                  width5,
-                                  _bookStats(
-                                    index: 2,
-                                    crossAlign: CrossAxisAlignment.end,
-                                    label: "Target",
-                                    amount: widget.book.targetAmount,
-                                    cardColor:
-                                        isDark
-                                            ? const Color(0xFF0B2A43)
-                                            : const Color.fromARGB(
+                                  children: [
+                                    _bookStats(
+                                      index: 0,
+                                      crossAlign: CrossAxisAlignment.start,
+                                      labelColor: context.colorScheme.onSurface,
+                                      amount: widget.book.income,
+                                      label: 'Income',
+                                      cardColor: context.isDarkMode
+                                          ? const Color(0xFF223B05)
+                                          : const Color(0xFFB5FFB7),
+                                      amountColor: context.isDarkMode
+                                          ? Colors.lightGreenAccent
+                                          : Colors.lightGreen.shade900,
+                                    ),
+                                    width5,
+                                    _bookStats(
+                                      index: 1,
+                                      crossAlign: CrossAxisAlignment.center,
+                                      amount: widget.book.expense,
+                                      label: 'Expense',
+                                      cardColor: context.isDarkMode
+                                          ? Colors.black
+                                          : Colors.grey.shade300,
+                                      labelColor: context.colorScheme.onSurface,
+                                      amountColor:
+                                          context.colorScheme.onSurface,
+                                    ),
+                                    width5,
+                                    _bookStats(
+                                      index: 2,
+                                      crossAlign: CrossAxisAlignment.end,
+                                      label: 'Current',
+                                      amount: widget.book.income -
+                                          widget.book.expense,
+                                      cardColor: context.isDarkMode
+                                          ? const Color(0xFF0B2A43)
+                                          : const Color.fromARGB(
                                               255,
                                               197,
                                               226,
                                               250,
                                             ),
-                                    labelColor:
-                                        isDark
-                                            ? Colors.white
-                                            : Colors.blue.shade900,
-                                    amountColor:
-                                        isDark
-                                            ? Colors.blue.shade100
-                                            : Colors.blue.shade900,
-                                  ),
-                                ],
-                              )
-                              : widget.book.type == "regular"
-                              ? Row(
-                                children: [
-                                  _bookStats(
-                                    index: 0,
-                                    crossAlign: CrossAxisAlignment.start,
-                                    labelColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amount: widget.book.income,
-                                    label: 'Income',
-                                    cardColor:
-                                        isDark
-                                            ? const Color(0xFF223B05)
-                                            : const Color(0xFFB5FFB7),
-                                    amountColor:
-                                        isDark
-                                            ? Colors.lightGreenAccent
-                                            : Colors.lightGreen.shade900,
-                                  ),
-                                  width5,
-                                  _bookStats(
-                                    index: 1,
-                                    crossAlign: CrossAxisAlignment.center,
-                                    amount: widget.book.expense,
-                                    label: 'Expense',
-                                    cardColor:
-                                        isDark
-                                            ? Colors.black
-                                            : Colors.grey.shade300,
-                                    labelColor:
-                                        isDark ? Colors.white : Colors.black,
-                                    amountColor:
-                                        isDark ? Colors.white : Colors.black,
-                                  ),
-                                  width5,
-                                  _bookStats(
-                                    index: 2,
-                                    crossAlign: CrossAxisAlignment.end,
-                                    label: 'Current',
-                                    amount:
-                                        widget.book.income -
-                                        widget.book.expense,
-                                    cardColor:
-                                        isDark
-                                            ? const Color(0xFF0B2A43)
-                                            : const Color.fromARGB(
-                                              255,
-                                              197,
-                                              226,
-                                              250,
-                                            ),
-                                    labelColor:
-                                        isDark
-                                            ? Colors.white
-                                            : Colors.blue.shade900,
-                                    amountColor:
-                                        isDark
-                                            ? Colors.blue.shade100
-                                            : Colors.blue.shade900,
-                                  ),
-                                ],
-                              )
+                                      labelColor: context.colorScheme.onSurface,
+                                      amountColor: context.isDarkMode
+                                          ? Colors.blue.shade100
+                                          : Colors.blue.shade900,
+                                    ),
+                                  ],
+                                )
                               : SizedBox(),
                     ),
                   if (isCompleted && !isSavings)
@@ -335,10 +315,9 @@ class _BookTileState extends State<BookTile> {
                           "INR ${kMoneyFormat(widget.book.income)}",
                           style: TextStyle(
                             fontSize: 20,
-                            color:
-                                isDark
-                                    ? Dark.onCompleteCard
-                                    : Light.onCompleteCard,
+                            color: context.isDarkMode
+                                ? Dark.onCompleteCard
+                                : Light.onCompleteCard,
                           ),
                         ),
                       ],
@@ -364,7 +343,7 @@ class _BookTileState extends State<BookTile> {
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
-              color: isDark ? Dark.scaffold : Light.scaffold,
+              color: context.scaffoldColor,
               borderRadius: kRadius(20),
             ),
             child: SingleChildScrollView(
@@ -373,25 +352,26 @@ class _BookTileState extends State<BookTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    backgroundColor:
-                        isDark ? Colors.grey.shade300 : Colors.black,
+                    backgroundColor: context.isDarkMode
+                        ? Colors.grey.shade300
+                        : Colors.black,
                     child: Icon(
                       Icons.menu_open_sharp,
-                      color: isDark ? Light.text : Dark.text,
+                      color: context.isDarkMode ? Light.text : Dark.text,
                     ),
                   ),
                   height10,
                   Text(
                     "Book Options",
                     style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
+                      color: context.colorScheme.onSurface,
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   height20,
                   KButton.icon(
-                    isDark,
+                    context,
                     onPressed: () {
                       Navigator.pop(context);
                       widget.onDelete!(bookId, bookName);

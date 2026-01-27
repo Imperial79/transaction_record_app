@@ -4,25 +4,25 @@ import 'commons.dart';
 import 'newColors.dart';
 
 class KTextfield {
-  static TextStyle _titleTextStyle(bool isDark, double fontSize) {
+  static TextStyle _titleTextStyle(BuildContext context, double fontSize) {
     return TextStyle(
       fontSize: fontSize,
       fontWeight: FontWeight.w900,
-      color: isDark ? Colors.white : Colors.black,
+      color: context.colorScheme.onSurface,
     );
   }
 
   static TextStyle _hintTextStyle(
-      bool isDark, double fontSize, FontWeight fontWeight) {
+      BuildContext context, double fontSize, FontWeight fontWeight) {
     return TextStyle(
       fontSize: fontSize,
-      color: isDark ? Dark.fadeText : Light.fadeText,
+      color: context.fadeTextColor,
       fontWeight: fontWeight,
     );
   }
 
   static InputDecoration _buildInputDecoration({
-    required bool isDark,
+    required BuildContext context,
     required String? hintText,
     Widget? prefix,
     double fontSize = 15,
@@ -30,10 +30,10 @@ class KTextfield {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: _hintTextStyle(isDark, fontSize, FontWeight.w500),
+      hintStyle: _hintTextStyle(context, fontSize, FontWeight.w500),
       prefixIcon: prefix != null
           ? Padding(padding: const EdgeInsets.only(right: 10.0), child: prefix)
-          : SizedBox(
+          : const SizedBox(
               width: 10,
             ),
       prefixIconConstraints: const BoxConstraints(minHeight: 0, minWidth: 0),
@@ -41,7 +41,7 @@ class KTextfield {
       focusedBorder: underlineBorder
           ? UnderlineInputBorder(
               borderSide: BorderSide(
-                color: isDark ? Dark.text : Light.text,
+                color: context.primaryColor,
                 width: 3,
               ),
             )
@@ -49,7 +49,7 @@ class KTextfield {
       enabledBorder: underlineBorder
           ? UnderlineInputBorder(
               borderSide: BorderSide(
-                color: isDark ? Dark.card : Colors.grey.shade300,
+                color: context.isDarkMode ? Colors.white24 : Colors.black12,
               ),
             )
           : null,
@@ -57,7 +57,7 @@ class KTextfield {
   }
 
   static Widget title(
-    bool isDark, {
+    BuildContext context, {
     TextEditingController? controller,
     int maxLines = 2,
     int minLines = 1,
@@ -73,14 +73,14 @@ class KTextfield {
       controller: controller,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
-      style: _titleTextStyle(isDark, fontSize),
+      style: _titleTextStyle(context, fontSize),
       cursorWidth: 1,
       maxLength: maxLength,
       minLines: minLines,
       maxLines: maxLines,
-      cursorColor: isDark ? Colors.white : Colors.black,
+      cursorColor: context.colorScheme.onSurface,
       decoration: _buildInputDecoration(
-        isDark: isDark,
+        context: context,
         hintText: hintText,
         underlineBorder: false,
         fontSize: fontSize,
@@ -90,7 +90,7 @@ class KTextfield {
   }
 
   static Widget regular(
-    bool isDark, {
+    BuildContext context, {
     TextEditingController? controller,
     Color? fieldColor,
     int maxLines = 10,
@@ -112,7 +112,7 @@ class KTextfield {
     return Container(
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: fieldColor ?? (isDark ? Dark.card : Light.card),
+        color: fieldColor ?? context.cardColor,
         borderRadius: kRadius(15),
       ),
       child: Row(
@@ -127,11 +127,11 @@ class KTextfield {
               inputFormatters: isNumField
                   ? [FilteringTextInputFormatter.digitsOnly]
                   : inputFormatters,
-              cursorColor: isDark ? Dark.primary : Light.primary,
+              cursorColor: context.primaryColor,
               style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
               textCapitalization: textCapitalization,
               decoration: _buildInputDecoration(
-                isDark: isDark,
+                context: context,
                 hintText: hintText,
                 prefix: prefix,
                 fontSize: fontSize,

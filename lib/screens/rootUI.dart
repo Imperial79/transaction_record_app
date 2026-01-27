@@ -33,7 +33,6 @@ class _RootUIState extends ConsumerState<RootUI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
 
     if (user != null) {
@@ -50,12 +49,10 @@ class _RootUIState extends ConsumerState<RootUI> {
                       child: Row(
                         children: [
                           _changeToPageButton(
-                            isDark,
                             index: 0,
                             label: 'Home',
                           ),
                           _changeToPageButton(
-                            isDark,
                             index: 1,
                             label: 'New Book',
                           ),
@@ -94,9 +91,7 @@ class _RootUIState extends ConsumerState<RootUI> {
                                           Text("${snapshot.data!.docs.length}"),
                                       child: Icon(
                                         Icons.notifications_active,
-                                        color: isDark
-                                            ? Dark.profitText
-                                            : Light.profitText,
+                                        color: context.profitColor,
                                       ),
                                     ),
                         );
@@ -129,8 +124,7 @@ class _RootUIState extends ConsumerState<RootUI> {
     return Scaffold();
   }
 
-  Widget _changeToPageButton(
-    bool isDark, {
+  Widget _changeToPageButton({
     required int index,
     required String label,
   }) {
@@ -150,11 +144,7 @@ class _RootUIState extends ConsumerState<RootUI> {
             label,
             style: TextStyle(
               fontSize: 20,
-              color: isActive
-                  ? isDark
-                      ? Colors.white
-                      : Colors.black
-                  : Colors.grey,
+              color: isActive ? context.colorScheme.onSurface : Colors.grey,
               fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -273,9 +274,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   alignment: Alignment.centerLeft,
                   curve: Curves.ease,
                   child: IconButton(
-                    color: isDark ? Dark.profitText : Light.profitText,
                     onPressed: () {
-                      // Navigator.pop(context);
                       context.go("/root");
                     },
                     icon: Row(
@@ -283,7 +282,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                       children: [
                         Icon(
                           Icons.arrow_back,
-                          color: isDark ? Dark.profitCard : Colors.black,
+                          color: context.colorScheme.onSurface,
                         ),
                         searchKey.text.isEmpty
                             ? const SizedBox(width: 10)
@@ -293,7 +292,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                 'Return',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.white : Colors.black,
+                                  color: context.colorScheme.onSurface,
                                 ),
                               )
                             : const SizedBox(),
@@ -392,7 +391,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                             if (isFetching) const CustomLoading(),
                           ],
                         )
-                      : kNoData(isDark, title: 'No Transacts')
+                      : kNoData(context, title: 'No Transacts')
                   : const SizedBox(),
             );
           },
@@ -453,7 +452,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                       borderRadius: kRadius(100),
                                       child: CircleAvatar(
                                         radius: 12,
-                                        backgroundColor: isDark
+                                        backgroundColor: context.isDarkMode
                                             ? Dark.card
                                             : Colors.grey.shade200,
                                         child: FittedBox(
@@ -464,9 +463,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                                 : Icons
                                                     .keyboard_arrow_down_rounded,
                                             size: 20,
-                                            color: isDark
-                                                ? Colors.white
-                                                : Colors.black,
+                                            color:
+                                                context.colorScheme.onSurface,
                                           ),
                                         ),
                                       ),
@@ -527,7 +525,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         style: TextStyle(
                           fontFamily: "Product",
                           fontSize: 25,
-                          color: isDark ? Colors.white : Colors.black,
+                          color: context.colorScheme.onSurface,
                         ),
                         TextSpan(
                           children: [
@@ -558,11 +556,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: kRadius(10),
-                          color: (isDark ? Dark.profitCard : Light.profitText)
-                              .lighten(.2),
+                          borderRadius: kRadius(12),
+                          color: context.profitCardColor.withAlpha(50),
                           border: Border.all(
-                            color: isDark ? Dark.profitCard : Light.profitText,
+                            color: context.profitColor.withAlpha(50),
                           ),
                         ),
                         child: Row(
@@ -587,11 +584,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: kRadius(10),
-                          color: (isDark ? Dark.lossCard : Light.lossCard)
-                              .lighten(.2),
+                          borderRadius: kRadius(12),
+                          color: context.lossCardColor.withAlpha(50),
                           border: Border.all(
-                            color: isDark ? Dark.lossCard : Light.lossCard,
+                            color: context.lossColor.withAlpha(50),
                           ),
                         ),
                         child: Row(
@@ -643,14 +639,16 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     Expanded(
                       child: CircleAvatar(
                         radius: 12,
-                        backgroundColor: isDark ? Dark.primary : Light.primary,
+                        backgroundColor: context.primaryColor,
                         child: FittedBox(
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
                               '₹',
                               style: TextStyle(
-                                color: isDark ? Colors.black : Colors.white,
+                                color: context.isDarkMode
+                                    ? Colors.black
+                                    : Colors.white,
                               ),
                             ),
                           ),
@@ -687,7 +685,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: kRadius(10),
-                        color: isDark ? Dark.scaffold : Light.scaffold,
+                        color: context.scaffoldColor,
                       ),
                       child: Row(
                         children: [
@@ -717,12 +715,12 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                             ),
                             decoration: BoxDecoration(
                               borderRadius: kRadius(100),
-                              color: isDark ? Light.card : Dark.card,
+                              color: context.cardColor,
                             ),
                             child: Text(
                               "₹ ${balanceSheet[index]['amount'].toStringAsFixed(2)}",
                               style: TextStyle(
-                                color: isDark ? Colors.black : Colors.white,
+                                color: context.colorScheme.onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

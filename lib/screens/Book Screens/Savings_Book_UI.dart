@@ -48,7 +48,6 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -60,7 +59,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: kRadius(10),
-                  color: isDark ? Dark.card : Light.card,
+                  color: context.cardColor,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -71,7 +70,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                       onPressed: () {},
                       icon: Icon(
                         Icons.delete_outline,
-                        color: isDark ? Dark.lossCard : Light.lossCard,
+                        color: context.lossCardColor,
                       ),
                     ),
                   ],
@@ -87,7 +86,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                       style: TextStyle(
                         letterSpacing: 5,
                         fontSize: 12,
-                        color: isDark ? Dark.fadeText : Light.fadeText,
+                        color: context.fadeTextColor,
                       ),
                     ),
                     width10,
@@ -98,7 +97,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                       style: TextStyle(
                         letterSpacing: 1.2,
                         fontSize: 12,
-                        color: isDark ? Dark.fadeText : Light.fadeText,
+                        color: context.fadeTextColor,
                       ),
                     ),
                   ],
@@ -126,7 +125,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                           "INR ${kMoneyFormat(data.income)}",
                           style: TextStyle(
                             fontSize: 25,
-                            color: isDark ? Dark.profitText : Light.profitText,
+                            color: context.profitColor,
                           ),
                         ),
                       ],
@@ -137,7 +136,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                 },
               ),
               height20,
-              _transactList(isDark, bookId: bookData.bookId),
+              _transactList(context.isDarkMode, bookId: bookData.bookId),
             ],
           ),
         ),
@@ -189,14 +188,15 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                             Transact transact = Transact.fromMap(
                                 snapshot.data!.docs[index].data());
 
-                            return _transactTile(isDark, data: transact);
+                            return _transactTile(context.isDarkMode,
+                                data: transact);
                           },
                         )
                       : Text(
                           'No Transacts',
                           style: TextStyle(
                             fontSize: 30,
-                            color: isDark ? Dark.fadeText : Light.fadeText,
+                            color: context.fadeTextColor,
                           ),
                         )
                   : SizedBox(),
@@ -240,7 +240,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                 dateLabel,
                 style: TextStyle(
                   fontSize: 14,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: context.colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -263,7 +263,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               padding: const EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? Dark.card : Light.card,
+                color: context.cardColor,
                 borderRadius: kRadius(10),
               ),
               child: Column(
@@ -284,12 +284,8 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w800,
                                   color: isIncome
-                                      ? isDark
-                                          ? Dark.profitText
-                                          : Light.profitText
-                                      : isDark
-                                          ? Dark.lossText
-                                          : Light.lossText,
+                                      ? context.profitColor
+                                      : context.lossColor,
                                 ),
                                 children: const [
                                   TextSpan(
@@ -309,10 +305,10 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                               fontSize: 10,
                               fontWeight: FontWeight.w400,
                               color: data.transactMode == 'CASH'
-                                  ? isDark
+                                  ? context.isDarkMode
                                       ? Dark.profitText
                                       : Colors.black
-                                  : isDark
+                                  : context.isDarkMode
                                       ? const Color(0xFF9DC4FF)
                                       : Colors.blue.shade900,
                             ),
@@ -331,7 +327,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                           padding: const EdgeInsets.all(8),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: isDark ? Dark.scaffold : Light.scaffold,
+                            color: context.scaffoldColor,
                             borderRadius: kRadius(10),
                           ),
                           child: Text(data.description),

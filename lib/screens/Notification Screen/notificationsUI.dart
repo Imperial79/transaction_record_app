@@ -99,12 +99,11 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       appBar: AppBar(
-        backgroundColor: isDark ? Dark.scaffold : Light.scaffold,
+        backgroundColor: context.scaffoldColor,
         title: const Text('Notifications'),
       ),
       body: SafeArea(
@@ -132,7 +131,6 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                                   Map<String, dynamic> data =
                                       snapshot.data!.docs[index].data();
                                   return _notificationCard(
-                                    isDark,
                                     uid: user.uid,
                                     data: data,
                                   );
@@ -161,8 +159,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
     );
   }
 
-  Widget _notificationCard(
-    bool isDark, {
+  Widget _notificationCard({
     required String uid,
     required Map<String, dynamic> data,
   }) {
@@ -170,7 +167,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: kRadius(15),
-        color: isDark ? Dark.card : Light.card,
+        color: context.cardColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,7 +216,8 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? Dark.lossCard : Light.lossCard,
+                  backgroundColor:
+                      context.isDarkMode ? Dark.lossCard : Light.lossCard,
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('Reject'),
