@@ -1,6 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -91,8 +93,9 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           );
         }
         transactId = _selectedTimeStamp;
-        final uploadableAmount =
-            amountField.text.replaceAll(' ', '').replaceAll(',', '');
+        final uploadableAmount = amountField.text
+            .replaceAll(' ', '')
+            .replaceAll(',', '');
 
         Transact newTransact = Transact(
           uid: uid,
@@ -136,6 +139,56 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _pickContact() async {
+    PermissionStatus status = await Permission.contacts.status;
+
+    if (status.isDenied) {
+      status = await Permission.contacts.request();
+    }
+
+    if (status.isGranted) {
+      final contact = await FlutterContacts.openExternalPick();
+      if (contact != null) {
+        setState(() {
+          sourceField.text = contact.displayName;
+        });
+      }
+    } else if (status.isPermanentlyDenied) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Permission Required"),
+            content: const Text(
+              "Contacts permission is required to pick a contact. Please enable it in app settings.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+                child: const Text("Open Settings"),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        KSnackbar(
+          context,
+          content: "Contacts permission denied!",
+          isDanger: true,
+        );
+      }
     }
   }
 
@@ -288,6 +341,11 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                         minLines: 1,
                         hintText: 'Add Source (Optional)',
                         icon: const Icon(Icons.person),
+                        suffix: IconButton(
+                          onPressed: _pickContact,
+                          icon: const Icon(Icons.contact_page_outlined),
+                          color: context.primaryColor,
+                        ),
                       ),
                       height10,
                       Row(
@@ -301,8 +359,8 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                 color: transactMode == 'ONLINE'
                                     ? Colors.grey
                                     : context.isDarkMode
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen,
+                                    ? Colors.lightGreenAccent
+                                    : Colors.lightGreen,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -316,8 +374,8 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                 fontFamily: 'Product',
                                 color: transactMode == 'ONLINE'
                                     ? context.isDarkMode
-                                        ? Colors.blue.shade200
-                                        : Colors.blue.shade700
+                                          ? Colors.blue.shade200
+                                          : Colors.blue.shade700
                                     : Colors.grey,
                               ),
                               children: const [
@@ -352,11 +410,11 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
                                 fontWeight: FontWeight.w500,
                                 color: transactMode == 'CASH'
                                     ? context.isDarkMode
-                                        ? Colors.lightGreenAccent
-                                        : Colors.lightGreen
+                                          ? Colors.lightGreenAccent
+                                          : Colors.lightGreen
                                     : context.isDarkMode
-                                        ? Colors.blue.shade200
-                                        : Colors.blue.shade700,
+                                    ? Colors.blue.shade200
+                                    : Colors.blue.shade700,
                               ),
                             ),
                           ),
@@ -481,19 +539,16 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         child: AnimatedAlign(
           curve: Curves.ease,
           duration: const Duration(milliseconds: 250),
-          alignment:
-              transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
+          alignment: transactMode == 'ONLINE'
+              ? Alignment.topRight
+              : Alignment.topLeft,
           child: CircleAvatar(
             backgroundColor: transactMode == 'ONLINE'
                 ? Colors.blue.shade700
                 : Colors.lightGreen,
             radius: 20,
             child: transactMode == 'ONLINE'
-                ? const Icon(
-                    Icons.webhook_sharp,
-                    color: Colors.white,
-                    size: 20,
-                  )
+                ? const Icon(Icons.webhook_sharp, color: Colors.white, size: 20)
                 : const Text(
                     '₹',
                     style: TextStyle(
@@ -522,23 +577,23 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         elevation: 0,
         backgroundColor: isIncome
             ? isSelected
-                ? context.profitCardColor
-                : context.cardColor
+                  ? context.profitCardColor
+                  : context.cardColor
             : isSelected
-                ? context.isDarkMode
-                    ? Colors.redAccent
-                    : Colors.black
-                : context.cardColor,
+            ? context.isDarkMode
+                  ? Colors.redAccent
+                  : Colors.black
+            : context.cardColor,
       ),
       icon: Icon(
         icon,
         color: isIncome
             ? isSelected
-                ? Colors.black
-                : Colors.grey
+                  ? Colors.black
+                  : Colors.grey
             : isSelected
-                ? Colors.white
-                : Colors.grey,
+            ? Colors.white
+            : Colors.grey,
         size: 20,
       ),
       label: Text(
@@ -548,13 +603,13 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
           // fontSize: 12,
           color: isIncome
               ? isSelected
-                  ? Colors.black
-                  : Colors.grey
+                    ? Colors.black
+                    : Colors.grey
               : isSelected
-                  ? Colors.white
-                  : context.isDarkMode
-                      ? Colors.grey
-                      : Colors.black,
+              ? Colors.white
+              : context.isDarkMode
+              ? Colors.grey
+              : Colors.black,
         ),
       ),
     );

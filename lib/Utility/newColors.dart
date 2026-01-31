@@ -27,7 +27,8 @@ extension ThemeColors on BuildContext {
   Color get lossColor => isDarkMode ? Dark.lossText : Light.lossText;
   Color get profitCardColor => isDarkMode ? Dark.profitCard : Light.profitCard;
   Color get lossCardColor => isDarkMode ? Dark.lossCard : Light.lossCard;
-  Color get fadeTextColor => isDarkMode ? Dark.fadeText : Light.fadeText;
+  Color get fadeTextColor =>
+      isDarkMode ? Dark.fadeText : const Color.fromARGB(255, 98, 98, 98);
 }
 
 Color kOpacity(Color color, double opacity) =>
@@ -88,88 +89,88 @@ class Dark {
 
 class KThemeData {
   static ThemeData light() => ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        splashFactory: InkSparkle.splashFactory,
-        scaffoldBackgroundColor: Light.scaffold,
-        brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Light.primary,
-          brightness: Brightness.light,
-          primary: Light.primary,
-          surface: Light.card,
-          onSurface: Light.text,
-          error: Light.lossText,
-        ),
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          },
-        ),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          color: Light.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: kRadius(16),
-            side: BorderSide(color: Colors.grey.withAlpha(25), width: 1),
-          ),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Light.text),
-          bodyMedium: TextStyle(color: Light.text),
-          titleLarge: TextStyle(color: Light.text, fontWeight: FontWeight.bold),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: Light.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
-          ),
-        ),
-      );
+    fontFamily: 'Product',
+    useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
+    scaffoldBackgroundColor: Light.scaffold,
+    brightness: Brightness.light,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Light.primary,
+      brightness: Brightness.light,
+      primary: Light.primary,
+      surface: Light.card,
+      onSurface: Light.text,
+      error: Light.lossText,
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Light.card,
+      shape: RoundedRectangleBorder(
+        borderRadius: kRadius(16),
+        side: BorderSide(color: Colors.grey.withAlpha(25), width: 1),
+      ),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Light.text),
+      bodyMedium: TextStyle(color: Light.text),
+      titleLarge: TextStyle(color: Light.text, fontWeight: FontWeight.bold),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Light.primary,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+      ),
+    ),
+  );
 
   static ThemeData dark() => ThemeData(
-        fontFamily: 'Product',
-        useMaterial3: true,
-        splashFactory: InkSparkle.splashFactory,
-        scaffoldBackgroundColor: Dark.scaffold,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Dark.primary,
-          brightness: Brightness.dark,
-          primary: Dark.primary,
-          surface: Dark.card,
-          onSurface: Dark.text,
-          error: Dark.lossText,
-        ),
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          },
-        ),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          color: Dark.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: kRadius(16),
-            side: BorderSide(color: Colors.white.withAlpha(15), width: 1),
-          ),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Dark.text),
-          bodyMedium: TextStyle(color: Dark.text),
-          titleLarge: TextStyle(color: Dark.text, fontWeight: FontWeight.bold),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: Dark.primary,
-            foregroundColor: Colors.black,
-            shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
-          ),
-        ),
-      );
+    fontFamily: 'Product',
+    useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
+    scaffoldBackgroundColor: Dark.scaffold,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Dark.primary,
+      brightness: Brightness.dark,
+      primary: Dark.primary,
+      surface: Dark.card,
+      onSurface: Dark.text,
+      error: Dark.lossText,
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Dark.card,
+      shape: RoundedRectangleBorder(
+        borderRadius: kRadius(16),
+        side: BorderSide(color: Colors.white.withAlpha(15), width: 1),
+      ),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Dark.text),
+      bodyMedium: TextStyle(color: Dark.text),
+      titleLarge: TextStyle(color: Dark.text, fontWeight: FontWeight.bold),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Dark.primary,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+      ),
+    ),
+  );
 }

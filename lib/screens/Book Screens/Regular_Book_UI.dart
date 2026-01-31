@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,6 +26,11 @@ import '../../Utility/commons.dart';
 import '../../services/database.dart';
 import '../../Utility/components.dart';
 
+final transactCountProvider = StateProvider.autoDispose<int>((ref) => 10);
+final showElementsProvider = StateProvider.autoDispose<bool>((ref) => true);
+final showMenuProvider = StateProvider.autoDispose<bool>((ref) => false);
+final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
+
 class Regular_Book_UI extends ConsumerStatefulWidget {
   final String bookId;
   final String bookType;
@@ -44,17 +50,15 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   bool showDateWidget = false;
   final ScrollController _scrollController = ScrollController();
 
-  final transactCountProvider = StateProvider.autoDispose<int>((ref) => 10);
-  final showElementsProvider = StateProvider.autoDispose<bool>((ref) => true);
-  final showMenuProvider = StateProvider.autoDispose<bool>((ref) => false);
-
   final searchKey = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
+
   final newBookName = TextEditingController();
 
   int searchingBookListCounter = 50;
   bool isSearching = false;
+  Timer? _debounce;
 
   //------------------------------------>
 
@@ -62,6 +66,16 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   void initState() {
     super.initState();
     _scrollController.addListener(scrollListener);
+    searchKey.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        ref.read(searchQueryProvider.notifier).state = searchKey.text;
+      }
+    });
   }
 
   void scrollListener() {
@@ -72,7 +86,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
       ref.read(showElementsProvider.notifier).state = true;
     }
     if (_scrollController.position.atEdge) {
-      bool isBottom = _scrollController.position.pixels ==
+      bool isBottom =
+          _scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent;
       if (isBottom) {
         _loadMore();
@@ -91,7 +106,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     });
   }
 
-  Future<void> distribute(bool isDark) async {
+  Future<void> distribute() async {
     setState(() {
       isLoading = true;
     });
@@ -116,11 +131,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             if (transact['type'] == "income") {
               expenseMap["${transact['uid']}"] =
                   expenseMap["${transact['uid']}"]! +
-                      double.parse(transact['amount']);
+                  double.parse(transact['amount']);
             } else {
               expenseMap["${transact['uid']}"] =
                   expenseMap["${transact['uid']}"]! -
-                      double.parse(transact['amount']);
+                  double.parse(transact['amount']);
             }
           }
         }
@@ -147,13 +162,13 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             .where('uid', whereIn: payGetUsers)
             .get()
             .then((value) {
-          for (var element in value.docs) {
-            balanceSheetUsers[element.data()['uid']] = {
-              'name': element.data()['name'],
-              'imgUrl': element.data()['imgUrl'],
-            };
-          }
-        });
+              for (var element in value.docs) {
+                balanceSheetUsers[element.data()['uid']] = {
+                  'name': element.data()['name'],
+                  'imgUrl': element.data()['imgUrl'],
+                };
+              }
+            });
 
         List<Map<String, dynamic>> balanceSheet = [];
         for (var i = 0; i < reciever.length; i++) {
@@ -197,10 +212,9 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
         showModalBottomSheet(
           context: context,
           elevation: 0,
-          backgroundColor: isDark ? Dark.card : Light.card,
+          backgroundColor: context.isDarkMode ? Dark.card : Light.card,
           builder: (context) {
             return DistributeModal(
-              isDark,
               balanceSheet: balanceSheet,
               balanceSheetUsers: balanceSheetUsers,
             );
@@ -244,6 +258,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
+    searchKey.removeListener(_onSearchChanged);
     super.dispose();
     _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
@@ -257,9 +273,6 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
-    isSearching = searchKey.text.isNotEmpty;
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
@@ -277,33 +290,36 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     onPressed: () {
                       context.go("/root");
                     },
-                    icon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.arrow_back,
-                          color: context.colorScheme.onSurface,
-                        ),
-                        searchKey.text.isEmpty
-                            ? const SizedBox(width: 10)
-                            : const SizedBox(),
-                        searchKey.text.isEmpty
-                            ? Text(
+                    icon: ValueListenableBuilder(
+                      valueListenable: searchKey,
+                      builder: (context, value, child) {
+                        bool isTextEmpty = searchKey.text.isEmpty;
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.arrow_back,
+                              color: context.colorScheme.onSurface,
+                            ),
+                            if (isTextEmpty) width10,
+                            if (isTextEmpty)
+                              Text(
                                 'Return',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: context.colorScheme.onSurface,
                                 ),
-                              )
-                            : const SizedBox(),
-                      ],
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
-                Flexible(child: _SearchBar(isDark)),
+                Flexible(child: _SearchBar()),
               ],
             ),
-            _incomeExpenseTracker(isDark),
+            _incomeExpenseTracker(),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(bottom: 100),
@@ -311,7 +327,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                 physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
-                child: TransactList(isDark, bookId: widget.bookId),
+                child: _TransactList(
+                  bookId: widget.bookId,
+                  isFetching: isFetching,
+                ),
               ),
             ),
           ],
@@ -330,77 +349,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Widget TransactList(bool isDark, {required String bookId}) {
-    dateTitle = '';
-    monthTitle = '';
-    return Consumer(
-      builder: (context, ref, _) {
-        final count = ref.watch(transactCountProvider);
-        final bookData = ref.watch(bookdataStream(widget.bookId));
-        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: firestore
-              .collection('transactBooks')
-              .doc(bookId)
-              .collection('transacts')
-              .orderBy('ts', descending: true)
-              .limit(count)
-              .snapshots(),
-          builder: (context, snapshot) {
-            dateTitle = '';
-            monthTitle = '';
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeIn,
-              switchOutCurve: Curves.easeOut,
-              child: snapshot.hasData
-                  ? snapshot.data!.docs.isNotEmpty
-                      ? Column(
-                          children: [
-                            ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: snapshot.data!.docs.length,
-                              shrinkWrap: true,
-                              padding: const EdgeInsets.fromLTRB(
-                                10,
-                                0,
-                                10,
-                                20,
-                              ),
-                              itemBuilder: (context, index) {
-                                Transact transact = Transact.fromMap(
-                                  snapshot.data!.docs[index].data(),
-                                );
-
-                                if (kCompare(
-                                      searchKey.text,
-                                      transact.amount,
-                                    ) ||
-                                    kCompare(
-                                      searchKey.text,
-                                      transact.description,
-                                    )) {
-                                  return TransactTile(
-                                    isDark,
-                                    data: transact,
-                                    users: bookData.value?.users,
-                                  );
-                                }
-                                return const SizedBox();
-                              },
-                            ),
-                            if (isFetching) const CustomLoading(),
-                          ],
-                        )
-                      : kNoData(context, title: 'No Transacts')
-                  : const SizedBox(),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _incomeExpenseTracker(bool isDark) {
+  Widget _incomeExpenseTracker() {
     return Consumer(
       builder: (context, ref, _) {
         final bookData = ref.watch(bookdataStream(widget.bookId));
@@ -435,19 +384,16 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                     Flexible(
                                       child: Text(
                                         book.bookName,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                        style: const TextStyle(fontSize: 15),
                                       ),
                                     ),
                                     width10,
                                     InkWell(
                                       onTap: () {
                                         ref
-                                            .read(
-                                              showMenuProvider.notifier,
-                                            )
-                                            .state = !showMenu;
+                                                .read(showMenuProvider.notifier)
+                                                .state =
+                                            !showMenu;
                                       },
                                       borderRadius: kRadius(100),
                                       child: CircleAvatar(
@@ -459,9 +405,9 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                           child: Icon(
                                             showMenu
                                                 ? Icons
-                                                    .keyboard_arrow_up_rounded
+                                                      .keyboard_arrow_up_rounded
                                                 : Icons
-                                                    .keyboard_arrow_down_rounded,
+                                                      .keyboard_arrow_down_rounded,
                                             size: 20,
                                             color:
                                                 context.colorScheme.onSurface,
@@ -485,10 +431,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                       child: const FittedBox(
                                         child: CircleAvatar(
                                           radius: 12,
-                                          child: Icon(
-                                            Icons.groups_2,
-                                            size: 12,
-                                          ),
+                                          child: Icon(Icons.groups_2, size: 12),
                                         ),
                                       ),
                                     ),
@@ -500,17 +443,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                 reverseDuration: const Duration(
                                   milliseconds: 300,
                                 ),
-                                duration: const Duration(
-                                  milliseconds: 300,
-                                ),
+                                duration: const Duration(milliseconds: 300),
                                 alignment: Alignment.topCenter,
                                 curve: Curves.ease,
                                 child: showMenu
-                                    ? BookMenu(
-                                        isDark,
-                                        bookData: book,
-                                        uid: user!.uid,
-                                      )
+                                    ? BookMenu(bookData: book, uid: user!.uid)
                                     : Container(),
                               ),
                             ],
@@ -534,16 +471,14 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                               style: TextStyle(fontWeight: FontWeight.w300),
                             ),
                             TextSpan(
-                              text: kMoneyFormat(
-                                book.income - book.expense,
-                              ),
+                              text: kMoneyFormat(book.income - book.expense),
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    _filterButton(isDark),
+                    _filterButton(),
                   ],
                 ),
                 height15,
@@ -616,8 +551,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Widget DistributeModal(
-    bool isDark, {
+  Widget DistributeModal({
     required List<dynamic> balanceSheet,
     required Map<String, dynamic> balanceSheetUsers,
   }) {
@@ -655,9 +589,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         ),
                       ),
                     ),
-                    const Expanded(
-                      child: Text('To', textAlign: TextAlign.end),
-                    ),
+                    const Expanded(child: Text('To', textAlign: TextAlign.end)),
                   ],
                 ),
                 height20,
@@ -666,21 +598,17 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     String payerName =
-                        balanceSheetUsers[balanceSheet[index]['payerUid']]
-                                ['name']
+                        balanceSheetUsers[balanceSheet[index]['payerUid']]['name']
                             .split(" ")
                             .first;
                     String payerImg =
-                        balanceSheetUsers[balanceSheet[index]['payerUid']]
-                            ['imgUrl'];
+                        balanceSheetUsers[balanceSheet[index]['payerUid']]['imgUrl'];
                     String recieverName =
-                        balanceSheetUsers[balanceSheet[index]['recieverUid']]
-                                ['name']
+                        balanceSheetUsers[balanceSheet[index]['recieverUid']]['name']
                             .split(" ")
                             .first;
                     String recieverImg =
-                        balanceSheetUsers[balanceSheet[index]['recieverUid']]
-                            ['imgUrl'];
+                        balanceSheetUsers[balanceSheet[index]['recieverUid']]['imgUrl'];
                     return Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -743,9 +671,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                                 width10,
                                 CircleAvatar(
                                   radius: 12,
-                                  backgroundImage: NetworkImage(
-                                    recieverImg,
-                                  ),
+                                  backgroundImage: NetworkImage(recieverImg),
                                 ),
                               ],
                             ),
@@ -764,38 +690,38 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Container _filterButton(bool isDark) {
+  Container _filterButton() {
     final isAll = _selectedSortType == 'All';
     final isIncome = _selectedSortType == 'Income';
 
     // Define colors based on selected sort type
-    final backgroundColor = isDark
+    final backgroundColor = context.isDarkMode
         ? isAll
-            ? Dark.text
-            : isIncome
-                ? Dark.profitCard
-                : Dark.lossCard
+              ? Dark.text
+              : isIncome
+              ? Dark.profitCard
+              : Dark.lossCard
         : isAll
-            ? Colors.black
-            : isIncome
-                ? Dark.profitCard
-                : Dark.lossCard;
+        ? Colors.black
+        : isIncome
+        ? Dark.profitCard
+        : Dark.lossCard;
 
-    final iconColor = isDark
+    final iconColor = context.isDarkMode
         ? (isIncome || isAll ? Colors.black : Colors.white)
         : (isAll || !isIncome ? Colors.white : Colors.black);
 
     final iconType = isAll
         ? Icons.filter_list
         : isIncome
-            ? Icons.file_download_outlined
-            : Icons.file_upload_outlined;
+        ? Icons.file_download_outlined
+        : Icons.file_upload_outlined;
 
     final boxShadowColor = isAll
         ? Colors.grey.shade500
         : isIncome
-            ? Dark.profitCard
-            : Colors.red;
+        ? Dark.profitCard
+        : Colors.red;
 
     return Container(
       height: 40,
@@ -816,7 +742,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               builder: (context) {
-                return FilterBottomSheet(isDark, setState);
+                return FilterBottomSheet(setState);
               },
             ).then((_) => setState(() {}));
           },
@@ -826,12 +752,12 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Container _SearchBar(bool isDark) {
+  Container _SearchBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
       decoration: BoxDecoration(
-        color: isDark ? Dark.card : Light.card,
+        color: context.isDarkMode ? Dark.card : Light.card,
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(100)),
       ),
       child: Row(
@@ -839,25 +765,45 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           SvgPicture.asset(
             'lib/assets/icons/search.svg',
             height: 20,
-            colorFilter: svgColor(isDark ? Dark.text : Light.text),
+            colorFilter: svgColor(context.isDarkMode ? Dark.text : Light.text),
           ),
           width10,
           Flexible(
             child: TextField(
               controller: searchKey,
-              cursorColor: isDark ? Dark.primary : Light.primary,
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+              cursorColor: context.isDarkMode ? Dark.primary : Light.primary,
+              style: TextStyle(
+                color: context.isDarkMode ? Colors.white : Colors.black,
+              ),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color: isDark ? Dark.fadeText : Light.fadeText,
+                  color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
                 ),
                 hintText: 'Search amount, description, etc',
+                suffixIcon: ValueListenableBuilder(
+                  valueListenable: searchKey,
+                  builder: (context, value, child) {
+                    return searchKey.text.isNotEmpty
+                        ? IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              searchKey.clear();
+                              ref.read(searchQueryProvider.notifier).state = '';
+                            },
+                            icon: Icon(
+                              Icons.cancel_rounded,
+                              size: 18,
+                              color: context.isDarkMode
+                                  ? Dark.fadeText
+                                  : Light.fadeText,
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
               ),
-              onChanged: (val) {
-                setState(() {});
-              },
             ),
           ),
         ],
@@ -865,360 +811,13 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Widget TransactTile(
-    bool isDark, {
-    required Transact data,
-    required List? users,
-  }) {
-    bool isIncome = data.type == 'Income';
-    String dateLabel = '';
-    var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == data.date) {
-      showDateWidget = false;
-    } else {
-      dateTitle = data.date;
-      showDateWidget = true;
-    }
-    String ts = DateFormat("yMMMMd").parse(data.date).toString();
-
-    if (dateTitle == todayDate) {
-      dateLabel = 'Today';
-    } else if (DateTime.now().difference(DateTime.parse(ts)).inDays == 1) {
-      dateLabel = 'Yesterday';
-    } else {
-      dateLabel = dateTitle;
-    }
-
-    return Consumer(
-      builder: (context, ref, _) {
-        final user = ref.watch(userProvider)!;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (showDateWidget)
-              Padding(
-                padding: const EdgeInsets.only(top: 15.0, left: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      dateLabel.split(" ").first.trim(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      dateLabel,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Dark.fadeText : Light.fadeText,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (data.uid != user.uid && users != null && users.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child:
-                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                      future: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(data.uid)
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return CircleAvatar(
-                            radius: 12,
-                            backgroundImage: NetworkImage(
-                              snapshot.data!.data()!['imgUrl'],
-                            ),
-                          );
-                        }
-
-                        return const CircleAvatar(radius: 12);
-                      },
-                    ),
-                  ),
-                Flexible(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (data.uid == user.uid) {
-                        navPush(context, EditTransactUI(trData: data));
-                      } else {
-                        KSnackbar(
-                          context,
-                          content: "You cannot edit other's transactions",
-                          isDanger: true,
-                        );
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: (isIncome
-                                    ? isDark
-                                        ? Dark.profitText
-                                        : Light.profitText
-                                    : isDark
-                                        ? Dark.lossText
-                                        : Light.lossText)
-                                .lighten(.3),
-                          ),
-                          borderRadius: kRadius(15),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(6),
-                                            height: 30,
-                                            width: 30,
-                                            decoration: BoxDecoration(
-                                              color: isIncome
-                                                  ? isDark
-                                                      ? Dark.profitText
-                                                      : Light.profitText
-                                                  : isDark
-                                                      ? Dark.lossText
-                                                      : Light.lossText,
-                                              shape: BoxShape.circle,
-                                              boxShadow: [
-                                                isDark
-                                                    ? BoxShadow(
-                                                        color: isIncome
-                                                            ? isDark
-                                                                ? Dark
-                                                                    .profitCard
-                                                                    .lighten(
-                                                                    .5,
-                                                                  )
-                                                                : Light
-                                                                    .profitCard
-                                                                    .lighten(
-                                                                    .5,
-                                                                  )
-                                                            : isDark
-                                                                ? Dark.lossCard
-                                                                : Light
-                                                                    .lossCard,
-                                                        blurRadius: 30,
-                                                        spreadRadius: 1,
-                                                      )
-                                                    : const BoxShadow(),
-                                              ],
-                                            ),
-                                            child: FittedBox(
-                                              child: Icon(
-                                                isIncome
-                                                    ? Icons
-                                                        .file_download_outlined
-                                                    : Icons
-                                                        .file_upload_outlined,
-                                                color: isIncome
-                                                    ? isDark
-                                                        ? Colors.black
-                                                        : Colors.white
-                                                    : isDark
-                                                        ? Colors.red.shade900
-                                                        : Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          width10,
-                                          Expanded(
-                                            child: Text.rich(
-                                              textAlign: TextAlign.start,
-                                              TextSpan(
-                                                text: kMoneyFormat(data.amount),
-                                                style: TextStyle(
-                                                  fontFamily: "Product",
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w800,
-                                                  color: isIncome
-                                                      ? isDark
-                                                          ? Dark.profitText
-                                                          : Light.profitText
-                                                      : isDark
-                                                          ? Dark.lossText
-                                                          : Light.lossText,
-                                                ),
-                                                children: const [
-                                                  TextSpan(
-                                                    text: " INR",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      StatsRow(
-                                        color: Colors.amber.shade900,
-                                        content: data.source,
-                                        icon: Icons.person,
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            data.description.trim().isNotEmpty,
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            top: 10,
-                                          ),
-                                          padding: const EdgeInsets.all(8),
-                                          width: double.maxFinite,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                isDark ? Dark.card : Light.card,
-                                            borderRadius: kRadius(10),
-                                          ),
-                                          child: Text(data.description),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Text(
-                                  data.transactMode,
-                                  style: TextStyle(
-                                    letterSpacing: 1,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: data.transactMode == 'CASH'
-                                        ? isDark
-                                            ? Dark.profitText
-                                            : Colors.black
-                                        : isDark
-                                            ? const Color(0xFF9DC4FF)
-                                            : Colors.blue.shade900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            height10,
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.schedule_rounded, size: 15),
-                                width5,
-                                Text(
-                                  data.time.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible:
-                      data.uid == user.uid && users != null && users.isNotEmpty,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundImage: NetworkImage(user.imgUrl),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget StatsRow({
-    required String content,
-    required IconData icon,
-    required Color color,
-  }) {
-    bool isEmpty = content.trim() == '';
-    return Visibility(
-      visible: !isEmpty,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              backgroundColor: color,
-              radius: 10,
-              child: FittedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Icon(icon, color: Colors.white),
-                ),
-              ),
-            ),
-            width5,
-            Flexible(
-              child: Text(
-                isEmpty ? 'No Information Provided' : content,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w500,
-                  fontStyle: isEmpty ? FontStyle.italic : null,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget BookMenu(
-    bool isDark, {
-    required BookModel bookData,
-    required String uid,
-  }) {
+  Widget BookMenu({required BookModel bookData, required String uid}) {
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? Dark.card : Light.card,
+        color: context.isDarkMode ? Dark.card : Light.card,
         borderRadius: kRadius(12),
       ),
       child: Column(
@@ -1243,13 +842,15 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
+                  color: context.isDarkMode
+                      ? Colors.grey.shade900
+                      : Colors.grey.shade300,
                   borderRadius: kRadius(50),
                 ),
                 child: Text(
                   bookData.date,
                   style: TextStyle(
-                    color: isDark ? Dark.fadeText : Light.fadeText,
+                    color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -1279,10 +880,12 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         oldBookName: bookData.bookName,
                         onUpdate: () {
                           Navigator.pop(context);
-                          ref.read(bookRepository).updateBook(
-                            bookId: bookData.bookId,
-                            data: {'bookName': newBookName.text.trim()},
-                          );
+                          ref
+                              .read(bookRepository)
+                              .updateBook(
+                                bookId: bookData.bookId,
+                                data: {'bookName': newBookName.text.trim()},
+                              );
                         },
                       );
                     },
@@ -1344,38 +947,40 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                 label: 'Clear all',
                 iconSize: 12,
                 icon: Icons.restore,
-                btnColor:
-                    isDark ? Colors.blue.shade700 : Colors.blueGrey.shade600,
+                btnColor: context.isDarkMode
+                    ? Colors.blue.shade700
+                    : Colors.blueGrey.shade600,
                 textColor: Colors.white,
               ),
               BookMenuBtn(
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => _addUserDialog(
-                      isDark,
-                      uid: uid,
-                      bookData: bookData,
-                    ),
+                    builder: (context) =>
+                        _addUserDialog(uid: uid, bookData: bookData),
                   );
                 },
                 labelSize: 12,
                 label: 'Add User(s)',
                 iconSize: 15,
                 icon: Icons.person_add_alt_1,
-                btnColor: isDark ? Dark.profitText : const Color(0xFF27576D),
-                textColor: isDark ? Colors.black : Colors.white,
+                btnColor: context.isDarkMode
+                    ? Dark.profitText
+                    : const Color(0xFF27576D),
+                textColor: context.isDarkMode ? Colors.black : Colors.white,
               ),
               BookMenuBtn(
                 onPressed: () {
-                  distribute(isDark);
+                  distribute();
                 },
                 labelSize: 12,
                 label: 'Distribute',
                 iconSize: 15,
                 icon: Icons.alt_route_rounded,
-                btnColor: isDark ? Dark.profitText : const Color(0xFF27576D),
-                textColor: isDark ? Colors.black : Colors.white,
+                btnColor: context.isDarkMode
+                    ? Dark.profitText
+                    : const Color(0xFF27576D),
+                textColor: context.isDarkMode ? Colors.black : Colors.white,
               ),
               // BookMenuBtn(
               //   onPressed: () {
@@ -1388,7 +993,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
               //   iconSize: 15,
               //   icon: Icons.share,
               //   btnColor: kColor(context).primary,
-              //   textColor: !isDark ? Dark.text : Light.text,
+              //   textColor: !context.isDarkMode ? Dark.text : Light.text,
               // ),
             ],
           ),
@@ -1416,7 +1021,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
               bottom: MediaQuery.of(context).viewInsets.bottom + 20,
             ),
             decoration: BoxDecoration(
-              color: isDark ? Dark.card : Light.card,
+              color: context.isDarkMode ? Dark.card : Light.card,
               borderRadius: kRadius(20),
             ),
             child: SingleChildScrollView(
@@ -1425,14 +1030,17 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    backgroundColor:
-                        isDark ? Colors.blue.shade100 : Colors.blueAccent,
+                    backgroundColor: isDark
+                        ? Colors.blue.shade100
+                        : Colors.blueAccent,
                     child: Text(
                       'Aa',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
-                        color: isDark ? Colors.blue.shade800 : Colors.white,
+                        color: context.isDarkMode
+                            ? Colors.blue.shade800
+                            : Colors.white,
                       ),
                     ),
                   ),
@@ -1440,7 +1048,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   Text(
                     'Rename Book',
                     style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
+                      color: context.isDarkMode ? Colors.white : Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1448,7 +1056,9 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   Text(
                     'Change the book name',
                     style: TextStyle(
-                      color: isDark ? Colors.blue.shade300 : Colors.blueAccent,
+                      color: context.isDarkMode
+                          ? Colors.blue.shade300
+                          : Colors.blueAccent,
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1461,27 +1071,37 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white : Colors.black,
+                      color: context.isDarkMode ? Colors.white : Colors.black,
                     ),
                     cursorWidth: 1,
-                    cursorColor: isDark ? Colors.white : Colors.black,
+                    cursorColor: context.isDarkMode
+                        ? Colors.white
+                        : Colors.black,
                     decoration: InputDecoration(
-                      focusColor: isDark ? Colors.white : Colors.black,
+                      focusColor: context.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: isDark ? Dark.scaffold : Colors.black,
+                          color: context.isDarkMode
+                              ? Dark.scaffold
+                              : Colors.black,
                           width: 2,
                         ),
                       ),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: isDark ? Dark.scaffold : Colors.grey.shade300,
+                          color: context.isDarkMode
+                              ? Dark.scaffold
+                              : Colors.grey.shade300,
                         ),
                       ),
                       hintText: 'Book title',
                       hintStyle: TextStyle(
                         fontSize: 30,
-                        color: isDark ? Dark.scaffold : Colors.grey.shade400,
+                        color: context.isDarkMode
+                            ? Dark.scaffold
+                            : Colors.grey.shade400,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -1507,18 +1127,13 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   }
 
   List<String> selectedUsers = [];
-  // bool isSelecting = false;
-  Widget _addUserDialog(
-    bool isDark, {
-    required String uid,
-    required BookModel bookData,
-  }) {
+  Widget _addUserDialog({required String uid, required BookModel bookData}) {
     return StatefulBuilder(
       builder: (context, setState) => UserSelectorDialog(bookData: bookData),
     );
   }
 
-  Widget FilterBottomSheet(bool isDark, StateSetter setState) {
+  Widget FilterBottomSheet(StateSetter setState) {
     return StatefulBuilder(
       builder: (context, setState) {
         return SingleChildScrollView(
@@ -1532,7 +1147,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: kRadius(20),
-                    color: isDark ? Dark.card : Colors.white,
+                    color: context.isDarkMode ? Dark.card : Colors.white,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1546,7 +1161,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: isDark
+                              color: context.isDarkMode
                                   ? Colors.grey.shade700
                                   : Colors.grey.shade300,
                               borderRadius: kRadius(50),
@@ -1554,7 +1169,9 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                             child: Text(
                               'Filter',
                               style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
+                                color: context.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 20,
                               ),
@@ -1565,18 +1182,22 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark
+                              backgroundColor: context.isDarkMode
                                   ? Colors.blue.shade100
                                   : Colors.blue.shade700,
                             ),
                             icon: Icon(
                               Icons.done,
-                              color: isDark ? Colors.black : Colors.white,
+                              color: context.isDarkMode
+                                  ? Colors.black
+                                  : Colors.white,
                             ),
                             label: Text(
                               'Apply',
                               style: TextStyle(
-                                color: isDark ? Colors.black : Colors.white,
+                                color: context.isDarkMode
+                                    ? Colors.black
+                                    : Colors.white,
                               ),
                             ),
                           ),
@@ -1587,34 +1208,43 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           FilterBtns(
-                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.all_inbox,
-                              color: isDark ? Colors.black : Colors.white,
+                              color: context.isDarkMode
+                                  ? Colors.black
+                                  : Colors.white,
                             ),
                             label: 'All',
-                            color: isDark ? Colors.white : Colors.black,
+                            color: context.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
                           ),
                           FilterBtns(
-                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.file_download_outlined,
-                              color: isDark ? Colors.black : Colors.white,
+                              color: context.isDarkMode
+                                  ? Colors.black
+                                  : Colors.white,
                             ),
                             label: 'Income',
-                            color: isDark ? Dark.profitCard : Light.profitCard,
+                            color: context.isDarkMode
+                                ? Dark.profitCard
+                                : Light.profitCard,
                           ),
                           FilterBtns(
-                            isDark,
                             setState: setState,
                             icon: Icon(
                               Icons.file_upload_outlined,
-                              color: isDark ? Colors.black : Colors.white,
+                              color: context.isDarkMode
+                                  ? Colors.black
+                                  : Colors.white,
                             ),
                             label: 'Expense',
-                            color: isDark ? Colors.red.shade300 : Colors.red,
+                            color: context.isDarkMode
+                                ? Colors.red.shade300
+                                : Colors.red,
                           ),
                         ],
                       ),
@@ -1640,8 +1270,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     setState(() => isLoading = false);
   }
 
-  GestureDetector FilterBtns(
-    bool isDark, {
+  GestureDetector FilterBtns({
     required String label,
     required Widget icon,
     required Color color,
@@ -1679,12 +1308,432 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isSelected
-                  ? isDark
-                      ? color
-                      : Colors.black
+                  ? context.isDarkMode
+                        ? color
+                        : Colors.black
                   : Colors.grey.shade600,
             ),
             textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TransactList extends ConsumerWidget {
+  final String bookId;
+  final bool isFetching;
+
+  const _TransactList({required this.bookId, required this.isFetching});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(transactCountProvider);
+    final bookData = ref.watch(bookdataStream(bookId));
+    final searchQuery = ref.watch(searchQueryProvider);
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('transactBooks')
+          .doc(bookId)
+          .collection('transacts')
+          .orderBy('ts', descending: true)
+          .limit(count)
+          .snapshots(),
+      builder: (context, snapshot) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: () {
+            if (!snapshot.hasData) return const SizedBox.shrink();
+            if (snapshot.data!.docs.isEmpty) {
+              return kNoData(context, title: 'No Transacts');
+            }
+
+            final items = snapshot.data!.docs
+                .map((doc) => Transact.fromMap(doc.data()))
+                .where(
+                  (transact) =>
+                      kCompare(searchQuery, transact.amount) ||
+                      kCompare(searchQuery, transact.description),
+                )
+                .toList();
+
+            if (items.isEmpty) {
+              return kNoData(context, title: 'No Transacts Found');
+            }
+
+            String getMonthStr(String d) {
+              try {
+                return DateFormat.yMMMM().format(DateFormat.yMMMMd().parse(d));
+              } catch (e) {
+                return "";
+              }
+            }
+
+            return Column(
+              key: ValueKey(
+                searchQuery + items.length.toString(),
+              ), // Re-animate when query or count changes
+              children: [
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: items.length,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+                  itemBuilder: (context, index) {
+                    final transact = items[index];
+                    final prevTransact = index > 0 ? items[index - 1] : null;
+
+                    final currentMonth = getMonthStr(transact.date);
+                    final bool showMonth =
+                        index == 0 ||
+                        getMonthStr(prevTransact!.date) != currentMonth;
+                    final bool showDate =
+                        index == 0 || prevTransact!.date != transact.date;
+
+                    return TweenAnimationBuilder<double>(
+                      duration: Duration(
+                        milliseconds: 400 + (index * 50).clamp(0, 400),
+                      ),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: _TransactTile(
+                        key: ValueKey(transact.transactId),
+                        data: transact,
+                        users: bookData.value?.users,
+                        showDate: showDate,
+                        showMonth: showMonth,
+                        monthLabel: currentMonth,
+                      ),
+                    );
+                  },
+                ),
+                if (isFetching) const CustomLoading(),
+              ],
+            );
+          }(),
+        );
+      },
+    );
+  }
+}
+
+class _TransactTile extends ConsumerWidget {
+  final Transact data;
+  final List? users;
+  final bool showDate;
+  final bool showMonth;
+  final String monthLabel;
+
+  const _TransactTile({
+    super.key,
+    required this.data,
+    required this.users,
+    required this.showDate,
+    required this.showMonth,
+    required this.monthLabel,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider)!;
+    final isIncome = data.type == 'Income';
+
+    final now = DateTime.now();
+    final today = DateFormat.yMMMMd().format(now);
+    final yesterday = DateFormat.yMMMMd().format(
+      now.subtract(const Duration(days: 1)),
+    );
+
+    final dateLabel = data.date == today
+        ? 'Today'
+        : data.date == yesterday
+        ? 'Yesterday'
+        : data.date;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showMonth)
+          Padding(
+            padding: const EdgeInsets.only(top: 25.0, left: 12, bottom: 5),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "${monthLabel.split(' ').first}, ",
+                  style: TextStyle(
+                    fontSize: 22,
+                    height: 1,
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  monthLabel.split(' ').last,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1,
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (data.uid != user.uid && users != null && users!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(data.uid)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return CircleAvatar(
+                        radius: 12,
+                        backgroundImage: NetworkImage(
+                          snapshot.data!.data()!['imgUrl'],
+                        ),
+                      );
+                    }
+                    return const CircleAvatar(radius: 12);
+                  },
+                ),
+              ),
+            Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  if (data.uid == user.uid) {
+                    navPush(context, EditTransactUI(trData: data));
+                  } else {
+                    KSnackbar(
+                      context,
+                      content: "You cannot edit other's transactions",
+                      isDanger: true,
+                    );
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.all(10),
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: context.colorScheme.onSurface.withAlpha(25),
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      height: 30,
+                                      width: 30,
+                                      decoration: BoxDecoration(
+                                        color: isIncome
+                                            ? context.profitColor
+                                            : context.lossColor,
+                                        shape: BoxShape.circle,
+                                        boxShadow: context.isDarkMode
+                                            ? [
+                                                BoxShadow(
+                                                  color:
+                                                      (isIncome
+                                                              ? context
+                                                                    .profitColor
+                                                              : context
+                                                                    .lossColor)
+                                                          .withAlpha(40),
+                                                  blurRadius: 30,
+                                                  spreadRadius: 1,
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: FittedBox(
+                                        child: Icon(
+                                          isIncome
+                                              ? Icons.file_download_outlined
+                                              : Icons.file_upload_outlined,
+                                          color: isIncome
+                                              ? (context.isDarkMode
+                                                    ? Colors.black
+                                                    : Colors.white)
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    width10,
+                                    Expanded(
+                                      child: Text.rich(
+                                        TextSpan(
+                                          text: kMoneyFormat(data.amount),
+                                          style: TextStyle(
+                                            fontFamily: "Product",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w800,
+                                            color: isIncome
+                                                ? context.profitColor
+                                                : context.lossColor,
+                                          ),
+                                          children: const [
+                                            TextSpan(
+                                              text: " INR",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                _StatsRow(
+                                  color: Colors.amber.shade900,
+                                  content: data.source,
+                                  icon: Icons.person,
+                                ),
+                                if (data.description.trim().isNotEmpty)
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    padding: const EdgeInsets.all(8),
+                                    width: double.maxFinite,
+                                    decoration: BoxDecoration(
+                                      color: context.cardColor,
+                                      borderRadius: kRadius(10),
+                                    ),
+                                    child: Text(data.description),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            data.transactMode,
+                            style: TextStyle(
+                              letterSpacing: 1,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: data.transactMode == 'CASH'
+                                  ? (context.isDarkMode
+                                        ? Dark.profitText
+                                        : Colors.black)
+                                  : (context.isDarkMode
+                                        ? const Color(0xFF9DC4FF)
+                                        : Colors.blue.shade900),
+                            ),
+                          ),
+                        ],
+                      ),
+                      height10,
+                      Row(
+                        children: [
+                          const Icon(Icons.schedule_rounded, size: 15),
+                          width5,
+                          Text(
+                            data.time,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const Spacer(),
+                          const Icon(Icons.calendar_month, size: 15),
+                          width5,
+                          Text(
+                            dateLabel,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (data.uid == user.uid && users != null && users!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: CircleAvatar(
+                  radius: 12,
+                  backgroundImage: NetworkImage(user.imgUrl),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _StatsRow extends StatelessWidget {
+  final String content;
+  final IconData icon;
+  final Color color;
+
+  const _StatsRow({
+    required this.content,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    bool isEmpty = content.trim() == '';
+    if (isEmpty) return const SizedBox();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 10,
+            child: FittedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Icon(icon, color: Colors.white),
+              ),
+            ),
+          ),
+          width5,
+          Flexible(
+            child: Text(
+              content,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

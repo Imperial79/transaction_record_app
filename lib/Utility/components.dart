@@ -61,8 +61,9 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color:
-                      context.isDarkMode ? Colors.amberAccent : Colors.orange,
+                  color: context.isDarkMode
+                      ? Colors.amberAccent
+                      : Colors.orange,
                   blurRadius: 100,
                   spreadRadius: 10,
                 ),
@@ -83,7 +84,8 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
               label: Text(
                 'Create',
                 style: TextStyle(
-                    color: context.isDarkMode ? Colors.black : Colors.white),
+                  color: context.isDarkMode ? Colors.black : Colors.white,
+                ),
               ),
             ),
           ),
@@ -137,94 +139,6 @@ class AppTitle extends StatelessWidget {
   }
 }
 
-// Widget DummyTransactList(bool isDark) {
-//   return Column(
-//     children: [
-//       for (int i = 0; i <= 10; i++)
-//         Container(
-//           margin: const EdgeInsets.only(bottom: 20),
-//           child: Container(
-//             padding: const EdgeInsets.all(10),
-//             width: double.infinity,
-//             decoration: BoxDecoration(
-//               color: isDark ? const Color(0xFF333333) : Light.card,
-//               borderRadius: kRadius(20),
-//             ),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                             crossAxisAlignment: CrossAxisAlignment.center,
-//                             children: [
-//                               Container(
-//                                 padding: const EdgeInsets.all(10),
-//                                 height: 40,
-//                                 width: 40,
-//                                 decoration: BoxDecoration(
-//                                   color: Colors.grey.lighten(0.5),
-//                                   shape: BoxShape.circle,
-//                                 ),
-//                               ),
-//                               const SizedBox(
-//                                 width: 10,
-//                               ),
-//                               Container(
-//                                 width: 200,
-//                                 height: 20,
-//                                 color: Colors.grey.lighten(0.5),
-//                               ),
-//                               const Spacer(),
-//                             ],
-//                           ),
-//                           const SizedBox(
-//                             height: 10,
-//                           ),
-//                           Container(
-//                             width: 200,
-//                             height: 20,
-//                             color: Colors.grey.lighten(0.5),
-//                           ),
-//                           Container(
-//                             width: 200,
-//                             height: 20,
-//                             color: Colors.grey.lighten(0.5),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 const SizedBox(
-//                   height: 20,
-//                 ),
-//                 Container(
-//                   padding:
-//                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-//                   decoration: BoxDecoration(
-//                     color: Colors.grey.lighten(0.5),
-//                     borderRadius: kRadius(100),
-//                   ),
-//                   child: const SizedBox(
-//                     width: 200,
-//                     height: 20,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//     ],
-//   );
-// }
-
 Widget StatsCard(
   BuildContext context, {
   required String label,
@@ -239,8 +153,9 @@ Widget StatsCard(
       borderRadius: kRadius(15),
       color: isExpense ? context.lossCardColor : context.profitCardColor,
       border: Border.all(
-        color:
-            (isExpense ? context.lossColor : context.profitColor).withAlpha(50),
+        color: (isExpense ? context.lossColor : context.profitColor).withAlpha(
+          50,
+        ),
       ),
     ),
     child: Column(
@@ -420,13 +335,16 @@ void setSystemUIColors(BuildContext context) {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent,
-      statusBarBrightness:
-          context.isDarkMode ? Brightness.dark : Brightness.light,
-      statusBarIconBrightness:
-          context.isDarkMode ? Brightness.light : Brightness.dark,
+      statusBarBrightness: context.isDarkMode
+          ? Brightness.dark
+          : Brightness.light,
+      statusBarIconBrightness: context.isDarkMode
+          ? Brightness.light
+          : Brightness.dark,
       systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness:
-          context.isDarkMode ? Brightness.light : Brightness.dark,
+      systemNavigationBarIconBrightness: context.isDarkMode
+          ? Brightness.light
+          : Brightness.dark,
     ),
   );
 }
@@ -476,60 +394,62 @@ Widget kDeleteAlertDialog(
 }
 
 Widget NewBookCard(BuildContext context) => Consumer(
-      builder: (context, ref, _) {
-        return Container(
-          margin: const EdgeInsets.all(15),
-          width: double.infinity,
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            borderRadius: kRadius(20),
-            gradient: const LinearGradient(
-              colors: [Light.profitCard, Colors.black],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+  builder: (context, ref, _) {
+    return Container(
+      margin: const EdgeInsets.all(15),
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        borderRadius: kRadius(20),
+        gradient: const LinearGradient(
+          colors: [Light.profitCard, Colors.black],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Create your first Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 30,
+              letterSpacing: 1,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Create your first Transact Book',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  fontSize: 30,
-                  letterSpacing: 1,
-                ),
-              ),
-              height10,
-              const Text(
-                'Track your daily expenses by creating categorised Transact Book',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              height10,
-              Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.watch(pageControllerProvider).animateToPage(
-                          1,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                        );
-                  },
-                  child: const Text('Create'),
-                ),
-              ),
-            ],
+          height10,
+          const Text(
+            'Track your daily expenses by creating categorised Transact Book',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
-        );
-      },
+          height10,
+          Align(
+            alignment: Alignment.topRight,
+            child: ElevatedButton(
+              onPressed: () {
+                ref
+                    .watch(pageControllerProvider)
+                    .animateToPage(
+                      1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+              },
+              child: const Text('Create'),
+            ),
+          ),
+        ],
+      ),
     );
+  },
+);
 
 Widget AnimatedFloatingButton(
   BuildContext context, {
@@ -596,7 +516,8 @@ Widget KSearchBar(
           decoration: BoxDecoration(
             color: context.cardColor,
             border: Border.all(
-                color: context.isDarkMode ? Colors.white12 : Colors.black12),
+              color: context.isDarkMode ? Colors.white12 : Colors.black12,
+            ),
             borderRadius: kRadius(100),
           ),
           child: Row(
@@ -632,10 +553,7 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
   return Center(
     child: Text(
       customText,
-      style: TextStyle(
-        fontSize: 30,
-        color: context.fadeTextColor,
-      ),
+      style: TextStyle(fontSize: 30, color: context.fadeTextColor),
     ),
   );
 }

@@ -37,23 +37,16 @@ class _BookTileState extends State<BookTile> {
 
     // Change Card color -------------------->
     Color kCardColor = Dark.card;
-    Color textColor = Colors.black;
     bool isCompleted = false;
 
     if (widget.book.type == "regular") {
-      isCompleted = widget.book.expense != 0 &&
+      isCompleted =
+          widget.book.expense != 0 &&
           (widget.book.income == widget.book.expense);
     } else {
-      isCompleted = widget.book.targetAmount != 0 &&
+      isCompleted =
+          widget.book.targetAmount != 0 &&
           (widget.book.income == widget.book.targetAmount);
-    }
-
-    if (isCompleted) {
-      kCardColor = context.isDarkMode ? Dark.completeCard : Light.completeCard;
-      textColor = context.colorScheme.onSurface;
-    } else {
-      kCardColor = context.cardColor;
-      textColor = context.colorScheme.onSurface;
     }
 
     bool isSavings = widget.book.type == "savings";
@@ -99,233 +92,198 @@ class _BookTileState extends State<BookTile> {
             );
           },
           child: Card(
-            margin: const EdgeInsets.only(top: 10),
+            margin: const .only(top: 10),
             shape: RoundedRectangleBorder(borderRadius: kRadius(10)),
-            color: kCardColor,
+            color: context.cardColor,
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const .all(10.0),
+              child: Row(
+                crossAxisAlignment: .start,
                 children: [
-                  if (isCompleted)
-                    Text(
-                      "Completed",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: context.isDarkMode
-                            ? Dark.onCompleteCard
-                            : Light.onCompleteCard,
-                      ),
-                    ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    widget.book.bookName,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 1,
-                                      color: textColor,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          widget.book.bookName,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: .w500,
+                                            letterSpacing: 1,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      width10,
+                                      if (widget.book.users != null &&
+                                          widget.book.users!.isNotEmpty)
+                                        const CircleAvatar(
+                                          radius: 12,
+                                          child: Icon(Icons.groups_2, size: 12),
+                                        ),
+                                    ],
                                   ),
-                                ),
-                                width10,
-                                widget.book.users != null &&
-                                        widget.book.users!.isNotEmpty
-                                    ? const CircleAvatar(
-                                        radius: 12,
-                                        child: Icon(Icons.groups_2, size: 12),
-                                      )
-                                    : const SizedBox(),
-                              ],
-                            ),
-                            Visibility(
-                              visible: widget.book.bookDescription.isNotEmpty,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.note,
-                                      color: textColor,
-                                      size: 12,
+                                  Visibility(
+                                    visible:
+                                        widget.book.bookDescription.isNotEmpty,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.note, size: 12),
+                                          width5,
+                                          Text(widget.book.bookDescription),
+                                        ],
+                                      ),
                                     ),
-                                    width5,
-                                    Text(
-                                      widget.book.bookDescription,
-                                      style: TextStyle(color: textColor),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  height5,
+                                  Row(
+                                    children: [
+                                      Icon(Icons.schedule, size: 12),
+                                      width5,
+                                      Text(
+                                        widget.book.time,
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            height5,
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.schedule,
-                                  color: textColor,
-                                  size: 12,
+                            if (isSavings)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
                                 ),
-                                width5,
-                                Text(
-                                  widget.book.time,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textColor,
-                                  ),
+                                decoration: BoxDecoration(
+                                  borderRadius: kRadius(7),
+                                  color: context.scaffoldColor,
                                 ),
-                              ],
-                            ),
+                                child: Text(
+                                  "₹ ${kMoneyFormat(widget.book.income)}",
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
                           ],
                         ),
-                      ),
-                      if (isSavings)
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: kRadius(7),
-                            color: context.scaffoldColor,
-                          ),
-                          child: Text(
-                            "₹ ${kMoneyFormat(widget.book.income)}",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (!isCompleted && !isSavings)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: widget.book.type == "due"
-                          ? Row(
-                              children: [
-                                _bookStats(
-                                  index: 0,
-                                  crossAlign: CrossAxisAlignment.start,
-                                  labelColor: context.colorScheme.onSurface,
-                                  amount: widget.book.targetAmount -
-                                      widget.book.income,
-                                  label: 'Due',
-                                  cardColor: context.isDarkMode
-                                      ? Dark.completeCard
-                                      : Light.completeCard,
-                                  amountColor: context.isDarkMode
+                        height10,
+                        if (!isCompleted && !isSavings)
+                          switch (widget.book.type) {
+                            "due" => _dueStatsStyle(context),
+                            "regular" => _regularStatsStyle(context),
+                            _ => SizedBox(),
+                          },
+                        if (isCompleted && !isSavings)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              height10,
+                              const Text(
+                                "Final Sum",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(
+                                "INR ${kMoneyFormat(widget.book.income)}",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: context.isDarkMode
                                       ? Dark.onCompleteCard
                                       : Light.onCompleteCard,
                                 ),
-                                width5,
-                                _bookStats(
-                                  index: 2,
-                                  crossAlign: CrossAxisAlignment.end,
-                                  label: "Target",
-                                  amount: widget.book.targetAmount,
-                                  cardColor: isDark
-                                      ? const Color(0xFF0B2A43)
-                                      : const Color.fromARGB(
-                                          255,
-                                          197,
-                                          226,
-                                          250,
-                                        ),
-                                  labelColor: isDark
-                                      ? Colors.white
-                                      : Colors.blue.shade900,
-                                  amountColor: isDark
-                                      ? Colors.blue.shade100
-                                      : Colors.blue.shade900,
-                                ),
-                              ],
-                            )
-                          : widget.book.type == "regular"
-                              ? Row(
-                                  children: [
-                                    _bookStats(
-                                      index: 0,
-                                      crossAlign: CrossAxisAlignment.start,
-                                      labelColor: context.colorScheme.onSurface,
-                                      amount: widget.book.income,
-                                      label: 'Income',
-                                      cardColor: context.isDarkMode
-                                          ? const Color(0xFF223B05)
-                                          : const Color(0xFFB5FFB7),
-                                      amountColor: context.isDarkMode
-                                          ? Colors.lightGreenAccent
-                                          : Colors.lightGreen.shade900,
-                                    ),
-                                    width5,
-                                    _bookStats(
-                                      index: 1,
-                                      crossAlign: CrossAxisAlignment.center,
-                                      amount: widget.book.expense,
-                                      label: 'Expense',
-                                      cardColor: context.isDarkMode
-                                          ? Colors.black
-                                          : Colors.grey.shade300,
-                                      labelColor: context.colorScheme.onSurface,
-                                      amountColor:
-                                          context.colorScheme.onSurface,
-                                    ),
-                                    width5,
-                                    _bookStats(
-                                      index: 2,
-                                      crossAlign: CrossAxisAlignment.end,
-                                      label: 'Current',
-                                      amount: widget.book.income -
-                                          widget.book.expense,
-                                      cardColor: context.isDarkMode
-                                          ? const Color(0xFF0B2A43)
-                                          : const Color.fromARGB(
-                                              255,
-                                              197,
-                                              226,
-                                              250,
-                                            ),
-                                      labelColor: context.colorScheme.onSurface,
-                                      amountColor: context.isDarkMode
-                                          ? Colors.blue.shade100
-                                          : Colors.blue.shade900,
-                                    ),
-                                  ],
-                                )
-                              : SizedBox(),
-                    ),
-                  if (isCompleted && !isSavings)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        height10,
-                        const Text("Final Sum", style: TextStyle(fontSize: 15)),
-                        Text(
-                          "INR ${kMoneyFormat(widget.book.income)}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: context.isDarkMode
-                                ? Dark.onCompleteCard
-                                : Light.onCompleteCard,
+                              ),
+                            ],
                           ),
-                        ),
                       ],
+                    ),
+                  ),
+                  if (isCompleted)
+                    Icon(
+                      Icons.verified,
+                      color: context.isDarkMode
+                          ? Dark.onCompleteCard
+                          : Light.onCompleteCard,
                     ),
                 ],
               ),
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _regularStatsStyle(BuildContext context) {
+    return Row(
+      children: [
+        _bookStats(
+          index: 0,
+          crossAlign: CrossAxisAlignment.start,
+          labelColor: kColor(context).primary,
+          amount: widget.book.income,
+          label: 'INCOME',
+          cardColor: kColor(context).primaryContainer,
+          amountColor: kColor(context).primary,
+        ),
+        width5,
+        _bookStats(
+          index: 1,
+          crossAlign: CrossAxisAlignment.center,
+          amount: widget.book.expense,
+          label: 'EXPENSE',
+          cardColor: context.isDarkMode ? Colors.black : Colors.grey.shade300,
+          labelColor: context.colorScheme.onSurface,
+          amountColor: context.colorScheme.onSurface,
+        ),
+        width5,
+        _bookStats(
+          index: 2,
+          crossAlign: CrossAxisAlignment.end,
+          label: 'CURRENT',
+          amount: widget.book.income - widget.book.expense,
+          cardColor: kColor(context).tertiaryContainer,
+          labelColor: kColor(context).tertiary,
+          amountColor: kColor(context).tertiary,
+        ),
+      ],
+    );
+  }
+
+  Widget _dueStatsStyle(BuildContext context) {
+    return Row(
+      children: [
+        _bookStats(
+          index: 0,
+          crossAlign: CrossAxisAlignment.start,
+          labelColor: kColor(context).primary,
+          amount: widget.book.targetAmount - widget.book.income,
+          label: 'DUE',
+          cardColor: kColor(context).primaryContainer,
+          amountColor: kColor(context).primary,
+        ),
+        width5,
+        _bookStats(
+          index: 2,
+          crossAlign: CrossAxisAlignment.end,
+          label: "TARGET",
+          amount: widget.book.targetAmount,
+          cardColor: kColor(context).tertiaryContainer,
+          labelColor: kColor(context).tertiary,
+          amountColor: kColor(context).tertiary,
         ),
       ],
     );

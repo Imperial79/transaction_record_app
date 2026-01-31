@@ -34,8 +34,10 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   bool isLoading = false;
   final DateTime _selectedDate = DateTime.now();
   final DateTime _selectedTimeStamp = DateTime.now();
-  final String _selectedTime =
-      DateFormat().add_jm().format(DateTime.now()).toString();
+  final String _selectedTime = DateFormat()
+      .add_jm()
+      .format(DateTime.now())
+      .toString();
 
   final _targetAmount = TextEditingController();
   final _bookTitle = TextEditingController(
@@ -54,8 +56,10 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
       });
       if (_bookTitle.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
-        String displayTime =
-            DateFormat().add_jm().format(_selectedTimeStamp).toString();
+        String displayTime = DateFormat()
+            .add_jm()
+            .format(_selectedTimeStamp)
+            .toString();
         BookModel newBook = BookModel(
           bookId: "$_selectedTimeStamp",
           bookName: _bookTitle.text,
@@ -66,8 +70,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
           time: displayTime,
           type: selectedBookType,
           uid: uid,
-          targetAmount:
-              selectedBookType == "due" ? double.parse(_targetAmount.text) : 0,
+          targetAmount: selectedBookType == "due"
+              ? double.parse(_targetAmount.text)
+              : 0,
           createdAt: "$_selectedTimeStamp",
           users: [],
         );
@@ -78,7 +83,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         if (res) {
           KSnackbar(context, content: 'Book Created');
 
-          await ref.read(pageControllerProvider).animateToPage(
+          await ref
+              .read(pageControllerProvider)
+              .animateToPage(
                 0,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
@@ -141,7 +148,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
               ),
               WaveDivider(
                 padding: EdgeInsets.only(bottom: 20),
-                color: isDark ? Dark.fadeText : Light.fadeText,
+                color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
               ),
               TextButton(
                 onPressed: () {
@@ -169,7 +176,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                 minLines: 1,
                 icon: Icon(
                   Icons.short_text_rounded,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: context.isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
               height10,
@@ -185,12 +192,16 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: kRadius(10),
-                            color: isDark ? Dark.scaffold : Light.scaffold,
+                            color: context.isDarkMode
+                                ? Dark.scaffold
+                                : Light.scaffold,
                           ),
                           child: Text(
                             DateFormat.yMMMMd().format(_selectedDate),
                             style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -200,12 +211,16 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           borderRadius: kRadius(10),
-                          color: isDark ? Dark.scaffold : Light.scaffold,
+                          color: context.isDarkMode
+                              ? Dark.scaffold
+                              : Light.scaffold,
                         ),
                         child: Text(
                           _selectedTime,
                           style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
+                            color: context.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -281,6 +296,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
       onTap: () {
         setState(() {
           selectedBookType = identifier;
+          if (identifier != "due") {
+            _targetAmount.clear();
+          }
         });
       },
       child: AnimatedContainer(
@@ -288,17 +306,13 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           borderRadius: kRadius(15),
-          color: isDark ? Dark.card : Light.card,
+          color: isActive
+              ? kColor(context).tertiary.lighten(.2)
+              : context.cardColor,
           border: Border.fromBorderSide(
             BorderSide(
               width: 2,
-              color: isActive
-                  ? isDark
-                      ? Dark.primaryAccent
-                      : Light.profitText
-                  : isDark
-                      ? Dark.card
-                      : Light.card,
+              color: isActive ? kColor(context).tertiary : context.cardColor,
             ),
           ),
         ),
@@ -309,12 +323,8 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
               children: [
                 CircleAvatar(
                   backgroundColor: isActive
-                      ? isDark
-                          ? Dark.primaryAccent
-                          : Light.profitText
-                      : isDark
-                          ? Dark.fadeText
-                          : Light.text,
+                      ? kColor(context).tertiary
+                      : context.fadeTextColor.lighten(.5),
                   radius: 5,
                 ),
                 width10,
@@ -322,13 +332,9 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
                   "$title Book",
                   style: TextStyle(
                     color: isActive
-                        ? isDark
-                            ? Dark.primaryAccent
-                            : Light.profitText
-                        : isDark
-                            ? Dark.text
-                            : Light.text,
-                    fontWeight: FontWeight.w400,
+                        ? kColor(context).tertiary
+                        : context.fadeTextColor,
+                    fontWeight: isActive ? .w600 : .w400,
                     letterSpacing: .8,
                     fontSize: 16,
                   ),
@@ -339,10 +345,11 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             Text(
               subTitle,
               style: TextStyle(
-                letterSpacing: 1,
                 fontSize: 13,
-                color: isDark ? Dark.fadeText : Light.text,
-                fontWeight: FontWeight.w300,
+                color: isActive
+                    ? kColor(context).onSurface
+                    : context.fadeTextColor,
+                fontWeight: isActive ? .w500 : .w400,
               ),
             ),
           ],

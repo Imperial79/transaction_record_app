@@ -13,7 +13,10 @@ class KTextfield {
   }
 
   static TextStyle _hintTextStyle(
-      BuildContext context, double fontSize, FontWeight fontWeight) {
+    BuildContext context,
+    double fontSize,
+    FontWeight fontWeight,
+  ) {
     return TextStyle(
       fontSize: fontSize,
       color: context.fadeTextColor,
@@ -33,17 +36,12 @@ class KTextfield {
       hintStyle: _hintTextStyle(context, fontSize, FontWeight.w500),
       prefixIcon: prefix != null
           ? Padding(padding: const EdgeInsets.only(right: 10.0), child: prefix)
-          : const SizedBox(
-              width: 10,
-            ),
+          : const SizedBox(width: 10),
       prefixIconConstraints: const BoxConstraints(minHeight: 0, minWidth: 0),
       border: underlineBorder ? null : InputBorder.none,
       focusedBorder: underlineBorder
           ? UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: context.primaryColor,
-                width: 3,
-              ),
+              borderSide: BorderSide(color: context.primaryColor, width: 3),
             )
           : null,
       enabledBorder: underlineBorder
@@ -100,6 +98,7 @@ class KTextfield {
     TextInputType? keyboardType,
     Widget? icon,
     Widget? prefix,
+    Widget? suffix,
     EdgeInsetsGeometry? padding,
     TextCapitalization textCapitalization = TextCapitalization.sentences,
     List<TextInputFormatter>? inputFormatters,
@@ -135,7 +134,7 @@ class KTextfield {
                 hintText: hintText,
                 prefix: prefix,
                 fontSize: fontSize,
-              ),
+              ).copyWith(suffixIcon: suffix),
             ),
           ),
         ],

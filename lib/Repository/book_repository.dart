@@ -6,37 +6,41 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 
-final bookListProvider = StateProvider<List<BookModel>>(
-  (ref) => [],
-);
+final bookListProvider = StateProvider<List<BookModel>>((ref) => []);
 
-final bookCountProvider = StateProvider<int>(
-  (ref) => 5,
-);
+final bookCountProvider = StateProvider<int>((ref) => 5);
+
+final bookFilterProvider = StateProvider<String>((ref) => "All");
 
 final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
-  String uid = ref.read(userProvider)!.uid;
-  int bookCount = ref.read(bookCountProvider);
-  return FirebaseFirestore.instance
+  String uid = ref.watch(userProvider)!.uid;
+  int bookCount = ref.watch(bookCountProvider);
+  String filter = ref.watch(bookFilterProvider);
+
+  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
       .collection('transactBooks')
       .where(
         Filter.or(
-          Filter(
-            'users',
-            arrayContains: uid,
-          ),
+          Filter('users', arrayContains: uid),
           Filter('uid', isEqualTo: uid),
         ),
-      )
+      );
+
+  if (filter != "All") {
+    query = query.where('type', isEqualTo: filter.toLowerCase());
+  }
+
+  return query
       .orderBy('createdAt', descending: true)
       .limit(bookCount)
       .snapshots()
       .map((snapshot) {
-    List<BookModel> data =
-        snapshot.docs.map((doc) => BookModel.fromMap(doc.data())).toList();
-    ref.read(bookListProvider.notifier).state = data;
-    return data;
-  });
+        List<BookModel> data = snapshot.docs
+            .map((doc) => BookModel.fromMap(doc.data()))
+            .toList();
+        ref.read(bookListProvider.notifier).state = data;
+        return data;
+      });
 });
 
 final bookdataStream = StreamProvider.family<BookModel, String>((ref, bookId) {
@@ -45,13 +49,11 @@ final bookdataStream = StreamProvider.family<BookModel, String>((ref, bookId) {
       .doc(bookId)
       .snapshots()
       .map((snapshot) {
-    return BookModel.fromMap(snapshot.data()!);
-  });
+        return BookModel.fromMap(snapshot.data()!);
+      });
 });
 
-final bookRepository = Provider(
-  (ref) => BookRepository(),
-);
+final bookRepository = Provider((ref) => BookRepository());
 
 class BookRepository {
   Future<bool> createBook({
@@ -89,16 +91,19 @@ class BookRepository {
   Future<bool> deleteBook({required String bookId}) async {
     try {
       // Reference to the book document
-      DocumentReference bookDocRef =
-          FirebaseFirestore.instance.collection('transactBooks').doc(bookId);
+      DocumentReference bookDocRef = FirebaseFirestore.instance
+          .collection('transactBooks')
+          .doc(bookId);
 
       // Reference to the nested transacts collection
-      CollectionReference transactsCollectionRef =
-          bookDocRef.collection('transacts');
+      CollectionReference transactsCollectionRef = bookDocRef.collection(
+        'transacts',
+      );
 
       // Function to delete all documents in a collection
       Future<void> deleteAllDocumentsInCollection(
-          CollectionReference collectionRef) async {
+        CollectionReference collectionRef,
+      ) async {
         // Get all documents in the collection
         final querySnapshot = await collectionRef.get();
         for (var doc in querySnapshot.docs) {

@@ -1,26 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-const String kAppVersion = "2.8.0";
+const String kAppVersion = "2.9.0";
 const String kAppLink = "https://transact-record.web.app";
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;
 
-  static CollectionReference<Map<String, dynamic>> userRef =
-      _firestore.collection('users');
+  static CollectionReference<Map<String, dynamic>> userRef = _firestore
+      .collection('users');
 
   static DocumentReference<Map<String, dynamic>> transactBookRef(
-      String bookId) {
+    String bookId,
+  ) {
     return _firestore.collection('transactBooks').doc(bookId);
   }
 
-  static CollectionReference<Map<String, dynamic>> requestRef =
-      _firestore.collection('requests');
+  static CollectionReference<Map<String, dynamic>> requestRef = _firestore
+      .collection('requests');
 
   static CollectionReference<Map<String, dynamic>> transactsRef(
-          String bookId) =>
-      transactBookRef(bookId).collection('transacts');
+    String bookId,
+  ) => transactBookRef(bookId).collection('transacts');
 }
 
 class Constants {
@@ -29,14 +30,15 @@ class Constants {
   }
 
   static String getDisplayDate(int milliseconds) {
-    return DateFormat.yMMMMd()
-        .format(DateTime.fromMillisecondsSinceEpoch(milliseconds));
+    return DateFormat.yMMMMd().format(
+      DateTime.fromMillisecondsSinceEpoch(milliseconds),
+    );
   }
 
   static String getDisplayTime(int milliseconds) {
-    return DateFormat()
-        .add_jm()
-        .format(DateTime.fromMillisecondsSinceEpoch(milliseconds));
+    return DateFormat().add_jm().format(
+      DateTime.fromMillisecondsSinceEpoch(milliseconds),
+    );
   }
 
   static String getSearchString(String text) {

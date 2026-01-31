@@ -33,6 +33,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
 
   final searchKey = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
   final showMenuProvider = StateProvider<bool>((ref) => false);
 
   bool isKeyboardOpen = false;
@@ -49,7 +50,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
 
   void scrollListener() {
     if (_scrollController.position.atEdge) {
-      bool isBottom = _scrollController.position.pixels ==
+      bool isBottom =
+          _scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent;
       if (isBottom) {
         ref.read(bookCountProvider.notifier).state += 5;
@@ -197,6 +199,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
                             setState(() {});
                           },
                         ),
+                        height15,
+                        _filterRow(),
                         height10,
                         _booksList(context.isDarkMode, uid: user.uid),
                       ],
@@ -212,38 +216,96 @@ class _Home_UIState extends ConsumerState<Home_UI>
     return SizedBox();
   }
 
+  Widget _filterRow() {
+    final filters = ["All", "Regular", "Due", "Savings"];
+    final selectedFilter = ref.watch(bookFilterProvider);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: filters.map((filter) {
+          bool isSelected = selectedFilter == filter;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ChoiceChip(
+              label: Text(filter),
+              selected: isSelected,
+              onSelected: (val) {
+                if (val) {
+                  ref.read(bookFilterProvider.notifier).state = filter;
+                  // Reset count and scroll when filter changes
+                  ref.read(bookCountProvider.notifier).state = 5;
+                  _scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.ease,
+                  );
+                }
+              },
+              selectedColor: kColor(context).tertiary.withAlpha(50),
+              labelStyle: TextStyle(
+                color: isSelected
+                    ? kColor(context).tertiary
+                    : context.fadeTextColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: context.cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: kRadius(10),
+                side: BorderSide(
+                  color: isSelected
+                      ? kColor(context).tertiary
+                      : Colors.transparent,
+                ),
+              ),
+              showCheckmark: false,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _booksList(bool isDark, {required String uid}) {
     return Consumer(
       builder: (context, ref, child) {
         final asyncData = ref.watch(bookListStream);
         final bookList = ref.watch(bookListProvider);
 
+        // Filter the list locally for search only
+        final filteredList = bookList.where((book) {
+          bool matchesSearch =
+              kCompare(searchKey.text, book.bookName) ||
+              kCompare(searchKey.text, book.bookDescription);
+          return matchesSearch;
+        }).toList();
+
+        // Reset dateTitle for each build to ensure headers are correct in the filtered list
+        String lastDate = '';
+
         return Column(
           children: [
             ListView.builder(
-              itemCount: bookList.length,
+              itemCount: filteredList.length,
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                BookModel book = bookList[index];
-                if (dateTitle == book.date) {
-                  showDateWidget = false;
-                } else {
-                  dateTitle = book.date;
-                  showDateWidget = true;
+                BookModel book = filteredList[index];
+                bool showDate = false;
+                if (lastDate != book.date) {
+                  showDate = true;
+                  lastDate = book.date;
                 }
-                if (kCompare(searchKey.text, book.bookName) ||
-                    kCompare(searchKey.text, book.bookDescription)) {
-                  return BookTile(
-                    book: book,
-                    title: dateTitle,
-                    showDate: showDateWidget,
-                    onDelete: (id, name) {
-                      _deleteBook(bookName: name, bookId: id);
-                    },
-                  );
-                }
-                return const SizedBox();
+
+                return BookTile(
+                  book: book,
+                  title: book.date,
+                  showDate: showDate,
+                  onDelete: (id, name) {
+                    _deleteBook(bookName: name, bookId: id);
+                  },
+                );
               },
             ),
             kHeight(30),

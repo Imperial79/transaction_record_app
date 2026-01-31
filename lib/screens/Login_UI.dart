@@ -131,23 +131,20 @@ class _LoginUIState extends ConsumerState<LoginUI> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: kRadius(12),
-                                color: context.primaryColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: context.primaryColor.withAlpha(50),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                                color: context.isDarkMode
+                                    ? Light.scaffold
+                                    : Dark.scaffold,
                               ),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 20),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.login,
-                                    color: Colors.white,
+                                    color: context.isDarkMode
+                                        ? Colors.black
+                                        : Colors.white,
                                   ),
                                   width15,
                                   Text(

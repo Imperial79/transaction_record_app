@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -239,6 +241,56 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     }
   }
 
+  Future<void> _pickContact() async {
+    PermissionStatus status = await Permission.contacts.status;
+
+    if (status.isDenied) {
+      status = await Permission.contacts.request();
+    }
+
+    if (status.isGranted) {
+      final contact = await FlutterContacts.openExternalPick();
+      if (contact != null) {
+        setState(() {
+          sourceField.text = contact.displayName;
+        });
+      }
+    } else if (status.isPermanentlyDenied) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Permission Required"),
+            content: const Text(
+              "Contacts permission is required to pick a contact. Please enable it in app settings.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+                child: const Text("Open Settings"),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        KSnackbar(
+          context,
+          content: "Contacts permission denied!",
+          isDanger: true,
+        );
+      }
+    }
+  }
+
   //------------------------------------->
 
   @override
@@ -401,6 +453,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                           size: 15,
                         ),
                       ),
+                      suffix: IconButton(
+                        onPressed: _pickContact,
+                        icon: const Icon(Icons.contact_page_outlined),
+                        color: Colors.amber.shade900,
+                      ),
                     ),
                     height10,
                     Row(
@@ -414,8 +471,8 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                               color: transactMode == 'ONLINE'
                                   ? Colors.grey
                                   : context.isDarkMode
-                                      ? Colors.lightGreenAccent
-                                      : Colors.lightGreen,
+                                  ? Colors.lightGreenAccent
+                                  : Colors.lightGreen,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -429,8 +486,8 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                               fontFamily: 'Product',
                               color: transactMode == 'ONLINE'
                                   ? context.isDarkMode
-                                      ? Colors.blue.shade200
-                                      : Colors.blue.shade700
+                                        ? Colors.blue.shade200
+                                        : Colors.blue.shade700
                                   : Colors.grey,
                             ),
                             children: const [
@@ -504,11 +561,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         fontWeight: FontWeight.w500,
                         color: transactMode == 'CASH'
                             ? context.isDarkMode
-                                ? Colors.lightGreenAccent
-                                : Colors.lightGreen
+                                  ? Colors.lightGreenAccent
+                                  : Colors.lightGreen
                             : context.isDarkMode
-                                ? Colors.blue.shade200
-                                : Colors.blue.shade700,
+                            ? Colors.blue.shade200
+                            : Colors.blue.shade700,
                       ),
                     ),
                     Text(DateFormat('dd MMMM, yyyy').format(DateTime.now())),
@@ -572,15 +629,15 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
                         updateTransacts(user!.uid);
                       },
                       backgroundColor: transactType == "Income"
-                          ? context.profitCardColor
-                          : context.lossCardColor,
+                          ? kColor(context).primary
+                          : kColor(context).error,
                       icon: Icon(
                         transactType == 'Income'
                             ? Icons.file_download_outlined
                             : Icons.file_upload_outlined,
                         color: transactType == "Income"
-                            ? context.profitColor
-                            : context.lossColor,
+                            ? kColor(context).primary
+                            : kColor(context).error,
                       ),
                       label: "Update transact",
                     ),
@@ -595,20 +652,21 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   }
 
   Widget _modeIndicatorPill(String mode) {
+    bool isIncome = mode == 'Income';
     return _typeBtn(
-      icon: mode == 'Income'
+      icon: isIncome
           ? Icons.file_download_outlined
           : Icons.file_upload_outlined,
-      label: widget.trData.type,
+      label: isIncome ? 'Income' : 'Expense',
     );
   }
 
   Widget _typeBtn({required String label, required IconData icon}) {
+    bool isIncome = label == 'Income';
     return MaterialButton(
       onPressed: () {},
       shape: RoundedRectangleBorder(borderRadius: kRadius(50)),
-      color:
-          label == 'Expense' ? context.lossCardColor : context.profitCardColor,
+      color: isIncome ? kColor(context).primary : kColor(context).error,
       elevation: 0,
       highlightElevation: 0,
       child: Row(
@@ -617,14 +675,18 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
           Icon(
             icon,
             size: 20,
-            color: label == 'Expense' ? Colors.white : Colors.black,
+            color: isIncome
+                ? kColor(context).onPrimary
+                : kColor(context).onError,
           ),
           const SizedBox(width: 7),
           Text(
             label,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: label == 'Expense' ? Colors.white : Colors.black,
+              color: isIncome
+                  ? kColor(context).onPrimary
+                  : kColor(context).onError,
             ),
           ),
         ],
@@ -656,19 +718,16 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
         child: AnimatedAlign(
           curve: Curves.ease,
           duration: const Duration(milliseconds: 250),
-          alignment:
-              transactMode == 'ONLINE' ? Alignment.topRight : Alignment.topLeft,
+          alignment: transactMode == 'ONLINE'
+              ? Alignment.topRight
+              : Alignment.topLeft,
           child: CircleAvatar(
             backgroundColor: transactMode == 'ONLINE'
                 ? Colors.blue.shade700
                 : Colors.lightGreen,
             radius: 20,
             child: transactMode == 'ONLINE'
-                ? const Icon(
-                    Icons.webhook_sharp,
-                    color: Colors.white,
-                    size: 20,
-                  )
+                ? const Icon(Icons.webhook_sharp, color: Colors.white, size: 20)
                 : const Text(
                     '₹',
                     style: TextStyle(
