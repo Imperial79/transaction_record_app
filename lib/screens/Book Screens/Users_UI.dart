@@ -12,18 +12,19 @@ class UsersUI extends ConsumerStatefulWidget {
   final List<dynamic> users;
   final String ownerUid;
   final String bookId;
-  const UsersUI(
-      {super.key,
-      required this.users,
-      required this.ownerUid,
-      required this.bookId});
+  const UsersUI({
+    super.key,
+    required this.users,
+    required this.ownerUid,
+    required this.bookId,
+  });
 
   @override
   ConsumerState<UsersUI> createState() => _UsersUIState();
 }
 
 class _UsersUIState extends ConsumerState<UsersUI> {
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
   final List<dynamic> _allUsers = [];
   List<dynamic> _usersList = [];
 
@@ -40,35 +41,36 @@ class _UsersUIState extends ConsumerState<UsersUI> {
   }
 
   Future<void> _fetchBookUsers() async {
-    setState(() => isLoading = true);
+    isLoading.value = true;
     _usersList = [];
-    await FirebaseRefs.userRef
-        .where('uid', whereIn: _allUsers)
-        .get()
-        .then((value) {
+    await FirebaseRefs.userRef.where('uid', whereIn: _allUsers).get().then((
+      value,
+    ) {
       setState(() {
         for (var element in value.docs) {
           _usersList.add(element.data());
         }
       });
     });
-    setState(() => isLoading = false);
+    isLoading.value = false;
   }
 
   void _removeUserFromBook(String userUid) async {
     try {
-      setState(() => isLoading = true);
-      await FirebaseRefs.transactBookRef(widget.bookId).update({
-        'uid': FieldValue.arrayRemove([userUid]),
-      }).whenComplete(() async {
-        _allUsers.remove(userUid);
-        widget.users.remove(userUid);
-        KSnackbar(context, content: "User Removed!");
-        await _fetchBookUsers();
-      });
-      setState(() => isLoading = false);
+      isLoading.value = true;
+      await FirebaseRefs.transactBookRef(widget.bookId)
+          .update({
+            'uid': FieldValue.arrayRemove([userUid]),
+          })
+          .whenComplete(() async {
+            _allUsers.remove(userUid);
+            widget.users.remove(userUid);
+            KSnackbar(context, content: "User Removed!");
+            await _fetchBookUsers();
+          });
+      isLoading.value = false;
     } catch (e) {
-      setState(() => isLoading = false);
+      isLoading.value = false;
       KSnackbar(context, content: "Unable to remove user: $e");
     }
   }
@@ -78,9 +80,7 @@ class _UsersUIState extends ConsumerState<UsersUI> {
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
-      appBar: AppBar(
-        title: const Text('Joined Users'),
-      ),
+      appBar: AppBar(title: const Text('Joined Users')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(15.0),
@@ -91,10 +91,7 @@ class _UsersUIState extends ConsumerState<UsersUI> {
             itemCount: _usersList.length,
             itemBuilder: (context, index) {
               UserModel userData = UserModel.fromMap(_usersList[index]);
-              return _usersTile(
-                uid: user!.uid,
-                user: userData,
-              );
+              return _usersTile(uid: user!.uid, user: userData);
             },
             separatorBuilder: (context, index) => height20,
           ),
@@ -103,16 +100,10 @@ class _UsersUIState extends ConsumerState<UsersUI> {
     );
   }
 
-  Widget _usersTile({
-    required String uid,
-    required UserModel user,
-  }) {
+  Widget _usersTile({required String uid, required UserModel user}) {
     return Row(
       children: [
-        CircleAvatar(
-          backgroundImage: NetworkImage(user.imgUrl),
-          radius: 15,
-        ),
+        CircleAvatar(backgroundImage: NetworkImage(user.imgUrl), radius: 15),
         width10,
         Expanded(
           child: Column(

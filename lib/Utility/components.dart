@@ -7,6 +7,8 @@ import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
+import 'package:transaction_record_app/models/transactModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Helper/navigatorFns.dart';
 import 'commons.dart';
 
@@ -396,53 +398,75 @@ Widget kDeleteAlertDialog(
 Widget NewBookCard(BuildContext context) => Consumer(
   builder: (context, ref, _) {
     return Container(
-      margin: const EdgeInsets.all(15),
+      margin: const EdgeInsets.all(16),
       width: double.infinity,
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        borderRadius: kRadius(20),
-        gradient: const LinearGradient(
-          colors: [Light.profitCard, Colors.black],
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: [
+            context.primaryColor,
+            context.primaryColor.withAlpha(200),
+            Colors.black,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: context.primaryColor.withAlpha(60),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            'Create your first Transact Book',
+            'Ready to Track?',
             style: TextStyle(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.bold,
               color: Colors.white,
-              fontSize: 30,
-              letterSpacing: 1,
+              fontSize: 28,
+              letterSpacing: -0.5,
             ),
           ),
-          height10,
+          const SizedBox(height: 8),
           const Text(
-            'Track your daily expenses by creating categorised Transact Book',
+            'Create your first book and start managing your finances with ease.',
             style: TextStyle(
               fontWeight: FontWeight.w400,
-              color: Colors.white,
-              fontSize: 16,
+              color: Colors.white70,
+              fontSize: 14,
             ),
           ),
-          height10,
+          const SizedBox(height: 24),
           Align(
-            alignment: Alignment.topRight,
-            child: ElevatedButton(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton.icon(
               onPressed: () {
                 ref
                     .watch(pageControllerProvider)
                     .animateToPage(
                       1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.ease,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.fastOutSlowIn,
                     );
               },
-              child: const Text('Create'),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Create Book'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
           ),
         ],
@@ -460,44 +484,43 @@ Widget AnimatedFloatingButton(
 }) {
   return InkWell(
     onTap: onTap,
-    child: DecoratedBox(
+    borderRadius: BorderRadius.circular(20),
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        borderRadius: kRadius(20),
+        borderRadius: BorderRadius.circular(22),
         color: context.primaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: context.primaryColor.withAlpha(80),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: AnimatedSize(
-        reverseDuration: const Duration(milliseconds: 300),
-        duration: const Duration(milliseconds: 300),
-        alignment: Alignment.centerLeft,
-        curve: Curves.ease,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: showFullBtn ? 12 : 10,
-            vertical: 10,
+      padding: EdgeInsets.symmetric(
+        horizontal: showFullBtn ? 20 : 15,
+        vertical: 12,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.add_rounded,
+            color: context.isDarkMode ? Colors.black : Colors.white,
+            size: 24,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.add_circle_outline,
+          if (showFullBtn) const SizedBox(width: 8),
+          if (showFullBtn)
+            Text(
+              'New Book',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
                 color: context.isDarkMode ? Colors.black : Colors.white,
-                size: 30,
               ),
-              if (showFullBtn) const SizedBox(width: 10),
-              if (showFullBtn)
-                Text(
-                  'Create Book',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    color: context.isDarkMode ? Colors.black : Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     ),
   );
@@ -508,44 +531,44 @@ Widget KSearchBar(
   TextEditingController? controller,
   void Function(String)? onChanged,
 }) {
-  return Row(
-    children: [
-      Flexible(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: context.cardColor,
-            border: Border.all(
-              color: context.isDarkMode ? Colors.white12 : Colors.black12,
-            ),
-            borderRadius: kRadius(100),
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(child: Icon(Icons.search)),
-              width15,
-              Flexible(
-                child: TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.text,
-                  style: const TextStyle(fontSize: 15),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Search by name or amount',
-                    hintStyle: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: context.fadeTextColor,
-                      fontSize: 17,
-                    ),
-                  ),
-                  onChanged: onChanged,
-                ),
-              ),
-            ],
-          ),
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    decoration: BoxDecoration(
+      color: context.isDarkMode
+          ? context.cardColor.lighten(0.05)
+          : context.cardColor,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withAlpha(context.isDarkMode ? 0 : 5),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+      border: Border.all(color: context.fadeTextColor.withAlpha(20), width: 1),
+    ),
+    child: TextField(
+      controller: controller,
+      onChanged: onChanged,
+      style: const TextStyle(fontSize: 16),
+      decoration: InputDecoration(
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: context.fadeTextColor,
+          size: 20,
+        ),
+        hintText: 'Search books...',
+        hintStyle: TextStyle(
+          color: context.fadeTextColor.withAlpha(150),
+          fontSize: 15,
+        ),
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
         ),
       ),
-    ],
+    ),
   );
 }
 
@@ -556,4 +579,209 @@ Widget NoData(BuildContext context, {String customText = "No Data"}) {
       style: TextStyle(fontSize: 30, color: context.fadeTextColor),
     ),
   );
+}
+
+class TransactTile extends ConsumerWidget {
+  final Transact data;
+  final bool showUser;
+  final VoidCallback onTap;
+  final bool isDark;
+
+  const TransactTile({
+    super.key,
+    required this.data,
+    this.showUser = false,
+    required this.onTap,
+    this.isDark = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    bool isIncome = data.type == 'Income';
+    final user = ref.watch(userProvider);
+    final isMine = data.uid == user?.uid;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: context.fadeTextColor.withAlpha(15),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(isDark ? 0 : 5),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isIncome
+                        ? context.profitColor.withAlpha(30)
+                        : context.lossColor.withAlpha(30),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isIncome
+                        ? Icons.south_west_rounded
+                        : Icons.north_east_rounded,
+                    size: 18,
+                    color: isIncome ? context.profitColor : context.lossColor,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "₹${kMoneyFormat(data.amount)}",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: isIncome
+                                  ? context.profitColor
+                                  : context.lossColor,
+                            ),
+                          ),
+                          _buildModeBadge(context, data.transactMode),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12,
+                            color: context.fadeTextColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            data.time,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: context.fadeTextColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          if (data.source.isNotEmpty) ...[
+                            const SizedBox(width: 12),
+                            Icon(
+                              Icons.person_rounded,
+                              size: 12,
+                              color: context.fadeTextColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              data.source,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: context.fadeTextColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (data.description.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: context.scaffoldColor.withAlpha(
+                    context.isDarkMode ? 100 : 150,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  data.description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: context.isDarkMode ? Colors.white70 : Colors.black87,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+            if (showUser && !isMine) ...[
+              const SizedBox(height: 12),
+              FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(data.uid)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final userData = snapshot.data!.data();
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Added by ${userData?['name'] ?? 'User'}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: context.fadeTextColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        CircleAvatar(
+                          radius: 10,
+                          backgroundImage: NetworkImage(
+                            userData?['imgUrl'] ?? '',
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeBadge(BuildContext context, String mode) {
+    bool isCash = mode.toUpperCase() == 'CASH';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isCash ? Colors.amber.withAlpha(30) : Colors.blue.withAlpha(30),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        mode.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+          color: isCash ? Colors.amber.shade700 : Colors.blue.shade700,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
 }

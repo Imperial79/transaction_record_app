@@ -17,8 +17,10 @@ const SizedBox height15 = SizedBox(height: 15);
 const SizedBox height20 = SizedBox(height: 20);
 const SizedBox height50 = SizedBox(height: 50);
 
+const SizedBox width4 = SizedBox(width: 4);
 const SizedBox width5 = SizedBox(width: 5);
 const SizedBox width10 = SizedBox(width: 10);
+const SizedBox width12 = SizedBox(width: 12);
 const SizedBox width15 = SizedBox(width: 15);
 const SizedBox width20 = SizedBox(width: 20);
 
@@ -56,15 +58,15 @@ void KSnackbar(
   ).show(context);
 }
 
-Widget kNoData(
-  BuildContext context, {
-  required String title,
-}) {
+Widget kNoData(BuildContext context, {required String title}) {
   return Center(
     child: Text(
       title,
       style: TextStyle(
-          fontSize: 25, fontFamily: "Serif", color: context.fadeTextColor),
+        fontSize: 25,
+        fontFamily: "Serif",
+        color: context.fadeTextColor,
+      ),
     ),
   );
 }

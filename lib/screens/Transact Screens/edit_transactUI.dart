@@ -1,20 +1,17 @@
-// ignore_for_file: non_constant_identifier_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Helper/transactFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
-import 'package:transaction_record_app/Utility/KTextfield.dart';
-import 'package:transaction_record_app/Utility/newColors.dart';
-import '../../Helper/transactFunctions.dart';
+import 'package:transaction_record_app/models/transactModel.dart';
+import 'package:transaction_record_app/services/database.dart';
 import '../../Utility/commons.dart';
-import '../../models/transactModel.dart';
-import '../../services/database.dart';
-import '../../Utility/components.dart';
+import '../../Utility/newColors.dart';
 
 class EditTransactUI extends ConsumerStatefulWidget {
   final Transact trData;
@@ -31,8 +28,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   TextEditingController amountField = TextEditingController();
   TextEditingController sourceField = TextEditingController();
   TextEditingController descriptionField = TextEditingController();
-  final title = TextEditingController();
-  bool _isLoading = false;
+  final isLoading = ValueNotifier(false);
 
   //---------------
   String source = 'From';
@@ -50,9 +46,15 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   };
 
   //  Functions ----------------------------------------->
+  late FocusNode _amountFocusNode;
   @override
   void initState() {
     super.initState();
+    _amountFocusNode = FocusNode();
+    // Delay focus to prevent jank during page transition
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _amountFocusNode.requestFocus();
+    });
     // title.text = widget.snap['title'];
     amountField.text = widget.trData.amount;
     descriptionField.text = widget.trData.description;
@@ -111,44 +113,51 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   }
 
   Future<void> updateTransacts(String uid) async {
-    if (amountField.text != '') {
-      if (widget.trData.date != _selectedDateMap['displayDate'] ||
-          widget.trData.time != _selectedTimeMap['displayTime']) {
-        _selectedTimeStamp = convertTimeToTS(
-          _selectedDateMap['tsDate'],
-          _selectedTimeMap['tsTime'],
+    try {
+      isLoading.value = true;
+      if (amountField.text != '') {
+        if (widget.trData.date != _selectedDateMap['displayDate'] ||
+            widget.trData.time != _selectedTimeMap['displayTime']) {
+          _selectedTimeStamp = convertTimeToTS(
+            _selectedDateMap['tsDate'],
+            _selectedTimeMap['tsTime'],
+          );
+        }
+
+        Transact updatedTransact = Transact(
+          uid: uid,
+          transactId: widget.trData.transactId,
+          amount: amountField.text,
+          source: sourceField.text,
+          transactMode: transactMode,
+          description: descriptionField.text,
+          type: transactType,
+          date: _selectedDateMap['displayDate'],
+          time: _selectedTimeMap['displayTime'],
+          bookId: widget.trData.bookId,
+          ts: _selectedTimeStamp,
         );
+        databaseMethods.updateTransacts(
+          widget.trData.bookId,
+          widget.trData.transactId,
+          updatedTransact.toMap(),
+        );
+
+        handleEditedNoteTransaction();
+
+        //  resetting the values
+        amountField.clear();
+        descriptionField.clear();
+        sourceField.clear();
+        transactType = 'Income';
+        source = 'From';
+
+        Navigator.pop(context);
       }
-
-      Transact updatedTransact = Transact(
-        uid: uid,
-        transactId: widget.trData.transactId,
-        amount: amountField.text,
-        source: sourceField.text,
-        transactMode: transactMode,
-        description: descriptionField.text,
-        type: transactType,
-        date: _selectedDateMap['displayDate'],
-        time: _selectedTimeMap['displayTime'],
-        bookId: widget.trData.bookId,
-        ts: _selectedTimeStamp,
-      );
-      databaseMethods.updateTransacts(
-        widget.trData.bookId,
-        widget.trData.transactId,
-        updatedTransact.toMap(),
-      );
-
-      handleEditedNoteTransaction();
-
-      //  resetting the values
-      amountField.clear();
-      descriptionField.clear();
-      sourceField.clear();
-      transactType = 'Income';
-      source = 'From';
-
-      Navigator.pop(context);
+    } catch (e) {
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -200,9 +209,8 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   Future<void> _deleteTransact() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      isLoading.value = true;
+
       await DatabaseMethods().deleteTransact(
         widget.trData.bookId,
         widget.trData.transactId,
@@ -234,9 +242,7 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
       KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        isLoading.value = false;
       }
     }
   }
@@ -295,11 +301,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
 
   @override
   void dispose() {
-    super.dispose();
+    _amountFocusNode.dispose();
     amountField.dispose();
-    title.dispose();
     descriptionField.dispose();
     sourceField.dispose();
+    super.dispose();
   }
 
   // -----------------------------------------
@@ -307,386 +313,199 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+    final isIncome = transactType == 'Income';
+    final primaryColor = isIncome ? context.profitColor : context.lossColor;
+
     return KScaffold(
-      isLoading: _isLoading,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 10,
+      isLoading: isLoading,
+      body: Column(
+        children: [
+          // Standard App Bar for Revision UI
+          Container(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              MediaQuery.of(context).padding.top + 10,
+              16,
+              16,
+            ),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              border: Border(
+                bottom: BorderSide(color: context.fadeTextColor.withAlpha(20)),
               ),
-              child: Row(
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  "Edit Transaction",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => AlertBox(context.isDarkMode),
+                  ),
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              physics: const BouncingScrollPhysics(),
+              child: Column(
                 children: [
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: context.cardColor,
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.close,
-                        size: 20,
-                        color: context.colorScheme.onSurface,
+                  // Amount Input - Cleaner and less dominant
+                  _entryCard(
+                    icon: Icons.payments_rounded,
+                    title: "Edit Amount",
+                    child: TextField(
+                      controller: amountField,
+                      focusNode: _amountFocusNode,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: primaryColor,
+                      ),
+                      decoration: InputDecoration(
+                        prefixText: "₹ ",
+                        prefixStyle: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w400,
+                          color: primaryColor,
+                        ),
+                        hintText: "0",
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
                   ),
-                  const Spacer(),
-                  _modeIndicatorPill(widget.trData.type),
+                  const SizedBox(height: 16),
+                  _entryCard(
+                    icon: Icons.notes_rounded,
+                    title: "Description",
+                    child: TextField(
+                      controller: descriptionField,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        hintText: "Add description...",
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _entryCard(
+                    icon: Icons.person_rounded,
+                    title: "Source / Person",
+                    child: TextField(
+                      controller: sourceField,
+                      decoration: InputDecoration(
+                        hintText: "Who is this from/to?",
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          onPressed: _pickContact,
+                          icon: const Icon(Icons.contact_page_rounded),
+                          color: context.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _entryCard(
+                          icon: Icons.calendar_today_rounded,
+                          title: "Date",
+                          onTap: () async {
+                            _selectedDateMap = await selectDate(
+                              context,
+                              setState,
+                              DateFormat.yMMMMd().parse(
+                                _selectedDateMap['displayDate'],
+                              ),
+                            );
+                          },
+                          child: Text(
+                            _selectedDateMap['displayDate'],
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _entryCard(
+                          icon: Icons.schedule_rounded,
+                          title: "Time",
+                          onTap: () async {
+                            _selectedTimeMap = await selectTime(
+                              context,
+                              setState,
+                              TimeOfDay.fromDateTime(
+                                DateFormat(
+                                  'hh:mm a',
+                                ).parse(_selectedTimeMap['displayTime']),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            _selectedTimeMap['displayTime'],
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _entryCard(
+                    icon: Icons.account_balance_wallet_rounded,
+                    title: "Payment Mode",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          transactMode,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            color: transactMode == 'ONLINE'
+                                ? Colors.blue
+                                : Colors.green,
+                          ),
+                        ),
+                        _modeToggle(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    KTextfield.regular(
-                      context,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      controller: descriptionField,
-                      maxLines: 4,
-                      minLines: 1,
-                      hintText: 'Add description (Optional)',
-                      icon: const CircleAvatar(
-                        radius: 15,
-                        backgroundColor: Colors.blue,
-                        child: Icon(
-                          Icons.short_text_rounded,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    height10,
-                    kCard(
-                      context,
-                      icon: Icons.schedule,
-                      title: "Created On",
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InkWell(
-                                onTap: () async {
-                                  _selectedDateMap = await selectDate(
-                                    context,
-                                    setState,
-                                    DateTime.parse(widget.trData.ts),
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: kRadius(10),
-                                    color: context.scaffoldColor,
-                                  ),
-                                  child: Text(
-                                    _selectedDateMap['displayDate'],
-                                    style: TextStyle(
-                                      color: context.colorScheme.onSurface,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            width5,
-                            InkWell(
-                              onTap: () async {
-                                _selectedTimeMap = await selectTime(
-                                  context,
-                                  setState,
-                                  TimeOfDay.fromDateTime(
-                                    DateTime.parse(_selectedDateMap['tsDate']),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: kRadius(10),
-                                  color: context.scaffoldColor,
-                                ),
-                                child: Text(
-                                  _selectedTimeMap['displayTime'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    height10,
-                    KTextfield.regular(
-                      context,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      controller: sourceField,
-                      maxLines: 4,
-                      minLines: 1,
-                      hintText: 'Add source (Optional)',
-                      icon: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: Colors.amber.shade900,
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 15,
-                        ),
-                      ),
-                      suffix: IconButton(
-                        onPressed: _pickContact,
-                        icon: const Icon(Icons.contact_page_outlined),
-                        color: Colors.amber.shade900,
-                      ),
-                    ),
-                    height10,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RotatedBox(
-                          quarterTurns: 45,
-                          child: Text(
-                            'CASH',
-                            style: TextStyle(
-                              color: transactMode == 'ONLINE'
-                                  ? Colors.grey
-                                  : context.isDarkMode
-                                  ? Colors.lightGreenAccent
-                                  : Colors.lightGreen,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        width10,
-                        _modeToggle(context),
-                        width10,
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              fontFamily: 'Product',
-                              color: transactMode == 'ONLINE'
-                                  ? context.isDarkMode
-                                        ? Colors.blue.shade200
-                                        : Colors.blue.shade700
-                                  : Colors.grey,
-                            ),
-                            children: const [
-                              TextSpan(
-                                text: 'ON',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '\nLINE',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    height20,
-                    MaterialButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertBox(context.isDarkMode);
-                          },
-                        );
-                      },
-                      shape: RoundedRectangleBorder(borderRadius: kRadius(10)),
-                      elevation: 0,
-                      padding: EdgeInsets.zero,
-                      child: Ink(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 25,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: kRadius(10),
-                          gradient: LinearGradient(
-                            colors: [Colors.red, Colors.red.shade900],
-                          ),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.white),
-                            SizedBox(width: 5),
-                            Text(
-                              'Delete Transact',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    height20,
-                    // BottomCard(context, date: _selectedDateMap['displayDate']),
-                    height10,
-                    Text(
-                      transactMode,
-                      style: TextStyle(
-                        letterSpacing: 5,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: transactMode == 'CASH'
-                            ? context.isDarkMode
-                                  ? Colors.lightGreenAccent
-                                  : Colors.lightGreen
-                            : context.isDarkMode
-                            ? Colors.blue.shade200
-                            : Colors.blue.shade700,
-                      ),
-                    ),
-                    Text(DateFormat('dd MMMM, yyyy').format(DateTime.now())),
-                    height10,
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            context.scaffoldColor,
-                            context.isDarkMode
-                                ? Colors.grey.lighten(0)
-                                : Colors.grey.shade300,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: amountField,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: context.colorScheme.onSurface,
-                          fontSize: 30,
-                        ),
-                        cursorColor: context.colorScheme.onSurface,
-                        decoration: InputDecoration(
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: Text(
-                              "INR",
-                              style: TextStyle(
-                                color: context.isDarkMode
-                                    ? Colors.white
-                                    : Colors.grey.shade700,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ),
-                          prefixIconConstraints: const BoxConstraints(
-                            minHeight: 0,
-                            minWidth: 0,
-                          ),
-                          border: InputBorder.none,
-                          hintText: '0.00',
-                          hintStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade400,
-                            fontSize: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    height20,
-                    KButton.icon(
-                      context,
-                      isOutlined: true,
-                      onPressed: () {
-                        updateTransacts(user!.uid);
-                      },
-                      backgroundColor: transactType == "Income"
-                          ? kColor(context).primary
-                          : kColor(context).error,
-                      icon: Icon(
-                        transactType == 'Income'
-                            ? Icons.file_download_outlined
-                            : Icons.file_upload_outlined,
-                        color: transactType == "Income"
-                            ? kColor(context).primary
-                            : kColor(context).error,
-                      ),
-                      label: "Update transact",
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _modeIndicatorPill(String mode) {
-    bool isIncome = mode == 'Income';
-    return _typeBtn(
-      icon: isIncome
-          ? Icons.file_download_outlined
-          : Icons.file_upload_outlined,
-      label: isIncome ? 'Income' : 'Expense',
-    );
-  }
-
-  Widget _typeBtn({required String label, required IconData icon}) {
-    bool isIncome = label == 'Income';
-    return MaterialButton(
-      onPressed: () {},
-      shape: RoundedRectangleBorder(borderRadius: kRadius(50)),
-      color: isIncome ? kColor(context).primary : kColor(context).error,
-      elevation: 0,
-      highlightElevation: 0,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: isIncome
-                ? kColor(context).onPrimary
-                : kColor(context).onError,
           ),
-          const SizedBox(width: 7),
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: isIncome
-                  ? kColor(context).onPrimary
-                  : kColor(context).onError,
+
+          // Action Button
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: KButton.full(
+              context,
+              label: "UPDATE TRANSACTION",
+              onPressed: () {
+                updateTransacts(user!.uid);
+              },
             ),
           ),
         ],
@@ -694,48 +513,80 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
     );
   }
 
-  Widget _modeToggle(BuildContext context) {
+  Widget _entryCard({
+    required IconData icon,
+    required String title,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.fadeTextColor.withAlpha(20)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 16, color: context.fadeTextColor),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: context.fadeTextColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _modeToggle() {
+    bool isOnline = transactMode == 'ONLINE';
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (transactMode == 'ONLINE') {
-            transactMode = 'CASH';
-            setState(() {});
-          } else {
-            transactMode = 'ONLINE';
-            setState(() {});
-          }
+          transactMode = isOnline ? 'CASH' : 'ONLINE';
         });
       },
       child: Container(
-        padding: const EdgeInsets.all(10),
-        width: 300,
+        padding: const EdgeInsets.all(4),
+        width: 60,
+        height: 32,
         decoration: BoxDecoration(
-          color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
-              .lighten(0.2),
-          borderRadius: kRadius(50),
+          color: isOnline
+              ? Colors.blue.withAlpha(40)
+              : Colors.green.withAlpha(40),
+          borderRadius: BorderRadius.circular(50),
         ),
         child: AnimatedAlign(
-          curve: Curves.ease,
-          duration: const Duration(milliseconds: 250),
-          alignment: transactMode == 'ONLINE'
-              ? Alignment.topRight
-              : Alignment.topLeft,
-          child: CircleAvatar(
-            backgroundColor: transactMode == 'ONLINE'
-                ? Colors.blue.shade700
-                : Colors.lightGreen,
-            radius: 20,
-            child: transactMode == 'ONLINE'
-                ? const Icon(Icons.webhook_sharp, color: Colors.white, size: 20)
-                : const Text(
-                    '₹',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                    ),
-                  ),
+          duration: const Duration(milliseconds: 200),
+          alignment: isOnline ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: isOnline ? Colors.blue : Colors.green,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isOnline ? Icons.language_rounded : Icons.payments_rounded,
+              size: 14,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

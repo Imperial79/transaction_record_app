@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,10 +8,8 @@ import 'package:transaction_record_app/Helper/transactFunctions.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
-import 'package:transaction_record_app/Utility/KTextfield.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/newColors.dart';
 
@@ -59,18 +55,35 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
     'displayTime': DateFormat('hh:mm a').format(DateTime.now()),
     'tsTime': DateFormat('HH:mm').format(DateTime.now()),
   };
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
+  late FocusNode _amountFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountFocusNode = FocusNode();
+    // Delay focus to prevent jank during page transition
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _amountFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _amountFocusNode.dispose();
+    amountField.dispose();
+    descriptionField.dispose();
+    sourceField.dispose();
+    super.dispose();
+  }
 
   void handleNewNoteTransaction(String uploadableAmount) {
-    //  calculating the Income and Expense for new transact
     if (transactType == 'Income') {
-      //  UPDATING INSIDE BOOK
       Map<String, dynamic> newMap = {
         'income': FieldValue.increment(double.parse(uploadableAmount)),
       };
       databaseMethods.updateBookTransactions(bookId, newMap);
     } else {
-      //  UPDATING INSIDE BOOK
       Map<String, dynamic> newMap = {
         'expense': FieldValue.increment(double.parse(uploadableAmount)),
       };
@@ -81,9 +94,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   Future<void> saveTransacts(String uid) async {
     FocusScope.of(context).unfocus();
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
       if (amountField.text != '') {
         if (_todayTimeMap['displayDate'] != _selectedDateMap['displayDate'] ||
             _todayTimeMap['displayTime'] != _selectedTimeMap['displayTime']) {
@@ -124,7 +135,6 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
 
         handleNewNoteTransaction(uploadableAmount);
 
-        //  resetting the values
         amountField.clear();
         descriptionField.clear();
         sourceField.clear();
@@ -136,9 +146,7 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
     } catch (e) {
       KSnackbar(context, content: "Unable to create Transact!", isDanger: true);
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     }
   }
 
@@ -193,423 +201,331 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    amountField.dispose();
-    descriptionField.dispose();
-    sourceField.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+    final isIncome = transactType == 'Income';
+    final primaryColor = isIncome ? context.profitColor : context.lossColor;
+    final primaryBg = isIncome
+        ? kColor(context).primaryContainer
+        : kColor(context).errorContainer;
+
     return KScaffold(
       isLoading: isLoading,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: context.cardColor,
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.close,
-                        size: 20,
-                        color: context.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  if (bookType != "savings")
-                    Row(
-                      children: [
-                        _typeBtn(
-                          icon: Icons.file_download_outlined,
-                          label: 'Income',
-                        ),
-                        width10,
-                        _typeBtn(
-                          icon: Icons.file_upload_outlined,
-                          label: 'Expense',
-                        ),
-                      ],
-                    ),
-                ],
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(16, 10, 16, 30),
+            decoration: BoxDecoration(
+              color: primaryBg,
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(32),
               ),
-              height15,
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      KTextfield.regular(
-                        context,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                        controller: descriptionField,
-                        maxLines: 4,
-                        minLines: 1,
-                        hintText: 'Add description (Optional)',
-                        icon: Icon(Icons.short_text_rounded),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close_rounded),
                       ),
-                      height10,
-                      kCard(
-                        context,
-                        icon: Icons.schedule,
-                        title: "Created On",
-                        children: [
-                          Row(
+                      if (bookType != "savings")
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: context.cardColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () async {
-                                    _selectedDateMap = await selectDate(
-                                      context,
-                                      setState,
-                                      DateTime.now(),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: kRadius(10),
-                                      color: context.scaffoldColor,
-                                    ),
-                                    child: Text(
-                                      _selectedDateMap['displayDate'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              width5,
-                              InkWell(
-                                onTap: () async {
-                                  _selectedTimeMap = await selectTime(
-                                    context,
-                                    setState,
-                                    TimeOfDay.now(),
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: kRadius(10),
-                                    color: context.scaffoldColor,
-                                  ),
-                                  child: Text(
-                                    _selectedTimeMap['displayTime'],
-                                    style: TextStyle(
-                                      color: context.colorScheme.onSurface,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              _typeTab('Income', Icons.south_west_rounded),
+                              _typeTab('Expense', Icons.north_east_rounded),
                             ],
                           ),
-                        ],
-                      ),
-                      height10,
-                      KTextfield.regular(
-                        context,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
                         ),
-                        controller: sourceField,
-                        maxLines: 4,
-                        minLines: 1,
-                        hintText: 'Add Source (Optional)',
-                        icon: const Icon(Icons.person),
-                        suffix: IconButton(
+                      const SizedBox(width: 40),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    "ENTER AMOUNT",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 2,
+                      color: primaryColor.withAlpha(180),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: TextField(
+                      controller: amountField,
+                      focusNode: _amountFocusNode,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 56,
+                        fontWeight: FontWeight.w900,
+                        color: primaryColor,
+                      ),
+                      decoration: InputDecoration(
+                        prefixText: "₹ ",
+                        prefixStyle: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w400,
+                          color: primaryColor,
+                        ),
+                        hintText: "0",
+                        hintStyle: TextStyle(
+                          color: primaryColor.withAlpha(100),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  _entryCard(
+                    icon: Icons.notes_rounded,
+                    title: "Description",
+                    child: TextField(
+                      controller: descriptionField,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        hintText: "What was this for?",
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _entryCard(
+                    icon: Icons.person_rounded,
+                    title: "Source / Person",
+                    child: TextField(
+                      controller: sourceField,
+                      decoration: InputDecoration(
+                        hintText: "Who is this from/to?",
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
                           onPressed: _pickContact,
-                          icon: const Icon(Icons.contact_page_outlined),
+                          icon: const Icon(Icons.contact_page_rounded),
                           color: context.primaryColor,
                         ),
                       ),
-                      height10,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RotatedBox(
-                            quarterTurns: 45,
-                            child: Text(
-                              'CASH',
-                              style: TextStyle(
-                                color: transactMode == 'ONLINE'
-                                    ? Colors.grey
-                                    : context.isDarkMode
-                                    ? Colors.lightGreenAccent
-                                    : Colors.lightGreen,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          width10,
-                          _modeToggle(context),
-                          width10,
-                          RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontFamily: 'Product',
-                                color: transactMode == 'ONLINE'
-                                    ? context.isDarkMode
-                                          ? Colors.blue.shade200
-                                          : Colors.blue.shade700
-                                    : Colors.grey,
-                              ),
-                              children: const [
-                                TextSpan(
-                                  text: 'ON',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '\nLINE',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      height20,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              transactMode,
-                              style: TextStyle(
-                                letterSpacing: 1,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: transactMode == 'CASH'
-                                    ? context.isDarkMode
-                                          ? Colors.lightGreenAccent
-                                          : Colors.lightGreen
-                                    : context.isDarkMode
-                                    ? Colors.blue.shade200
-                                    : Colors.blue.shade700,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            DateFormat('dd MMMM, yyyy').format(DateTime.now()),
-                          ),
-                        ],
-                      ),
-                      height20,
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              context.scaffoldColor,
-                              context.isDarkMode
-                                  ? Colors.grey.lighten(0)
-                                  : Colors.grey.shade300,
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                        ),
-                        child: TextField(
-                          controller: amountField,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: context.colorScheme.onSurface,
-                            fontSize: 30,
-                          ),
-                          cursorColor: context.colorScheme.onSurface,
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: Text(
-                                "INR",
-                                style: TextStyle(
-                                  color: context.isDarkMode
-                                      ? Colors.white
-                                      : Colors.grey.shade700,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                            ),
-                            prefixIconConstraints: const BoxConstraints(
-                              minHeight: 0,
-                              minWidth: 0,
-                            ),
-                            border: InputBorder.none,
-                            hintText: '0.00',
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: context.fadeTextColor,
-                              fontSize: 30,
-                            ),
-                          ),
-                        ),
-                      ),
-                      height20,
-                      if (bookType == "savings")
-                        KButton.full(
-                          context,
-                          label: "Save",
-                          onPressed: () {
-                            saveTransacts(user!.uid);
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _entryCard(
+                          icon: Icons.calendar_today_rounded,
+                          title: "Date",
+                          onTap: () async {
+                            _selectedDateMap = await selectDate(
+                              context,
+                              setState,
+                              DateTime.now(),
+                            );
                           },
-                        )
-                      else
-                        KButton.icon(
-                          context,
-                          isOutlined: true,
-                          onPressed: () {
-                            saveTransacts(user!.uid);
-                          },
-                          backgroundColor: transactType == "Income"
-                              ? context.profitCardColor
-                              : context.lossCardColor,
-                          icon: Icon(
-                            transactType == 'Income'
-                                ? Icons.file_download_outlined
-                                : Icons.file_upload_outlined,
-                            color: transactType == "Income"
-                                ? context.profitColor
-                                : context.lossColor,
+                          child: Text(
+                            _selectedDateMap['displayDate'],
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          label: "Add transact",
                         ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _entryCard(
+                          icon: Icons.schedule_rounded,
+                          title: "Time",
+                          onTap: () async {
+                            _selectedTimeMap = await selectTime(
+                              context,
+                              setState,
+                              TimeOfDay.now(),
+                            );
+                          },
+                          child: Text(
+                            _selectedTimeMap['displayTime'],
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  _entryCard(
+                    icon: Icons.account_balance_wallet_rounded,
+                    title: "Payment Mode",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          transactMode,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            color: transactMode == 'ONLINE'
+                                ? Colors.blue
+                                : Colors.green,
+                          ),
+                        ),
+                        _modeToggle(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
-            ],
+            ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: KButton.full(
+              context,
+              label: "SAVE TRANSACTION",
+              onPressed: () => saveTransacts(user!.uid),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _typeTab(String label, IconData icon) {
+    bool isSelected = transactType == label;
+    bool isIncome = label == 'Income';
+    return GestureDetector(
+      onTap: () => setState(() => transactType = label),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isIncome
+                    ? kColor(context).primaryContainer
+                    : context.lossCardColor)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : context.fadeTextColor,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.white : context.fadeTextColor,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _modeToggle(BuildContext context) {
+  Widget _entryCard({
+    required IconData icon,
+    required String title,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.fadeTextColor.withAlpha(20)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 16, color: context.fadeTextColor),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: context.fadeTextColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _modeToggle() {
+    bool isOnline = transactMode == 'ONLINE';
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (transactMode == 'ONLINE') {
-            transactMode = 'CASH';
-            setState(() {});
-          } else {
-            transactMode = 'ONLINE';
-            setState(() {});
-          }
+          transactMode = isOnline ? 'CASH' : 'ONLINE';
         });
       },
       child: Container(
-        padding: const EdgeInsets.all(10),
-        width: 300,
+        padding: const EdgeInsets.all(4),
+        width: 60,
+        height: 32,
         decoration: BoxDecoration(
-          color: (transactMode == 'ONLINE' ? Colors.blue : Colors.lightGreen)
-              .lighten(0.2),
-          borderRadius: kRadius(50),
+          color: isOnline
+              ? Colors.blue.withAlpha(40)
+              : Colors.green.withAlpha(40),
+          borderRadius: BorderRadius.circular(50),
         ),
         child: AnimatedAlign(
-          curve: Curves.ease,
-          duration: const Duration(milliseconds: 250),
-          alignment: transactMode == 'ONLINE'
-              ? Alignment.topRight
-              : Alignment.topLeft,
-          child: CircleAvatar(
-            backgroundColor: transactMode == 'ONLINE'
-                ? Colors.blue.shade700
-                : Colors.lightGreen,
-            radius: 20,
-            child: transactMode == 'ONLINE'
-                ? const Icon(Icons.webhook_sharp, color: Colors.white, size: 20)
-                : const Text(
-                    '₹',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                    ),
-                  ),
+          duration: const Duration(milliseconds: 200),
+          alignment: isOnline ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: isOnline ? Colors.blue : Colors.green,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: (isOnline ? Colors.blue : Colors.green).withAlpha(100),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: Icon(
+              isOnline ? Icons.language_rounded : Icons.payments_rounded,
+              size: 14,
+              color: Colors.white,
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _typeBtn({required String label, required IconData icon}) {
-    bool isIncome = label == 'Income';
-    bool isSelected = transactType == label;
-    return ElevatedButton.icon(
-      onPressed: () {
-        setState(() {
-          transactType = label;
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        elevation: 0,
-        backgroundColor: isIncome
-            ? isSelected
-                  ? context.profitCardColor
-                  : context.cardColor
-            : isSelected
-            ? context.isDarkMode
-                  ? Colors.redAccent
-                  : Colors.black
-            : context.cardColor,
-      ),
-      icon: Icon(
-        icon,
-        color: isIncome
-            ? isSelected
-                  ? Colors.black
-                  : Colors.grey
-            : isSelected
-            ? Colors.white
-            : Colors.grey,
-        size: 20,
-      ),
-      label: Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          // fontSize: 12,
-          color: isIncome
-              ? isSelected
-                    ? Colors.black
-                    : Colors.grey
-              : isSelected
-              ? Colors.white
-              : context.isDarkMode
-              ? Colors.grey
-              : Colors.black,
         ),
       ),
     );

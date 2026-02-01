@@ -8,25 +8,24 @@ import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
+import 'package:transaction_record_app/screens/Account Screen/accountUI.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/components.dart';
 
 class HomeMenuUI extends ConsumerStatefulWidget {
-  const HomeMenuUI({super.key});
+  final ValueNotifier<bool>? isLoading;
+  const HomeMenuUI({super.key, this.isLoading});
 
   @override
   ConsumerState<HomeMenuUI> createState() => _HomeMenuUIState();
 }
 
 class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
-  bool isLoading = false;
-
   Future<void> _signOut() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      if (widget.isLoading != null) {
+        widget.isLoading!.value = true;
+      }
 
       final res = await ref.read(authRepository).signOut();
       if (res) {
@@ -37,10 +36,8 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
     } catch (e) {
       KSnackbar(context, content: "Something went wrong!", isDanger: true);
     } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+      if (mounted && widget.isLoading != null) {
+        widget.isLoading!.value = false;
       }
     }
   }
@@ -88,12 +85,37 @@ class _HomeMenuUIState extends ConsumerState<HomeMenuUI> {
                     : Colors.red.shade900,
                 child: IconButton(
                   onPressed: () {
-                    _signOut();
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Sign Out'),
+                        content: const Text(
+                          'Are you sure you want to sign out?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _signOut();
+                            },
+                            child: Text(
+                              'Logout',
+                              style: TextStyle(color: context.lossColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   icon: Icon(
                     Icons.logout,
-                    color:
-                        context.isDarkMode ? Colors.white : Colors.red.shade900,
+                    color: context.isDarkMode
+                        ? Colors.white
+                        : Colors.red.shade900,
                   ),
                 ),
                 btnColor: context.isDarkMode

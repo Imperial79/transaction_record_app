@@ -7,49 +7,52 @@ import 'package:transaction_record_app/Utility/newColors.dart';
 import 'commons.dart';
 
 // ignore: must_be_immutable
-class KScaffold extends StatefulWidget {
+class KScaffold extends StatelessWidget {
   PreferredSizeWidget? appBar;
   final Widget body;
   FloatingActionButtonLocation? floatingActionButtonLocation;
   FloatingActionButtonAnimator? floatingActionButtonAnimator;
   Widget? floatingActionButton;
-  bool isLoading;
+  ValueNotifier<bool>? isLoading;
   KScaffold({
     super.key,
     this.appBar,
     required this.body,
-    this.isLoading = false,
+    this.isLoading,
     this.floatingActionButtonAnimator,
     this.floatingActionButtonLocation,
     this.floatingActionButton,
   });
 
   @override
-  State<KScaffold> createState() => _KScaffoldState();
-}
-
-class _KScaffoldState extends State<KScaffold> {
-  @override
   Widget build(BuildContext context) {
     setSystemUIColors(context);
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Scaffold(
-            appBar: widget.appBar,
-            body: widget.body,
-            floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
-            floatingActionButtonLocation: widget.floatingActionButtonLocation,
-            floatingActionButton: widget.floatingActionButton,
-          ),
-          FullScreenLoading(isLoading: widget.isLoading),
-        ],
+      body: ValueListenableBuilder(
+        valueListenable: isLoading ?? ValueNotifier(false),
+        builder: (context, value, child) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Scaffold(
+                appBar: appBar,
+                body: body,
+                floatingActionButtonAnimator: floatingActionButtonAnimator,
+                floatingActionButtonLocation: floatingActionButtonLocation,
+                floatingActionButton: floatingActionButton,
+              ),
+              _fullScreenLoading(context, isLoading: value),
+            ],
+          );
+        },
       ),
     );
   }
 
-  AnimatedSwitcher FullScreenLoading({required bool isLoading}) {
+  AnimatedSwitcher _fullScreenLoading(
+    BuildContext context, {
+    required bool isLoading,
+  }) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 200),

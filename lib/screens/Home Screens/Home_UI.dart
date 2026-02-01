@@ -37,7 +37,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
   final showMenuProvider = StateProvider<bool>((ref) => false);
 
   bool isKeyboardOpen = false;
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
 
   @override
   bool get wantKeepAlive => true;
@@ -49,13 +49,13 @@ class _Home_UIState extends ConsumerState<Home_UI>
   }
 
   void scrollListener() {
-    if (_scrollController.position.atEdge) {
-      bool isBottom =
-          _scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent;
-      if (isBottom) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final hasMore = ref.read(hasMoreBooksProvider);
+      if (hasMore && !isLoading.value) {
+        // Simple debounce: only increment if we aren't already loading something elsewhere
+        // (In a more complex app, we'd use a dedicated 'isPaginationLoading' state)
         ref.read(bookCountProvider.notifier).state += 5;
-        ref.refresh(bookListStream.future);
       }
     }
   }
@@ -65,9 +65,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
     required String bookId,
   }) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
 
       final res = await ref.read(bookRepository).deleteBook(bookId: bookId);
       if (res) {
@@ -81,9 +79,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
         isDanger: true,
       );
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     }
   }
 
@@ -115,83 +111,91 @@ class _Home_UIState extends ConsumerState<Home_UI>
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 100),
-                    child: showHomeMenu ? const HomeMenuUI() : Container(),
+                    child: showHomeMenu
+                        ? HomeMenuUI(isLoading: isLoading)
+                        : Container(),
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        navPush(context, const AccountUI());
-                      },
+                      onTap: () => navPush(context, const AccountUI()),
                       child: Hero(
                         tag: 'profImg',
-                        child: CircleAvatar(
-                          radius: 12,
-                          child: ClipRRect(
-                            borderRadius: kRadius(50),
-                            child: CachedNetworkImage(
-                              imageUrl: user.imgUrl,
-                              fit: BoxFit.cover,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: context.profitColor,
+                              width: 2,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: CachedNetworkImageProvider(
+                              user.imgUrl,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    width10,
+                    width12,
                     Expanded(
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hi,',
+                            'Good Day,',
                             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: context.colorScheme.onSurface,
+                              fontSize: 14,
+                              color: context.fadeTextColor,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          width5,
                           Text(
                             user.name.split(" ").first,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: context.colorScheme.onSurface,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
                     InkWell(
-                      onTap: () {
-                        ref.read(showMenuProvider.notifier).state =
-                            !showHomeMenu;
-                      },
-                      borderRadius: kRadius(100),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: context.isDarkMode
-                            ? Dark.card
-                            : Colors.grey.shade200,
+                      onTap: () => ref.read(showMenuProvider.notifier).state =
+                          !showHomeMenu,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: context.cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: context.fadeTextColor.withAlpha(20),
+                          ),
+                        ),
                         child: Icon(
                           showHomeMenu
-                              ? Icons.keyboard_arrow_up_rounded
-                              : Icons.keyboard_arrow_down_rounded,
+                              ? Icons.close_rounded
+                              : Icons.grid_view_rounded,
                           size: 20,
-                          color: context.colorScheme.onSurface,
                         ),
                       ),
                     ),
                   ],
                 ),
-                height15,
+                height20,
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     padding: EdgeInsets.only(bottom: 50),
                     child: Column(
                       children: [
+                        // Summary Card
+                        _buildSummarySection(ref.watch(bookListProvider)),
+                        height20,
                         KSearchBar(
                           context,
                           controller: searchKey,
@@ -216,50 +220,149 @@ class _Home_UIState extends ConsumerState<Home_UI>
     return SizedBox();
   }
 
+  Widget _buildSummarySection(List<BookModel> books) {
+    double totalNet = books.fold(
+      0.0,
+      (sum, book) => sum + (book.income - book.expense),
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            kColor(context).secondaryContainer,
+            kColor(context).secondaryContainer.withAlpha(300),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Overall Balance",
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "₹ ${kMoneyFormat(totalNet)}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _summaryMiniItem(
+                label: "Books",
+                value: "${books.length}",
+                icon: Icons.auto_stories_rounded,
+              ),
+              const Spacer(),
+              _summaryMiniItem(
+                label: "Regular",
+                value: "${books.where((b) => b.type == 'regular').length}",
+                icon: Icons.receipt_long_rounded,
+              ),
+              const Spacer(),
+              _summaryMiniItem(
+                label: "Due",
+                value: "${books.where((b) => b.type == 'due').length}",
+                icon: Icons.assignment_late_rounded,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryMiniItem({
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: Colors.white60),
+        width5,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+            Text(
+              label,
+              style: const TextStyle(color: Colors.white60, fontSize: 10),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _filterRow() {
     final filters = ["All", "Regular", "Due", "Savings"];
     final selectedFilter = ref.watch(bookFilterProvider);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: filters.map((filter) {
           bool isSelected = selectedFilter == filter;
           return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ChoiceChip(
-              label: Text(filter),
-              selected: isSelected,
-              onSelected: (val) {
-                if (val) {
-                  ref.read(bookFilterProvider.notifier).state = filter;
-                  // Reset count and scroll when filter changes
-                  ref.read(bookCountProvider.notifier).state = 5;
-                  _scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.ease,
-                  );
-                }
+            padding: const EdgeInsets.only(right: 12.0),
+            child: GestureDetector(
+              onTap: () {
+                ref.read(bookFilterProvider.notifier).state = filter;
+                ref.read(bookCountProvider.notifier).state = 5;
               },
-              selectedColor: kColor(context).tertiary.withAlpha(50),
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? kColor(context).tertiary
-                    : context.fadeTextColor,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              backgroundColor: context.cardColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: kRadius(10),
-                side: BorderSide(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
                   color: isSelected
-                      ? kColor(context).tertiary
-                      : Colors.transparent,
+                      ? kColor(context).primary
+                      : context.cardColor,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isSelected
+                        ? context.primaryColor
+                        : context.fadeTextColor.withAlpha(30),
+                  ),
+                ),
+                child: Text(
+                  filter,
+                  style: TextStyle(
+                    color: isSelected
+                        ? kColor(context).onPrimary
+                        : context.fadeTextColor,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    fontSize: 13,
+                  ),
                 ),
               ),
-              showCheckmark: false,
             ),
           );
         }).toList(),

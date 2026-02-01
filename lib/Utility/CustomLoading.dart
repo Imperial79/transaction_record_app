@@ -49,8 +49,9 @@ class _CustomLoadingState extends State<CustomLoading> {
             scale: currentIndex == index ? 2 : 1,
             child: CircleAvatar(
               radius: 2,
-              backgroundColor:
-                  currentIndex == index ? Colors.white : Colors.grey,
+              backgroundColor: currentIndex == index
+                  ? Colors.white
+                  : Colors.grey,
             ),
           ),
         ),

@@ -36,7 +36,6 @@ class _BookTileState extends State<BookTile> {
     String dateTitle = widget.title;
 
     // Change Card color -------------------->
-    Color kCardColor = Dark.card;
     bool isCompleted = false;
 
     if (widget.book.type == "regular") {
@@ -50,19 +49,26 @@ class _BookTileState extends State<BookTile> {
     }
 
     bool isSavings = widget.book.type == "savings";
+    Color typeColor = widget.book.type == 'due'
+        ? Colors.blue
+        : widget.book.type == 'savings'
+        ? Colors.amber
+        : context.profitColor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Visibility(
           visible: widget.showDate,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Text(
               dateTitle == todayDate ? 'Today' : dateTitle,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: context.fadeTextColor,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
               ),
             ),
           ),
@@ -91,133 +97,168 @@ class _BookTileState extends State<BookTile> {
               },
             );
           },
-          child: Card(
-            margin: const .only(top: 10),
-            shape: RoundedRectangleBorder(borderRadius: kRadius(10)),
-            color: context.cardColor,
-            child: Padding(
-              padding: const .all(10.0),
-              child: Row(
-                crossAxisAlignment: .start,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: typeColor.withAlpha(isDark ? 40 : 20),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: typeColor.withAlpha(isDark ? 10 : 15),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
                 children: [
-                  Expanded(
+                  Positioned(
+                    right: -20,
+                    top: -20,
+                    child: Icon(
+                      widget.book.type == 'due'
+                          ? Icons.pending_actions
+                          : widget.book.type == 'savings'
+                          ? Icons.savings_outlined
+                          : Icons.account_balance_wallet_outlined,
+                      size: 100,
+                      color: typeColor.withAlpha(isDark ? 15 : 10),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: typeColor.withAlpha(40),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                widget.book.type == 'due'
+                                    ? Icons.timer_outlined
+                                    : widget.book.type == 'savings'
+                                    ? Icons.savings
+                                    : Icons.book_outlined,
+                                size: 18,
+                                color: typeColor,
+                              ),
+                            ),
+                            width12,
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          widget.book.bookName,
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: .w500,
-                                            letterSpacing: 1,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      width10,
-                                      if (widget.book.users != null &&
-                                          widget.book.users!.isNotEmpty)
-                                        const CircleAvatar(
-                                          radius: 12,
-                                          child: Icon(Icons.groups_2, size: 12),
-                                        ),
-                                    ],
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        widget.book.bookDescription.isNotEmpty,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.note, size: 12),
-                                          width5,
-                                          Text(widget.book.bookDescription),
-                                        ],
-                                      ),
+                                  Text(
+                                    widget.book.bookName,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  height5,
-                                  Row(
-                                    children: [
-                                      Icon(Icons.schedule, size: 12),
-                                      width5,
-                                      Text(
-                                        widget.book.time,
-                                        style: TextStyle(fontSize: 12),
+                                  if (widget.book.bookDescription.isNotEmpty)
+                                    Text(
+                                      widget.book.bookDescription,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: context.fadeTextColor,
                                       ),
-                                    ],
-                                  ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                 ],
                               ),
                             ),
-                            if (isSavings)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: kRadius(7),
-                                  color: context.scaffoldColor,
-                                ),
-                                child: Text(
-                                  "₹ ${kMoneyFormat(widget.book.income)}",
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                            if (widget.book.users != null &&
+                                widget.book.users!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Icon(
+                                  Icons.groups_rounded,
+                                  size: 16,
+                                  color: context.fadeTextColor,
                                 ),
                               ),
                           ],
                         ),
-                        height10,
+                        const SizedBox(height: 16),
                         if (!isCompleted && !isSavings)
                           switch (widget.book.type) {
                             "due" => _dueStatsStyle(context),
                             "regular" => _regularStatsStyle(context),
-                            _ => SizedBox(),
+                            _ => const SizedBox(),
                           },
+                        if (isSavings) _savingsStatsStyle(context),
                         if (isCompleted && !isSavings)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              height10,
-                              const Text(
-                                "Final Sum",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              Text(
-                                "INR ${kMoneyFormat(widget.book.income)}",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: context.isDarkMode
-                                      ? Dark.onCompleteCard
-                                      : Light.onCompleteCard,
+                          _completedStatsStyle(context),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule_rounded,
+                                  size: 12,
+                                  color: context.fadeTextColor,
+                                ),
+                                width4,
+                                Text(
+                                  widget.book.time,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: context.fadeTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (isCompleted)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.profitColor.withAlpha(40),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 12,
+                                      color: context.profitColor,
+                                    ),
+                                    width4,
+                                    Text(
+                                      "Settled",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: context.profitColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  if (isCompleted)
-                    Icon(
-                      Icons.verified,
-                      color: context.isDarkMode
-                          ? Dark.onCompleteCard
-                          : Light.onCompleteCard,
-                    ),
                 ],
               ),
             ),
@@ -227,63 +268,152 @@ class _BookTileState extends State<BookTile> {
     );
   }
 
+  Widget _savingsStatsStyle(BuildContext context) {
+    return Row(
+      children: [
+        _statColumn(
+          label: "Total Balance",
+          amount: widget.book.income,
+          color: Colors.amber,
+          icon: Icons.account_balance_wallet_rounded,
+        ),
+      ],
+    );
+  }
+
+  Widget _completedStatsStyle(BuildContext context) {
+    return Row(
+      children: [
+        _statColumn(
+          label: "Final Settle",
+          amount: widget.book.income,
+          color: context.profitColor,
+          icon: Icons.verified_rounded,
+        ),
+      ],
+    );
+  }
+
   Widget _regularStatsStyle(BuildContext context) {
     return Row(
       children: [
-        _bookStats(
-          index: 0,
-          crossAlign: CrossAxisAlignment.start,
-          labelColor: kColor(context).primary,
+        _statColumn(
+          label: "Income",
           amount: widget.book.income,
-          label: 'INCOME',
-          cardColor: kColor(context).primaryContainer,
-          amountColor: kColor(context).primary,
+          color: context.profitColor,
+          icon: Icons.arrow_downward_rounded,
         ),
-        width5,
-        _bookStats(
-          index: 1,
-          crossAlign: CrossAxisAlignment.center,
+        const Spacer(),
+        _statColumn(
+          label: "Expense",
           amount: widget.book.expense,
-          label: 'EXPENSE',
-          cardColor: context.isDarkMode ? Colors.black : Colors.grey.shade300,
-          labelColor: context.colorScheme.onSurface,
-          amountColor: context.colorScheme.onSurface,
+          color: context.lossColor,
+          icon: Icons.arrow_upward_rounded,
         ),
-        width5,
-        _bookStats(
-          index: 2,
-          crossAlign: CrossAxisAlignment.end,
-          label: 'CURRENT',
+        const Spacer(),
+        _statColumn(
+          label: "Current",
           amount: widget.book.income - widget.book.expense,
-          cardColor: kColor(context).tertiaryContainer,
-          labelColor: kColor(context).tertiary,
-          amountColor: kColor(context).tertiary,
+          color: Colors.blue,
+          icon: Icons.wallet_rounded,
         ),
       ],
     );
   }
 
   Widget _dueStatsStyle(BuildContext context) {
-    return Row(
+    double progress = widget.book.targetAmount != 0
+        ? (widget.book.income / widget.book.targetAmount).clamp(0.0, 1.0)
+        : 0.0;
+    return Column(
       children: [
-        _bookStats(
-          index: 0,
-          crossAlign: CrossAxisAlignment.start,
-          labelColor: kColor(context).primary,
-          amount: widget.book.targetAmount - widget.book.income,
-          label: 'DUE',
-          cardColor: kColor(context).primaryContainer,
-          amountColor: kColor(context).primary,
+        Row(
+          children: [
+            _statColumn(
+              label: "Due",
+              amount: widget.book.targetAmount - widget.book.income,
+              color: context.lossColor,
+              icon: Icons.info_outline_rounded,
+            ),
+            const Spacer(),
+            _statColumn(
+              label: "Goal",
+              amount: widget.book.targetAmount,
+              color: Colors.blue,
+              icon: Icons.flag_rounded,
+            ),
+          ],
         ),
-        width5,
-        _bookStats(
-          index: 2,
-          crossAlign: CrossAxisAlignment.end,
-          label: "TARGET",
-          amount: widget.book.targetAmount,
-          cardColor: kColor(context).tertiaryContainer,
-          labelColor: kColor(context).tertiary,
-          amountColor: kColor(context).tertiary,
+        if (widget.book.targetAmount > 0) ...[
+          const SizedBox(height: 12),
+          Stack(
+            children: [
+              Container(
+                height: 6,
+                decoration: BoxDecoration(
+                  color: context.isDarkMode
+                      ? Colors.white10
+                      : Colors.black.withAlpha(10),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                height: 6,
+                width: (MediaQuery.of(context).size.width - 56) * progress,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.withAlpha(150), Colors.blue],
+                  ),
+                  borderRadius: BorderRadius.circular(3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withAlpha(60),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _statColumn({
+    required String label,
+    required double amount,
+    required Color color,
+    required IconData icon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 10, color: context.fadeTextColor),
+            width4,
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: context.fadeTextColor,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          "₹${kMoneyFormat(amount)}",
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );
@@ -343,58 +473,6 @@ class _BookTileState extends State<BookTile> {
           ),
         );
       },
-    );
-  }
-
-  Widget _bookStats({
-    required int index,
-    double amount = 0,
-    required Color cardColor,
-    String label = "label",
-    required Color labelColor,
-    required Color amountColor,
-    required CrossAxisAlignment crossAlign,
-  }) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-    if (amount < 0) {
-      if (isDark) {
-        amountColor = Dark.lossText;
-        cardColor = Dark.lossCard.lighten(.2);
-      } else {
-        labelColor = Light.lossText;
-        amountColor = Light.lossText;
-        cardColor = Light.lossCard.lighten(.2);
-      }
-    }
-    return Flexible(
-      child: Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(color: cardColor, borderRadius: kRadius(7)),
-        child: Column(
-          crossAxisAlignment: crossAlign,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: labelColor,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-            height5,
-            Text(
-              "₹${kMoneyFormat(amount)}",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: amountColor,
-              ),
-              textAlign: TextAlign.end,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

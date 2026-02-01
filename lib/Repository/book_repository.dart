@@ -9,8 +9,8 @@ import 'package:transaction_record_app/models/bookModel.dart';
 final bookListProvider = StateProvider<List<BookModel>>((ref) => []);
 
 final bookCountProvider = StateProvider<int>((ref) => 5);
-
 final bookFilterProvider = StateProvider<String>((ref) => "All");
+final hasMoreBooksProvider = StateProvider<bool>((ref) => true);
 
 final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
   String uid = ref.watch(userProvider)!.uid;
@@ -38,6 +38,11 @@ final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
         List<BookModel> data = snapshot.docs
             .map((doc) => BookModel.fromMap(doc.data()))
             .toList();
+
+        // Update hasMore state
+        ref.read(hasMoreBooksProvider.notifier).state =
+            data.length == bookCount;
+
         ref.read(bookListProvider.notifier).state = data;
         return data;
       });

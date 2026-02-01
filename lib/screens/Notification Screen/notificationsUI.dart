@@ -17,7 +17,7 @@ class NotificationsUI extends ConsumerStatefulWidget {
 }
 
 class _NotificationsUIState extends ConsumerState<NotificationsUI> {
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
 
   Future<void> _addToBook({
     required String uid,
@@ -26,21 +26,21 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
     required String requestId,
   }) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
       await FirebaseRefs.transactBookRef(bookId).get().then((book) async {
         if (book.exists) {
-          await FirebaseRefs.transactBookRef(bookId).update({
-            'users': FieldValue.arrayUnion([uid])
-          }).then((value) async {
-            await _removeFromRequest(uid: uid, requestId: requestId).then(
-              (value) => KSnackbar(
-                context,
-                content: "\"$bookName\" Book joined successfully!",
-              ),
-            );
-          });
+          await FirebaseRefs.transactBookRef(bookId)
+              .update({
+                'users': FieldValue.arrayUnion([uid]),
+              })
+              .then((value) async {
+                await _removeFromRequest(uid: uid, requestId: requestId).then(
+                  (value) => KSnackbar(
+                    context,
+                    content: "\"$bookName\" Book joined successfully!",
+                  ),
+                );
+              });
         } else {
           KSnackbar(
             context,
@@ -50,50 +50,38 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
           await _removeFromRequest(uid: uid, requestId: requestId);
         }
       });
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
       KSnackbar(context, content: "Something went wrong!", isDanger: true);
     }
   }
 
-  Future<void> _removeFromRequest(
-      {required String uid, required String requestId}) async {
+  Future<void> _removeFromRequest({
+    required String uid,
+    required String requestId,
+  }) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
       await FirebaseRefs.requestRef.doc(requestId).get().then((value) async {
         if (value.data()!['users'].length == 1 &&
             value.data()!['users'].contains(uid)) {
           await FirebaseRefs.requestRef.doc(requestId).delete();
         } else {
-          await FirebaseRefs.requestRef.doc(requestId).update({
-            'users': FieldValue.arrayRemove([uid]),
-          }).then(
-            (value) => KSnackbar(
-              context,
-              content: 'Request Rejected!',
-            ),
-          );
+          await FirebaseRefs.requestRef
+              .doc(requestId)
+              .update({
+                'users': FieldValue.arrayRemove([uid]),
+              })
+              .then(
+                (value) => KSnackbar(context, content: 'Request Rejected!'),
+              );
         }
       });
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      KSnackbar(
-        context,
-        content: "Something went wrong!",
-        isDanger: true,
-      );
+      isLoading.value = false;
+      KSnackbar(context, content: "Something went wrong!", isDanger: true);
     }
   }
 
@@ -118,30 +106,33 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
                 duration: const Duration(milliseconds: 600),
                 child: snapshot.hasData
                     ? snapshot.data!.docs.isEmpty
-                        ? NoData(context, customText: 'No Notifications Yet')
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Recent Notifications'),
-                              height10,
-                              ListView.separated(
-                                shrinkWrap: true,
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  Map<String, dynamic> data =
-                                      snapshot.data!.docs[index].data();
-                                  return _notificationCard(
-                                    uid: user.uid,
-                                    data: data,
-                                  );
-                                },
-                                separatorBuilder: (context, index) => height10,
-                              ),
-                            ],
-                          )
+                          ? NoData(context, customText: 'No Notifications Yet')
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Recent Notifications'),
+                                height10,
+                                ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    Map<String, dynamic> data = snapshot
+                                        .data!
+                                        .docs[index]
+                                        .data();
+                                    return _notificationCard(
+                                      uid: user.uid,
+                                      data: data,
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      height10,
+                                ),
+                              ],
+                            )
                     : snapshot.hasError
-                        ? const Text('Has Error')
-                        : _dummyNotificationsCard(),
+                    ? const Text('Has Error')
+                    : _dummyNotificationsCard(),
               );
             },
           ),
@@ -151,12 +142,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
   }
 
   Widget _dummyNotificationsCard() {
-    return const Card(
-      child: SizedBox(
-        height: 150,
-        width: double.infinity,
-      ),
-    );
+    return const Card(child: SizedBox(height: 150, width: double.infinity));
   }
 
   Widget _notificationCard({
@@ -189,9 +175,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
           height10,
           Text(
             'Join my book "${data['bookName']}" so that we can share the expense details!',
-            style: const TextStyle(
-              fontSize: 15,
-            ),
+            style: const TextStyle(fontSize: 15),
           ),
           height10,
           Row(
@@ -210,20 +194,18 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
               width10,
               ElevatedButton(
                 onPressed: () async {
-                  await _removeFromRequest(
-                    uid: uid,
-                    requestId: data['id'],
-                  );
+                  await _removeFromRequest(uid: uid, requestId: data['id']);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      context.isDarkMode ? Dark.lossCard : Light.lossCard,
+                  backgroundColor: context.isDarkMode
+                      ? Dark.lossCard
+                      : Light.lossCard,
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('Reject'),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -232,9 +214,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsUI> {
   Widget _notificationCardHeader({dynamic data}) {
     return Row(
       children: [
-        CircleAvatar(
-          backgroundImage: NetworkImage(data['imgUrl']),
-        ),
+        CircleAvatar(backgroundImage: NetworkImage(data['imgUrl'])),
         width10,
         Expanded(
           child: Column(

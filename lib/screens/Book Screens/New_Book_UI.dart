@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
-import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/KTextfield.dart';
-import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import 'package:transaction_record_app/services/database.dart';
@@ -31,7 +29,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
     "Savings": "Savings book is used for tracking collected/saved amount.",
   };
 
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
   final DateTime _selectedDate = DateTime.now();
   final DateTime _selectedTimeStamp = DateTime.now();
   final String _selectedTime = DateFormat()
@@ -51,9 +49,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   void _createBook(String uid) async {
     FocusScope.of(context).unfocus();
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
       if (_bookTitle.text.isNotEmpty) {
         String displayDate = DateFormat.yMMMMd().format(_selectedDate);
         String displayTime = DateFormat()
@@ -97,9 +93,7 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
     } catch (e) {
       KSnackbar(context, content: "$e", isDanger: true);
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     }
   }
 
@@ -115,174 +109,265 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     final user = ref.watch(userProvider);
+
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(15, 15, 15, 100),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Flexible(
+                  Expanded(
                     child: KTextfield.title(
                       context,
                       controller: _bookTitle,
                       maxLength: 20,
-                      hintText: "Book Title",
-                      onChanged: (val) {
-                        setState(() {});
-                      },
+                      hintText: "Enter Name...",
+                      fontSize: 32,
+                      onChanged: (val) => setState(() {}),
                     ),
                   ),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(text: "${_bookTitle.text.length}\n"),
-                        TextSpan(text: "20"),
-                      ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _bookTitle.text.length >= 20
+                          ? context.lossColor.withAlpha(50)
+                          : context.fadeTextColor.withAlpha(30),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      "${_bookTitle.text.length}/20",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: _bookTitle.text.length >= 20
+                            ? context.lossColor
+                            : context.fadeTextColor,
+                      ),
                     ),
                   ),
                 ],
               ),
+
               WaveDivider(
-                padding: EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
               ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _bookTitle.text = DateFormat(
-                      'MMMM, yyyy',
-                    ).format(DateTime.now());
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.auto_mode_sharp, size: 15),
-                    width5,
-                    Text("Auto Generate"),
-                  ],
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _bookTitle.text = DateFormat(
+                        'MMMM, yyyy',
+                      ).format(DateTime.now());
+                    });
+                  },
+                  icon: Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 16,
+                    color: context.profitColor,
+                  ),
+                  label: Text(
+                    "Magic Title",
+                    style: TextStyle(
+                      color: context.profitColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: context.profitColor.withAlpha(30),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
                 ),
               ),
-              height15,
+
+              const SizedBox(height: 25),
+
               KTextfield.regular(
                 context,
                 controller: _bookDescription,
-                hintText: 'Add description',
-                maxLines: 10,
+                hintText: 'Add a helpful description...',
+                maxLines: 4,
                 minLines: 1,
-                icon: Icon(
-                  Icons.short_text_rounded,
-                  color: context.isDarkMode ? Colors.white : Colors.black,
+                padding: const EdgeInsets.all(15),
+                icon: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Icon(
+                    Icons.notes_rounded,
+                    color: context.fadeTextColor,
+                  ),
                 ),
               ),
-              height10,
-              kCard(
-                context,
-                icon: Icons.schedule,
-                title: "Created On",
+
+              const SizedBox(height: 25),
+
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: kRadius(10),
-                            color: context.isDarkMode
-                                ? Dark.scaffold
-                                : Light.scaffold,
-                          ),
-                          child: Text(
-                            DateFormat.yMMMMd().format(_selectedDate),
-                            style: TextStyle(
-                              color: context.isDarkMode
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      width5,
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: kRadius(10),
-                          color: context.isDarkMode
-                              ? Dark.scaffold
-                              : Light.scaffold,
-                        ),
-                        child: Text(
-                          _selectedTime,
-                          style: TextStyle(
-                            color: context.isDarkMode
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
+                  _buildChip(
+                    context,
+                    icon: Icons.calendar_today_rounded,
+                    label: DateFormat.yMMMMd().format(_selectedDate),
+                  ),
+                  const SizedBox(width: 10),
+                  _buildChip(
+                    context,
+                    icon: Icons.access_time_rounded,
+                    label: _selectedTime,
                   ),
                 ],
               ),
-              kLabel("Book Type"),
+
+              const SizedBox(height: 35),
+
+              const Text(
+                "BOOK CATEGORY",
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 15),
+
               MasonryGridView.count(
                 crossAxisCount: 2,
                 mainAxisSpacing: 15,
                 crossAxisSpacing: 15,
                 itemCount: bookTypeMap.length,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
+                  String key = bookTypeMap.keys.toList()[index];
                   return _bookTypeBtn(
                     isDark,
-                    title: bookTypeMap.keys.toList()[index],
+                    title: key,
                     subTitle: bookTypeMap.values.toList()[index],
-                    identifier: bookTypeMap.keys.toList()[index].toLowerCase(),
+                    identifier: key.toLowerCase(),
+                    icon: _getIconForType(key.toLowerCase()),
                   );
                 },
               ),
-              if (selectedBookType == "due")
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    kLabel("Target / Due Amount"),
-                    KTextfield.regular(
-                      context,
-                      controller: _targetAmount,
-                      fontSize: 30,
-                      hintText: "1 - 10,000",
-                      keyboardType: TextInputType.number,
-                      icon: const Text(
-                        "INR",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w400,
-                        ),
+
+              if (selectedBookType == "due") ...[
+                const SizedBox(height: 30),
+                const Text(
+                  "SET TARGET AMOUNT",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                KTextfield.regular(
+                  context,
+                  controller: _targetAmount,
+                  fontSize: 24,
+                  hintText: "0.00",
+                  keyboardType: TextInputType.number,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 15,
+                  ),
+                  prefix: Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: Text(
+                      "₹",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: context.profitColor,
                       ),
                     ),
-                  ],
+                  ),
                 ),
+              ],
             ],
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: KButton.icon(
-          context,
-          onPressed: () {
-            _createBook(user!.uid);
-          },
-          icon: const Icon(Icons.add_circle_outline),
-          label: "Create Book",
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: context.primaryColor.withAlpha(60),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: KButton.icon(
+            context,
+            onPressed: () {
+              if (user != null) _createBook(user.uid);
+            },
+            icon: const Icon(Icons.check_circle_rounded),
+            label: "Create Transaction Book",
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildChip(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.fadeTextColor.withAlpha(20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: context.fadeTextColor),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: context.fadeTextColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getIconForType(String type) {
+    switch (type) {
+      case 'regular':
+        return Icons.receipt_long_rounded;
+      case 'due':
+        return Icons.pending_actions_rounded;
+      case 'savings':
+        return Icons.savings_rounded;
+      default:
+        return Icons.book_rounded;
+    }
   }
 
   Widget _bookTypeBtn(
@@ -290,8 +375,15 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
     required String title,
     required String subTitle,
     required String identifier,
+    required IconData icon,
   }) {
     bool isActive = selectedBookType == identifier;
+    Color activeColor = identifier == 'due'
+        ? Colors.blue
+        : identifier == 'savings'
+        ? Colors.amber
+        : context.profitCardColor;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -302,55 +394,64 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         });
       },
       child: AnimatedContainer(
-        curve: Curves.ease,
         duration: const Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn,
         decoration: BoxDecoration(
-          borderRadius: kRadius(15),
+          borderRadius: BorderRadius.circular(24),
           color: isActive
-              ? kColor(context).tertiary.lighten(.2)
+              ? activeColor.withAlpha(isActive ? 30 : 0)
               : context.cardColor,
-          border: Border.fromBorderSide(
-            BorderSide(
-              width: 2,
-              color: isActive ? kColor(context).tertiary : context.cardColor,
-            ),
+          border: Border.all(
+            width: 2,
+            color: isActive ? activeColor : context.fadeTextColor.withAlpha(20),
           ),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: isActive
-                      ? kColor(context).tertiary
-                      : context.fadeTextColor.lighten(.5),
-                  radius: 5,
-                ),
-                width10,
-                Text(
-                  "$title Book",
-                  style: TextStyle(
-                    color: isActive
-                        ? kColor(context).tertiary
-                        : context.fadeTextColor,
-                    fontWeight: isActive ? .w600 : .w400,
-                    letterSpacing: .8,
-                    fontSize: 16,
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: activeColor.withAlpha(40),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
-                ),
-              ],
+                ]
+              : null,
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? activeColor
+                    : context.fadeTextColor.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: isActive ? Colors.white : context.fadeTextColor,
+              ),
             ),
-            height10,
+            const SizedBox(height: 15),
+            Text(
+              title,
+              style: TextStyle(
+                color: isActive ? activeColor : context.colorScheme.onSurface,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 6),
             Text(
               subTitle,
               style: TextStyle(
-                fontSize: 13,
-                color: isActive
-                    ? kColor(context).onSurface
-                    : context.fadeTextColor,
-                fontWeight: isActive ? .w500 : .w400,
+                fontSize: 11,
+                color: context.fadeTextColor,
+                height: 1.3,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

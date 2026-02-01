@@ -27,6 +27,7 @@ import '../../services/database.dart';
 import '../../Utility/components.dart';
 
 final transactCountProvider = StateProvider.autoDispose<int>((ref) => 10);
+final hasMoreTransactsProvider = StateProvider.autoDispose<bool>((ref) => true);
 final showElementsProvider = StateProvider.autoDispose<bool>((ref) => true);
 final showMenuProvider = StateProvider.autoDispose<bool>((ref) => false);
 final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -85,31 +86,22 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     } else {
       ref.read(showElementsProvider.notifier).state = true;
     }
-    if (_scrollController.position.atEdge) {
-      bool isBottom =
-          _scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent;
-      if (isBottom) {
-        _loadMore();
-      }
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMore();
     }
   }
 
-  Future<void> _loadMore() async {
-    setState(() {
-      isFetching = true;
-    });
-    await Future.delayed(Duration(seconds: 2));
-    ref.read(transactCountProvider.notifier).state += 5;
-    setState(() {
-      isFetching = false;
-    });
+  void _loadMore() {
+    final hasMore = ref.read(hasMoreTransactsProvider);
+    if (hasMore && !isFetching.value) {
+      ref.read(transactCountProvider.notifier).state += 10;
+    }
   }
 
   Future<void> distribute() async {
-    setState(() {
-      isLoading = true;
-    });
+    isLoading.value = true;
     await FirebaseRefs.transactBookRef(widget.bookId).get().then((value) async {
       List<dynamic> groupMembers = [];
 
@@ -222,9 +214,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
         );
       });
     });
-    setState(() {
-      isLoading = false;
-    });
+    isLoading.value = false;
   }
 
   Future<void> _deleteBook({
@@ -232,9 +222,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     required String bookId,
   }) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      isLoading.value = true;
 
       final res = await ref.read(bookRepository).deleteBook(bookId: bookId);
       if (res) {
@@ -248,9 +236,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
         isDanger: true,
       );
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     }
   }
 
@@ -268,8 +254,8 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   //------------------------------------>
 
-  bool isLoading = false;
-  bool isFetching = false;
+  final isLoading = ValueNotifier(false);
+  final isFetching = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -321,16 +307,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             ),
             _incomeExpenseTracker(),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: 100),
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                child: _TransactList(
-                  bookId: widget.bookId,
-                  isFetching: isFetching,
-                ),
+              child: _TransactList(
+                bookId: widget.bookId,
+                isFetching: isFetching.value,
+                scrollController: _scrollController,
               ),
             ),
           ],
@@ -761,6 +741,7 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(100)),
       ),
       child: Row(
+        crossAxisAlignment: .center,
         children: [
           SvgPicture.asset(
             'lib/assets/icons/search.svg',
@@ -777,6 +758,9 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
+                // contentPadding: EdgeInsets.all(0),
                 hintStyle: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
@@ -1261,13 +1245,13 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   }
 
   Future<void> _clearAllTransacts(String bookId) async {
-    setState(() => isLoading = true);
+    isLoading.value = true;
     await DatabaseMethods().deleteAllTransacts(bookId);
     await DatabaseMethods().updateBookTransactions(bookId, {
       "income": 0,
       "expense": 0,
     });
-    setState(() => isLoading = false);
+    isLoading.value = false;
   }
 
   GestureDetector FilterBtns({
@@ -1324,8 +1308,13 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 class _TransactList extends ConsumerWidget {
   final String bookId;
   final bool isFetching;
+  final ScrollController scrollController;
 
-  const _TransactList({required this.bookId, required this.isFetching});
+  const _TransactList({
+    required this.bookId,
+    required this.isFetching,
+    required this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1359,6 +1348,14 @@ class _TransactList extends ConsumerWidget {
                 )
                 .toList();
 
+            // Efficiently handle hasMore state updates
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                ref.read(hasMoreTransactsProvider.notifier).state =
+                    snapshot.data!.docs.length == count;
+              }
+            });
+
             if (items.isEmpty) {
               return kNoData(context, title: 'No Transacts Found');
             }
@@ -1372,51 +1369,77 @@ class _TransactList extends ConsumerWidget {
             }
 
             return Column(
-              key: ValueKey(
-                searchQuery + items.length.toString(),
-              ), // Re-animate when query or count changes
               children: [
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: items.length,
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-                  itemBuilder: (context, index) {
-                    final transact = items[index];
-                    final prevTransact = index > 0 ? items[index - 1] : null;
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemCount: items.length,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 100),
+                    itemBuilder: (context, index) {
+                      final transact = items[index];
+                      final prevTransact = index > 0 ? items[index - 1] : null;
 
-                    final currentMonth = getMonthStr(transact.date);
-                    final bool showMonth =
-                        index == 0 ||
-                        getMonthStr(prevTransact!.date) != currentMonth;
-                    final bool showDate =
-                        index == 0 || prevTransact!.date != transact.date;
+                      final currentMonth = getMonthStr(transact.date);
+                      final bool showMonth =
+                          index == 0 ||
+                          getMonthStr(prevTransact!.date) != currentMonth;
+                      final bool showDate =
+                          index == 0 || prevTransact!.date != transact.date;
 
-                    return TweenAnimationBuilder<double>(
-                      duration: Duration(
-                        milliseconds: 400 + (index * 50).clamp(0, 400),
-                      ),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      curve: Curves.easeOutCubic,
-                      builder: (context, value, child) {
-                        return Opacity(
-                          opacity: value,
-                          child: Transform.translate(
-                            offset: Offset(0, 20 * (1 - value)),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: _TransactTile(
-                        key: ValueKey(transact.transactId),
-                        data: transact,
-                        users: bookData.value?.users,
-                        showDate: showDate,
-                        showMonth: showMonth,
-                        monthLabel: currentMonth,
-                      ),
-                    );
-                  },
+                      return TweenAnimationBuilder<double>(
+                        duration: Duration(
+                          milliseconds: 400 + (index.clamp(0, 10) * 40),
+                        ),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (showMonth)
+                              _buildMonthHeader(context, currentMonth),
+                            if (showDate && !showMonth)
+                              _buildDateHeader(context, transact.date),
+                            TransactTile(
+                              key: ValueKey(transact.transactId),
+                              data: transact,
+                              showUser:
+                                  bookData.value?.users != null &&
+                                  bookData.value!.users!.isNotEmpty,
+                              isDark: context.isDarkMode,
+                              onTap: () {
+                                final user = ref.read(userProvider);
+                                if (transact.uid == user?.uid) {
+                                  navPush(
+                                    context,
+                                    EditTransactUI(trData: transact),
+                                  );
+                                } else {
+                                  KSnackbar(
+                                    context,
+                                    content:
+                                        "You cannot edit other's transactions",
+                                    isDanger: true,
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 if (isFetching) const CustomLoading(),
               ],
@@ -1426,316 +1449,59 @@ class _TransactList extends ConsumerWidget {
       },
     );
   }
-}
 
-class _TransactTile extends ConsumerWidget {
-  final Transact data;
-  final List? users;
-  final bool showDate;
-  final bool showMonth;
-  final String monthLabel;
-
-  const _TransactTile({
-    super.key,
-    required this.data,
-    required this.users,
-    required this.showDate,
-    required this.showMonth,
-    required this.monthLabel,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider)!;
-    final isIncome = data.type == 'Income';
-
-    final now = DateTime.now();
-    final today = DateFormat.yMMMMd().format(now);
-    final yesterday = DateFormat.yMMMMd().format(
-      now.subtract(const Duration(days: 1)),
-    );
-
-    final dateLabel = data.date == today
-        ? 'Today'
-        : data.date == yesterday
-        ? 'Yesterday'
-        : data.date;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (showMonth)
-          Padding(
-            padding: const EdgeInsets.only(top: 25.0, left: 12, bottom: 5),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "${monthLabel.split(' ').first}, ",
-                  style: TextStyle(
-                    fontSize: 22,
-                    height: 1,
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                Text(
-                  monthLabel.split(' ').last,
-                  style: TextStyle(
-                    fontSize: 12,
-                    height: 1,
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (data.uid != user.uid && users != null && users!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  future: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(data.uid)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return CircleAvatar(
-                        radius: 12,
-                        backgroundImage: NetworkImage(
-                          snapshot.data!.data()!['imgUrl'],
-                        ),
-                      );
-                    }
-                    return const CircleAvatar(radius: 12);
-                  },
-                ),
-              ),
-            Flexible(
-              child: GestureDetector(
-                onTap: () {
-                  if (data.uid == user.uid) {
-                    navPush(context, EditTransactUI(trData: data));
-                  } else {
-                    KSnackbar(
-                      context,
-                      content: "You cannot edit other's transactions",
-                      isDanger: true,
-                    );
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.all(10),
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: context.colorScheme.onSurface.withAlpha(25),
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(6),
-                                      height: 30,
-                                      width: 30,
-                                      decoration: BoxDecoration(
-                                        color: isIncome
-                                            ? context.profitColor
-                                            : context.lossColor,
-                                        shape: BoxShape.circle,
-                                        boxShadow: context.isDarkMode
-                                            ? [
-                                                BoxShadow(
-                                                  color:
-                                                      (isIncome
-                                                              ? context
-                                                                    .profitColor
-                                                              : context
-                                                                    .lossColor)
-                                                          .withAlpha(40),
-                                                  blurRadius: 30,
-                                                  spreadRadius: 1,
-                                                ),
-                                              ]
-                                            : null,
-                                      ),
-                                      child: FittedBox(
-                                        child: Icon(
-                                          isIncome
-                                              ? Icons.file_download_outlined
-                                              : Icons.file_upload_outlined,
-                                          color: isIncome
-                                              ? (context.isDarkMode
-                                                    ? Colors.black
-                                                    : Colors.white)
-                                              : Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    width10,
-                                    Expanded(
-                                      child: Text.rich(
-                                        TextSpan(
-                                          text: kMoneyFormat(data.amount),
-                                          style: TextStyle(
-                                            fontFamily: "Product",
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w800,
-                                            color: isIncome
-                                                ? context.profitColor
-                                                : context.lossColor,
-                                          ),
-                                          children: const [
-                                            TextSpan(
-                                              text: " INR",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                _StatsRow(
-                                  color: Colors.amber.shade900,
-                                  content: data.source,
-                                  icon: Icons.person,
-                                ),
-                                if (data.description.trim().isNotEmpty)
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    padding: const EdgeInsets.all(8),
-                                    width: double.maxFinite,
-                                    decoration: BoxDecoration(
-                                      color: context.cardColor,
-                                      borderRadius: kRadius(10),
-                                    ),
-                                    child: Text(data.description),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            data.transactMode,
-                            style: TextStyle(
-                              letterSpacing: 1,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: data.transactMode == 'CASH'
-                                  ? (context.isDarkMode
-                                        ? Dark.profitText
-                                        : Colors.black)
-                                  : (context.isDarkMode
-                                        ? const Color(0xFF9DC4FF)
-                                        : Colors.blue.shade900),
-                            ),
-                          ),
-                        ],
-                      ),
-                      height10,
-                      Row(
-                        children: [
-                          const Icon(Icons.schedule_rounded, size: 15),
-                          width5,
-                          Text(
-                            data.time,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Spacer(),
-                          const Icon(Icons.calendar_month, size: 15),
-                          width5,
-                          Text(
-                            dateLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            if (data.uid == user.uid && users != null && users!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: CircleAvatar(
-                  radius: 12,
-                  backgroundImage: NetworkImage(user.imgUrl),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _StatsRow extends StatelessWidget {
-  final String content;
-  final IconData icon;
-  final Color color;
-
-  const _StatsRow({
-    required this.content,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    bool isEmpty = content.trim() == '';
-    if (isEmpty) return const SizedBox();
-
+  Widget _buildMonthHeader(BuildContext context, String monthLabel) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 25.0, left: 12, bottom: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          CircleAvatar(
-            backgroundColor: color,
-            radius: 10,
-            child: FittedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Icon(icon, color: Colors.white),
-              ),
+          Text(
+            "${monthLabel.split(' ').first}, ",
+            style: TextStyle(
+              fontSize: 22,
+              height: 1,
+              color: context.colorScheme.onSurface,
+              fontWeight: FontWeight.w900,
             ),
           ),
-          width5,
-          Flexible(
-            child: Text(
-              content,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            monthLabel.split(' ').last,
+            style: TextStyle(
+              fontSize: 12,
+              height: 1,
+              color: context.colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateHeader(BuildContext context, String date) {
+    String label = date;
+    final today = DateFormat.yMMMMd().format(DateTime.now());
+    final yesterday = DateFormat.yMMMMd().format(
+      DateTime.now().subtract(const Duration(days: 1)),
+    );
+
+    if (date == today) {
+      label = 'Today';
+    } else if (date == yesterday) {
+      label = 'Yesterday';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12, top: 12, left: 12),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          color: context.fadeTextColor,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }

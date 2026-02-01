@@ -5,11 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/KScaffold.dart';
-import 'package:transaction_record_app/models/bookModel.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import '../../Helper/navigatorFns.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/constants.dart';
 import '../../Utility/newColors.dart';
+import '../../models/bookModel.dart';
 import '../../models/transactModel.dart';
 import '../../services/database.dart';
 import '../Transact Screens/edit_transactUI.dart';
@@ -37,11 +38,30 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
   final _newTargetAmount = TextEditingController();
 
   int searchingBookListCounter = 50;
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
+  final isFetching = ValueNotifier(false);
   bool isSearching = false;
+  final ScrollController _scrollController = ScrollController();
+  bool _hasMore = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !isFetching.value) {
+        bookListCounter.value += 10;
+      }
+    }
+  }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _newTargetAmount.dispose();
     super.dispose();
   }
@@ -52,6 +72,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
       isLoading: isLoading,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +112,9 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                     ),
                     width10,
                     Text(
-                      DateFormat("dd MMM, yyyy [hh:mm a]").format(
-                        DateTime.parse(bookData.bookId),
-                      ),
+                      DateFormat(
+                        "dd MMM, yyyy [hh:mm a]",
+                      ).format(DateTime.parse(bookData.bookId)),
                       style: TextStyle(
                         letterSpacing: 1.2,
                         fontSize: 12,
@@ -105,8 +126,9 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               ),
               height20,
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                stream:
-                    FirebaseRefs.transactBookRef(bookData.bookId).snapshots(),
+                stream: FirebaseRefs.transactBookRef(
+                  bookData.bookId,
+                ).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final data = BookModel.fromMap(snapshot.data!.data()!);
@@ -116,9 +138,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                         height10,
                         Text(
                           data.bookName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                          ),
+                          style: const TextStyle(fontSize: 20),
                         ),
                         Text("Accumulated"),
                         Text(
@@ -145,10 +165,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
         onPressed: () {
           navPush(
             context,
-            New_Transact_UI(
-              bookType: bookData.type,
-              bookId: bookData.bookId,
-            ),
+            New_Transact_UI(bookType: bookData.type, bookId: bookData.bookId),
           );
         },
         elevation: 0,
@@ -172,6 +189,9 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               .limit(bookCount)
               .snapshots(),
           builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              _hasMore = snapshot.data!.docs.length == bookCount;
+            }
             dateTitle = '';
 
             return AnimatedSwitcher(
@@ -180,26 +200,59 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               switchOutCurve: Curves.easeOut,
               child: snapshot.hasData
                   ? snapshot.data!.docs.isNotEmpty
-                      ? ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: snapshot.data!.docs.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            Transact transact = Transact.fromMap(
-                                snapshot.data!.docs[index].data());
+                        ? ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: snapshot.data!.docs.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              Transact transact = Transact.fromMap(
+                                snapshot.data!.docs[index].data(),
+                              );
 
-                            return _transactTile(context.isDarkMode,
-                                data: transact);
-                          },
-                        )
-                      : Text(
-                          'No Transacts',
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: context.fadeTextColor,
-                          ),
-                        )
-                  : SizedBox(),
+                              final bool showDate =
+                                  index == 0 ||
+                                  Transact.fromMap(
+                                        snapshot.data!.docs[index - 1].data(),
+                                      ).date !=
+                                      transact.date;
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (showDate) _buildDateHeader(transact.date),
+                                  Consumer(
+                                    builder: (context, ref, _) {
+                                      final user = ref.watch(userProvider);
+                                      return TransactTile(
+                                        data: transact,
+                                        isDark: isDark,
+                                        showUser:
+                                            bookData.users != null &&
+                                            bookData.users!.isNotEmpty,
+                                        onTap: () {
+                                          if (transact.uid == user?.uid) {
+                                            navPush(
+                                              context,
+                                              EditTransactUI(trData: transact),
+                                            );
+                                          } else {
+                                            KSnackbar(
+                                              context,
+                                              content:
+                                                  "You cannot edit other's transactions",
+                                              isDanger: true,
+                                            );
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                        : NoData(context, customText: 'No Transacts')
+                  : const SizedBox(),
             );
           },
         );
@@ -207,171 +260,31 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
     );
   }
 
-  Widget _transactTile(bool isDark, {required Transact data}) {
-    bool isIncome = data.type == 'Income';
-    String dateLabel = '';
-    var todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    if (dateTitle == data.date) {
-      showDateWidget = false;
-    } else {
-      dateTitle = data.date;
-      showDateWidget = true;
-    }
-    String ts = DateFormat("yMMMMd").parse(data.date).toString();
+  Widget _buildDateHeader(String date) {
+    String label = date;
+    final today = DateFormat.yMMMMd().format(DateTime.now());
+    final yesterday = DateFormat.yMMMMd().format(
+      DateTime.now().subtract(const Duration(days: 1)),
+    );
 
-    if (dateTitle == todayDate) {
-      dateLabel = 'Today';
-    } else if (DateTime.now().difference(DateTime.parse(ts)).inDays == 1) {
-      dateLabel = 'Yesterday';
-    } else {
-      dateLabel = dateTitle;
+    if (date == today) {
+      label = 'Today';
+    } else if (date == yesterday) {
+      label = 'Yesterday';
     }
 
-    return Consumer(builder: (context, ref, _) {
-      final user = ref.watch(userProvider)!;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Visibility(
-            visible: showDateWidget,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10, top: 5),
-              child: Text(
-                dateLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              if (data.uid == user.uid) {
-                navPush(context, EditTransactUI(trData: data));
-              } else {
-                KSnackbar(
-                  context,
-                  content: "You cannot edit other's transactions",
-                  isDanger: true,
-                );
-              }
-            },
-            child: Container(
-              margin: EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                borderRadius: kRadius(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text.rich(
-                              TextSpan(
-                                text: oCcy.format(double.parse(data.amount)),
-                                style: TextStyle(
-                                  fontFamily: "Product",
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: isIncome
-                                      ? context.profitColor
-                                      : context.lossColor,
-                                ),
-                                children: const [
-                                  TextSpan(
-                                    text: " INR",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Text(
-                            data.transactMode,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                              color: data.transactMode == 'CASH'
-                                  ? context.isDarkMode
-                                      ? Dark.profitText
-                                      : Colors.black
-                                  : context.isDarkMode
-                                      ? const Color(0xFF9DC4FF)
-                                      : Colors.blue.shade900,
-                            ),
-                          ),
-                        ],
-                      ),
-                      StatsRow(
-                        color: Colors.amber.shade900,
-                        content: data.source,
-                        icon: Icons.person,
-                      ),
-                      Visibility(
-                        visible: data.description.trim().isNotEmpty,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          padding: const EdgeInsets.all(8),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: context.scaffoldColor,
-                            borderRadius: kRadius(10),
-                          ),
-                          child: Text(data.description),
-                        ),
-                      )
-                    ],
-                  ),
-                  height10,
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.schedule_rounded,
-                        size: 15,
-                      ),
-                      width5,
-                      Text(
-                        data.time.toString(),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Visibility(
-            visible: data.uid == user.uid &&
-                bookData.users != null &&
-                bookData.users!.isNotEmpty,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: CircleAvatar(
-                radius: 12,
-                backgroundImage: NetworkImage(user.imgUrl),
-              ),
-            ),
-          ),
-        ],
-      );
-    });
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          color: context.fadeTextColor,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
   }
 
   Widget StatsRow({
@@ -393,10 +306,7 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
               child: FittedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(5),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                  ),
+                  child: Icon(icon, color: Colors.white),
                 ),
               ),
             ),

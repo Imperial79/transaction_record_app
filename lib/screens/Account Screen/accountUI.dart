@@ -40,7 +40,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
   }
 
   Future<void> updateAccountDetails(String uid) async {
-    setState(() => isLoading = true);
+    isLoading.value = true;
     if (nameController.text.isNotEmpty) {
       Map<String, dynamic> accountMap = {'name': nameController.text};
 
@@ -58,15 +58,15 @@ class _AccountUIState extends ConsumerState<AccountUI> {
           .update((state) => state!.copyWith(name: nameController.text));
 
       KSnackbar(context, content: "Name Updated");
-      setState(() => isLoading = false);
+      isLoading.value = false;
     } else {
-      setState(() => isLoading = false);
+      isLoading.value = false;
       KSnackbar(context, content: 'Please fill all the Fields', isDanger: true);
     }
   }
 
   //------------------------->
-  bool isLoading = false;
+  final isLoading = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
@@ -97,10 +97,7 @@ class _AccountUIState extends ConsumerState<AccountUI> {
               height10,
               Row(
                 children: [
-                  Icon(
-                    Icons.tag,
-                    color: context.fadeTextColor,
-                  ),
+                  Icon(Icons.tag, color: context.fadeTextColor),
                   width5,
                   Flexible(
                     child: Text(
@@ -131,8 +128,9 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color:
-                          context.isDarkMode ? Colors.white24 : Colors.black12,
+                      color: context.isDarkMode
+                          ? Colors.white24
+                          : Colors.black12,
                     ),
                   ),
                   hintText: 'Name',
@@ -156,14 +154,17 @@ class _AccountUIState extends ConsumerState<AccountUI> {
                 decoration: InputDecoration(
                   focusColor: context.primaryColor,
                   focusedBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: context.primaryColor, width: 2),
+                    borderSide: BorderSide(
+                      color: context.primaryColor,
+                      width: 2,
+                    ),
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                        color: context.isDarkMode
-                            ? Colors.white12
-                            : Colors.black12),
+                      color: context.isDarkMode
+                          ? Colors.white12
+                          : Colors.black12,
+                    ),
                   ),
                   hintText: 'Email',
                   hintStyle: TextStyle(
@@ -239,10 +240,12 @@ class _AccountUIState extends ConsumerState<AccountUI> {
           final bool isActive = notifier.themeString == theme;
 
           Color inactiveColor = context.isDarkMode ? Dark.card : Light.card;
-          Color inactiveBorderColor =
-              context.isDarkMode ? Colors.white12 : Colors.black12;
-          Color activeColor =
-              context.primaryColor.withAlpha(context.isDarkMode ? 40 : 30);
+          Color inactiveBorderColor = context.isDarkMode
+              ? Colors.white12
+              : Colors.black12;
+          Color activeColor = context.primaryColor.withAlpha(
+            context.isDarkMode ? 40 : 30,
+          );
           Color activeBorderColor = context.primaryColor;
 
           return MaterialButton(
