@@ -13,7 +13,7 @@ import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/screens/Account%20Screen/accountUI.dart';
 import 'package:transaction_record_app/screens/Book%20Screens/Book%20Widgets/Book_Tile.dart';
-import 'package:transaction_record_app/screens/Home%20Screens/HomeMenu.dart';
+import 'package:transaction_record_app/screens/Home%20Screens/Home_Menu_Widget.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../Utility/commons.dart';
 import '../../Utility/components.dart';
@@ -112,7 +112,7 @@ class _Home_UIState extends ConsumerState<Home_UI>
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 100),
                     child: showHomeMenu
-                        ? HomeMenuUI(isLoading: isLoading)
+                        ? Home_Menu_Widget(isLoading: isLoading)
                         : Container(),
                   ),
                 ),
@@ -194,8 +194,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
                     child: Column(
                       children: [
                         // Summary Card
-                        _buildSummarySection(ref.watch(bookListProvider)),
-                        height20,
+                        // _buildSummarySection(ref.watch(bookListProvider)),
+                        // height20,
                         KSearchBar(
                           context,
                           controller: searchKey,
@@ -232,8 +232,8 @@ class _Home_UIState extends ConsumerState<Home_UI>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            kColor(context).secondaryContainer,
-            kColor(context).secondaryContainer.withAlpha(300),
+            kColor(context).secondary,
+            kColor(context).secondary.withAlpha(300),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

@@ -405,15 +405,6 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
             width: 2,
             color: isActive ? activeColor : context.fadeTextColor.withAlpha(20),
           ),
-          boxShadow: isActive
-              ? [
-                  BoxShadow(
-                    color: activeColor.withAlpha(40),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
         ),
         padding: const EdgeInsets.all(16),
         child: Column(

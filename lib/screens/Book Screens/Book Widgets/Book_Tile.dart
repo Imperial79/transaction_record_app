@@ -98,7 +98,7 @@ class _BookTileState extends State<BookTile> {
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            margin: const EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
               color: context.cardColor,
               borderRadius: BorderRadius.circular(20),

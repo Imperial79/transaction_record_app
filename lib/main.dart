@@ -41,7 +41,7 @@ class MyApp extends ConsumerWidget {
         theme: KThemeData.light(),
         darkTheme: KThemeData.dark(),
         routerConfig: goRouter,
-        themeAnimationDuration: const Duration(milliseconds: 500),
+        themeAnimationDuration: const Duration(milliseconds: 300),
         themeAnimationCurve: Curves.easeInOut,
       ),
     );
