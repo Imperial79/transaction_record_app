@@ -130,6 +130,7 @@ extension ThemeExtensionGetter on BuildContext {
   Color get lossColor => appColors.loss;
   Color get profitCardColor => appColors.profitCard;
   Color get lossCardColor => appColors.lossCard;
+  Color get textColor => colorScheme.onSurface;
   Color get fadeTextColor => appColors.fadeText;
   Color get linkColor => appColors.link;
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Helper/navigatorFns.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import '../../../Utility/KButton.dart';
@@ -10,7 +12,7 @@ import '../../../Utility/newColors.dart';
 import '../Due_Book_UI.dart';
 import '../Savings_Book_UI.dart';
 
-class BookTile extends StatefulWidget {
+class BookTile extends ConsumerStatefulWidget {
   final BookModel book;
   final String title;
   final bool showDate;
@@ -24,10 +26,10 @@ class BookTile extends StatefulWidget {
   });
 
   @override
-  State<BookTile> createState() => _BookTileState();
+  ConsumerState<BookTile> createState() => _BookTileState();
 }
 
-class _BookTileState extends State<BookTile> {
+class _BookTileState extends ConsumerState<BookTile> {
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -78,7 +80,10 @@ class _BookTileState extends State<BookTile> {
             if (widget.book.type == "due") {
               navPush(context, Due_Book_UI(bookData: widget.book));
             } else if (widget.book.type == "regular") {
-              context.push("/book/regular/${widget.book.bookId}");
+              context.push(
+                "/book/regular/${widget.book.bookId}",
+                extra: widget.book,
+              );
             } else {
               navPush(context, Savings_Book_UI(bookData: widget.book));
             }
@@ -89,7 +94,7 @@ class _BookTileState extends State<BookTile> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               builder: (context) {
-                return _deleteModal(
+                return _optionsModal(
                   isDark,
                   bookId: widget.book.bookId,
                   bookName: widget.book.bookName,
@@ -419,13 +424,13 @@ class _BookTileState extends State<BookTile> {
     );
   }
 
-  Widget _deleteModal(
+  Widget _optionsModal(
     bool isDark, {
     required String bookName,
     required String bookId,
   }) {
-    return StatefulBuilder(
-      builder: (context, setState) {
+    return Consumer(
+      builder: (context, ref, child) {
         return SafeArea(
           child: Container(
             padding: const EdgeInsets.all(20),
@@ -462,10 +467,27 @@ class _BookTileState extends State<BookTile> {
                     context,
                     onPressed: () {
                       Navigator.pop(context);
+                      showRenameBookModal(
+                        context,
+                        ref,
+                        bookId: bookId,
+                        initialName: bookName,
+                      );
+                    },
+                    icon: const Icon(Icons.edit_rounded),
+                    label: "Edit Book Name",
+                  ),
+                  height12,
+                  KButton.icon(
+                    context,
+                    onPressed: () {
+                      Navigator.pop(context);
                       widget.onDelete!(bookId, bookName);
                     },
-                    icon: Icon(Icons.delete),
-                    label: "Delete \"$bookName\" Book!",
+                    backgroundColor: context.lossColor.withAlpha(20),
+                    textColor: context.lossColor,
+                    icon: const Icon(Icons.delete_rounded),
+                    label: "Delete \"$bookName\" Book",
                   ),
                 ],
               ),

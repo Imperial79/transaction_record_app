@@ -88,6 +88,20 @@ class _Due_Book_UIState extends ConsumerState<Savings_Book_UI> {
                     kBackButton(context),
                     const Spacer(),
                     IconButton(
+                      onPressed: () {
+                        showRenameBookModal(
+                          context,
+                          ref,
+                          bookId: bookData.bookId,
+                          initialName: bookData.bookName,
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                    IconButton(
                       onPressed: () {},
                       icon: Icon(
                         Icons.delete_outline,

@@ -45,6 +45,10 @@ final bookListStream = StreamProvider.autoDispose<List<BookModel>>((ref) {
 
         ref.read(bookListProvider.notifier).state = data;
         return data;
+      })
+      .handleError((error) {
+        log("Error in bookListStream: $error");
+        throw error;
       });
 });
 

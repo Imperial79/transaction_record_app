@@ -220,103 +220,6 @@ class _Home_UIState extends ConsumerState<Home_UI>
     return SizedBox();
   }
 
-  Widget _buildSummarySection(List<BookModel> books) {
-    double totalNet = books.fold(
-      0.0,
-      (sum, book) => sum + (book.income - book.expense),
-    );
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            kColor(context).secondary,
-            kColor(context).secondary.withAlpha(300),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Overall Balance",
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "₹ ${kMoneyFormat(totalNet)}",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _summaryMiniItem(
-                label: "Books",
-                value: "${books.length}",
-                icon: Icons.auto_stories_rounded,
-              ),
-              const Spacer(),
-              _summaryMiniItem(
-                label: "Regular",
-                value: "${books.where((b) => b.type == 'regular').length}",
-                icon: Icons.receipt_long_rounded,
-              ),
-              const Spacer(),
-              _summaryMiniItem(
-                label: "Due",
-                value: "${books.where((b) => b.type == 'due').length}",
-                icon: Icons.assignment_late_rounded,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _summaryMiniItem({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: Colors.white60),
-        width5,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white60, fontSize: 10),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _filterRow() {
     final filters = ["All", "Regular", "Due", "Savings"];
     final selectedFilter = ref.watch(bookFilterProvider);
@@ -375,44 +278,125 @@ class _Home_UIState extends ConsumerState<Home_UI>
       builder: (context, ref, child) {
         final asyncData = ref.watch(bookListStream);
         final bookList = ref.watch(bookListProvider);
+        final selectedFilter = ref.watch(bookFilterProvider);
 
-        // Filter the list locally for search only
+        // Filter the list locally for search and category
         final filteredList = bookList.where((book) {
           bool matchesSearch =
               kCompare(searchKey.text, book.bookName) ||
               kCompare(searchKey.text, book.bookDescription);
-          return matchesSearch;
+
+          bool matchesFilter =
+              selectedFilter == "All" ||
+              book.type.toLowerCase() == selectedFilter.toLowerCase();
+
+          return matchesSearch && matchesFilter;
         }).toList();
+
+        // Check if we have an error (e.g., missing Firestore index or no internet)
+        if (asyncData.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.cloud_off_rounded,
+                    color: context.lossColor.withAlpha(150),
+                    size: 60,
+                  ),
+                  height15,
+                  Text(
+                    "Connection Error",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: context.textColor,
+                    ),
+                  ),
+                  height10,
+                  Text(
+                    "Unable to reach the server. Please check your internet connection.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: context.fadeTextColor),
+                  ),
+                  height20,
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ref.invalidate(bookListStream);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text("Retry Now"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
         // Reset dateTitle for each build to ensure headers are correct in the filtered list
         String lastDate = '';
 
         return Column(
           children: [
-            ListView.builder(
-              itemCount: filteredList.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                BookModel book = filteredList[index];
-                bool showDate = false;
-                if (lastDate != book.date) {
-                  showDate = true;
-                  lastDate = book.date;
-                }
+            if (filteredList.isEmpty && !asyncData.isLoading)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 50),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.auto_stories_outlined,
+                      size: 64,
+                      color: context.fadeTextColor.withAlpha(50),
+                    ),
+                    height15,
+                    Text(
+                      "No books found",
+                      style: TextStyle(
+                        color: context.fadeTextColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ListView.builder(
+                itemCount: filteredList.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  BookModel book = filteredList[index];
+                  bool showDate = false;
+                  if (lastDate != book.date) {
+                    showDate = true;
+                    lastDate = book.date;
+                  }
 
-                return BookTile(
-                  book: book,
-                  title: book.date,
-                  showDate: showDate,
-                  onDelete: (id, name) {
-                    _deleteBook(bookName: name, bookId: id);
-                  },
-                );
-              },
-            ),
-            kHeight(30),
-            if (asyncData.isLoading) Center(child: const CustomLoading()),
+                  return BookTile(
+                    book: book,
+                    title: book.date,
+                    showDate: showDate,
+                    onDelete: (id, name) {
+                      _deleteBook(bookName: name, bookId: id);
+                    },
+                  );
+                },
+              ),
+            if (asyncData.isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(child: CustomLoading()),
+              ),
           ],
         );
       },

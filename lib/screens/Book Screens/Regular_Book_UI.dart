@@ -7,9 +7,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/User_Selector_Card.dart';
+import 'package:transaction_record_app/Components/WIdgets.dart';
 import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Repository/book_repository.dart';
 import 'package:transaction_record_app/Utility/CustomLoading.dart';
@@ -35,10 +35,13 @@ final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 class Regular_Book_UI extends ConsumerStatefulWidget {
   final String bookId;
   final String bookType;
+
+  final BookModel bookData;
   const Regular_Book_UI({
     super.key,
     required this.bookId,
     required this.bookType,
+    required this.bookData,
   });
 
   @override
@@ -54,8 +57,6 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   final searchKey = TextEditingController();
   String _selectedSortType = 'All';
   var items = ['All', 'Income', 'Expense'];
-
-  final newBookName = TextEditingController();
 
   int searchingBookListCounter = 50;
   bool isSearching = false;
@@ -259,51 +260,173 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  reverseDuration: const Duration(milliseconds: 300),
-                  alignment: Alignment.centerLeft,
-                  curve: Curves.ease,
-                  child: IconButton(
-                    onPressed: () {
-                      context.go("/root");
-                    },
-                    icon: ValueListenableBuilder(
-                      valueListenable: searchKey,
-                      builder: (context, value, child) {
-                        bool isTextEmpty = searchKey.text.isEmpty;
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.arrow_back,
-                              color: context.colorScheme.onSurface,
-                            ),
-                            if (isTextEmpty) width10,
-                            if (isTextEmpty)
-                              Text(
-                                'Return',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.colorScheme.onSurface,
-                                ),
-                              ),
-                          ],
-                        );
-                      },
+            // Row(
+            //   children: [
+            //     IconButton.filledTonal(
+            //       onPressed: () {
+            //         context.go("/root");
+            //       },
+            //       icon: Icon(
+            //         Icons.arrow_back,
+            //         color: context.colorScheme.onSurface,
+            //       ),
+            //     ),
+            //     Flexible(child: _SearchBar()),
+            //   ],
+            // ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  kBackButton(context),
+                  width10,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.bookData.bookName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          DateFormat(
+                            "dd MMM, yyyy",
+                          ).format(DateTime.parse(widget.bookData.bookId)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.fadeTextColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                Flexible(child: _SearchBar()),
-              ],
+                  IconButton(
+                    onPressed: () {
+                      showRenameBookModal(
+                        context,
+                        ref,
+                        bookId: widget.bookData.bookId,
+                        initialName: widget.bookData.bookName,
+                      );
+                    },
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: context.primaryColor.withAlpha(
+                          context.isDarkMode ? 40 : 20,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.edit_rounded,
+                        size: 20,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => _addUserDialog(
+                          // context.isDarkMode,
+                          uid: user!.uid,
+                          bookData: widget.bookData,
+                        ),
+                      );
+                    },
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withAlpha(
+                          context.isDarkMode ? 40 : 20,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.person_add_rounded,
+                        size: 20,
+                        color: context.isDarkMode
+                            ? Colors.blueAccent
+                            : Colors.blue.shade700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => kAlertDialog(
+                          context,
+                          title: 'Delete Book?',
+                          subTitle:
+                              'Are you sure you want to delete "${widget.bookData.bookName}" book?',
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                try {
+                                  isLoading.value = true;
+                                  await ref
+                                      .read(bookRepository)
+                                      .deleteBook(
+                                        bookId: widget.bookData.bookId,
+                                      );
+                                  if (context.mounted) Navigator.pop(context);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    KSnackbar(
+                                      context,
+                                      content: "Delete failed",
+                                      isDanger: true,
+                                    );
+                                  }
+                                } finally {
+                                  isLoading.value = false;
+                                }
+                              },
+                              child: const Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withAlpha(
+                          context.isDarkMode ? 40 : 20,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        size: 20,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             _incomeExpenseTracker(),
             Expanded(
@@ -333,108 +456,108 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     return Consumer(
       builder: (context, ref, _) {
         final bookData = ref.watch(bookdataStream(widget.bookId));
-        final user = ref.watch(userProvider);
-        final showElements = ref.watch(showElementsProvider);
-        final showMenu = ref.watch(showMenuProvider);
+        // final user = ref.watch(userProvider);
+        // final showElements = ref.watch(showElementsProvider);
+        // final showMenu = ref.watch(showMenuProvider);
         return bookData.when(
           data: (book) => Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: Column(
               children: [
-                AnimatedSize(
-                  reverseDuration: const Duration(milliseconds: 300),
-                  duration: const Duration(milliseconds: 300),
-                  alignment: Alignment.topCenter,
-                  curve: Curves.ease,
-                  child: Container(
-                    child: showElements
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        book.bookName,
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                    width10,
-                                    InkWell(
-                                      onTap: () {
-                                        ref
-                                                .read(showMenuProvider.notifier)
-                                                .state =
-                                            !showMenu;
-                                      },
-                                      borderRadius: kRadius(100),
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: context.isDarkMode
-                                            ? Dark.card
-                                            : Colors.grey.shade200,
-                                        child: FittedBox(
-                                          child: Icon(
-                                            showMenu
-                                                ? Icons
-                                                      .keyboard_arrow_up_rounded
-                                                : Icons
-                                                      .keyboard_arrow_down_rounded,
-                                            size: 20,
-                                            color:
-                                                context.colorScheme.onSurface,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    width10,
-                                    InkWell(
-                                      borderRadius: kRadius(100),
-                                      onTap: () {
-                                        navPush(
-                                          context,
-                                          UsersUI(
-                                            users: book.users!,
-                                            ownerUid: book.uid,
-                                            bookId: book.bookId,
-                                          ),
-                                        );
-                                      },
-                                      child: const FittedBox(
-                                        child: CircleAvatar(
-                                          radius: 12,
-                                          child: Icon(Icons.groups_2, size: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              height10,
-                              AnimatedSize(
-                                reverseDuration: const Duration(
-                                  milliseconds: 300,
-                                ),
-                                duration: const Duration(milliseconds: 300),
-                                alignment: Alignment.topCenter,
-                                curve: Curves.ease,
-                                child: showMenu
-                                    ? BookMenu(bookData: book, uid: user!.uid)
-                                    : Container(),
-                              ),
-                            ],
-                          )
-                        : Container(),
-                  ),
-                ),
+                // AnimatedSize(
+                //   reverseDuration: const Duration(milliseconds: 300),
+                //   duration: const Duration(milliseconds: 300),
+                //   alignment: Alignment.topCenter,
+                //   curve: Curves.ease,
+                //   child: Container(
+                //     child: showElements
+                //         ? Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               Padding(
+                //                 padding: const EdgeInsets.symmetric(
+                //                   horizontal: 10,
+                //                 ),
+                //                 child: Row(
+                //                   crossAxisAlignment: CrossAxisAlignment.start,
+                //                   mainAxisAlignment:
+                //                       MainAxisAlignment.spaceBetween,
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   children: [
+                //                     Flexible(
+                //                       child: Text(
+                //                         book.bookName,
+                //                         style: const TextStyle(fontSize: 15),
+                //                       ),
+                //                     ),
+                //                     width10,
+                //                     InkWell(
+                //                       onTap: () {
+                //                         ref
+                //                                 .read(showMenuProvider.notifier)
+                //                                 .state =
+                //                             !showMenu;
+                //                       },
+                //                       borderRadius: kRadius(100),
+                //                       child: CircleAvatar(
+                //                         radius: 12,
+                //                         backgroundColor: context.isDarkMode
+                //                             ? Dark.card
+                //                             : Colors.grey.shade200,
+                //                         child: FittedBox(
+                //                           child: Icon(
+                //                             showMenu
+                //                                 ? Icons
+                //                                       .keyboard_arrow_up_rounded
+                //                                 : Icons
+                //                                       .keyboard_arrow_down_rounded,
+                //                             size: 20,
+                //                             color:
+                //                                 context.colorScheme.onSurface,
+                //                           ),
+                //                         ),
+                //                       ),
+                //                     ),
+                //                     width10,
+                //                     InkWell(
+                //                       borderRadius: kRadius(100),
+                //                       onTap: () {
+                // navPush(
+                //   context,
+                //   UsersUI(
+                //     users: book.users!,
+                //     ownerUid: book.uid,
+                //     bookId: book.bookId,
+                //   ),
+                // );
+                //                       },
+                //                       child: const FittedBox(
+                //                         child: CircleAvatar(
+                //                           radius: 12,
+                //                           child: Icon(Icons.groups_2, size: 12),
+                //                         ),
+                //                       ),
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ),
+                //               height10,
+                //               AnimatedSize(
+                //                 reverseDuration: const Duration(
+                //                   milliseconds: 300,
+                //                 ),
+                //                 duration: const Duration(milliseconds: 300),
+                //                 alignment: Alignment.topCenter,
+                //                 curve: Curves.ease,
+                //                 child: showMenu
+                //                     ? BookMenu(bookData: book, uid: user!.uid)
+                //                     : Container(),
+                //               ),
+                //             ],
+                //           )
+                //         : Container(),
+                //   ),
+                // ),
                 Row(
                   children: [
                     Expanded(
@@ -457,6 +580,19 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
                           ],
                         ),
                       ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        navPush(
+                          context,
+                          UsersUI(
+                            users: book.users!,
+                            ownerUid: book.uid,
+                            bookId: book.bookId,
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.groups_2, color: context.primaryColor),
                     ),
                     _filterButton(),
                   ],
@@ -852,27 +988,11 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
             children: [
               BookMenuBtn(
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return kRenameModal(
-                        context,
-                        bookId: bookData.bookId,
-                        oldBookName: bookData.bookName,
-                        onUpdate: () {
-                          Navigator.pop(context);
-                          ref
-                              .read(bookRepository)
-                              .updateBook(
-                                bookId: bookData.bookId,
-                                data: {'bookName': newBookName.text.trim()},
-                              );
-                        },
-                      );
-                    },
+                  showRenameBookModal(
+                    context,
+                    ref,
+                    bookId: bookData.bookId,
+                    initialName: bookData.bookName,
                   );
                 },
                 label: 'Edit',
@@ -983,130 +1103,6 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget kRenameModal(
-    BuildContext context, {
-    required String bookId,
-    required String oldBookName,
-    required void Function()? onUpdate,
-  }) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            margin: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            ),
-            decoration: BoxDecoration(
-              color: context.isDarkMode ? Dark.card : Light.card,
-              borderRadius: kRadius(20),
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: isDark
-                        ? Colors.blue.shade100
-                        : Colors.blueAccent,
-                    child: Text(
-                      'Aa',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: context.isDarkMode
-                            ? Colors.blue.shade800
-                            : Colors.white,
-                      ),
-                    ),
-                  ),
-                  height10,
-                  Text(
-                    'Rename Book',
-                    style: TextStyle(
-                      color: context.isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    'Change the book name',
-                    style: TextStyle(
-                      color: context.isDarkMode
-                          ? Colors.blue.shade300
-                          : Colors.blueAccent,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  height20,
-                  TextField(
-                    controller: newBookName,
-                    keyboardType: TextInputType.text,
-                    textCapitalization: TextCapitalization.words,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
-                      color: context.isDarkMode ? Colors.white : Colors.black,
-                    ),
-                    cursorWidth: 1,
-                    cursorColor: context.isDarkMode
-                        ? Colors.white
-                        : Colors.black,
-                    decoration: InputDecoration(
-                      focusColor: context.isDarkMode
-                          ? Colors.white
-                          : Colors.black,
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: context.isDarkMode
-                              ? Dark.scaffold
-                              : Colors.black,
-                          width: 2,
-                        ),
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: context.isDarkMode
-                              ? Dark.scaffold
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                      hintText: 'Book title',
-                      hintStyle: TextStyle(
-                        fontSize: 30,
-                        color: context.isDarkMode
-                            ? Dark.scaffold
-                            : Colors.grey.shade400,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        newBookName.text = value;
-                      });
-                    },
-                  ),
-                  height20,
-                  ElevatedButton.icon(
-                    onPressed: onUpdate,
-                    icon: const Icon(Icons.file_upload_outlined),
-                    label: const Text('Update'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 

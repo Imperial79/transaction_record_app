@@ -181,6 +181,30 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
                     ),
                     IconButton(
                       onPressed: () {
+                        showRenameBookModal(
+                          context,
+                          ref,
+                          bookId: bookData.bookId,
+                          initialName: bookData.bookName,
+                        );
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: context.primaryColor.withAlpha(
+                            context.isDarkMode ? 40 : 20,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.edit_rounded,
+                          size: 20,
+                          color: context.primaryColor,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
                         showDialog(
                           context: context,
                           builder: (context) => _addUserDialog(

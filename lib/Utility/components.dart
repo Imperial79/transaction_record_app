@@ -10,6 +10,7 @@ import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Helper/navigatorFns.dart';
+import 'CustomLoading.dart';
 import 'commons.dart';
 
 Widget kPill({
@@ -21,6 +22,183 @@ Widget kPill({
     padding: padding,
     decoration: BoxDecoration(color: color, borderRadius: kRadius(100)),
     child: child,
+  );
+}
+
+void showRenameBookModal(
+  BuildContext context,
+  WidgetRef ref, {
+  required String bookId,
+  required String initialName,
+}) {
+  final controller = TextEditingController(text: initialName);
+  bool isLoading = false;
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    isScrollControlled: true,
+    builder: (modalContext) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              margin: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                borderRadius: kRadius(20),
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: context.isDarkMode
+                          ? Colors.blue.shade100
+                          : Colors.blueAccent,
+                      child: Text(
+                        'Aa',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: context.isDarkMode
+                              ? Colors.blue.shade800
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                    height10,
+                    Text(
+                      'Rename Book',
+                      style: TextStyle(
+                        color: context.textColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      'Change the book name',
+                      style: TextStyle(
+                        color: context.primaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    height20,
+                    TextField(
+                      controller: controller,
+                      keyboardType: TextInputType.text,
+                      textCapitalization: TextCapitalization.words,
+                      autofocus: true,
+                      enabled: !isLoading,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: context.textColor,
+                      ),
+                      cursorColor: context.primaryColor,
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: context.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: context.fadeTextColor.withAlpha(50),
+                          ),
+                        ),
+                        hintText: 'Book title',
+                        hintStyle: TextStyle(
+                          fontSize: 24,
+                          color: context.fadeTextColor.withAlpha(100),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    height25,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: context.fadeTextColor.withAlpha(
+                                20,
+                              ),
+                              foregroundColor: context.textColor,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('Cancel'),
+                          ),
+                        ),
+                        width15,
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (controller.text.trim().isNotEmpty) {
+                                      setState(() => isLoading = true);
+                                      final name = controller.text.trim();
+                                      try {
+                                        await FirebaseFirestore.instance
+                                            .collection('transactBooks')
+                                            .doc(bookId)
+                                            .update({'bookName': name});
+                                        Navigator.pop(modalContext);
+                                        Navigator.pop(context);
+                                        KSnackbar(
+                                          context,
+                                          content: "Book Renamed!",
+                                        );
+                                      } catch (e) {
+                                        setState(() => isLoading = false);
+                                        KSnackbar(
+                                          context,
+                                          content: "Failed to rename book!",
+                                          isDanger: true,
+                                        );
+                                      }
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kColor(context).tertiary,
+                              foregroundColor: kColor(context).onTertiary,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const CustomLoading()
+                                : const Text('Update'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
   );
 }
 

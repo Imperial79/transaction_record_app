@@ -4,7 +4,7 @@ import '../Utility/commons.dart';
 import '../Utility/newColors.dart';
 
 Widget kBackButton(BuildContext context, {bool isSearching = false}) {
-  return IconButton(
+  return IconButton.filledTonal(
     onPressed: () {
       Navigator.pop(context);
     },
@@ -12,16 +12,16 @@ Widget kBackButton(BuildContext context, {bool isSearching = false}) {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.arrow_back, color: context.colorScheme.onSurface),
-        !isSearching ? width10 : const SizedBox(),
-        !isSearching
-            ? Text(
-                'Return',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: context.colorScheme.onSurface,
-                ),
-              )
-            : const SizedBox(),
+        // !isSearching ? width10 : const SizedBox(),
+        // !isSearching
+        //     ? Text(
+        //         'Return',
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.w600,
+        //           color: context.colorScheme.onSurface,
+        //         ),
+        //       )
+        //     : const SizedBox(),
       ],
     ),
   );

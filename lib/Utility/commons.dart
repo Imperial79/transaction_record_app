@@ -13,8 +13,10 @@ Widget kHeight(double height) => SizedBox(height: height);
 // Shortcuts for specific spacings
 const SizedBox height5 = SizedBox(height: 5);
 const SizedBox height10 = SizedBox(height: 10);
+const SizedBox height12 = SizedBox(height: 12);
 const SizedBox height15 = SizedBox(height: 15);
 const SizedBox height20 = SizedBox(height: 20);
+const SizedBox height25 = SizedBox(height: 25);
 const SizedBox height50 = SizedBox(height: 50);
 
 const SizedBox width4 = SizedBox(width: 4);
@@ -40,18 +42,20 @@ void KSnackbar(
     snackbarDuration: const Duration(seconds: 3),
     builder: (context) => ToastCard(
       shadowColor: Colors.transparent,
-      color: isDanger ? context.lossCardColor : context.profitCardColor,
+      color: isDanger
+          ? context.lossCardColor
+          : kColor(context).primaryContainer,
       leading: Icon(
         isDanger ? Icons.dangerous : Icons.verified,
         size: 28,
-        color: isDanger ? context.lossColor : context.profitColor,
+        color: isDanger ? context.lossColor : context.primaryColor,
       ),
       title: Text(
         content,
         style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 15,
-          color: isDanger ? context.lossColor : context.profitColor,
+          color: isDanger ? context.lossColor : context.primaryColor,
         ),
       ),
     ),
