@@ -141,10 +141,12 @@ class _New_Transact_UIState extends ConsumerState<New_Transact_UI> {
         transactType = 'Income';
         source = 'From';
 
-        Navigator.pop(context);
+        if (context.mounted) Navigator.pop(context);
       }
     } catch (e) {
-      KSnackbar(context, content: "Unable to create Transact!", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "Unable to create Transact!", isDanger: true);
+      }
     } finally {
       isLoading.value = false;
     }

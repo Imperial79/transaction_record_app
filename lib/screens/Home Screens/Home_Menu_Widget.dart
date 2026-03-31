@@ -27,13 +27,15 @@ class _HomeMenuUIState extends ConsumerState<Home_Menu_Widget> {
       }
 
       final res = await ref.read(authRepository).signOut();
-      if (res) {
+      if (res && context.mounted) {
         ref.read(userProvider.notifier).state = null;
         // NavPushReplacement(context, const LoginUI());
         context.pushReplacement("/login");
       }
     } catch (e) {
-      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      }
     } finally {
       if (mounted && widget.isLoading != null) {
         widget.isLoading!.value = false;

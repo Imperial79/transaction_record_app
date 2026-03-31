@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/Components/User_Selector_Card.dart';
 import 'package:transaction_record_app/Components/WIdgets.dart';
@@ -202,17 +201,19 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
           }
         }
 
-        showModalBottomSheet(
-          context: context,
-          elevation: 0,
-          backgroundColor: context.isDarkMode ? Dark.card : Light.card,
-          builder: (context) {
-            return DistributeModal(
-              balanceSheet: balanceSheet,
-              balanceSheetUsers: balanceSheetUsers,
-            );
-          },
-        );
+        if (context.mounted) {
+          showModalBottomSheet(
+            context: context,
+            elevation: 0,
+            backgroundColor: context.isDarkMode ? Dark.card : Light.card,
+            builder: (context) {
+              return DistributeModal(
+                balanceSheet: balanceSheet,
+                balanceSheetUsers: balanceSheetUsers,
+              );
+            },
+          );
+        }
       });
     });
     isLoading.value = false;
@@ -226,16 +227,18 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
       isLoading.value = true;
 
       final res = await ref.read(bookRepository).deleteBook(bookId: bookId);
-      if (res) {
+      if (res && context.mounted) {
         KSnackbar(context, content: "\"$bookName\" Book Deleted!");
       }
     } catch (e) {
-      KSnackbar(
-        context,
-        content:
-            "Unable to delete book! Check your connection or try again later.",
-        isDanger: true,
-      );
+      if (context.mounted) {
+        KSnackbar(
+          context,
+          content:
+              "Unable to delete book! Check your connection or try again later.",
+          isDanger: true,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -247,10 +250,10 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
   void dispose() {
     _debounce?.cancel();
     searchKey.removeListener(_onSearchChanged);
-    super.dispose();
     _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
     searchKey.dispose();
+    super.dispose();
   }
 
   //------------------------------------>
@@ -868,68 +871,68 @@ class _BookUIState extends ConsumerState<Regular_Book_UI> {
     );
   }
 
-  Container _SearchBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-      margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-      decoration: BoxDecoration(
-        color: context.isDarkMode ? Dark.card : Light.card,
-        borderRadius: const BorderRadius.horizontal(left: Radius.circular(100)),
-      ),
-      child: Row(
-        crossAxisAlignment: .center,
-        children: [
-          SvgPicture.asset(
-            'lib/assets/icons/search.svg',
-            height: 20,
-            colorFilter: svgColor(context.isDarkMode ? Dark.text : Light.text),
-          ),
-          width10,
-          Flexible(
-            child: TextField(
-              controller: searchKey,
-              cursorColor: context.isDarkMode ? Dark.primary : Light.primary,
-              style: TextStyle(
-                color: context.isDarkMode ? Colors.white : Colors.black,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                // contentPadding: EdgeInsets.all(0),
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
-                ),
-                hintText: 'Search amount, description, etc',
-                suffixIcon: ValueListenableBuilder(
-                  valueListenable: searchKey,
-                  builder: (context, value, child) {
-                    return searchKey.text.isNotEmpty
-                        ? IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              searchKey.clear();
-                              ref.read(searchQueryProvider.notifier).state = '';
-                            },
-                            icon: Icon(
-                              Icons.cancel_rounded,
-                              size: 18,
-                              color: context.isDarkMode
-                                  ? Dark.fadeText
-                                  : Light.fadeText,
-                            ),
-                          )
-                        : const SizedBox.shrink();
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Container _SearchBar() {
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+  //     margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
+  //     decoration: BoxDecoration(
+  //       color: context.isDarkMode ? Dark.card : Light.card,
+  //       borderRadius: const BorderRadius.horizontal(left: Radius.circular(100)),
+  //     ),
+  //     child: Row(
+  //       crossAxisAlignment: .center,
+  //       children: [
+  //         SvgPicture.asset(
+  //           'lib/assets/icons/search.svg',
+  //           height: 20,
+  //           colorFilter: svgColor(context.isDarkMode ? Dark.text : Light.text),
+  //         ),
+  //         width10,
+  //         Flexible(
+  //           child: TextField(
+  //             controller: searchKey,
+  //             cursorColor: context.isDarkMode ? Dark.primary : Light.primary,
+  //             style: TextStyle(
+  //               color: context.isDarkMode ? Colors.white : Colors.black,
+  //             ),
+  //             decoration: InputDecoration(
+  //               border: InputBorder.none,
+  //               isDense: true,
+  //               contentPadding: EdgeInsets.symmetric(vertical: 10),
+  //               // contentPadding: EdgeInsets.all(0),
+  //               hintStyle: TextStyle(
+  //                 fontWeight: FontWeight.w400,
+  //                 color: context.isDarkMode ? Dark.fadeText : Light.fadeText,
+  //               ),
+  //               hintText: 'Search amount, description, etc',
+  //               suffixIcon: ValueListenableBuilder(
+  //                 valueListenable: searchKey,
+  //                 builder: (context, value, child) {
+  //                   return searchKey.text.isNotEmpty
+  //                       ? IconButton(
+  //                           padding: EdgeInsets.zero,
+  //                           onPressed: () {
+  //                             searchKey.clear();
+  //                             ref.read(searchQueryProvider.notifier).state = '';
+  //                           },
+  //                           icon: Icon(
+  //                             Icons.cancel_rounded,
+  //                             size: 18,
+  //                             color: context.isDarkMode
+  //                                 ? Dark.fadeText
+  //                                 : Light.fadeText,
+  //                           ),
+  //                         )
+  //                       : const SizedBox.shrink();
+  //                 },
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget BookMenu({required BookModel bookData, required String uid}) {
     return Container(

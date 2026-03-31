@@ -117,9 +117,20 @@ extension ColorUtils on Color {
 }
 
 extension ThemeExtensionGetter on BuildContext {
-  AppColors get appColors => Theme.of(this).extension<AppColors>()!;
-  ColorScheme get colorScheme => Theme.of(this).colorScheme;
-  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+  AppColors get appColors {
+    if (!mounted) return AppColors.light;
+    return Theme.of(this).extension<AppColors>() ?? AppColors.light;
+  }
+
+  ColorScheme get colorScheme {
+    if (!mounted) return KThemeData.light().colorScheme;
+    return Theme.of(this).colorScheme;
+  }
+
+  bool get isDarkMode {
+    if (!mounted) return false;
+    return Theme.of(this).brightness == Brightness.dark;
+  }
 
   Color get primaryColor => colorScheme.primary;
   Color get scaffoldColor => Theme.of(this).scaffoldBackgroundColor;
@@ -163,101 +174,114 @@ class Dark {
 // Utility functions
 Color kOpacity(Color color, double opacity) =>
     color.withAlpha((opacity * 255).round());
-ColorScheme kColor(BuildContext context) => Theme.of(context).colorScheme;
+
+ColorScheme kColor(BuildContext context) => context.colorScheme;
 ColorFilter svgColor(Color color) => ColorFilter.mode(color, BlendMode.srcIn);
 
 class KThemeData {
-  static ThemeData light() => ThemeData(
-    fontFamily: 'Product',
-    useMaterial3: true,
-    splashFactory: InkSparkle.splashFactory,
-    scaffoldBackgroundColor: AppPalette.scaffoldLight,
-    brightness: Brightness.light,
-    extensions: [AppColors.light],
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppPalette.primaryLight,
-      brightness: Brightness.light,
-      primary: AppPalette.primaryLight,
-      surface: AppPalette.cardLight,
-      onSurface: AppPalette.textLight,
-      error: AppPalette.lossLight,
-    ),
-    pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      },
-    ),
-    cardTheme: CardThemeData(
-      elevation: 0,
-      color: AppPalette.cardLight,
-      shape: RoundedRectangleBorder(
-        borderRadius: kRadius(16),
-        side: BorderSide(color: Colors.grey.withAlpha(25), width: 1),
-      ),
-    ),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppPalette.textLight),
-      bodyMedium: TextStyle(color: AppPalette.textLight),
-      titleLarge: TextStyle(
-        color: AppPalette.textLight,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: AppPalette.primaryLight,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
-      ),
-    ),
-  );
+  static ThemeData light({ColorScheme? dynamicColorScheme}) {
+    final scheme =
+        dynamicColorScheme ??
+        ColorScheme.fromSeed(
+          seedColor: AppPalette.primaryLight,
+          brightness: Brightness.light,
+          primary: AppPalette.primaryLight,
+          surface: AppPalette.cardLight,
+          onSurface: AppPalette.textLight,
+          error: AppPalette.lossLight,
+        );
 
-  static ThemeData dark() => ThemeData(
-    fontFamily: 'Product',
-    useMaterial3: true,
-    splashFactory: InkSparkle.splashFactory,
-    scaffoldBackgroundColor: AppPalette.scaffoldDark,
-    brightness: Brightness.dark,
-    extensions: [AppColors.dark],
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppPalette.primaryDark,
-      brightness: Brightness.dark,
-      primary: AppPalette.primaryDark,
-      surface: AppPalette.cardDark,
-      onSurface: AppPalette.textDark,
-      error: AppPalette.lossDark,
-    ),
-    pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      },
-    ),
-    cardTheme: CardThemeData(
-      elevation: 0,
-      color: AppPalette.cardDark,
-      shape: RoundedRectangleBorder(
-        borderRadius: kRadius(16),
-        side: BorderSide(color: Colors.white.withAlpha(15), width: 1),
+    return ThemeData(
+      fontFamily: 'Product',
+      useMaterial3: true,
+      splashFactory: InkSparkle.splashFactory,
+      scaffoldBackgroundColor: AppPalette.scaffoldLight,
+      brightness: Brightness.light,
+      extensions: [AppColors.light],
+      colorScheme: scheme,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
       ),
-    ),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppPalette.textDark),
-      bodyMedium: TextStyle(color: AppPalette.textDark),
-      titleLarge: TextStyle(
-        color: AppPalette.textDark,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
+      cardTheme: CardThemeData(
         elevation: 0,
-        backgroundColor: AppPalette.primaryDark,
-        foregroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+        color: AppPalette.cardLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: kRadius(16),
+          side: BorderSide(color: Colors.grey.withAlpha(25), width: 1),
+        ),
       ),
-    ),
-  );
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: AppPalette.textLight),
+        bodyMedium: TextStyle(color: AppPalette.textLight),
+        titleLarge: TextStyle(
+          color: AppPalette.textLight,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: AppPalette.primaryLight,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData dark({ColorScheme? dynamicColorScheme}) {
+    final scheme =
+        dynamicColorScheme ??
+        ColorScheme.fromSeed(
+          seedColor: AppPalette.primaryDark,
+          brightness: Brightness.dark,
+          primary: AppPalette.primaryDark,
+          surface: AppPalette.cardDark,
+          onSurface: AppPalette.textDark,
+          error: AppPalette.lossDark,
+        );
+
+    return ThemeData(
+      fontFamily: 'Product',
+      useMaterial3: true,
+      splashFactory: InkSparkle.splashFactory,
+      scaffoldBackgroundColor: AppPalette.scaffoldDark,
+      brightness: Brightness.dark,
+      extensions: [AppColors.dark],
+      colorScheme: scheme,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: AppPalette.cardDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: kRadius(16),
+          side: BorderSide(color: Colors.white.withAlpha(15), width: 1),
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: AppPalette.textDark),
+        bodyMedium: TextStyle(color: AppPalette.textDark),
+        titleLarge: TextStyle(
+          color: AppPalette.textDark,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: AppPalette.primaryDark,
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+        ),
+      ),
+    );
+  }
 }

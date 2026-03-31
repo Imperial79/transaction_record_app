@@ -137,15 +137,16 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
 
                         await FirebaseRefs.requestRef
                             .doc("$currentTime")
-                            .set(requestMap)
-                            .then(
-                              (value) => KSnackbar(
-                                context,
-                                content:
-                                    "Request to join book has been sent to ${selectedUsers.length} user(s)",
-                              ),
-                            );
-                        Navigator.pop(context);
+                            .set(requestMap);
+
+                        if (context.mounted) {
+                          KSnackbar(
+                            context,
+                            content:
+                                "Request to join book has been sent to ${selectedUsers.length} user(s)",
+                          );
+                          Navigator.pop(context);
+                        }
                       },
                       child: Text('Send Request [${selectedUsers.length}]'),
                     ),

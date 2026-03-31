@@ -10,6 +10,8 @@ import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 
+import 'package:upgrader/upgrader.dart';
+
 import '../Utility/commons.dart';
 
 class LoginUI extends ConsumerStatefulWidget {
@@ -49,159 +51,162 @@ class _LoginUIState extends ConsumerState<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    return KScaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Stack(
-            children: [
-              _backgroundGraphics(),
-              ValueListenableBuilder(
-                valueListenable: isLoading,
-                builder: (context, loading, child) {
-                  return Column(
-                    children: [
-                      if (loading)
-                        _loadingScreen()
-                      else
-                        Flexible(
-                          flex: 6,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Transact',
-                                      style: TextStyle(
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "Serif",
-                                      ),
-                                    ),
-                                    Text(
-                                      'Your Personal Money Manager',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400,
-                                        color: context.primaryColor,
-                                      ),
-                                    ),
-                                    height20,
-                                    Text(
-                                      '#FOSS',
-                                      style: TextStyle(
-                                        color: context.profitColor,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.7,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.cloud, color: context.profitColor),
-                                  width10,
-                                  Expanded(
-                                    child: Text(
-                                      'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        color: context.profitColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              height20,
-                              InkWell(
-                                borderRadius: kRadius(15),
-                                onTap: () async {
-                                  _googleSignIn();
-                                },
-                                child: Ink(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: kRadius(12),
-                                    color: context.isDarkMode
-                                        ? Light.scaffold
-                                        : Dark.scaffold,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 20,
-                                  ),
-                                  child: Row(
+    return UpgradeAlert(
+      child: KScaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Stack(
+              children: [
+                _backgroundGraphics(),
+                ValueListenableBuilder(
+                  valueListenable: isLoading,
+                  builder: (context, loading, child) {
+                    return Column(
+                      children: [
+                        if (loading)
+                          _loadingScreen()
+                        else
+                          Flexible(
+                            flex: 6,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.login,
-                                        color: context.isDarkMode
-                                            ? Colors.black
-                                            : Colors.white,
-                                      ),
-                                      width15,
-                                      Text(
-                                        "Continue with Google",
+                                      const Text(
+                                        'Transact',
                                         style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: context.isDarkMode
-                                              ? Colors.black
-                                              : Colors.white,
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: "Serif",
+                                        ),
+                                      ),
+                                      Text(
+                                        'Your Personal Money Manager',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: context.primaryColor,
+                                        ),
+                                      ),
+                                      height20,
+                                      Text(
+                                        '#FOSS',
+                                        style: TextStyle(
+                                          color: context.profitColor,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.7,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                              height15,
-                              Text.rich(
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: context.fadeTextColor,
-                                ),
-                                TextSpan(
+                                Row(
                                   children: [
-                                    const TextSpan(
-                                      text:
-                                          "By signing in, you agree with our ",
-                                    ),
-                                    TextSpan(
-                                      text: "Terms & Conditions ",
-                                      style: TextStyle(
-                                        color: context.linkColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const TextSpan(text: "and "),
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () async {
-                                          await launchTheUrl(_privacyPolicyUrl);
-                                        },
-                                      text: "Privacy Policy.",
-                                      style: TextStyle(
-                                        color: context.linkColor,
-                                        fontWeight: FontWeight.w500,
+                                    Icon(Icons.cloud, color: context.profitColor),
+                                    width10,
+                                    Expanded(
+                                      child: Text(
+                                        'SYNC YOUR DATA ON TRANSACT CLOUD FOR FREE',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15,
+                                          color: context.profitColor,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
+                                height20,
+                                InkWell(
+                                  borderRadius: kRadius(15),
+                                  onTap: () async {
+                                    _googleSignIn();
+                                  },
+                                  child: Ink(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius: kRadius(12),
+                                      color: context.isDarkMode
+                                          ? Light.scaffold
+                                          : Dark.scaffold,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 20,
+                                      // ignore: deprecated_member_use
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.login,
+                                          color: context.isDarkMode
+                                              ? Colors.black
+                                              : Colors.white,
+                                        ),
+                                        width15,
+                                        Text(
+                                          "Continue with Google",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: context.isDarkMode
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                height15,
+                                Text.rich(
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: context.fadeTextColor,
+                                  ),
+                                  TextSpan(
+                                    children: [
+                                      const TextSpan(
+                                        text:
+                                            "By signing in, you agree with our ",
+                                      ),
+                                      TextSpan(
+                                        text: "Terms & Conditions ",
+                                        style: TextStyle(
+                                          color: context.linkColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const TextSpan(text: "and "),
+                                      TextSpan(
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () async {
+                                            await launchTheUrl(_privacyPolicyUrl);
+                                          },
+                                        text: "Privacy Policy.",
+                                        style: TextStyle(
+                                          color: context.linkColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ],
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

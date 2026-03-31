@@ -76,22 +76,22 @@ class _New_Book_UIState extends ConsumerState<New_Book_UI> {
         final res = await ref
             .read(bookRepository)
             .createBook(bookId: "$_selectedTimeStamp", data: newBook.toMap());
-        if (res) {
+        if (res && context.mounted) {
           KSnackbar(context, content: 'Book Created');
 
-          await ref
-              .read(pageControllerProvider)
-              .animateToPage(
+          await ref.read(pageControllerProvider).animateToPage(
                 0,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
               );
-        } else {
+        } else if (context.mounted) {
           KSnackbar(context, content: "Something went wrong!", isDanger: true);
         }
       }
     } catch (e) {
-      KSnackbar(context, content: "$e", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "$e", isDanger: true);
+      }
     } finally {
       isLoading.value = false;
     }

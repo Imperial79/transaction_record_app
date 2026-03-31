@@ -5,7 +5,8 @@ import 'package:transaction_record_app/Repository/system_repository.dart';
 import 'package:transaction_record_app/firebase_options.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:dynamic_color/dynamic_color.dart';
+
 import 'Helper/Route_Helper/go_router_setup.dart';
 import 'Utility/newColors.dart';
 
@@ -27,23 +28,27 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    setSystemUIColors(context);
-
     final goRouter = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeProvider);
 
-    return UpgradeAlert(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Transact Record',
-        color: Colors.white,
-        themeMode: themeMode,
-        theme: KThemeData.light(),
-        darkTheme: KThemeData.dark(),
-        routerConfig: goRouter,
-        themeAnimationDuration: const Duration(milliseconds: 300),
-        themeAnimationCurve: Curves.easeInOut,
-      ),
+    return DynamicColorBuilder(
+      builder: (lightDynamic, darkDynamic) {
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'Transact Record',
+          color: Colors.white,
+          themeMode: themeMode,
+          theme: KThemeData.light(dynamicColorScheme: lightDynamic),
+          darkTheme: KThemeData.dark(dynamicColorScheme: darkDynamic),
+          routerConfig: goRouter,
+          themeAnimationDuration: const Duration(milliseconds: 300),
+          themeAnimationCurve: Curves.easeInOut,
+          builder: (context, child) {
+            setSystemUIColors(context);
+            return child!;
+          },
+        );
+      },
     );
   }
 }

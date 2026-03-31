@@ -98,13 +98,17 @@ class _Due_Book_UIState extends ConsumerState<Due_Book_UI> {
           .doc(bookData.bookId)
           .update({"targetAmount": double.parse(_newTargetAmount.text)});
 
-      KSnackbar(
-        context,
-        content: "New target set successfully!",
-        isDanger: false,
-      );
+      if (context.mounted) {
+        KSnackbar(
+          context,
+          content: "New target set successfully!",
+          isDanger: false,
+        );
+      }
     } catch (e) {
-      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      }
     } finally {
       isLoading.value = false;
     }

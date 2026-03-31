@@ -152,10 +152,12 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
         transactType = 'Income';
         source = 'From';
 
-        Navigator.pop(context);
+        if (context.mounted) Navigator.pop(context);
       }
     } catch (e) {
-      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      }
     } finally {
       isLoading.value = false;
     }
@@ -237,9 +239,11 @@ class _EditTransactUIState extends ConsumerState<EditTransactUI> {
         );
       }
 
-      Navigator.pop(context);
+      if (context.mounted) Navigator.pop(context);
     } catch (e) {
-      KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      if (context.mounted) {
+        KSnackbar(context, content: "Something went wrong!", isDanger: true);
+      }
     } finally {
       if (mounted) {
         isLoading.value = false;

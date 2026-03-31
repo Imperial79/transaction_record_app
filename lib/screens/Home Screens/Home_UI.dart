@@ -68,16 +68,18 @@ class _Home_UIState extends ConsumerState<Home_UI>
       isLoading.value = true;
 
       final res = await ref.read(bookRepository).deleteBook(bookId: bookId);
-      if (res) {
+      if (res && context.mounted) {
         KSnackbar(context, content: "\"$bookName\" Book Deleted!");
       }
     } catch (e) {
-      KSnackbar(
-        context,
-        content:
-            "Unable to delete book! Check your connection or try again later.",
-        isDanger: true,
-      );
+      if (context.mounted) {
+        KSnackbar(
+          context,
+          content:
+              "Unable to delete book! Check your connection or try again later.",
+          isDanger: true,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
