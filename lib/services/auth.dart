@@ -6,7 +6,7 @@
 // import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:hive/hive.dart';
 // import 'package:transaction_record_app/Functions/navigatorFns.dart';
-// import 'package:transaction_record_app/Utility/constants.dart';
+// import 'package:transaction_record_app/utility/constants.dart';
 // import 'package:transaction_record_app/models/userModel.dart';
 // import 'package:transaction_record_app/screens/loginUI.dart';
 // import 'package:transaction_record_app/screens/rootUI.dart';

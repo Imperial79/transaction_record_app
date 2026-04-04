@@ -86,7 +86,7 @@ class KButton {
                 fontSize: 20,
                 color: !isOutlined
                     ? textColor ??
-                        (context.isDarkMode ? Colors.black : Colors.white)
+                          (context.isDarkMode ? Colors.black : Colors.white)
                     : backgroundColor ?? context.primaryColor,
               ),
             ),
@@ -107,9 +107,33 @@ class KButton {
       borderRadius: kRadius(100),
       child: Text(
         label,
+        style: TextStyle(color: context.profitColor, fontSize: fontSize),
+      ),
+    );
+  }
+
+  static ElevatedButton outline(
+    BuildContext context, {
+    void Function()? onPressed,
+    String label = "label",
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        foregroundColor: context.textColor,
+        side: BorderSide(color: context.textColor.withAlpha(40), width: 1.5),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+        elevation: 0,
+      ),
+      child: Text(
+        label.toUpperCase(),
         style: TextStyle(
-          color: context.profitColor,
-          fontSize: fontSize,
+          fontSize: 12,
+          color: context.textColor,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
         ),
       ),
     );

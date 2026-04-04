@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'commons.dart';
 
 /// Raw color tokens for the app.
 /// These should be used to build the [AppColors] extension and [ThemeData].
@@ -209,7 +208,7 @@ class KThemeData {
         elevation: 0,
         color: AppPalette.cardLight,
         shape: RoundedRectangleBorder(
-          borderRadius: kRadius(16),
+        borderRadius: BorderRadius.zero,
           side: BorderSide(color: Colors.grey.withAlpha(25), width: 1),
         ),
       ),
@@ -226,7 +225,7 @@ class KThemeData {
           elevation: 0,
           backgroundColor: AppPalette.primaryLight,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
     );
@@ -262,7 +261,7 @@ class KThemeData {
         elevation: 0,
         color: AppPalette.cardDark,
         shape: RoundedRectangleBorder(
-          borderRadius: kRadius(16),
+          borderRadius: BorderRadius.zero,
           side: BorderSide(color: Colors.white.withAlpha(15), width: 1),
         ),
       ),
@@ -279,7 +278,7 @@ class KThemeData {
           elevation: 0,
           backgroundColor: AppPalette.primaryDark,
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
     );

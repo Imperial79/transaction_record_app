@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/Repository/auth_repository.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-import 'package:transaction_record_app/screens/Book%20Screens/New_Book_UI.dart';
+import 'package:transaction_record_app/helpers/navigation_helper.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../Helper/navigatorFns.dart';
+import 'package:transaction_record_app/repositories/auth_repository.dart';
+import 'package:transaction_record_app/screens/book/new_book_screen.dart';
 import 'CustomLoading.dart';
 import 'commons.dart';
 
@@ -138,8 +138,8 @@ void showRenameBookModal(
                               foregroundColor: context.textColor,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
                               ),
                             ),
                             child: const Text('Cancel'),
@@ -180,8 +180,8 @@ void showRenameBookModal(
                               foregroundColor: kColor(context).onTertiary,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
                               ),
                             ),
                             child: isLoading
@@ -251,7 +251,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
             ),
             child: ElevatedButton.icon(
               onPressed: () {
-                navPush(context, New_Book_UI());
+                navPush(context, NewBookScreen());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.primaryColor,
@@ -430,16 +430,22 @@ Widget ConfirmDeleteModal({
                         foregroundColor: context.isDarkMode
                             ? Colors.white70
                             : Colors.black87,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
                       ),
-                      child: const Text('Cancel'),
+                      child: const Text('CANCEL'),
                     ),
                     ElevatedButton(
                       onPressed: onDelete,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.lossColor,
                         foregroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
                       ),
-                      child: const Text('Yes'),
+                      child: const Text('YES'),
                     ),
                   ],
                 ),
@@ -467,9 +473,17 @@ Widget BookMenuBtn({
       backgroundColor: btnColor,
       foregroundColor: textColor,
       elevation: 0,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
     ),
     icon: Icon(icon, size: iconSize),
-    label: Text(label, style: TextStyle(fontSize: labelSize)),
+    label: Text(
+      label.toUpperCase(),
+      style: TextStyle(
+        fontSize: labelSize ?? 10,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1,
+      ),
+    ),
   );
 }
 
@@ -641,8 +655,8 @@ Widget NewBookCard(BuildContext context) => Consumer(
                   horizontal: 20,
                   vertical: 12,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
                 ),
               ),
             ),
@@ -665,17 +679,7 @@ Widget AnimatedFloatingButton(
     borderRadius: BorderRadius.circular(20),
     child: AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: context.primaryColor,
-        boxShadow: [
-          BoxShadow(
-            color: context.primaryColor.withAlpha(80),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(border: Border.all(color: context.textColor)),
       padding: EdgeInsets.symmetric(
         horizontal: showFullBtn ? 20 : 15,
         vertical: 12,
@@ -683,19 +687,16 @@ Widget AnimatedFloatingButton(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.add_rounded,
-            color: context.isDarkMode ? Colors.black : Colors.white,
-            size: 24,
-          ),
+          Icon(Icons.add, color: context.textColor, size: 18),
           if (showFullBtn) const SizedBox(width: 8),
           if (showFullBtn)
             Text(
-              'New Book',
+              'NEW BOOK',
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: context.isDarkMode ? Colors.black : Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 10,
+                letterSpacing: 2,
+                color: context.textColor,
               ),
             ),
         ],
@@ -710,40 +711,35 @@ Widget KSearchBar(
   void Function(String)? onChanged,
 }) {
   return Container(
-    margin: const EdgeInsets.symmetric(vertical: 8),
+    margin: const EdgeInsets.symmetric(vertical: 12),
     decoration: BoxDecoration(
       color: context.isDarkMode
           ? context.cardColor.lighten(0.05)
           : context.cardColor,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withAlpha(context.isDarkMode ? 0 : 5),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
-      border: Border.all(color: context.fadeTextColor.withAlpha(20), width: 1),
+      border: Border.all(color: context.textColor.lighten(0.1)),
     ),
     child: TextField(
       controller: controller,
       onChanged: onChanged,
-      style: const TextStyle(fontSize: 16),
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+      cursorColor: context.primaryColor,
       decoration: InputDecoration(
         prefixIcon: Icon(
-          Icons.search_rounded,
-          color: context.fadeTextColor,
-          size: 20,
+          Icons.search,
+          color: context.textColor.lighten(0.4),
+          size: 18,
         ),
-        hintText: 'Search books...',
+        hintText: 'SEARCH TRANSACTIONS...',
         hintStyle: TextStyle(
-          color: context.fadeTextColor.withAlpha(150),
-          fontSize: 15,
+          color: context.fadeTextColor.lighten(0.4),
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
         ),
         border: InputBorder.none,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 12,
+          vertical: 15,
         ),
       ),
     ),
