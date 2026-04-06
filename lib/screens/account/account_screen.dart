@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:transaction_record_app/repositories/system_repository.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
 import 'package:transaction_record_app/utility/newColors.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../repositories/auth_repository.dart';
 import '../../utility/commons.dart';
+import '../../Utility/KButton.dart';
+import '../../Utility/constants.dart';
+import 'package:transaction_record_app/components/common/widgets.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
@@ -79,31 +83,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: context.textColor.lighten(0.1)),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  const Spacer(),
-                  Text(
-                    "ACCOUNT PROFILE",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                      color: context.fadeTextColor,
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-            ),
+            KPageHeader(title: "ACCOUNT PROFILE"),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -123,11 +103,12 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                         child: Image.network(
                           user.imgUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => const Icon(Icons.person),
+                          errorBuilder: (_, _, _) =>
+                              const Icon(LucideIcons.user),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: APP_PADDING),
                     Center(
                       child: Text(
                         "@${user.username.toUpperCase()}",
@@ -176,22 +157,10 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(24),
-              child: InkWell(
-                onTap: () => updateAccountDetails(user.uid),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(color: context.textColor),
-                  child: Text(
-                    "UPDATE ACCOUNT SETTINGS",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: context.scaffoldColor,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
+              child: KButton.full(
+                context,
+                label: "UPDATE ACCOUNT SETTINGS",
+                onPressed: () => updateAccountDetails(user.uid),
               ),
             ),
           ],
@@ -242,8 +211,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               borderRadius: BorderRadius.zero,
             ),
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
+              horizontal: APP_PADDING,
+              vertical: APP_PADDING,
             ),
           ),
         ),
@@ -262,7 +231,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             onTap: () => notifier.setTheme(theme),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: APP_PADDING),
               decoration: BoxDecoration(
                 color: isActive ? context.textColor : Colors.transparent,
                 border: Border.all(

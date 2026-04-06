@@ -8,6 +8,8 @@ class KStatBox extends StatelessWidget {
   final bool isCurrency;
   final bool isPrimary;
   final bool isLoss;
+  final bool small;
+  final double? width;
 
   const KStatBox({
     super.key,
@@ -16,6 +18,8 @@ class KStatBox extends StatelessWidget {
     this.isCurrency = true,
     this.isPrimary = false,
     this.isLoss = false,
+    this.small = false,
+    this.width,
   });
 
   @override
@@ -27,7 +31,8 @@ class KStatBox extends StatelessWidget {
         : context.textColor;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: width,
+      padding: EdgeInsets.all(small ? 12 : APP_PADDING),
       decoration: BoxDecoration(
         color: context.cardColor,
         border: Border.all(color: context.textColor.lighten(0.08)),
@@ -38,17 +43,17 @@ class KStatBox extends StatelessWidget {
           Text(
             label.toUpperCase(),
             style: TextStyle(
-              fontSize: 9,
+              fontSize: small ? 8 : 9,
               fontWeight: FontWeight.w900,
               color: context.fadeTextColor,
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: small ? 4 : 8),
           Text(
             isCurrency ? "₹${kMoneyFormat(value)}" : value.toStringAsFixed(0),
             style: TextStyle(
-              fontSize: 16,
+              fontSize: small ? 13 : 16,
               fontWeight: FontWeight.w900,
               color: displayColor,
               letterSpacing: -0.5,

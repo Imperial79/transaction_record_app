@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
 import 'package:transaction_record_app/utility/commons.dart';
@@ -182,7 +183,7 @@ class _UserSelectorDialogState extends ConsumerState<UserSelectorDialog> {
           child: Row(
             children: [
               selectedUsers.contains(userData.uid)
-                  ? const CircleAvatar(child: Icon(Icons.done))
+                  ? const CircleAvatar(child: Icon(LucideIcons.check))
                   : CircleAvatar(
                       backgroundImage: NetworkImage(userData.imgUrl),
                     ),

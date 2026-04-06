@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:transaction_record_app/Utility/constants.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
@@ -258,7 +259,7 @@ Widget FirstTransactCard(BuildContext context, String bookId) {
                 elevation: 0,
               ),
               icon: Icon(
-                Icons.bolt,
+                LucideIcons.bolt,
                 color: context.isDarkMode ? Colors.black : Colors.white,
               ),
               label: Text(
@@ -344,9 +345,7 @@ Widget StatsCard(
         Row(
           children: [
             Icon(
-              isExpense
-                  ? Icons.file_upload_outlined
-                  : Icons.file_download_outlined,
+              isExpense ? LucideIcons.upload : LucideIcons.download,
               color: isExpense ? Colors.white : Colors.black,
             ),
             width5,
@@ -557,7 +556,7 @@ Widget kDeleteAlertDialog(
     builder: (context, StateSetter setState) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
-        icon: const Icon(Icons.delete, color: Colors.red, size: 30),
+        icon: const Icon(LucideIcons.trash2, color: Colors.red, size: 30),
         title: Text(label, style: const TextStyle(color: Colors.black)),
         content: Text(
           content,
@@ -590,7 +589,7 @@ Widget kDeleteAlertDialog(
 Widget NewBookCard(BuildContext context) => Consumer(
   builder: (context, ref, _) {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(APP_PADDING),
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -646,7 +645,7 @@ Widget NewBookCard(BuildContext context) => Consumer(
                       curve: Curves.fastOutSlowIn,
                     );
               },
-              icon: const Icon(Icons.add_rounded),
+              icon: const Icon(LucideIcons.plus),
               label: const Text('Create Book'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -687,7 +686,7 @@ Widget AnimatedFloatingButton(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.add, color: context.textColor, size: 18),
+          Icon(LucideIcons.plus, color: context.textColor, size: 18),
           if (showFullBtn) const SizedBox(width: 8),
           if (showFullBtn)
             Text(
@@ -725,7 +724,7 @@ Widget KSearchBar(
       cursorColor: context.primaryColor,
       decoration: InputDecoration(
         prefixIcon: Icon(
-          Icons.search,
+          LucideIcons.search,
           color: context.textColor.lighten(0.4),
           size: 18,
         ),
@@ -738,7 +737,7 @@ Widget KSearchBar(
         ),
         border: InputBorder.none,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
+          horizontal: APP_PADDING,
           vertical: 15,
         ),
       ),
@@ -779,7 +778,7 @@ class TransactTile extends ConsumerWidget {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(APP_PADDING),
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(20),
@@ -810,8 +809,8 @@ class TransactTile extends ConsumerWidget {
                   ),
                   child: Icon(
                     isIncome
-                        ? Icons.south_west_rounded
-                        : Icons.north_east_rounded,
+                        ? LucideIcons.arrowDownLeft
+                        : LucideIcons.arrowUpRight,
                     size: 18,
                     color: isIncome ? context.profitColor : context.lossColor,
                   ),
@@ -841,7 +840,7 @@ class TransactTile extends ConsumerWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons.schedule_rounded,
+                            LucideIcons.clock,
                             size: 12,
                             color: context.fadeTextColor,
                           ),
@@ -857,7 +856,7 @@ class TransactTile extends ConsumerWidget {
                           if (data.source.isNotEmpty) ...[
                             const SizedBox(width: 12),
                             Icon(
-                              Icons.person_rounded,
+                              LucideIcons.user,
                               size: 12,
                               color: context.fadeTextColor,
                             ),

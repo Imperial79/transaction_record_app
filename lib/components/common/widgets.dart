@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../utility/newColors.dart';
+import '../../Utility/constants.dart';
 
 Widget kBackButton(BuildContext context) {
   return InkWell(
@@ -9,7 +11,7 @@ Widget kBackButton(BuildContext context) {
       decoration: BoxDecoration(
         border: Border.all(color: context.textColor.lighten(0.1)),
       ),
-      child: Icon(Icons.arrow_back, size: 20, color: context.textColor),
+      child: Icon(LucideIcons.arrowLeft, size: 20, color: context.textColor),
     ),
   );
 }
@@ -32,7 +34,7 @@ Widget kAlertDialog(
   BuildContext context, {
   required String title,
   required String subTitle,
-  Widget? content,
+  Widget? child,
   required List<Widget> actions,
 }) {
   return Dialog(
@@ -65,7 +67,7 @@ Widget kAlertDialog(
               color: context.fadeTextColor,
             ),
           ),
-          if (content != null) ...[const SizedBox(height: 20), content],
+          if (child != null) ...[const SizedBox(height: 20), child],
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -78,4 +80,50 @@ Widget kAlertDialog(
       ),
     ),
   );
+}
+class KPageHeader extends StatelessWidget {
+  final String title;
+  final Widget? leading;
+  final List<Widget>? actions;
+
+  const KPageHeader({
+    super.key,
+    required this.title,
+    this.leading,
+    this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: APP_PADDING,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: context.textColor.lighten(0.1)),
+      ),
+      child: Row(
+        children: [
+          leading ??
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(LucideIcons.arrowLeft, size: 20),
+                color: context.textColor,
+              ),
+          const Spacer(),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+              color: context.fadeTextColor,
+            ),
+          ),
+          if (actions != null) ...actions! else const SizedBox(width: 48),
+        ],
+      ),
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/utility/newColors.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/Utility/KLoading.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -60,14 +61,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 padding: const EdgeInsets.all(48),
                 child: Column(
                   children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: context.textColor.lighten(0.2),
-                      ),
-                    ),
+                    const KLoading(),
                     const SizedBox(height: 24),
                     Text(
                       "INITIALIZING...",

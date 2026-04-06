@@ -1,93 +1,47 @@
 import 'package:flutter/material.dart';
-
-import 'commons.dart';
 import 'newColors.dart';
 
 class KButton {
-  static ElevatedButton regular(
-    BuildContext context, {
-    void Function()? onPressed,
-    String label = "label",
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-        shape: RoundedRectangleBorder(borderRadius: kRadius(100)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 15,
-          color: context.isDarkMode ? Colors.black : Colors.white,
-        ),
-      ),
-    );
-  }
-
-  static ElevatedButton full(
-    BuildContext context, {
-    void Function()? onPressed,
-    String label = "label",
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: kRadius(15)),
-      ),
-      child: SizedBox(
-        width: double.maxFinite,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 20,
-            color: context.isDarkMode ? Colors.black : Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  static ElevatedButton icon(
+  /// The main action button with high contrast (Inverse of theme)
+  static Widget primary(
     BuildContext context, {
     required void Function()? onPressed,
-    required Widget icon,
-    String label = "label",
+    required String label,
+    IconData? icon,
+    bool fullWidth = true,
     Color? backgroundColor,
     Color? textColor,
-    bool isOutlined = false,
+    double? verticalPadding,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: !isOutlined
-            ? backgroundColor ?? context.primaryColor
-            : Colors.transparent,
-        side: BorderSide(
-          color: isOutlined
-              ? backgroundColor ?? context.primaryColor
-              : Colors.transparent,
+    return SizedBox(
+      width: fullWidth ? double.infinity : null,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor ?? context.textColor,
+          foregroundColor: textColor ?? context.scaffoldColor,
+          padding: EdgeInsets.symmetric(
+            vertical: verticalPadding ?? 20,
+            horizontal: 24,
+          ),
+          elevation: 0,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          splashFactory: InkSparkle.splashFactory,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: kRadius(15)),
-      ),
-      child: SizedBox(
-        width: double.maxFinite,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            icon,
+            if (icon != null) ...[
+              Icon(icon, size: 20),
+              const SizedBox(width: 12),
+            ],
             Text(
-              label,
-              style: TextStyle(
-                fontSize: 20,
-                color: !isOutlined
-                    ? textColor ??
-                          (context.isDarkMode ? Colors.black : Colors.white)
-                    : backgroundColor ?? context.primaryColor,
+              label.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
+                fontSize: 13,
               ),
             ),
           ],
@@ -96,46 +50,130 @@ class KButton {
     );
   }
 
-  static InkWell text(
+  /// Alias for primary with full width
+  static Widget full(
     BuildContext context, {
-    void Function()? onTap,
+    void Function()? onPressed,
     String label = "label",
-    double fontSize = 17,
+    IconData? icon,
+    Color? backgroundColor,
+    Color? textColor,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: kRadius(100),
-      child: Text(
-        label,
-        style: TextStyle(color: context.profitColor, fontSize: fontSize),
+    return primary(
+      context,
+      onPressed: onPressed,
+      label: label,
+      icon: icon,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      fullWidth: true,
+    );
+  }
+
+  /// Alias for primary without full width
+  static Widget regular(
+    BuildContext context, {
+    void Function()? onPressed,
+    String label = "label",
+    IconData? icon,
+    Color? backgroundColor,
+    Color? textColor,
+  }) {
+    return primary(
+      context,
+      onPressed: onPressed,
+      label: label,
+      icon: icon,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      fullWidth: false,
+      verticalPadding: 14,
+    );
+  }
+
+  /// An outlined button with zero radius
+  static Widget outline(
+    BuildContext context, {
+    void Function()? onPressed,
+    required String label,
+    IconData? icon,
+    bool fullWidth = true,
+  }) {
+    return SizedBox(
+      width: fullWidth ? double.infinity : null,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: context.textColor,
+          side: BorderSide(color: context.textColor, width: 1),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 20),
+              const SizedBox(width: 12),
+            ],
+            Text(
+              label.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  static ElevatedButton outline(
+  /// A text-only button with emphasis
+  static Widget text(
     BuildContext context, {
-    void Function()? onPressed,
-    String label = "label",
+    void Function()? onTap,
+    required String label,
+    double fontSize = 14,
+    Color? color,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        foregroundColor: context.textColor,
-        side: BorderSide(color: context.textColor.withAlpha(40), width: 1.5),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        shape: RoundedRectangleBorder(borderRadius: kRadius(12)),
-        elevation: 0,
-      ),
-      child: Text(
-        label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 12,
-          color: context.textColor,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.5,
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            color: color ?? context.textColor,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
+            fontSize: fontSize,
+          ),
         ),
       ),
+    );
+  }
+
+  /// Special variant for themed actions (e.g. Profit/Loss)
+  static Widget themed(
+    BuildContext context, {
+    required void Function()? onPressed,
+    required String label,
+    required Color color,
+    IconData? icon,
+    bool fullWidth = false,
+  }) {
+    return primary(
+      context,
+      onPressed: onPressed,
+      label: label,
+      icon: icon,
+      backgroundColor: color,
+      textColor: Colors.white,
+      fullWidth: fullWidth,
+      verticalPadding: 16,
     );
   }
 }

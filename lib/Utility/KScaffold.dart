@@ -1,10 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:transaction_record_app/Utility/CustomLoading.dart';
+import 'package:transaction_record_app/Utility/KLoading.dart';
 import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
-
-import 'commons.dart';
 
 // ignore: must_be_immutable
 class KScaffold extends StatelessWidget {
@@ -61,22 +59,7 @@ class KScaffold extends StatelessWidget {
               height: double.maxFinite,
               width: double.maxFinite,
               color: context.scaffoldColor.withAlpha(200),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomLoading(),
-                    height15,
-                    Text(
-                      "Please Wait ...",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: context.colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: KLoading.fullPage(context, label: "PLEASE WAIT..."),
             )
           : const SizedBox(),
     );

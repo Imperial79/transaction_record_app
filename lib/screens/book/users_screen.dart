@@ -1,22 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
 import 'package:transaction_record_app/utility/constants.dart';
 import 'package:transaction_record_app/utility/newColors.dart';
 import 'package:transaction_record_app/models/userModel.dart';
 import '../../repositories/auth_repository.dart';
 import '../../utility/commons.dart';
+import 'package:transaction_record_app/components/common/widgets.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
   final List<dynamic> users;
   final String ownerUid;
   final String bookId;
+  final String bookName;
   const UsersScreen({
     super.key,
     required this.users,
     required this.ownerUid,
     required this.bookId,
+    required this.bookName,
   });
 
   @override
@@ -86,32 +90,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Architectural Header
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: context.textColor.lighten(0.1)),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "BOOK COLLABORATORS",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
-                          color: context.fadeTextColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              KPageHeader(title: "BOOK COLLABORATORS"),
               const SizedBox(height: 32),
 
               ListView.separated(
@@ -200,7 +179,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             IconButton(
               onPressed: () => _removeUserFromBook(user.uid),
               icon: Icon(
-                Icons.person_remove_outlined,
+                LucideIcons.userMinus,
                 size: 18,
                 color: context.lossColor,
               ),

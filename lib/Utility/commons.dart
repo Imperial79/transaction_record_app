@@ -2,6 +2,7 @@ import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:transaction_record_app/Utility/newColors.dart';
 
 const String appLogoPath = 'lib/assets/logo/logo.png';
@@ -46,7 +47,7 @@ void KSnackbar(
           ? context.lossCardColor
           : kColor(context).primaryContainer,
       leading: Icon(
-        isDanger ? Icons.dangerous : Icons.verified,
+        isDanger ? LucideIcons.circleAlert : LucideIcons.circleCheck,
         size: 28,
         color: isDanger ? context.lossColor : context.primaryColor,
       ),

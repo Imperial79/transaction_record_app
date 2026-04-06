@@ -1,13 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
-import 'package:transaction_record_app/utility/newColors.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
 import 'package:upgrader/upgrader.dart';
-import '../utility/commons.dart';
+import '../Utility/commons.dart';
+import 'package:transaction_record_app/Utility/KLoading.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -118,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.cloud_done,
+                                    LucideIcons.cloudCheck,
                                     color: context.profitColor,
                                     size: 20,
                                   ),
@@ -138,37 +141,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            InkWell(
-                              onTap: _googleSignIn,
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: context.textColor,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 22,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.account_circle,
-                                      color: context.scaffoldColor,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "CONTINUE WITH GOOGLE",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: 1,
-                                        color: context.scaffoldColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            KButton.full(
+                              context,
+                              label: "CONTINUE WITH GOOGLE",
+                              icon: LucideIcons.circleUser,
+                              onPressed: _googleSignIn,
                             ),
                             const SizedBox(height: 24),
                             Text.rich(
@@ -236,23 +213,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _loadingScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(strokeWidth: 1, color: context.textColor),
-          const SizedBox(height: 24),
-          Text(
-            'PLEASE WAIT...',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              color: context.textColor,
-              fontSize: 10,
-              letterSpacing: 2,
-            ),
-          ),
-        ],
-      ),
-    );
+    return KLoading.fullPage(context, label: "PLEASE WAIT...");
   }
 }

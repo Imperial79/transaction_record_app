@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
@@ -9,6 +10,7 @@ import 'package:transaction_record_app/screens/book/new_book_screen.dart';
 import 'package:transaction_record_app/screens/home/home_screen.dart';
 import 'package:transaction_record_app/screens/notification/notifications_screen.dart';
 import 'package:upgrader/upgrader.dart';
+import 'package:transaction_record_app/utility/constants.dart';
 
 class RootScreen extends ConsumerStatefulWidget {
   const RootScreen({super.key});
@@ -72,9 +74,9 @@ class _RootScreenState extends ConsumerState<RootScreen> {
                           return count > 0
                               ? Badge(
                                   label: Text("$count"),
-                                  child: const Icon(Icons.notifications_active),
+                                  child: const Icon(LucideIcons.bellRing),
                                 )
-                              : const Icon(Icons.notifications_none);
+                              : const Icon(LucideIcons.bell);
                         },
                       ),
                     ),
@@ -115,7 +117,7 @@ class _RootScreenState extends ConsumerState<RootScreen> {
           ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: APP_PADDING, vertical: 10),
         decoration: BoxDecoration(
           color: isActive ? context.textColor : Colors.transparent,
           border: Border.all(

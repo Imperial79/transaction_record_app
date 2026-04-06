@@ -3,6 +3,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/utility/KButton.dart';
 import 'package:transaction_record_app/helpers/transaction_helper.dart';
@@ -12,6 +13,7 @@ import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../utility/commons.dart';
 import '../../utility/newColors.dart';
+import '../../Utility/constants.dart';
 
 class EditTransactionScreen extends ConsumerStatefulWidget {
   final Transact trData;
@@ -171,7 +173,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
           // shape: RoundedRectangleBorder(
           //   borderRadius: kRadius(12),
           // ),
-          icon: const Icon(Icons.delete, color: Colors.red, size: 30),
+          icon: const Icon(LucideIcons.trash2, color: Colors.red, size: 30),
           title: Text(
             'Delete Transact ?',
             style: TextStyle(color: context.colorScheme.onSurface),
@@ -330,10 +332,10 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
           // Standard App Bar for Revision UI
           Container(
             padding: EdgeInsets.fromLTRB(
-              16,
+              APP_PADDING,
               MediaQuery.of(context).padding.top + 10,
-              16,
-              16,
+              APP_PADDING,
+              APP_PADDING,
             ),
             decoration: BoxDecoration(
               color: context.cardColor,
@@ -345,7 +347,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
               children: [
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_rounded),
+                  icon: const Icon(LucideIcons.arrowLeft),
                 ),
                 const SizedBox(width: 8),
                 const Text(
@@ -359,7 +361,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     builder: (context) => AlertBox(context.isDarkMode),
                   ),
                   icon: const Icon(
-                    Icons.delete_outline_rounded,
+                    LucideIcons.trash2,
                     color: Colors.red,
                   ),
                 ),
@@ -375,7 +377,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                 children: [
                   // Amount Input - Cleaner and less dominant
                   _entryCard(
-                    icon: Icons.payments_rounded,
+                    icon: LucideIcons.banknote,
                     title: "AMOUNT",
                     child: TextField(
                       controller: amountField,
@@ -405,7 +407,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                   ),
                   const SizedBox(height: 16),
                   _entryCard(
-                    icon: Icons.notes_rounded,
+                    icon: LucideIcons.fileText,
                     title: "Description",
                     child: TextField(
                       controller: descriptionField,
@@ -418,7 +420,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                   ),
                   const SizedBox(height: 16),
                   _entryCard(
-                    icon: Icons.person_rounded,
+                    icon: LucideIcons.user,
                     title: "Source / Person",
                     child: TextField(
                       controller: sourceField,
@@ -427,7 +429,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                         border: InputBorder.none,
                         suffixIcon: IconButton(
                           onPressed: _pickContact,
-                          icon: const Icon(Icons.contact_page_rounded),
+                          icon: const Icon(LucideIcons.contact),
                           color: context.primaryColor,
                         ),
                       ),
@@ -438,7 +440,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     children: [
                       Expanded(
                         child: _entryCard(
-                          icon: Icons.calendar_today_rounded,
+                          icon: LucideIcons.calendar,
                           title: "Date",
                           onTap: () async {
                             _selectedDateMap = await selectDate(
@@ -458,7 +460,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: _entryCard(
-                          icon: Icons.schedule_rounded,
+                          icon: LucideIcons.clock,
                           title: "Time",
                           onTap: () async {
                             _selectedTimeMap = await selectTime(
@@ -481,7 +483,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                   ),
                   const SizedBox(height: 16),
                   _entryCard(
-                    icon: Icons.account_balance_wallet_rounded,
+                    icon: LucideIcons.wallet,
                     title: "Payment Mode",
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -531,7 +533,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(APP_PADDING),
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.zero,
@@ -596,7 +598,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
               borderRadius: BorderRadius.zero,
             ),
             child: Icon(
-              isOnline ? Icons.language_rounded : Icons.payments_rounded,
+              isOnline ? LucideIcons.globe : LucideIcons.banknote,
               size: 14,
               color: Colors.white,
             ),

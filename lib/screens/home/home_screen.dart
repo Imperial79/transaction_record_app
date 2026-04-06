@@ -1,19 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:transaction_record_app/utility/KButton.dart';
+import 'package:transaction_record_app/Utility/KButton.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
 import 'package:transaction_record_app/repositories/book_repository.dart';
 import 'package:transaction_record_app/screens/book/book_widgets/book_tile.dart';
-import 'package:transaction_record_app/utility/components.dart';
+import 'package:transaction_record_app/Utility/components.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
-import 'package:transaction_record_app/utility/constants.dart';
-import 'package:transaction_record_app/utility/newColors.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/Utility/KLoading.dart';
 import 'package:transaction_record_app/screens/account/account_screen.dart';
 import 'package:transaction_record_app/screens/home/home_menu_widget.dart';
-import '../../utility/commons.dart';
+import '../../Utility/commons.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -86,7 +88,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(APP_PADDING),
               child: Column(
                 children: [
                   Row(
@@ -108,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               imageUrl: user.imgUrl,
                               fit: BoxFit.cover,
                               errorWidget: (context, url, error) =>
-                                  const Icon(Icons.person),
+                                  const Icon(LucideIcons.user),
                             ),
                           ),
                         ),
@@ -145,7 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             ref.read(showMenuProvider.notifier).state =
                                 !showHomeMenu,
                         icon: Icon(
-                          showHomeMenu ? Icons.close : Icons.menu,
+                          showHomeMenu ? LucideIcons.x : LucideIcons.menu,
                           color: context.textColor,
                         ),
                       ),
@@ -164,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: APP_PADDING),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -269,7 +271,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           child: Column(
             children: [
               Icon(
-                Icons.cloud_off,
+                LucideIcons.cloudOff,
                 size: 48,
                 color: context.lossColor.lighten(0.5),
               ),
@@ -315,7 +317,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         if (asyncData.isLoading)
           const Padding(
             padding: EdgeInsets.all(20),
-            child: CircularProgressIndicator(),
+            child: Center(child: KLoading()),
           ),
       ],
     );

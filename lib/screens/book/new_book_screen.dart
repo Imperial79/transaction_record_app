@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/repositories/book_repository.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
 import '../../repositories/auth_repository.dart';
-import '../../utility/commons.dart';
-import '../../utility/newColors.dart';
+import '../../Utility/commons.dart';
+import '../../Utility/newColors.dart';
+import '../../Utility/KButton.dart';
+import '../../Utility/constants.dart';
+import 'package:transaction_record_app/components/common/widgets.dart';
 
 class NewBookScreen extends ConsumerStatefulWidget {
   const NewBookScreen({super.key});
@@ -101,35 +105,18 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: context.textColor.lighten(0.1)),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => ref
-                        .read(pageControllerProvider)
-                        .animateToPage(
-                          0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                        ),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  const Spacer(),
-                  Text(
-                    "CREATE NEW BOOK",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                      color: context.fadeTextColor,
+            KPageHeader(
+              title: "CREATE NEW BOOK",
+              leading: IconButton(
+                onPressed: () => ref
+                    .read(pageControllerProvider)
+                    .animateToPage(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
                     ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
+                icon: const Icon(LucideIcons.arrowLeft, size: 20),
+                color: context.textColor,
               ),
             ),
             Expanded(
@@ -167,7 +154,7 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
                               'MMMM, yyyy',
                             ).format(DateTime.now()),
                           ),
-                          icon: const Icon(Icons.auto_awesome),
+                          icon: const Icon(LucideIcons.sparkles),
                           tooltip: "Magic Title",
                         ),
                       ),
@@ -190,7 +177,7 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
                     ),
                     const SizedBox(height: 32),
                     _inputLabel("CHOOSE CATEGORY"),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: APP_PADDING),
                     MasonryGridView.count(
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
@@ -236,24 +223,12 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(24),
-              child: InkWell(
-                onTap: () {
+              child: KButton.full(
+                context,
+                label: "INITIALIZE BOOK",
+                onPressed: () {
                   if (user != null) _createBook(user.uid);
                 },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(color: context.textColor),
-                  child: Text(
-                    "INITIALIZE BOOK",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: context.scaffoldColor,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],
@@ -275,9 +250,9 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
   }
 
   IconData _getIcon(String type) {
-    if (type == 'regular') return Icons.receipt_long;
-    if (type == 'due') return Icons.timer;
-    return Icons.savings;
+    if (type == 'regular') return LucideIcons.receiptText;
+    if (type == 'due') return LucideIcons.timer;
+    return LucideIcons.piggyBank;
   }
 
   Widget _typeCard({
@@ -291,7 +266,7 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
       onTap: () => setState(() => selectedBookType = type),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(APP_PADDING),
         decoration: BoxDecoration(
           color: isActive ? context.textColor : Colors.transparent,
           border: Border.all(

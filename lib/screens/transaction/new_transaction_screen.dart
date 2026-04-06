@@ -4,6 +4,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/helpers/transaction_helper.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
@@ -12,6 +13,8 @@ import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
 import '../../utility/commons.dart';
 import '../../utility/newColors.dart';
+import '../../Utility/KButton.dart';
+import '../../Utility/constants.dart';
 
 class NewTransactionScreen extends ConsumerStatefulWidget {
   final String bookType;
@@ -190,13 +193,13 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(APP_PADDING),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(LucideIcons.x),
                   ),
                   if (widget.bookType != "savings")
                     Container(
@@ -209,8 +212,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _typeTab('Income', Icons.south_west),
-                          _typeTab('Expense', Icons.north_east),
+                          _typeTab('Income', LucideIcons.arrowDownLeft),
+                          _typeTab('Expense', LucideIcons.arrowUpRight),
                         ],
                       ),
                     ),
@@ -256,7 +259,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     const SizedBox(height: 48),
                     _inputBox(
                       label: "DESCRIPTION",
-                      icon: Icons.notes,
+                      icon: LucideIcons.fileText,
                       child: TextField(
                         controller: descriptionField,
                         maxLines: null,
@@ -270,7 +273,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     const SizedBox(height: 16),
                     _inputBox(
                       label: "SOURCE / PERSON",
-                      icon: Icons.person_outline,
+                      icon: LucideIcons.user,
                       child: TextField(
                         controller: sourceField,
                         decoration: InputDecoration(
@@ -280,7 +283,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           suffixIcon: IconButton(
                             onPressed: _pickContact,
                             icon: const Icon(
-                              Icons.contact_page_outlined,
+                              LucideIcons.contact,
                               size: 20,
                             ),
                           ),
@@ -293,7 +296,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                         Expanded(
                           child: _inputBox(
                             label: "DATE",
-                            icon: Icons.calendar_today_outlined,
+                            icon: LucideIcons.calendar,
                             onTap: () async {
                               final res = await selectDate(
                                 context,
@@ -311,11 +314,11 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: APP_PADDING),
                         Expanded(
                           child: _inputBox(
                             label: "TIME",
-                            icon: Icons.access_time,
+                            icon: LucideIcons.clock,
                             onTap: () async {
                               final res = await selectTime(
                                 context,
@@ -338,7 +341,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     const SizedBox(height: 16),
                     _inputBox(
                       label: "PAYMENT MODE",
-                      icon: Icons.payments_outlined,
+                      icon: LucideIcons.banknote,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -362,22 +365,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(24),
-              child: InkWell(
-                onTap: () => saveTransaction(user!.uid),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(color: context.textColor),
-                  child: Text(
-                    "SAVE TRANSACTION",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: context.scaffoldColor,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
+              child: KButton.full(
+                context,
+                label: "SAVE TRANSACTION",
+                onPressed: () => saveTransaction(user!.uid),
               ),
             ),
           ],
@@ -393,7 +384,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
       onTap: () => setState(() => transactType = label),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: APP_PADDING,
+          vertical: 8,
+        ),
         decoration: BoxDecoration(
           color: isSelected
               ? (isIncome ? context.profitColor : context.lossColor)
@@ -432,7 +426,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(APP_PADDING),
         decoration: BoxDecoration(
           border: Border.all(color: context.textColor.lighten(0.1)),
         ),
@@ -484,7 +478,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                 height: 28,
                 color: isOnline ? Colors.blue : context.profitColor,
                 child: Icon(
-                  isOnline ? Icons.language : Icons.payments,
+                  isOnline ? LucideIcons.globe : LucideIcons.banknote,
                   size: 14,
                   color: Colors.white,
                 ),

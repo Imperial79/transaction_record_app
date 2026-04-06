@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
@@ -58,7 +59,7 @@ class _HomeMenuUIState extends ConsumerState<Home_Menu_Widget> {
         border: Border.all(color: context.textColor.lighten(0.1)),
       ),
       padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const .symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -94,7 +95,11 @@ class _HomeMenuUIState extends ConsumerState<Home_Menu_Widget> {
                 decoration: BoxDecoration(
                   border: Border.all(color: context.textColor),
                 ),
-                child: Icon(Icons.bolt, size: 14, color: context.textColor),
+                child: Icon(
+                  LucideIcons.bolt,
+                  size: 14,
+                  color: context.textColor,
+                ),
               ),
             ],
           ),
@@ -168,7 +173,7 @@ class _HomeMenuUIState extends ConsumerState<Home_Menu_Widget> {
             children: [
               _menuActionBtn(
                 label: 'ADD BOOK',
-                icon: Icons.add_box_outlined,
+                icon: LucideIcons.squarePlus,
                 onTap: () => ref
                     .read(pageControllerProvider)
                     .animateToPage(
@@ -179,12 +184,12 @@ class _HomeMenuUIState extends ConsumerState<Home_Menu_Widget> {
               ),
               _menuActionBtn(
                 label: 'ACCOUNT',
-                icon: Icons.account_circle_outlined,
+                icon: LucideIcons.user,
                 onTap: () => navPush(context, const AccountScreen()),
               ),
               _menuActionBtn(
                 label: 'LOGOUT',
-                icon: Icons.power_settings_new_outlined,
+                icon: LucideIcons.logOut,
                 onTap: _confirmSignOut,
                 isDanger: true,
               ),

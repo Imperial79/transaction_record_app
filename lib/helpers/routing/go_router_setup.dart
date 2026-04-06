@@ -33,14 +33,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/book/:type/:bookId',
         builder: (context, state) {
-          final type = state.pathParameters["type"]!;
-          final bookId = state.pathParameters["bookId"]!;
           final bookData = state.extra as BookModel;
-          return RegularBookScreen(
-            bookId: bookId,
-            bookType: type,
-            bookData: bookData,
-          );
+          return RegularBookScreen(bookData: bookData);
         },
       ),
       GoRoute(

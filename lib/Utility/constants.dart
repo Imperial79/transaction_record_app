@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 const String kAppVersion = "4.0.0";
 const String kAppLink = "https://transact-record.web.app";
+const double APP_PADDING = 16.0;
 
 class FirebaseRefs {
   static final _firestore = FirebaseFirestore.instance;

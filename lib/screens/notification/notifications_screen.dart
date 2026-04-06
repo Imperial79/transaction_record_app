@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transaction_record_app/utility/KScaffold.dart';
+import 'package:transaction_record_app/Utility/KScaffold.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
-import 'package:transaction_record_app/utility/components.dart';
-import 'package:transaction_record_app/utility/constants.dart';
-import 'package:transaction_record_app/utility/newColors.dart';
-
-import '../../utility/commons.dart';
+import 'package:transaction_record_app/Utility/components.dart';
+import 'package:transaction_record_app/Utility/constants.dart';
+import 'package:transaction_record_app/Utility/newColors.dart';
+import 'package:transaction_record_app/Utility/KLoading.dart';
+import '../../Utility/commons.dart';
+import 'package:transaction_record_app/components/common/widgets.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -90,14 +91,14 @@ class _NotificationsUIState extends ConsumerState<NotificationsScreen> {
     final user = ref.watch(userProvider);
     return KScaffold(
       isLoading: isLoading,
-      appBar: AppBar(
-        backgroundColor: context.scaffoldColor,
-        title: const Text('Notifications'),
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: StreamBuilder(
+        child: Column(
+          children: [
+            KPageHeader(title: "NOTIFICATIONS"),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(APP_PADDING),
+                child: StreamBuilder(
             stream: FirebaseRefs.requestRef
                 .where('users', arrayContains: user!.uid)
                 .snapshots(),
@@ -135,7 +136,10 @@ class _NotificationsUIState extends ConsumerState<NotificationsScreen> {
                     : _dummyNotificationsCard(),
               );
             },
-          ),
+                      ),
+                    ),
+                  ),
+          ],
         ),
       ),
     );
@@ -150,7 +154,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsScreen> {
     required Map<String, dynamic> data,
   }) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(APP_PADDING),
       decoration: BoxDecoration(
         borderRadius: kRadius(15),
         color: context.cardColor,
@@ -166,10 +170,7 @@ class _NotificationsUIState extends ConsumerState<NotificationsScreen> {
                   return _notificationCardHeader(data: snapshot.data.data());
                 }
               }
-              return Transform.scale(
-                scale: .5,
-                child: const CircularProgressIndicator(),
-              );
+              return const KLoading(size: 20);
             },
           ),
           height10,

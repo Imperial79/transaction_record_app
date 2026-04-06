@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:transaction_record_app/utility/components.dart';
 import 'package:transaction_record_app/helpers/navigation_helper.dart';
@@ -81,14 +82,7 @@ class _BookTileState extends ConsumerState<BookTile> {
             if (widget.book.type == "due") {
               navPush(context, DueBookScreen(bookData: widget.book));
             } else if (widget.book.type == "regular") {
-              navPush(
-                context,
-                RegularBookScreen(
-                  bookData: widget.book,
-                  bookId: widget.book.bookId,
-                  bookType: widget.book.type,
-                ),
-              );
+              navPush(context, RegularBookScreen(bookData: widget.book));
             } else {
               navPush(context, SavingsBookScreen(bookData: widget.book));
             }
@@ -121,10 +115,10 @@ class _BookTileState extends ConsumerState<BookTile> {
                     children: [
                       Icon(
                         widget.book.type == 'due'
-                            ? Icons.timer_outlined
+                            ? LucideIcons.timer
                             : widget.book.type == 'savings'
-                            ? Icons.savings_outlined
-                            : Icons.receipt_long_outlined,
+                            ? LucideIcons.piggyBank
+                            : LucideIcons.receiptText,
                         size: 20,
                         color: context.textColor,
                       ),
@@ -374,7 +368,7 @@ class _BookTileState extends ConsumerState<BookTile> {
                 ),
                 const SizedBox(height: 24),
                 _modalTile(
-                  icon: Icons.edit_outlined,
+                  icon: LucideIcons.pencil,
                   label: "RENAME BOOK",
                   onTap: () {
                     Navigator.pop(context);
@@ -387,7 +381,7 @@ class _BookTileState extends ConsumerState<BookTile> {
                   },
                 ),
                 _modalTile(
-                  icon: Icons.delete_outline,
+                  icon: LucideIcons.trash2,
                   label: "DELETE BOOK",
                   isDanger: true,
                   onTap: () {
