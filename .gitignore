@@ -56,3 +56,4 @@ app.*.map.json
 /android/app/.cxx
 
 *.env
+node_modules

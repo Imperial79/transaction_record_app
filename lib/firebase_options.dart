@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -64,5 +61,15 @@ class DefaultFirebaseOptions {
     messagingSenderId: '621632578553',
     projectId: 'transact-record',
     storageBucket: 'transact-record.appspot.com',
+  );
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDBOupTipgFEZkekFpCOu_Nsxd6fkel_y0',
+    appId: '1:621632578553:ios:aa3689c52f4b003f715328',
+    messagingSenderId: '621632578553',
+    projectId: 'transact-record',
+    storageBucket: 'transact-record.appspot.com',
+    androidClientId: '621632578553-6vkriav9n2ld5fvltgelmqk4bcsmha3e.apps.googleusercontent.com',
+    iosClientId: '621632578553-qfs5nmfq2b1vd3ps2bhec5tu1t51kts6.apps.googleusercontent.com',
+    iosBundleId: 'com.imperial.transactionRecordApp',
   );
 }

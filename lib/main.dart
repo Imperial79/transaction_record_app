@@ -37,7 +37,6 @@ class MyApp extends ConsumerWidget {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'Transact Record',
-          color: Colors.white,
           themeMode: themeMode,
           theme: KThemeData.light(dynamicColorScheme: lightDynamic),
           darkTheme: KThemeData.dark(dynamicColorScheme: darkDynamic),

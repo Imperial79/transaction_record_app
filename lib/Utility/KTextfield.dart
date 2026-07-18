@@ -116,7 +116,7 @@ class KTextfield {
       ),
       child: Row(
         children: [
-          if (icon != null) icon,
+          ?icon,
           Flexible(
             child: TextField(
               controller: controller,

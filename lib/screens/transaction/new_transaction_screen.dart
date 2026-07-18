@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter_contacts/flutter_contacts.dart' hide PermissionStatus;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -146,9 +146,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
     if (status.isDenied) status = await Permission.contacts.request();
 
     if (status.isGranted) {
-      final contact = await FlutterContacts.openExternalPick();
+      final contact = await FlutterContacts.native.showPicker();
       if (contact != null) {
-        setState(() => sourceField.text = contact.displayName);
+        setState(() => sourceField.text = contact.displayName ?? '');
       }
     } else if (status.isPermanentlyDenied) {
       if (mounted) {

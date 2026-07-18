@@ -1,0 +1,30 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "transact-record",
+                    "appId": "1:621632578553:android:98782bf2b5ddcd4a715328",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "transact-record",
+                    "appId": "1:621632578553:ios:aa3689c52f4b003f715328",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "transact-record",
+                    "configurations": {
+                        "android": "1:621632578553:android:98782bf2b5ddcd4a715328",
+                        "ios": "1:621632578553:ios:aa3689c52f4b003f715328"
+                    }
+                }
+            }
+        }
+    }
+}

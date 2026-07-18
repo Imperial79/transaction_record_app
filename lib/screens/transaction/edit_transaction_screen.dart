@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter_contacts/flutter_contacts.dart' hide PermissionStatus;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -264,10 +264,10 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     }
 
     if (status.isGranted) {
-      final contact = await FlutterContacts.openExternalPick();
+      final contact = await FlutterContacts.native.showPicker();
       if (contact != null) {
         setState(() {
-          sourceField.text = contact.displayName;
+          sourceField.text = contact.displayName ?? '';
         });
       }
     } else if (status.isPermanentlyDenied) {
@@ -360,10 +360,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     context: context,
                     builder: (context) => AlertBox(context.isDarkMode),
                   ),
-                  icon: const Icon(
-                    LucideIcons.trash2,
-                    color: Colors.red,
-                  ),
+                  icon: const Icon(LucideIcons.trash2, color: Colors.red),
                 ),
               ],
             ),
