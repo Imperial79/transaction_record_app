@@ -11,6 +11,7 @@ import 'package:transaction_record_app/repositories/auth_repository.dart';
 import 'package:transaction_record_app/components/common/k_scaffold.dart';
 import 'package:transaction_record_app/models/transactModel.dart';
 import 'package:transaction_record_app/services/database.dart';
+import 'package:transaction_record_app/components/common/widgets.dart';
 import '../../utility/commons.dart';
 import '../../utility/newColors.dart';
 import '../../Utility/KButton.dart';
@@ -152,30 +153,27 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
       }
     } else if (status.isPermanentlyDenied) {
       if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            title: const Text("PERMISSION REQUIRED"),
-            content: const Text(
+        kAlertDialog(
+          context,
+          title: "PERMISSION REQUIRED",
+          subTitle:
               "Contacts permission is required to pick a contact. Please enable it in settings.",
+          actions: [
+            KButton.text(
+              context,
+              onTap: () => Navigator.pop(context),
+              label: "CANCEL",
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("CANCEL"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  openAppSettings();
-                },
-                child: const Text("SETTINGS"),
-              ),
-            ],
-          ),
+            KButton.themed(
+              context,
+              onPressed: () {
+                Navigator.pop(context);
+                openAppSettings();
+              },
+              label: "SETTINGS",
+              color: context.primaryColor,
+            ),
+          ],
         );
       }
     }
@@ -282,10 +280,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           isDense: true,
                           suffixIcon: IconButton(
                             onPressed: _pickContact,
-                            icon: const Icon(
-                              LucideIcons.contact,
-                              size: 20,
-                            ),
+                            icon: const Icon(LucideIcons.contact, size: 20),
                           ),
                         ),
                       ),

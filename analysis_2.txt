@@ -1,7 +1,0 @@
-Analyzing transaction_record_app...                             
-
-  error - Target of URI doesn't exist: 'package:transaction_record_app/models/Profiles.dart' - lib\Utility\constants.dart:3:8 - uri_does_not_exist
-  error - Undefined class 'Profiles' - lib\Utility\constants.dart:9:7 - undefined_class
-  error - Const variables must be initialized with a constant value - lib\Utility\constants.dart:9:30 - const_initialized_with_non_constant_value
-  error - Undefined name 'Profiles' - lib\Utility\constants.dart:9:30 - undefined_identifier
-

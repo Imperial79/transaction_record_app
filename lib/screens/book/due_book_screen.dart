@@ -14,6 +14,7 @@ import 'package:transaction_record_app/components/common/k_scaffold.dart';
 import 'package:transaction_record_app/components/common/stat_box.dart';
 import 'package:transaction_record_app/components/common/widgets.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
+import 'package:transaction_record_app/repositories/book_repository.dart';
 import 'package:transaction_record_app/screens/book/book_widgets/book_fab.dart';
 import 'package:transaction_record_app/screens/book/book_widgets/book_transaction_list.dart';
 import 'package:transaction_record_app/screens/book/book_widgets/book_utilities.dart';
@@ -33,10 +34,14 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
   final ScrollController _scrollController = ScrollController();
   final _newTargetAmount = TextEditingController();
   late BookScrollHelper _scrollHelper;
+  double _currentTargetAmount = 0;
+  String _currentReminderInterval = 'none';
 
   @override
   void initState() {
     super.initState();
+    _currentTargetAmount = widget.bookData.targetAmount;
+    _currentReminderInterval = widget.bookData.reminderInterval;
     _scrollHelper = BookScrollHelper(
       controller: _scrollController,
       showStatsProvider: showDueStatsProvider,
@@ -79,6 +84,15 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
                 KActionButton(
                   icon: LucideIcons.target,
                   onTap: () => _updateTargetAmount(context),
+                ),
+                KActionButton(
+                  icon: LucideIcons.bell,
+                  onTap: () => _updateReminderInterval(context),
+                ),
+                KActionButton(
+                  icon: LucideIcons.trash2,
+                  color: context.lossColor,
+                  onTap: () => _confirmDelete(context),
                 ),
               ],
             ),
@@ -142,25 +156,72 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
           if (snapshot.hasData && snapshot.data!.data() != null) {
             income = (snapshot.data!.data()!['income'] ?? 0).toDouble();
             target = (snapshot.data!.data()!['targetAmount'] ?? 0).toDouble();
+            _currentTargetAmount = target;
+            _currentReminderInterval =
+                snapshot.data!.data()!['reminderInterval'] ?? 'none';
           }
-          return Row(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: KStatBox(
-                  label: "COLLECTED",
-                  value: income,
-                  isCurrency: true,
-                  isPrimary: true,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: KStatBox(
+                      label: "COLLECTED",
+                      value: income,
+                      isCurrency: true,
+                      isPrimary: true,
+                    ),
+                  ),
+                  const SizedBox(width: APP_PADDING),
+                  Expanded(
+                    child: KStatBox(
+                      label: "TARGET",
+                      value: target,
+                      isCurrency: true,
+                      isPrimary: false,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: APP_PADDING),
-              Expanded(
-                child: KStatBox(
-                  label: "TARGET",
-                  value: target,
-                  isCurrency: true,
-                  isPrimary: false,
-                ),
+              const SizedBox(height: APP_PADDING),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "COLLECTION PROGRESS",
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: context.fadeTextColor,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      Text(
+                        target > 0
+                            ? "${(income / target * 100).toStringAsFixed(0)}%"
+                            : "0%",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: context.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: target > 0 ? (income / target).clamp(0.0, 1.0) : 0.0,
+                    minHeight: 8,
+                    backgroundColor: context.textColor.lighten(0.08),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.primaryColor,
+                    ),
+                  ),
+                ],
               ),
             ],
           );
@@ -170,6 +231,9 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
   }
 
   void _updateTargetAmount(BuildContext context) {
+    _newTargetAmount.text = _currentTargetAmount == _currentTargetAmount.toInt()
+        ? _currentTargetAmount.toInt().toString()
+        : _currentTargetAmount.toString();
     kAlertDialog(
       context,
       title: "SET TARGET",
@@ -184,7 +248,7 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
         ),
         decoration: InputDecoration(
           prefixText: "₹ ",
-          prefixStyle: TextStyle(color: context.fadeTextColor),
+          prefixStyle: TextStyle(color: context.fadeTextColor, fontSize: 20),
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: context.fadeTextColor),
           ),
@@ -209,6 +273,97 @@ class _DueBookScreenState extends ConsumerState<DueBookScreen> {
               if (context.mounted) Navigator.pop(context);
               _newTargetAmount.clear();
             }
+          },
+          label: "UPDATE",
+        ),
+      ],
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    kAlertDialog(
+      context,
+      title: "DELETE BOOK",
+      subTitle:
+          "ARE YOU SURE YOU WANT TO DELETE THIS BOOK? THIS ACTION CANNOT BE UNDONE.",
+      actions: [
+        KButton.text(
+          context,
+          onTap: () => Navigator.pop(context),
+          label: "CANCEL",
+        ),
+        KButton.themed(
+          context,
+          onPressed: () async {
+            await ref
+                .read(bookrepositories)
+                .deleteBook(bookId: widget.bookData.bookId);
+            if (context.mounted) {
+              Navigator.pop(context); // Close dialog
+              Navigator.pop(context); // Go back from screen
+            }
+          },
+          label: "DELETE",
+          color: context.lossColor,
+        ),
+      ],
+    );
+  }
+
+  void _updateReminderInterval(BuildContext context) {
+    String selectedInterval = _currentReminderInterval;
+    kAlertDialog(
+      context,
+      title: "REMINDER INTERVAL",
+      subTitle: "CHOOSE A TIME INTERVAL FOR THE REMINDER",
+      child: StatefulBuilder(
+        builder: (context, setDialogState) {
+          return DropdownButtonFormField<String>(
+            value: selectedInterval,
+            items: const [
+              DropdownMenuItem(value: 'none', child: Text("NO REMINDER")),
+              DropdownMenuItem(value: 'daily', child: Text("DAILY")),
+              DropdownMenuItem(value: 'weekly', child: Text("WEEKLY")),
+            ],
+            onChanged: (val) {
+              if (val != null) {
+                setDialogState(() {
+                  selectedInterval = val;
+                });
+              }
+            },
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: context.textColor,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: context.textColor.lighten(0.05),
+              border: const OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            dropdownColor: context.scaffoldColor,
+          );
+        },
+      ),
+      actions: [
+        KButton.text(
+          context,
+          onTap: () => Navigator.pop(context),
+          label: "CANCEL",
+        ),
+        KButton.regular(
+          context,
+          onPressed: () async {
+            final now = DateTime.now().toString();
+            await FirebaseRefs.transactBookRef(widget.bookData.bookId).update({
+              'reminderInterval': selectedInterval,
+              'reminderTime': now,
+            });
+            if (context.mounted) Navigator.pop(context);
           },
           label: "UPDATE",
         ),

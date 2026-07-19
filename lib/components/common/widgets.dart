@@ -30,57 +30,61 @@ Widget kLabel(String text, {double top = 20, double bottom = 15}) {
   );
 }
 
-Widget kAlertDialog(
+Future<T?> kAlertDialog<T>(
   BuildContext context, {
   required String title,
   required String subTitle,
   Widget? child,
   required List<Widget> actions,
 }) {
-  return Dialog(
-    elevation: 0,
-    backgroundColor: context.scaffoldColor,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-    child: Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        border: Border.all(color: context.textColor.lighten(0.1)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.5,
+  return showDialog<T>(
+    context: context,
+    builder: (context) => Dialog(
+      elevation: 0,
+      backgroundColor: context.scaffoldColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          border: Border.all(color: context.textColor.lighten(0.1)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            subTitle,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.fadeTextColor,
+            const SizedBox(height: 12),
+            Text(
+              subTitle,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: context.fadeTextColor,
+              ),
             ),
-          ),
-          if (child != null) ...[const SizedBox(height: 20), child],
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: actions
-                .expand((a) => [const SizedBox(width: 12), a])
-                .skip(1)
-                .toList(),
-          ),
-        ],
+            if (child != null) ...[const SizedBox(height: 20), child],
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: actions
+                  .expand((a) => [const SizedBox(width: 12), a])
+                  .skip(1)
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     ),
   );
 }
+
 class KPageHeader extends StatelessWidget {
   final String title;
   final Widget? leading;
@@ -96,10 +100,7 @@ class KPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: APP_PADDING,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: APP_PADDING, vertical: 8),
       decoration: BoxDecoration(
         border: Border.all(color: context.textColor.lighten(0.1)),
       ),

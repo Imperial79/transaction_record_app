@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:transaction_record_app/repositories/auth_repository.dart';
 import 'package:transaction_record_app/models/bookModel.dart';
+import 'package:transaction_record_app/services/notification_service.dart';
 
 final bookListProvider = StateProvider<List<BookModel>>((ref) => []);
 
@@ -62,6 +63,27 @@ final bookdataStream = StreamProvider.family<BookModel, String>((ref, bookId) {
       });
 });
 
+final dueBooksRemindersStreamProvider = StreamProvider.autoDispose<List<BookModel>>((ref) {
+  final user = ref.watch(userProvider);
+  if (user == null) return Stream.value([]);
+
+  return FirebaseFirestore.instance
+      .collection('transactBooks')
+      .where(
+        Filter.or(
+          Filter('users', arrayContains: user.uid),
+          Filter('uid', isEqualTo: user.uid),
+        ),
+      )
+      .where('type', isEqualTo: 'due')
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs
+            .map((doc) => BookModel.fromMap(doc.data()))
+            .toList();
+      });
+});
+
 final bookrepositories = Provider((ref) => Bookrepositories());
 
 class Bookrepositories {
@@ -99,6 +121,9 @@ class Bookrepositories {
 
   Future<bool> deleteBook({required String bookId}) async {
     try {
+      // Cancel reminder notification
+      await NotificationService.cancelReminder(bookId);
+
       // Reference to the book document
       DocumentReference bookDocRef = FirebaseFirestore.instance
           .collection('transactBooks')

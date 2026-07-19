@@ -16,6 +16,8 @@ class BookModel {
   String createdAt = '';
   double targetAmount = 0;
   List<dynamic>? users = [];
+  String reminderInterval = 'none';
+  String reminderTime = '';
   BookModel({
     required this.bookId,
     required this.bookName,
@@ -29,6 +31,8 @@ class BookModel {
     required this.createdAt,
     required this.targetAmount,
     this.users,
+    this.reminderInterval = 'none',
+    this.reminderTime = '',
   });
 
   BookModel copyWith({
@@ -44,6 +48,8 @@ class BookModel {
     String? createdAt,
     double? targetAmount,
     List<dynamic>? users,
+    String? reminderInterval,
+    String? reminderTime,
   }) {
     return BookModel(
       bookId: bookId ?? this.bookId,
@@ -58,6 +64,8 @@ class BookModel {
       createdAt: createdAt ?? this.createdAt,
       targetAmount: targetAmount ?? this.targetAmount,
       users: users ?? this.users,
+      reminderInterval: reminderInterval ?? this.reminderInterval,
+      reminderTime: reminderTime ?? this.reminderTime,
     );
   }
 
@@ -75,6 +83,8 @@ class BookModel {
       'createdAt': createdAt,
       'targetAmount': targetAmount,
       'users': users,
+      'reminderInterval': reminderInterval,
+      'reminderTime': reminderTime,
     };
   }
 
@@ -92,6 +102,8 @@ class BookModel {
       createdAt: map['createdAt'] ?? '',
       targetAmount: map['targetAmount']?.toDouble() ?? 0.0,
       users: List<dynamic>.from(map['users']),
+      reminderInterval: map['reminderInterval'] ?? 'none',
+      reminderTime: map['reminderTime'] ?? '',
     );
   }
 

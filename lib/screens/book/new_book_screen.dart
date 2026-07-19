@@ -33,6 +33,7 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
   );
   final _bookDescription = TextEditingController();
   String selectedBookType = 'regular';
+  String selectedReminderInterval = 'daily';
 
   void _createBook(String uid) async {
     if (_bookTitle.text.isEmpty) {
@@ -62,6 +63,8 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
             : 0,
         createdAt: "$now",
         users: [],
+        reminderInterval: selectedBookType == "due" ? selectedReminderInterval : "none",
+        reminderTime: selectedBookType == "due" ? "$now" : "",
       );
 
       final res = await ref
@@ -107,17 +110,7 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
           children: [
             KPageHeader(
               title: "CREATE NEW BOOK",
-              leading: IconButton(
-                onPressed: () => ref
-                    .read(pageControllerProvider)
-                    .animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.ease,
-                    ),
-                icon: const Icon(LucideIcons.arrowLeft, size: 20),
-                color: context.textColor,
-              ),
+              leading: SizedBox(height: 30),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -215,6 +208,38 @@ class _NewBookScreenState extends ConsumerState<NewBookScreen> {
                             borderRadius: BorderRadius.zero,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 32),
+                      _inputLabel("REMINDER INTERVAL"),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: selectedReminderInterval,
+                        items: const [
+                          DropdownMenuItem(value: 'none', child: Text("NO REMINDER")),
+                          DropdownMenuItem(value: 'daily', child: Text("DAILY")),
+                          DropdownMenuItem(value: 'weekly', child: Text("WEEKLY")),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() {
+                              selectedReminderInterval = val;
+                            });
+                          }
+                        },
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: context.textColor,
+                        ),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: context.textColor.lighten(0.05),
+                          border: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.zero,
+                          ),
+                        ),
+                        dropdownColor: context.scaffoldColor,
                       ),
                     ],
                   ],
