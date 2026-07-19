@@ -47,9 +47,11 @@ This project uses Swift Package Manager (SPM) for iOS plugins. If you run into b
 3. Re-generate the local build configurations using:
    ```sh
    flutter clean
+   mkdir -p build/ios/SourcePackages
    flutter pub get
    flutter build ios --config-only
    ```
+   _Note: A known bug in Flutter's Swift Package Manager tooling causes `flutter pub get` to fail with an rsync directory error after `flutter clean` because the `build` directory is deleted. Creating the `build/ios/SourcePackages` parent directory manually before running `flutter pub get` bypasses this error._
 
 ## Download & Access
 
